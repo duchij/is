@@ -1,0 +1,267 @@
+﻿using System;
+
+using System.Configuration;
+using System.Collections;
+using System.Collections.Generic;
+//using System.Linq;
+using System.Web;
+using System.Web.Configuration;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Web.UI.HtmlControls;
+using System.Data;
+using System.Data.Odbc;
+using System.Text;
+
+/// <summary>
+/// Summary description for medix
+/// </summary>
+public class medix : my_db
+{
+	public medix()
+	{
+		//
+		// TODO: Add constructor logic here
+		//
+	}
+
+    public DataSet getData_OpDg()
+    {
+
+        string query = "SELECT * FROM `medix_opdg` ";
+        //string conn = @"Driver={MySQL ODBC 3.51 Driver};uid=root;password=aa;Server=127.0.0.1;Option=3;Database=kdch_sk;";
+        my_con.Open();
+
+        OdbcDataAdapter da = new OdbcDataAdapter(query, this.G_CONN);
+        DataSet ds = new DataSet();
+        da.Fill(ds);
+        my_con.Close();
+
+        return ds;
+    }
+
+    public DataSet getData_Operateri()
+    {
+
+        string query = "SELECT * FROM `medix_operateri` ORDER BY `priezvisko` ";
+        //string conn = @"Driver={MySQL ODBC 3.51 Driver};uid=root;password=aa;Server=127.0.0.1;Option=3;Database=kdch_sk;";
+        my_con.Open();
+
+        OdbcDataAdapter da = new OdbcDataAdapter(query, this.G_CONN);
+        DataSet ds = new DataSet();
+        da.Fill(ds);
+        my_con.Close();
+
+        return ds;
+    }
+
+    public DataSet getData_OpDg_ByQuery(string key)
+    {
+        string query = "SELECT * FROM `medix_opdg` WHERE `typop` LIKE '%{0}%'";
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.AppendFormat(query, key);
+
+
+        //string conn = @"Driver={MySQL ODBC 3.51 Driver};uid=root;password=aa;Server=127.0.0.1;Option=3;Database=kdch_sk;";
+
+        my_con.Open();
+
+        OdbcDataAdapter da = new OdbcDataAdapter(sb.ToString(), this.G_CONN);
+
+        DataSet ds = new DataSet();
+        da.Fill(ds);
+        my_con.Close();
+
+        return ds;
+
+    }
+
+    public DataSet getDataByOsobCisl(int osobcisl)
+    {
+        string query = "SELECT * FROM `medix_operateri` WHERE `osobcisl` = {0}";
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.AppendFormat(query, osobcisl);
+
+        my_con.Open();
+
+        OdbcDataAdapter da = new OdbcDataAdapter(sb.ToString(), this.G_CONN);
+
+        DataSet ds = new DataSet();
+        da.Fill(ds);
+        my_con.Close();
+
+        return ds;
+
+    }
+
+    public DataSet getDataByPriezvisko(string priezvisko)
+    {
+        string query = "SELECT * FROM `medix_operateri` WHERE `priezvisko` LIKE '%{0}%'";
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.AppendFormat(query, priezvisko);
+
+        my_con.Open();
+
+        OdbcDataAdapter da = new OdbcDataAdapter(sb.ToString(), this.G_CONN);
+
+        DataSet ds = new DataSet();
+        da.Fill(ds);
+        my_con.Close();
+
+        return ds;
+
+    }
+
+    public DataSet getData_OpDg_ByOdbornost(string odbornost)
+    {
+        string query = "SELECT * FROM `medix_opdg` WHERE `odbornost` LIKE '%{0}%' ORDER BY `typop`";
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.AppendFormat(query, odbornost);
+
+
+        //string conn = @"Driver={MySQL ODBC 3.51 Driver};uid=root;password=aa;Server=127.0.0.1;Option=3;Database=kdch_sk;";
+
+        my_con.Open();
+
+        OdbcDataAdapter da = new OdbcDataAdapter(sb.ToString(), this.G_CONN);
+
+        DataSet ds = new DataSet();
+        da.Fill(ds);
+        my_con.Close();
+
+        return ds;
+
+    }
+
+    public SortedList getInfoOperaterData(int id)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("SELECT * FROM `medix_operateri` WHERE `id`={0}", id);
+
+        my_con.Open();
+        SortedList result = new SortedList();
+
+        OdbcCommand my_com = new OdbcCommand(sb.ToString(), my_con);
+
+        OdbcDataReader reader = my_com.ExecuteReader();
+
+        if (reader.HasRows)
+        {
+            while (reader.Read())
+            {
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                    result.Add(reader.GetName(i).ToString(), reader.GetValue(i).ToString());
+                }
+
+            }
+            my_con.Close();
+        }
+        else
+        {
+            my_con.Close();
+            result.Add("status", "empty");
+
+        }
+
+        return result;
+    }
+
+
+    public SortedList getInfoOpDgData(int id)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("SELECT * FROM `medix_opdg` WHERE `id`={0}", id);
+
+        my_con.Open();
+        SortedList result = new SortedList();
+
+        OdbcCommand my_com = new OdbcCommand(sb.ToString(), my_con);
+
+        OdbcDataReader reader = my_com.ExecuteReader();
+
+        if (reader.HasRows)
+        {
+            while (reader.Read())
+            {
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                    result.Add(reader.GetName(i).ToString(), reader.GetValue(i).ToString());
+                }
+
+            }
+            my_con.Close();
+        }
+        else
+        {
+            my_con.Close();
+            result.Add("status", "empty");
+
+        }
+
+        return result;
+    }
+
+    public SortedList getOdbornosti()
+    {
+
+        SortedList result = new SortedList();
+
+        string query = "SELECT * FROM `medix_odbornost` ORDER BY `text`";
+        my_con.Open();
+
+        OdbcCommand my_com = new OdbcCommand(query, my_con);
+
+        OdbcDataReader reader = my_com.ExecuteReader();
+
+        if (reader.HasRows)
+        {
+            while (reader.Read())
+            {
+                result.Add(reader["odbkod"].ToString(), reader["text"].ToString());
+            }
+            my_con.Close();
+        }
+        else
+        {
+            my_con.Close();
+            result.Add("status", "empty");
+
+        }
+
+        return result;
+
+    }
+
+    public DataSet getOperaterByOdbornost(string odbornost)
+    {
+        string query = "SELECT * FROM `medix_operateri` WHERE `odbornost` LIKE '%{0}%' ORDER BY `priezvisko`";
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.AppendFormat(query, odbornost);
+
+
+        //string conn = @"Driver={MySQL ODBC 3.51 Driver};uid=root;password=aa;Server=127.0.0.1;Option=3;Database=kdch_sk;";
+
+        my_con.Open();
+
+        OdbcDataAdapter da = new OdbcDataAdapter(sb.ToString(), this.G_CONN);
+
+        DataSet ds = new DataSet();
+        da.Fill(ds);
+        my_con.Close();
+
+        return ds;
+    }
+
+
+}

@@ -1,0 +1,759 @@
+﻿using System;
+
+using System.Configuration;
+using System.Collections;
+using System.Collections.Generic;
+//using System.Linq;
+using System.Web;
+using System.Web.Configuration;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Web.UI.HtmlControls;
+using System.Data;
+using System.Data.Odbc;
+
+
+/// <summary>
+/// Summary description for my_db
+/// </summary>
+public class my_db
+{
+    private  OdbcConnection my_con = new OdbcConnection();
+
+	public my_db()
+	{
+		//
+		// TODO: Add constructor logic here
+		//
+       // my_con.ConnectionString = @"Driver={MySQL ODBC 3.51 Driver};uid=root;password=aa;Server=127.0.0.1;Option=3;Database=kdch_sk;";
+     
+        Configuration myConfig = WebConfigurationManager.OpenWebConfiguration("/is");
+        ConnectionStringSettings connString;
+        connString = myConfig.ConnectionStrings.ConnectionStrings["kdch_sk"];
+
+        my_con.ConnectionString = connString.ToString();
+    
+    }
+
+    public DataSet getData_opvykon(string druh)
+    {
+        string query = "SELECT * FROM is_opvykon WHERE Oddelenie='" + druh + "'";
+        string conn = my_con.ConnectionString.ToString();
+        my_con.Open();
+        OdbcDataAdapter da = new OdbcDataAdapter(query, conn);
+        DataSet ds = new DataSet();
+        da.Fill(ds);
+        my_con.Close();
+
+        return ds;
+    }
+    public DataSet getData_operacie()
+    {
+        string query = "SELECT * FROM is_opkniha ORDER BY DESC";
+        string conn = my_con.ConnectionString.ToString();
+        my_con.Open();
+        OdbcDataAdapter da = new OdbcDataAdapter(query, conn);
+        DataSet ds = new DataSet();
+        da.Fill(ds);
+        my_con.Close();
+
+        return ds;
+    }
+
+    public SortedList getAllUsers(string table)
+    {
+        SortedList result = new SortedList();
+
+        string query = "SELECT id, full_name FROM " + table +" WHERE `group` <> 'sestra' ORDER BY full_name DESC";
+        my_con.Open();
+
+        OdbcCommand my_com = new OdbcCommand(query, my_con);
+
+        OdbcDataReader reader = my_com.ExecuteReader();
+
+        if (reader.HasRows)
+        {
+            while (reader.Read())
+            {
+                result.Add(reader[0].ToString(), reader[1].ToString());
+            }
+        }
+        my_con.Close();
+
+        return result;
+
+
+
+
+    }
+
+         
+
+    public SortedList insertHoliday(string table, SortedList data)
+    {
+        SortedList result = new SortedList();
+        
+        SortedList tmp = this.insert_rows(table, data);
+
+        if (tmp["status"].ToString() == "ok")
+        {
+            result.Add("status", "ok");
+            result.Add("last_id", tmp["last_id"].ToString());
+        }
+        if (tmp["status"].ToString() == "error")
+        {
+            result.Add("status", "error");
+            result.Add("message", tmp["message"].ToString());
+        }
+
+
+        return result;
+    }
+
+
+
+    public SortedList lastInsertID(string table)
+    {
+        string query = "SELECT MAX(id) FROM "+table;
+        my_con.Open();
+        OdbcCommand my_com = new OdbcCommand(query, my_con);       
+
+        OdbcDataReader reader = my_com.ExecuteReader();
+        SortedList result = new SortedList();
+        while (reader.Read())
+        {
+
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                result.Add("last_id", reader.GetValue(i).ToString());
+            }
+        }
+        
+        
+       my_con.Close();
+
+        return result;
+
+    }
+
+
+
+    public SortedList getUserPasswd(string name)
+    {
+        SortedList result = new SortedList();
+        
+        string query = "SELECT * FROM is_users WHERE name='"+name+"'";
+        my_con.Open();
+
+        OdbcCommand my_com = new OdbcCommand(query, my_con);
+        
+
+        OdbcDataReader reader = my_com.ExecuteReader();
+       
+        if (reader.HasRows)
+        {
+            while (reader.Read())
+            {
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                    result.Add(reader.GetName(i).ToString(), reader.GetValue(i).ToString());
+                }
+            }
+        }
+        my_con.Close();
+
+        return result;
+
+    }
+    /// <summary>
+    /// vlozi riadky, a vrati status=ok a posledne IDecko, inak vrati chybove hlasenie, vrati status=ok  alebo status=error a polozke message je error
+    /// </summary>
+    /// <param name="table"></param>
+    /// <param name="data"></param>
+    /// <returns></returns>
+
+    public SortedList insert_rows(string table, SortedList data)
+    {
+        string cols = "(";
+        string values = "('";
+        string parse_str;
+        SortedList result = new SortedList();
+        foreach (DictionaryEntry tmp in data)
+        {
+            cols = cols + tmp.Key + ",";
+            parse_str = tmp.Value.ToString();
+            values = values + parse_str.Replace("'","*") + "','";
+        }
+        cols = cols.Substring(0, cols.Length-1);
+        values = values.Substring(0, values.Length-2);
+        cols = cols + ")";
+        values = values + ")";
+
+        string query = "INSERT INTO "+table+" " + cols + " VALUES " + values;
+
+        //return query;
+        try
+        {
+            my_con.Open();
+
+            OdbcCommand my_insert = new OdbcCommand(query, my_con);
+
+            my_insert.ExecuteNonQuery();
+
+            
+
+            my_con.Close();
+            SortedList my_res = this.lastInsertID(table);
+            result.Add("status", "ok");
+            result.Add("last_id", my_res["last_id"]);
+            //return true;
+            return result;
+        }
+         catch (Exception e)
+       {
+           my_con.Close();
+           result.Clear();
+           result.Add("status", "error");
+           result.Add("message", e.ToString()+"...."+query);
+           return result;
+       }
+   
+
+    }
+
+    public SortedList getUserInfoByID(string table, string id)
+    {
+        SortedList result = new SortedList();
+
+        string query = "SELECT * FROM " + table + " WHERE id=" + id;
+        my_con.Open();
+
+        OdbcCommand my_com = new OdbcCommand(query, my_con);
+
+        OdbcDataReader reader = my_com.ExecuteReader();
+
+        if (reader.HasRows)
+        {
+            while (reader.Read())
+            {
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                    result.Add(reader.GetName(i).ToString(), reader.GetValue(i).ToString());
+                }
+            }
+        }
+        else
+        {
+            result.Add("result", "none");
+        }
+        my_con.Close();
+
+        return result;
+    }
+    /// <summary>
+    /// updatuje riadky v db ak je id len cislo, plati klauzula id=cislo, ak sa to id vlozi WHERE nejake_id = id, tak sa pouzije tento zapi id...
+    /// </summary>
+    /// <param name="table"></param>
+    /// <param name="data"></param>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public string update_row(string table, SortedList data, string id)
+    {
+        string my_set = "SET ";
+        string parse_str;
+        foreach (DictionaryEntry tmp in data)
+        {
+            //cols = cols + tmp.Key + ",";
+            parse_str = tmp.Value.ToString();
+            parse_str = parse_str.Replace("'", "*");
+            my_set += tmp.Key.ToString() + "='" + parse_str + "', ";
+        }
+        my_set = my_set.Substring(0, my_set.Length - 2);
+        //values = values.Substring(0, values.Length - 2);
+        //cols = cols + ")";
+        //values = values + ")";
+        string query = "";
+        if (id.IndexOf("WHERE") != -1)
+        {
+            query = "UPDATE " + table + " " + my_set + " " + id;
+        }
+        else
+        {
+            query = "UPDATE " + table + " " + my_set + " WHERE id=" + id;
+        }
+
+        //return query;
+
+        try
+        {
+            my_con.Open();
+
+            OdbcCommand my_insert = new OdbcCommand(query, my_con);
+
+            my_insert.ExecuteNonQuery();
+
+            my_con.Close();
+            //return true;
+            return "ok";
+        }
+        catch (Exception e)
+        {
+            my_con.Close();
+            return e.ToString();
+        }
+
+        //return query;
+    }
+
+    public SortedList getDataByID(string table, string id)
+    {
+        SortedList result = new SortedList();
+        string query = "SELECT * FROM " + table + " WHERE id=" + id;
+        my_con.Open();
+        OdbcCommand my_com = new OdbcCommand(query, my_con);
+
+        OdbcDataReader reader = my_com.ExecuteReader();
+
+        if (reader.HasRows)
+        {
+            while (reader.Read())
+            {
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                    result.Add(reader.GetName(i).ToString(), reader.GetValue(i).ToString());
+                }
+            }
+        }
+        else
+        {
+            result.Add("empty", "true");
+        }
+        my_con.Close();
+
+        return result;
+        
+    }
+
+    public SortedList getSestrHlasko(DateTime dat_hlas, string oddelenie, string lokalita, string hlas_text, string user_id, string cas)
+    {
+        SortedList result = new SortedList();
+        string mesiac = dat_hlas.Month.ToString();
+        string den = dat_hlas.Day.ToString();
+        string rok = dat_hlas.Year.ToString();
+        string unix_date = rok + "-" + mesiac + "-" + den;
+
+        string query = "SELECT * FROM is_hlasko_sestry WHERE dat_hlas = '" + unix_date + "' AND oddelenie ='" + oddelenie + "'" + " AND lokalita = '" + lokalita + "' AND cas='" + cas + "'";
+        my_con.Open();
+
+        OdbcCommand my_com = new OdbcCommand(query, my_con);
+
+
+        OdbcDataReader reader = my_com.ExecuteReader();
+        string lbl_hlaskoSestr = Resources.Resource.odd_hlasko_sestry.ToString();
+
+        if (reader.HasRows)
+        {
+            result.Add("update", "1");
+            while (reader.Read())
+            {
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                    result.Add(reader.GetName(i).ToString(), reader.GetValue(i).ToString());
+                }
+            }
+            my_con.Close();
+        }
+        else
+        {
+            my_con.Close();
+            SortedList data = new SortedList();
+            data.Add("oddelenie", oddelenie);
+            data.Add("lokalita", lokalita);
+            data.Add("dat_hlas", unix_date);
+            data.Add("hlasko", lbl_hlaskoSestr);
+           
+            data.Add("creat_user", user_id);
+            data.Add("last_user", user_id);
+            data.Add("uzavri", "0");
+            data.Add("cas", cas);
+
+
+            SortedList res = this.insert_rows("is_hlasko_sestry", data);
+            my_con.Close();
+            if (res["status"] == "ok")
+            {
+                result.Add("new_ins", "true");
+                result.Add("hlasko", lbl_hlaskoSestr);
+                result.Add("akt_hlasenie", res["last_id"]);
+                result.Add("last_user", user_id);
+                result.Add("uzavri", "0");
+                result.Add("cas", cas);
+            }
+            else
+            {
+                result.Add("error", res["message"]);
+            }
+        }
+        return result;
+    }
+
+
+
+    public SortedList getHlasko(DateTime dat_hlas, string hlas_type, string hlas_text, string user_id)
+    {
+        SortedList result = new SortedList();
+        string mesiac = dat_hlas.Month.ToString();
+        string den = dat_hlas.Day.ToString();
+        string rok = dat_hlas.Year.ToString();
+        string unix_date = mesiac + "/" + den + "/" + rok;
+
+        string query = "SELECT * FROM is_hlasko WHERE dat_hlas = '" + unix_date+"' AND type ='"+hlas_type+"'";
+        my_con.Open();
+
+        OdbcCommand my_com = new OdbcCommand(query, my_con);
+
+
+        OdbcDataReader reader = my_com.ExecuteReader();
+
+
+        string lbl_hlasko = Resources.Resource.odd_hlasko_html.ToString();
+        if (reader.HasRows)
+        {
+            result.Add("update", "1");
+            while (reader.Read())
+            {
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                    result.Add(reader.GetName(i).ToString(), reader.GetValue(i).ToString());
+                }
+            }
+            my_con.Close();
+        }
+        else
+        {
+            my_con.Close();
+            SortedList data = new SortedList();
+            data.Add("type", hlas_type);
+            data.Add("dat_hlas", unix_date);
+            data.Add("text", lbl_hlasko);
+            data.Add("date", dat_hlas.ToString());
+            data.Add("creat_user", user_id);
+            data.Add("last_user", user_id);
+            data.Add("uzavri", "0");
+            
+
+            SortedList res = this.insert_rows("is_hlasko", data);
+            my_con.Close();
+            if (res["status"] == "ok")
+            {
+                result.Add("new_ins", "true");
+                result.Add("text", lbl_hlasko);
+                result.Add("akt_hlasenie", res["last_id"]);
+                result.Add("last_user", user_id);
+                result.Add("uzavri", "0");
+            }
+            else
+            {
+                result.Add("error", res["message"]);
+            }
+        }
+        return result;
+    }
+
+    public SortedList insertSluzby(string table, SortedList data)
+    {
+        SortedList result = this.insert_rows(table, data);
+
+        return result;
+    }
+
+    public string updateSluzby(string table, SortedList data, string id)
+    {
+        string result = this.update_row(table, data, id);
+
+        return result;
+    }
+    /// <summary>
+    /// Funkcia nacita sluzby dla mesiaca a roku
+    /// </summary>
+    /// <param name="table"></param>
+    /// <param name="month"></param>
+    /// <param name="year"></param>
+    /// <returns></returns>
+
+    public SortedList loadSluzbaMonthYear(string table, string month, string year)
+    {
+        string query = "SELECT * FROM " + table + " WHERE mesiac='" + month + "' AND rok='" + year+"'";
+        SortedList result = new SortedList();
+
+        my_con.Open();
+
+        OdbcCommand my_com = new OdbcCommand(query, my_con);
+
+
+        OdbcDataReader reader = my_com.ExecuteReader();
+
+        if (reader.HasRows)
+        {
+
+            while (reader.Read())
+            {
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                    result.Add(reader.GetName(i).ToString(), reader.GetValue(i).ToString());
+                }
+            }
+        }
+        else
+        {
+            result.Add("ziadna_sluzba", "true");
+
+        }
+        
+        my_con.Close();
+
+       
+
+
+        return result;
+    }
+
+    public string[] getFreeDays()
+    {
+        string query = "SELECT * FROM is_settings WHERE name='free_days'";
+
+        my_con.Open();
+        //my_con.Open();
+        OdbcCommand my_com = new OdbcCommand(query, my_con);
+
+        OdbcDataReader reader = my_com.ExecuteReader();
+        string tmp = "";
+
+        if (reader.HasRows)
+        {
+            while (reader.Read())
+            {
+                tmp = reader["data"].ToString();
+            }
+        }
+        my_con.Close();
+
+        string[] result = tmp.Split(new char[] { ',' });
+
+        return result;
+
+    }
+
+    public ArrayList getDovolenky(string od_datum, string do_datum)
+    {
+        ArrayList result = new ArrayList(); 
+
+        string query = "SELECT is_users.id,is_users.full_name,is_dovolenky.id,is_dovolenky.user_id,is_dovolenky.od,is_dovolenky.do FROM is_users INNER JOIN is_dovolenky on is_users.id = is_dovolenky.user_id WHERE is_dovolenky.od >= '"+od_datum+"' AND is_dovolenky.do <= '"+do_datum+"'";
+
+        my_con.Open();
+        OdbcCommand my_com = new OdbcCommand(query, my_con);
+
+        OdbcDataReader reader = my_com.ExecuteReader();
+        
+        //int j = 0;
+        if (reader.HasRows)
+        {
+            while (reader.Read())
+            {
+                result.Add(reader["full_name"].ToString() + ";" + reader["od"].ToString() + ";" + reader["do"].ToString());
+            }
+            
+        }
+        my_con.Close();
+
+
+        return result;
+    }
+
+    public OdbcDataReader getAllStatusDov()
+    {
+
+        string query = "SELECT is_users.id, is_users.full_name, is_dovolen_zost.id AS dovzost_id, is_dovolen_zost.user_id, is_dovolen_zost.zostatok, is_dovolen_zost.narok FROM is_users INNER JOIN is_dovolen_zost ON is_users.id = is_dovolen_zost.user_id";
+        //SortedList result = new SortedList();
+        my_con.Open();
+
+        OdbcCommand my_com = new OdbcCommand(query, my_con);
+        OdbcDataReader reader = my_com.ExecuteReader();
+        //my_con.Close();
+
+        //OdbcDataReader result = reader;
+        //my_con.Close();
+
+        return reader;
+        my_con.Close();
+    }
+
+    public SortedList getDovolStatus(string table, string id)
+    {
+        SortedList result = new SortedList();
+        
+        string query = "SELECT is_users.id, is_users.full_name, is_dovolen_zost.id AS dovzost_id, is_dovolen_zost.user_id, is_dovolen_zost.zostatok, is_dovolen_zost.narok FROM is_users INNER JOIN is_dovolen_zost ON is_users.id = is_dovolen_zost.user_id WHERE is_dovolen_zost.user_id = " + id;
+        my_con.Open();
+       
+        try
+        {
+
+            OdbcCommand my_com = new OdbcCommand(query, my_con);
+            OdbcDataReader reader = my_com.ExecuteReader();
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    result.Add("fullname", reader["full_name"].ToString());
+                    result.Add("zostatok", reader["zostatok"].ToString());
+                    result.Add("narok", reader["narok"].ToString());
+                    result.Add("id", reader["dovzost_id"].ToString());
+
+                }
+
+            }
+            my_con.Close();
+        }
+        catch (Exception e)
+        {
+            my_con.Close();
+            result.Add("error", e.ToString());
+        }
+
+
+      
+
+        return result;
+    }
+
+    public ArrayList getDovolenkyWithID(string od_datum, string do_datum)
+    {
+        ArrayList result = new ArrayList();
+
+        string query = "SELECT is_users.id,is_users.full_name,is_dovolenky.id AS dov_id,is_dovolenky.user_id,is_dovolenky.od,is_dovolenky.do FROM is_users INNER JOIN is_dovolenky on is_users.id = is_dovolenky.user_id WHERE is_dovolenky.od >= '" + od_datum + "' AND is_dovolenky.do <= '" + do_datum+"'";
+
+        my_con.Open();
+        OdbcCommand my_com = new OdbcCommand(query, my_con);
+
+        OdbcDataReader reader = my_com.ExecuteReader();
+
+        //int j = 0;
+        if (reader.HasRows)
+        {
+            while (reader.Read())
+            {
+                result.Add(reader["full_name"].ToString() + ";" + reader["od"].ToString() + ";" + reader["do"].ToString()+";"+reader["dov_id"].ToString());
+            }
+
+        }
+        my_con.Close();
+
+
+        return result;
+    }
+
+    public string eraseRowByID(string table, string id)
+    {
+        //string result = "";
+
+        string query = "DELETE FROM " + table + " WHERE id=" + id;
+        try
+        {
+
+
+            my_con.Open();
+
+            OdbcCommand my_com = new OdbcCommand(query, my_con);
+
+            my_com.ExecuteNonQuery();
+            my_con.Close();
+            return "ok";
+        }
+        catch (Exception e)
+        {
+            return e.ToString();
+        }
+
+        //return result;
+    }
+
+    public SortedList getDovolenkaByID(string id)
+    {
+        string query = "SELECT * FROM is_dovolenky WHERE id = "+id;
+
+        my_con.Open();
+        OdbcCommand my_com = new OdbcCommand(query, my_con);
+        OdbcDataReader reader = my_com.ExecuteReader();
+        SortedList result = new SortedList();
+
+        if (reader.HasRows)
+        {
+            while (reader.Read())
+            {
+                result.Add("od",reader["od"].ToString());
+                result.Add("do", reader["do"].ToString());
+                result.Add("user_id", reader["user_id"].ToString());
+            }
+        }
+        my_con.Close();
+
+        return result;
+    }
+
+    //cast urcena pre staze
+
+    public SortedList loadStazeMonthYear(string table, string month, string year)
+    {
+        string query = "SELECT * FROM " + table + " WHERE mesiac='" + month + "' AND rok='" + year + "'";
+        SortedList result = new SortedList();
+
+        my_con.Open();
+
+        OdbcCommand my_com = new OdbcCommand(query, my_con);
+
+
+        OdbcDataReader reader = my_com.ExecuteReader();
+
+        if (reader.HasRows)
+        {
+
+            while (reader.Read())
+            {
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                    result.Add(reader.GetName(i).ToString(), reader.GetValue(i).ToString());
+                }
+            }
+        }
+        else
+        {
+            result.Add("ziadna_staze", "true");
+
+        }
+
+        my_con.Close();
+
+
+
+
+        return result;
+    }
+
+    public string updateStaze(string table, SortedList data, string id)
+    {
+        string result = this.update_row(table, data, id);
+
+        return result;
+    }
+
+    public SortedList insertStaze(string table, SortedList data)
+    {
+        SortedList result = this.insert_rows(table, data);
+
+        return result;
+    }
+            
+
+
+
+}

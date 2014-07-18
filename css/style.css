@@ -1,0 +1,196 @@
+﻿body {
+
+font-family:Verdana;
+font-size:12px;
+margin:0px;
+
+line-height: 1em;
+
+}
+
+.login 
+{
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin-top: -50px;
+  margin-left: -100px;
+}
+
+#wrapper {
+    width:1024px;
+    margin: 0 auto;
+	background-color:white;
+	
+	
+    }
+    
+#header 
+{
+	width:1024px;
+	height:125px;
+	border-bottom-style:solid;
+	border-bottom-width:1px;
+	border-bottom-color:#990000;
+	
+	padding:5px;
+	
+}
+
+#content 
+{
+	float:left;
+	width:100%;
+}
+    
+#menu {
+    
+    float:left;	
+    margin-left: -1024px;
+	width:150px;
+	/*height:500px; */   
+    
+}
+#menu_small_title
+{
+	
+	padding-left:5px;
+	text-align:center;
+	padding-top:3px;
+	width:135px;
+	height:18px;
+	vertical-align:middle;
+	background-image:url(../img/vtab.png);
+	background-repeat:no-repeat;
+	
+	color:Yellow;
+	font-size:13px;
+}
+#menu2 {
+    position:relative;
+    top:0px;
+    right:0px;
+    float:right;	
+    margin:0 0 -5px 0;
+	width:150px;
+	
+	
+	/*height:500px; */   
+    
+}
+
+#cont_text 
+{
+	margin-left:150px;
+	width:700px;
+	border-left-style:solid;
+	border-left-width:1px;
+	border-left-color:#990000;
+	
+	border-right-style:solid;
+	border-right-width:1px;
+	border-right-color:#990000;
+	padding:5px;
+	
+}
+.context
+{
+	margin:5px;
+}
+
+#footer 
+{
+	clear:left;
+	width:1024px;
+	height:50px;
+	border-top-style:solid;
+	border-top-width:1px;
+	border-top-color:#990000;
+	text-align:center;
+	font-size:10px;
+	
+
+}
+
+
+ 
+    
+/*text styles*/
+.menu 
+{
+		font-family:Arial;
+		color:White;
+		font-size:20px;
+}
+.PrintButton
+{
+			display:block;
+}
+a  
+{
+	text-decoration :none;
+	color:#990000;
+}
+a:hover
+{
+	text-decoration:underline;
+	color:Maroon;
+}
+h1,h2 
+{ 
+	color:#990000;
+}
+hr
+{
+	color: #990000;
+	background: #990000;
+	border: 0;
+	height: 1px;
+}
+td 
+{
+	padding:2px;
+}
+
+/*taby*/
+.tabs 
+{
+	
+	width:150px;
+	height:25px;
+	background-image:url(../img/tab.png);
+	background-repeat:repeat-x;
+	color:Yellow;
+	vertical-align:top;
+
+}
+.tabs_a
+{
+	color:Yellow;
+}
+
+/*MEDIX DATA*/
+#medixwrapper
+{
+	position:absolute;
+	width:1000px;
+	left:20px;
+}
+
+#medixdata 
+{
+	position:absolute;
+	top:60px;
+	left:0px;
+	width:500px;
+	
+}
+
+#medixform 
+{
+	
+	position:absolute;
+	top:50px;
+	left:506px;
+}
+	

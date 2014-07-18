@@ -1,0 +1,285 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="is_den" xml:space="preserve">
+    <value>Deň</value>
+  </data>
+  <data name="is_dievcat" xml:space="preserve">
+    <value>Dievčatá</value>
+  </data>
+  <data name="is_koj" xml:space="preserve">
+    <value>Kojenci</value>
+  </data>
+  <data name="is_news_button_save" xml:space="preserve">
+    <value>Uložiť správu</value>
+  </data>
+  <data name="is_news_full" xml:space="preserve">
+    <value>Celá správa</value>
+  </data>
+  <data name="is_news_short" xml:space="preserve">
+    <value>Krátka správa (max 250zn)</value>
+  </data>
+  <data name="is_news_title" xml:space="preserve">
+    <value>Informácie KDCH</value>
+  </data>
+  <data name="is_news_title_small" xml:space="preserve">
+    <value>Aktuality</value>
+  </data>
+  <data name="is_opprogram_short" xml:space="preserve">
+    <value>Nadpis operačného programu</value>
+  </data>
+  <data name="is_opprogram_title" xml:space="preserve">
+    <value>Operačný program KDCH, KUP, DOrK, DKAIM, KDO,ORL</value>
+  </data>
+  <data name="is_op_title_small" xml:space="preserve">
+    <value>OP program</value>
+  </data>
+  <data name="is_oup" xml:space="preserve">
+    <value>OÚP</value>
+  </data>
+  <data name="is_rozp_title" xml:space="preserve">
+    <value>Rozpis lekárov KDCH</value>
+  </data>
+  <data name="is_traumamb" xml:space="preserve">
+    <value>Trauma.amb</value>
+  </data>
+  <data name="is_veldeti" xml:space="preserve">
+    <value>Veľké deti</value>
+  </data>
+  <data name="is_vseamb" xml:space="preserve">
+    <value>Všeob.amb.</value>
+  </data>
+  <data name="lmenu_oddelenie" xml:space="preserve">
+    <value>Administratíva</value>
+  </data>
+  <data name="lmenu_rozpis" xml:space="preserve">
+    <value>Organizačné veci</value>
+  </data>
+  <data name="lmenu_sestry" xml:space="preserve">
+    <value>Sestry</value>
+  </data>
+  <data name="lmenu_user" xml:space="preserve">
+    <value>Užívateľ</value>
+  </data>
+  <data name="odd_akt_sluz" xml:space="preserve">
+    <value>Aktuálne služby</value>
+  </data>
+  <data name="odd_hlasko_html" xml:space="preserve">
+    <value>&lt;font size="2" face="Verdana"&gt;&lt;b&gt;Prijmy&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;Operovaní&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;Sledovaní&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;br&gt;</value>
+  </data>
+  <data name="odd_hlasko_sestry" xml:space="preserve">
+    <value>&lt;font size="2" face="Verdana"&gt;Hlásenie sestier&lt;br&gt;&lt;/font&gt;</value>
+  </data>
+  <data name="odd_lock_btn" xml:space="preserve">
+    <value>Vložiť/Upraviť</value>
+  </data>
+  <data name="odd_poziadavky" xml:space="preserve">
+    <value>Požiadavky na služby</value>
+  </data>
+  <data name="odd_poziadavky_alert" xml:space="preserve">
+    <value>Nemáte zapísané požiadavky na ďalší mesiac, prosím vyplňte si ich!!!! \r\n Ďakujem</value>
+  </data>
+  <data name="odd_poziadavky_info" xml:space="preserve">
+    <value>Uzatvorenie požiadaviek na ďalší mesiac: </value>
+  </data>
+  <data name="odd_poziadavky_info_short" xml:space="preserve">
+    <value>Požiadavky do:</value>
+  </data>
+  <data name="odd_poziadavky_next" xml:space="preserve">
+    <value>Vyber iný dátum.</value>
+  </data>
+  <data name="odd_poziadavky_title" xml:space="preserve">
+    <value>Požiadavky na služby</value>
+  </data>
+  <data name="odd_poziadavky_title_print" xml:space="preserve">
+    <value>Požiadavky na služby na mesiac: </value>
+  </data>
+  <data name="odd_prev_hlasko" xml:space="preserve">
+    <value>&lt;font color="red"&gt;Predchádzajúce hlásenie !!!!! &lt;/font&gt;&lt;br&gt;</value>
+  </data>
+  <data name="odd_print_poz_btn" xml:space="preserve">
+    <value>Vytlačiť požiadavky na nasledujuci mesiac</value>
+  </data>
+  <data name="odd_rozpis_prev" xml:space="preserve">
+    <value>Preniesť z predošlého miesiaca</value>
+  </data>
+  <data name="odd_save" xml:space="preserve">
+    <value>Uložiť</value>
+  </data>
+  <data name="odd_staze" xml:space="preserve">
+    <value>Stáže KDCH</value>
+  </data>
+  <data name="odd_vloz_clip" xml:space="preserve">
+    <value>Vložiť hlásko z predchádzajúcej služby</value>
+  </data>
+  <data name="odd_vloz_clip_info" xml:space="preserve">
+    <value>&lt;br&gt;&lt;br&gt;&lt;font color="red"&gt;Stlačte tlačidlo&lt;b&gt; vložiť do Schránky&lt;/b&gt; a následne si môžete už zadaný Text vložiť do Vášho hlásenia&lt;/font&gt;</value>
+  </data>
+  <data name="slu_pohotovost" xml:space="preserve">
+    <value>Pohotovosť</value>
+  </data>
+  <data name="slu_primar" xml:space="preserve">
+    <value>Vypracoval:&lt;br /&gt;MUDr. Ľubomír Sýkora,&lt;br /&gt;primár KDCH</value>
+  </data>
+  <data name="slu_title" xml:space="preserve">
+    <value>ÚPS KDCH, KPU  a DOrK</value>
+  </data>
+  <data name="tabs_odd" xml:space="preserve">
+    <value>Oddelenie</value>
+  </data>
+  <data name="tabs_operacky" xml:space="preserve">
+    <value>Operačky</value>
+  </data>
+  <data name="tabs_op_program" xml:space="preserve">
+    <value>Operačný program</value>
+  </data>
+  <data name="tabs_rozpis_lekar" xml:space="preserve">
+    <value>Rozpis lekárov</value>
+  </data>
+  <data name="dov_prepoc" xml:space="preserve">
+    <value>Skontroluj dovolenky</value>
+  </data>
+  <data name="info_dov_status" xml:space="preserve">
+    <value>&lt;h1&gt;Zamestnanec má už v tomto období dovolenku !!!!!&lt;/h1&gt;&lt;br/&gt;</value>
+  </data>
+  <data name="kdch_prednosta" xml:space="preserve">
+    <value>Schválil:&lt;br /&gt;doc.MUDr. Ján Trnka, CSc.&lt;br /&gt;prednosta KDCH</value>
+  </data>
+  <data name="staze_3" xml:space="preserve">
+    <value>3.ročník</value>
+  </data>
+  <data name="staze_4" xml:space="preserve">
+    <value>4.ročník</value>
+  </data>
+  <data name="staze_5" xml:space="preserve">
+    <value>5.ročník</value>
+  </data>
+  <data name="staze_6" xml:space="preserve">
+    <value>6.ročník</value>
+  </data>
+  <data name="staze_den" xml:space="preserve">
+    <value>Deň</value>
+  </data>
+  <data name="staze_note" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="adduser_relogin" xml:space="preserve">
+    <value>Na to aby sa zmeny aktualizovali je nutné sa odhlásiť a nanovo prihlásiť !!!</value>
+  </data>
+</root>

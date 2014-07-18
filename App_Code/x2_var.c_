@@ -1,0 +1,96 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Mail;
+using System.Web;
+using System.Text;
+using System.Web.UI;
+using System.Security.Cryptography;
+using System.Text.RegularExpressions;
+
+/// <summary>
+/// Summary description for x2_var
+/// </summary>
+public class x2_var
+{
+	public x2_var()
+	{
+		//
+		// TODO: Add constructor logic here
+		//
+	}
+
+    public string make_hash(string text)
+    {
+        MD5CryptoServiceProvider hasher = new MD5CryptoServiceProvider();
+        System.Text.ASCIIEncoding enc = new System.Text.ASCIIEncoding();
+        byte[] data = enc.GetBytes(text);
+        data = hasher.ComputeHash(data);
+        return Convert.ToBase64String(data);
+
+    }
+
+    public bool isAlfaNum(string text)
+    {
+        Regex myReg = new Regex(@"^[a-zA-Z0-9_]*$");
+        bool isValid = false;
+        if (myReg.IsMatch(text))
+        {
+            isValid = true;
+        }
+        else
+        {
+            isValid = false;
+        }
+        
+        return isValid;
+    }
+
+    public bool isEmail(string email)
+    {
+        bool status = false;
+        Regex mojeReg = new Regex(@"^(\w[-._\w]*@\w[-._\w]*\w\.\w{2,6})$");
+        if (mojeReg.IsMatch(email.Trim()))
+        {
+            status = true;
+        }
+        return status;
+    }
+
+    public string mySendMail(string mail_server, SortedList mailData, bool isHtml)
+    {
+        MailAddress from = new MailAddress(mailData["from"].ToString());
+        MailAddress to = new MailAddress(mailData["to"].ToString());
+        MailAddress cc = new MailAddress(mailData["cc"].ToString());
+
+        MailMessage sprava = new MailMessage();
+        sprava.From = from;
+        sprava.To.Add(to);
+        sprava.CC.Add(cc);
+
+        sprava.Subject = mailData["subject"].ToString();
+        sprava.IsBodyHtml = isHtml; 
+        sprava.BodyEncoding = Encoding.UTF8;
+
+        sprava.Body = mailData["message"].ToString();
+
+        SmtpClient mail_klient = new SmtpClient(mail_server);
+        try
+        {
+            mail_klient.Send(sprava);
+            return "ok";
+        }
+        catch (Exception e)
+        {
+            return e.ToString();
+        }
+            
+
+    }
+
+    
+
+
+        
+}
