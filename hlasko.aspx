@@ -123,7 +123,7 @@ function myAlert()
                     <p>Sem <strong style="color:Maroon;">copy/paste priezvisko</strong> z hlásenia následne po jeho vložení za ním stlačiť klávesu enter, tak aby každé priezvisko začínalo na novom riadku, pre uloženie/vygenerovanie stlačiť <strong> uložiť</strong>, nie je nutné dodržiavať veľké malé písmená. Automaticky sa vygeneruje odkaz na OSIRIX</p>
                     <hr />
                     </td>
-                    <td><p><strong style="color:Maroon;">Klikni na link, pre otvorenie v OSIRIXe</strong><br /><br />Toto funguje len vrámci DFNsP!!!!!</p><hr /></td>
+                    <td><p><strong style="color:Maroon;">Klikni na link, pre otvorenie v OSIRIXe</strong><br /><br />Tento link funguje len vrámci DFNsP!!!!!</p><hr /></td>
                     </tr>
                     <tr>
                     <td>
