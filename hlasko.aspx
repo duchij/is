@@ -135,6 +135,7 @@ function myAlert()
                             <div style="text-align:center;"><asp:Label ID="osirix_url" runat="server" Text="Label"></asp:Label></div></td>
                         </tr>
                     </table>
+                    <h1>Hlásenie služby:</h1>
                     <hr />
                     <asp:TextBox ID="hlasenie" CssClass="dtextbox" runat="server"  Width="90%" Rows="30" Height="500" TextMode="MultiLine"> </asp:TextBox>
                     <%--<FTB:FreeTextBox ID="hlasenie" runat="server" Width="100%" Height="500"  toolbarlayout="Bold, Italic, Underline,RemoveFormat|FontFacesMenu,FontSizesMenu|JustifyLeft,JustifyRight,JustifyCenter,JustifyFull; Redo,Undo ,BulletedList,NumberedList,Indent,Outdent|WordClean,NetSpell"></FTB:FreeTextBox>--%>
