@@ -523,7 +523,7 @@ public class my_db
             data.Add("creat_user", user_id);
             data.Add("last_user", user_id);
             data.Add("uzavri", "0");
-            
+            data.Add("osirix", "");
 
             SortedList res = this.insert_rows("is_hlasko", data);
             my_con.Close();
@@ -534,6 +534,7 @@ public class my_db
                 result.Add("akt_hlasenie", res["last_id"]);
                 result.Add("last_user", user_id);
                 result.Add("uzavri", "0");
+                result.Add("osirix", "");
             }
             else
             {
