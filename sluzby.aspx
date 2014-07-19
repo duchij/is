@@ -65,7 +65,7 @@
                     <td width="130" align="center"><b>A</b></td>
                     <td width="130" align="center"><b>B</b></td>
                     <td width="130" align="center"><b>Pohotovost</b></td>
-                    <td width="130" align="center"><b>TRP</b></td>
+                    <td width="130" align="center"><b>Prijmova AMB</b></td>
                 
                 </tr>
                 </table>

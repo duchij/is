@@ -5,46 +5,47 @@ using System.Collections.Generic;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Text.RegularExpressions;
 
 public partial class hlasko : System.Web.UI.Page
 {
     my_db x_db = new my_db();
     x2_var my_x2 = new x2_var();
 
-   // protected System.Web.UI.HtmlControls.HtmlGenericControl hlavicka;
+    // protected System.Web.UI.HtmlControls.HtmlGenericControl hlavicka;
     protected void Page_Init(object sender, EventArgs e)
     {
         //hlavicka.Controls.Add(new LiteralControl("<script type='text/javascript' src='tinymce/jscripts/tiny_mce/tiny_mce.js'></script>"));
-       // hlavicka.Controls.Add(new LiteralControl("<script type='text/javascript'>tinyMCE.init({mode : 'textareas',        force_br_newlines : true,        force_p_newlines : false});</script>"));
+        // hlavicka.Controls.Add(new LiteralControl("<script type='text/javascript'>tinyMCE.init({mode : 'textareas',        force_br_newlines : true,        force_p_newlines : false});</script>"));
     }
 
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        
+
 
         if (Session["tuisegumdrum"] == null)
         {
             Response.Redirect("error.html");
         }
 
-        
 
 
-        
+
+
         if (IsPostBack == false)
         {
-           // Calendar1.SelectedDate = DateTime.Today;
+            // Calendar1.SelectedDate = DateTime.Today;
             this.setMyDate();
 
-            
-            
+
+
             this.loadHlasko();
         }
 
-        
 
-        
+
+
     }
 
 
@@ -53,7 +54,7 @@ public partial class hlasko : System.Web.UI.Page
         DateTime now = DateTime.Now;
 
         int hour = now.Hour;
-        msg_lbl.Text = "hod:"+hour.ToString();
+        msg_lbl.Text = "hod:" + hour.ToString();
         if (hour >= 9)
         {
             Calendar1.SelectedDate = DateTime.Today;
@@ -63,7 +64,7 @@ public partial class hlasko : System.Web.UI.Page
         else
         {
             Calendar1.SelectedDate = DateTime.Today.AddDays(-1);
-         //  msg_lbl.Text += "tu smr";
+            //  msg_lbl.Text += "tu smr";
         }
 
     }
@@ -75,15 +76,16 @@ public partial class hlasko : System.Web.UI.Page
         //user.Text = Calendar1.SelectedDate.ToString();
         //last_user.Text = Request.Cookies["user_id"].Value.ToString();
 
-        this.loadHlasko();       
-       
+        this.loadHlasko();
+
     }
 
     protected void loadHlasko()
     {
         //msg_lbl.Text = Calendar1.SelectedDate.ToString();
-        
+
         SortedList data = x_db.getHlasko(Calendar1.SelectedDate, hlas_type.SelectedValue.ToString(), hlasenie.Text.ToString(), Session["user_id"].ToString());
+        this.osirix_txt.Text = data["osirix"].ToString();
         if (data["uzavri"].ToString() == "1")
         {
             hlasenie.Visible = false;
@@ -93,9 +95,10 @@ public partial class hlasko : System.Web.UI.Page
             view_hlasko.Visible = true;
             hlasko_lbl.Visible = true;
             view_hlasko.Text = data["text"].ToString();
+           // osirix_txt = data["osirix"].ToString();
             send.Enabled = false;
-            
-           
+
+
         }
         else
         {
@@ -107,21 +110,22 @@ public partial class hlasko : System.Web.UI.Page
             addInfo_btn.Enabled = false;
             send.Enabled = true;
             hlasko_lbl.Visible = false;
+            view_hlasko.Text = data["text"].ToString();
         }
         SortedList akt_user_info = x_db.getUserInfoByID("is_users", Session["user_id"].ToString());
         user.Text = akt_user_info["full_name"].ToString();
-        
+
         SortedList my_last_user = new SortedList();
-        
+
         //SortedList lekari = this.getSluzbyByDen(Convert.ToInt32(Calendar1.SelectedDate.Day));
-        
+
         if (data["new_ins"] == "true")
         {
-            
+
             hlasenie.Text = data["text"].ToString();
             my_last_user = x_db.getUserInfoByID("is_users", data["last_user"].ToString());
             last_user.Text = my_last_user["full_name"].ToString();
-            Session.Add("akt_hlasenie",data["akt_hlasenie"].ToString());
+            Session.Add("akt_hlasenie", data["akt_hlasenie"].ToString());
         }
 
         if (data["update"] != null)
@@ -129,7 +133,7 @@ public partial class hlasko : System.Web.UI.Page
             hlasenie.Text = data["text"].ToString();
             my_last_user = x_db.getUserInfoByID("is_users", data["last_user"].ToString());
             last_user.Text = my_last_user["full_name"].ToString();
-            Session.Add("akt_hlasenie",data["id"].ToString());
+            Session.Add("akt_hlasenie", data["id"].ToString());
         }
 
 
@@ -137,13 +141,13 @@ public partial class hlasko : System.Web.UI.Page
         {
             msg_lbl.Text = data["error"].ToString();
         }
-
+        this.generateOsirix();
 
     }
-/// <summary>
-/// Ulozi hlasenie, ak sa fnc zavola s 1 ulozi a uzavrie akt. hlasenie potom je mozne pisat len dodatky.. Nula urobi len save
-/// </summary>
-/// <param name="uzavri"></param>
+    /// <summary>
+    /// Ulozi hlasenie, ak sa fnc zavola s 1 ulozi a uzavrie akt. hlasenie potom je mozne pisat len dodatky.. Nula urobi len save
+    /// </summary>
+    /// <param name="uzavri"></param>
     protected void saveData(bool uzavri)
     {
         SortedList data = new SortedList();
@@ -160,7 +164,7 @@ public partial class hlasko : System.Web.UI.Page
         my_last_user = x_db.getUserInfoByID("is_users", Session["user_id"].ToString());
         if (res.IndexOf("ok") != -1)
         {
-           //msg_lbl.Text = res;
+            //msg_lbl.Text = res;
             last_user.Text = my_last_user["full_name"].ToString();
         }
         else
@@ -186,14 +190,14 @@ public partial class hlasko : System.Web.UI.Page
         else
         {
             msg_lbl.Text = res + Session["akt_hlasenie"].ToString();
-        } 
+        }
     }
 
 
 
     protected void send_Click(object sender, EventArgs e)
     {
-       
+
         this.saveData(false);
 
     }
@@ -234,12 +238,12 @@ public partial class hlasko : System.Web.UI.Page
     protected void toWord_Click(object sender, EventArgs e)
     {
         this.send_Click(sender, e);
-        Response.Redirect("print.aspx?den=" + Calendar1.SelectedDate.Day.ToString() + "&datum=" + Calendar1.SelectedDate.ToLongDateString() + "&m=" + Calendar1.SelectedDate.Month.ToString()+"&w=1");
+        Response.Redirect("print.aspx?den=" + Calendar1.SelectedDate.Day.ToString() + "&datum=" + Calendar1.SelectedDate.ToLongDateString() + "&m=" + Calendar1.SelectedDate.Month.ToString() + "&w=1");
     }
 
     protected void pdfCretae_btn_Click(object sender, EventArgs e)
     {
-        Session.Add("pdf","print");
+        Session.Add("pdf", "print");
         Response.Redirect("print.aspx?den=" + Calendar1.SelectedDate.Day.ToString() + "&datum=" + Calendar1.SelectedDate.ToLongDateString() + "&m=" + Calendar1.SelectedDate.Month.ToString());
     }
 
@@ -250,7 +254,7 @@ public partial class hlasko : System.Web.UI.Page
         if (hlasenie.Visible == true)
         {
             this.saveData(true);
-            Response.Redirect("print.aspx?den=" + Calendar1.SelectedDate.Day.ToString() + "&datum=" + Calendar1.SelectedDate.ToLongDateString()+ "&m=" + Calendar1.SelectedDate.Month.ToString());
+            Response.Redirect("print.aspx?den=" + Calendar1.SelectedDate.Day.ToString() + "&datum=" + Calendar1.SelectedDate.ToLongDateString() + "&m=" + Calendar1.SelectedDate.Month.ToString());
         }
         else
         {
@@ -260,7 +264,7 @@ public partial class hlasko : System.Web.UI.Page
             this.saveDodatok(tmp_hlasko);
             Response.Redirect("print.aspx?den=" + Calendar1.SelectedDate.Day.ToString() + "&datum=" + Calendar1.SelectedDate.ToLongDateString() + "&m=" + Calendar1.SelectedDate.Month.ToString());
         }
-       
+
     }
 
     protected void def_lock_btn_w_Click(object sender, EventArgs e)
@@ -292,6 +296,55 @@ public partial class hlasko : System.Web.UI.Page
         tmp_hlasko += "<br>" + dodatok.Text;
         this.saveDodatok(tmp_hlasko);
         this.loadHlasko();
-        
+
+    }
+    protected void generateOsirix()
+    {
+        string text = this.osirix_txt.Text.ToString();
+
+        string asciiTxt = x2_var.UTFtoASCII(text);
+      
+
+        SortedList data = new SortedList();
+
+        if (asciiTxt.Length > 0)
+        {
+            data.Add("osirix", asciiTxt);
+            string res = x_db.update_row("is_hlasko", data, Session["akt_hlasenie"].ToString());
+            string html = "";
+            if (res == "ok")
+            {
+                //this.osirix_url.Text = asciiTxt.ToString();
+
+                string[] lines = this.returnStrArray(asciiTxt.ToString());
+                foreach (string line in lines)
+                {
+                    html += "<p><a href='http://10.10.2.49:3333/studyList?search=" + line + "' target='_blank' style='font-size:15px;font-weight:bolder;'>" + line.ToUpper() + "</a></p>";
+                }
+
+                this.osirix_url.Text = html.ToString();
+
+            }
+            else
+            {
+                this.msg_lbl.Text = res.ToString();
+
+            }
+        }
+        else
+        {
+            this.osirix_url.Text = "";
+        }
+    }
+
+    protected void osirix_btn_Click(object sender, EventArgs e)
+    {
+        this.generateOsirix();
+    }
+
+    public string[] returnStrArray(string str)
+    {
+        string[] result = Regex.Split(str,"\r\n");
+        return result;
     }
 }

@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.UI;
 using System.Net.Mail;
 using System.Security.Cryptography;
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using iTextSharp.text;
@@ -27,6 +28,32 @@ public class x2_var
 		// TODO: Add constructor logic here
 		//
 	}
+
+    public static string UTFtoASCII(string value)
+    {
+        if (String.IsNullOrEmpty(value))
+            return value;
+
+        string normalized = value.Normalize(NormalizationForm.FormD);
+        StringBuilder sb = new StringBuilder();
+
+        foreach (char c in normalized)
+        {
+            if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                sb.Append(c);
+        }
+
+        Encoding nonunicode = Encoding.GetEncoding(850);
+        Encoding unicode = Encoding.Unicode;
+
+        byte[] nonunicodeBytes = Encoding.Convert(unicode, nonunicode, unicode.GetBytes(sb.ToString()));
+        char[] nonunicodeChars = new char[nonunicode.GetCharCount(nonunicodeBytes, 0, nonunicodeBytes.Length)];
+        nonunicode.GetChars(nonunicodeBytes, 0, nonunicodeBytes.Length, nonunicodeChars, 0);
+
+        //string result = nonunicodeChars.ToString();
+
+        return new string(nonunicodeChars);
+    }
 
     public int pocetVolnychDni(DateTime datum1, DateTime datum2, string[] volneDni)
     {

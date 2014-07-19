@@ -21,7 +21,7 @@
                     <td width="130" align="center"><b>A</b></td>
                     <td width="130" align="center"><b>B</b></td>
                     <td width="130" align="center"><b><asp:Label ID="label2" runat="server" Text="<%$ Resources:Resource, slu_pohotovost %>"></asp:Label></b></td>
-                    <td width="130" align="center"><b>TRP</b></td>
+                    <td width="130" align="center"><b>Prijmova AMB</b></td>
                 
                 </tr>
                 </table>

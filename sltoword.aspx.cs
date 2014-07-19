@@ -13,8 +13,9 @@ using System.Web.UI.WebControls.WebParts;
 
 public partial class sltoword : System.Web.UI.Page
 {
-    my_db x_db = new my_db();
-    x2_var my_x2 = new x2_var();
+    public my_db x_db = new my_db();
+    public x2_var my_x2 = new x2_var();
+
     sluzbyclass mySluz = new sluzbyclass();
 
     protected void Page_Load(object sender, EventArgs e)
@@ -30,6 +31,8 @@ public partial class sltoword : System.Web.UI.Page
         mesiac_lbl.Text = Request["mes"].ToString();
         rok_lbl.Text = rok;
         this.drawTable(mesiac, rok);
+
+       // string asci_mes = my_x2. 
 
         if (Request["print"] == null)
         {
@@ -111,7 +114,7 @@ public partial class sltoword : System.Web.UI.Page
 
                 if ((nazov == "sobota") || (nazov == "nedeľa"))
                 {
-                    my_cell.BackColor = System.Drawing.Color.FromArgb(0xcc3300);
+                    my_cell.BackColor = System.Drawing.Color.FromArgb(0xa4a2a2);
                 }
                 else 
                 {
@@ -126,7 +129,7 @@ public partial class sltoword : System.Web.UI.Page
 
                 if ((rs_tmp != -1) && (nazov != "sobota") && (nazov != "nedeľa"))
                 {
-                    my_cell.BackColor = System.Drawing.Color.FromArgb(0xcc3300);
+                    my_cell.BackColor = System.Drawing.Color.FromArgb(0xa4a2a2);
                 }
 
                 my_cell.BorderColor = System.Drawing.Color.Black;
@@ -143,7 +146,7 @@ public partial class sltoword : System.Web.UI.Page
                     if (j == 0)
                     {
                         my_cell.Width = 80;
-                        my_cell.Text = den.ToString() + "." + nazov.Substring(0, 2);
+                        my_cell.Text = "<div style='font-size:11px;font-family:arial;'>"+den.ToString() + "." + nazov.Substring(0, 2)+"</div>";
 
                     }
                     else if (j == 1)
@@ -155,12 +158,12 @@ public partial class sltoword : System.Web.UI.Page
 
                         string[] oup = _mm.Split(del);
 
-                        my_cell.Text = "<div style='font-size:11px;'>" + docList[oup[0]].ToString() + "/"+oup[1].ToString()+"</div>";
+                        my_cell.Text = "<div style='font-size:11px;font-family:arial;'>" + docList[oup[0]].ToString() + "/"+oup[1].ToString()+"</div>";
                     }
                     else
                     {
                         my_cell.Width = 130;
-                        my_cell.Text = "<div style='font-size:11px;'>" + docList[data[i][j]].ToString() + "</div>";
+                        my_cell.Text = "<div style='font-size:11px;font-family:arial;'>" + docList[data[i][j]].ToString() + "</div>";
                     } 
                 }
                 else
@@ -168,7 +171,7 @@ public partial class sltoword : System.Web.UI.Page
                     if (j == 0)
                     {
                         my_cell.Width = 80;
-                        my_cell.Text = den.ToString() + "." + nazov.Substring(0, 2);
+                        my_cell.Text = "<div style='font-size:11px;font-family:arial;'>"+den.ToString() + "." + nazov.Substring(0, 2)+"</div>";
                     }
                     else if (j == 1)
                     {
@@ -179,10 +182,10 @@ public partial class sltoword : System.Web.UI.Page
                     {
                         my_cell.Width = 130;
                        
-                    } 
+                    }
 
 
-                    my_cell.Text = "<div style='font-size:11px;'>" + data[i][j] + "</div>";
+                    my_cell.Text = "<div style='font-size:11px;font-family:arial;'>" + data[i][j] + "</div>";
                 }
 
                 

@@ -1,9 +1,9 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="is_news_show.aspx.cs" Inherits="is_news_show" %>
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
 <%@ Register TagPrefix="duch" TagName="my_header" Src="header.ascx" %>
 <%@ Register TagPrefix="menu" TagName="left_menu" Src="left_menu.ascx" %>
 <%@ Register TagPrefix="info" TagName="info_bar" Src="news.ascx" %>
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<%@ Page Language="C#" AutoEventWireup="true" CodeFile="is_news_show.aspx.cs" Inherits="is_news_show" ValidateRequest="False" Culture="sk-Sk" %>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">

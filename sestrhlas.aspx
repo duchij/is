@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<%@ Register TagPrefix="FTB" Namespace="FreeTextBoxControls" Assembly="FreeTextBox" %>
+<%--<%@ Register TagPrefix="FTB" Namespace="FreeTextBoxControls" Assembly="FreeTextBox" %>--%>
 <%@ Page Language="C#" AutoEventWireup="true" CodeFile="sestrhlas.aspx.cs" Inherits="sestrhlas" ValidateRequest="False" Culture="sk-Sk" %>
 <%@ Register TagPrefix="duch" TagName="my_header" src="header.ascx" %>
 <%@ Register TagPrefix="menu" TagName="left_menu" Src="left_menu.ascx" %>
@@ -9,10 +9,23 @@
 <head runat="server">
 <link href="css/style.css" rel="stylesheet" type="text/css" />
     <title>IS -KDCH Hlásenie sestier</title>
-     <script type="text/javascript" src="tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
-     <script type="text/javascript" src="zeroclipboard/ZeroClipboard.js"></script> 
+     <script type="text/javascript" src="tinymce/js/tinymce/tinymce.min.js"></script>
+     <%--<script type="text/javascript" src="zeroclipboard/ZeroClipboard.js"></script> --%>
      
     <script type="text/javascript">
+    tinymce.init({
+    selector: ".dtextbox",
+    //theme:"advanced",
+    toolbar:"undo redo | alignleft aligncenter alignright | bold italic | bullist numlist | fontsizeselect | fontselect",
+    fontsize_formats: "8pt 10pt 12pt 14pt 18pt 24pt 36pt",
+    font_formats: "Arial=arial,helvetica,sans-serif;Courier New=courier new,courier,monospace;",
+    menubar:true,
+    plugins : 'paste',
+    paste_word_valid_elements: "b,strong,i,em,h1,h2",
+    paste_as_text: true
+
+
+ })
    
          
 /*tinyMCE.init({
@@ -99,10 +112,10 @@
                     </table>
                     <br />
                     <br />
+                   <asp:TextBox ID="hlasenie" CssClass="dtextbox" runat="server" Width="90%" Rows="30" Height="500" TextMode="MultiLine"> </asp:TextBox> 
                     
-                    
-                <FTB:FreeTextBox ID="hlasenie"  Height="500" Width="100%" toolbarlayout="Bold, Italic, Underline,RemoveFormat, Redo, Undo|FontFacesMenu,FontSizesMenu|JustifyLeft,JustifyRight,JustifyCenter,JustifyFull;BulletedList,NumberedList,Indent,Outdent|WordClean,NetSpell"
-runat="Server"></FTB:FreeTextBox>
+                <%--<FTB:FreeTextBox ID="hlasenie"  Height="500" Width="100%" toolbarlayout="Bold, Italic, Underline,RemoveFormat, Redo, Undo|FontFacesMenu,FontSizesMenu|JustifyLeft,JustifyRight,JustifyCenter,JustifyFull;BulletedList,NumberedList,Indent,Outdent|WordClean,NetSpell"
+runat="Server"></FTB:FreeTextBox>--%>
    
                  <asp:Label ID="hlasko_lbl" runat="server" Visible="False" Font-Size="Small" >Hlasenie:</asp:Label>
                 <asp:Label ID="view_hlasko" runat="server" Visible="False" Font-Size="Small"></asp:Label>

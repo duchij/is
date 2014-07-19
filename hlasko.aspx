@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<%@ Register TagPrefix="FTB" Namespace="FreeTextBoxControls" Assembly="FreeTextBox"  %>
+<!--<%@ Register TagPrefix="FTB" Namespace="FreeTextBoxControls" Assembly="FreeTextBox"  %>!-->
 <%@ Register TagPrefix="duch" TagName="my_header" src="header.ascx" %>
 <%@ Register TagPrefix="menu" TagName="left_menu" Src="left_menu.ascx" %>
 <%@ Register TagPrefix="info" TagName="info_bar" Src="news.ascx" %>
@@ -11,9 +11,27 @@
 <link href="css/style.css" rel="stylesheet" type="text/css" />
 
     <title>IS- Hlasenie sluzieb</title>
-    <script type="text/javascript" src="tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+    <script type="text/javascript" src="tinymce/js/tinymce/tinymce.min.js"></script>
 
 <script type="text/javascript">
+
+
+tinymce.init({
+    selector: ".dtextbox",
+    //theme:"advanced",
+    toolbar:"undo redo | alignleft aligncenter alignright | bold italic | bullist numlist | fontsizeselect | fontselect",
+    
+    fontsize_formats: "8pt 10pt 12pt 14pt 18pt 24pt 36pt",
+    font_formats: "Arial=arial,helvetica,sans-serif;Courier New=courier new,courier,monospace;",
+    menubar:true,
+    plugins : 'paste',
+    paste_word_valid_elements: "b,strong,i,em,h1,h2",
+    paste_as_text: true
+
+
+ });
+
+
 function myAlert()
 {
     window.alert("Pozor!!! Zmena dátumu dňa až po 9.00 hod. \n\r \n\rTo znamená, že službe zostáva jej dátum aktuálne vybraný až do 9.00 hod nasledujúceho dňa !!!!");
@@ -98,8 +116,28 @@ function myAlert()
                     </table>
                     <br />
                     <br />
-                    <!--<asp:TextBox ID="hlasenie_old" runat="server" Width="90%" Rows="30" Height="500" TextMode="MultiLine"> </asp:TextBox>!-->
-                    <FTB:FreeTextBox ID="hlasenie" runat="server" Width="100%" Height="500"  toolbarlayout="Bold, Italic, Underline,RemoveFormat|FontFacesMenu,FontSizesMenu|JustifyLeft,JustifyRight,JustifyCenter,JustifyFull; Redo,Undo ,BulletedList,NumberedList,Indent,Outdent|WordClean,NetSpell"></FTB:FreeTextBox>
+                    <hr />
+                    <table width="95%" border="0">
+                    <tr>
+                    <td style="width:60%;">
+                    <p>Sem <strong style="color:Maroon;">copy/paste priezvisko</strong> z hlásenia následne po jeho vložení za ním stlačiť klávesu enter, tak aby každé priezvisko začínalo na novom riadku, pre uloženie/vygenerovanie stlačiť <strong> uložiť</strong>, nie je nutné dodržiavať veľké malé písmená. Automaticky sa vygeneruje odkaz na OSIRIX</p>
+                    <hr />
+                    </td>
+                    <td><p><strong style="color:Maroon;">Klikni na link, pre otvorenie v OSIRIXe</strong><br /><br />Toto funguje len vrámci DFNsP!!!!!</p><hr /></td>
+                    </tr>
+                    <tr>
+                    <td>
+                        <asp:TextBox ID="osirix_txt" runat="server" Width="80%" Height="150px" TextMode="MultiLine" ></asp:TextBox>
+                        <asp:Button ID="osirix_btn"
+                            runat="server" Text="Ulož" onclick="osirix_btn_Click"  /></td>
+                        <td valign="top">
+                        
+                            <div style="text-align:center;"><asp:Label ID="osirix_url" runat="server" Text="Label"></asp:Label></div></td>
+                        </tr>
+                    </table>
+                    <hr />
+                    <asp:TextBox ID="hlasenie" CssClass="dtextbox" runat="server"  Width="90%" Rows="30" Height="500" TextMode="MultiLine"> </asp:TextBox>
+                    <%--<FTB:FreeTextBox ID="hlasenie" runat="server" Width="100%" Height="500"  toolbarlayout="Bold, Italic, Underline,RemoveFormat|FontFacesMenu,FontSizesMenu|JustifyLeft,JustifyRight,JustifyCenter,JustifyFull; Redo,Undo ,BulletedList,NumberedList,Indent,Outdent|WordClean,NetSpell"></FTB:FreeTextBox>--%>
                     <hr />
                  <asp:Label ID="hlasko_lbl" runat="server" Visible="False" Font-Size="Small" >Hlasenie:</asp:Label><br />
                 <asp:Label ID="view_hlasko" runat="server" Visible="False" Font-Size="Small"></asp:Label>

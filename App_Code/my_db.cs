@@ -1206,7 +1206,7 @@ public class my_db
 
     public SortedList getNews()
     {
-        string query = "SELECT * FROM is_news ORDER BY DATE(datum) DESC LIMIT 5";
+        string query = "SELECT *, DATE(`datum`) as `n_d` FROM `is_news` ORDER BY `n_d` DESC LIMIT 5";
 
         SortedList result = new SortedList();
         //int i = 0;
@@ -1222,7 +1222,7 @@ public class my_db
             while (reader.Read())
             {
 
-                result.Add(reader["id"].ToString(), "<strong>" + reader["datum_txt"].ToString() + "</strong><br/>" + reader["kratka_sprava"].ToString());
+                result.Add(reader["id"].ToString(), "<strong>" + reader["n_d"].ToString() + "</strong><br/>" + reader["kratka_sprava"].ToString());
                 //i++;  
 
             }
