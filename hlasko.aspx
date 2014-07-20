@@ -12,8 +12,34 @@
 
     <title>IS- Hlasenie sluzieb</title>
     <script type="text/javascript" src="tinymce/js/tinymce/tinymce.min.js"></script>
+   <%-- <script type="text/javascript" src="js/jquery.js"></script>--%>
+    
 
 <script type="text/javascript">
+
+//$(document).ready(function(){
+
+//setInterval(function (){
+//            
+//            $.ajax( {
+//                        url:'hlasko.aspx',
+//                        type:'POST',
+//                        data:{'saveHlasko':'1'},
+//                        
+//                        success:function(result){
+//                            alert(result);
+//                            },
+//                            
+//                        error:function(xhr,desc,err){
+//                        
+//                             console.log(xhr);
+//		                    console.log("Details: " + desc + "\nError:" + err);
+//		                    }
+//			    } );  
+//            },300);
+
+//});
+
 
 
 tinymce.init({

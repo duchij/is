@@ -22,6 +22,9 @@ public partial class hlasko : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        
+
+        Response.AppendHeader("Refresh", 300 + "; URL=hlasko.aspx"); 
 
 
         if (Session["tuisegumdrum"] == null)
@@ -148,7 +151,7 @@ public partial class hlasko : System.Web.UI.Page
     /// Ulozi hlasenie, ak sa fnc zavola s 1 ulozi a uzavrie akt. hlasenie potom je mozne pisat len dodatky.. Nula urobi len save
     /// </summary>
     /// <param name="uzavri"></param>
-    protected void saveData(bool uzavri)
+    protected void saveData(bool uzavri,bool callBack)
     {
         SortedList data = new SortedList();
         SortedList my_last_user = new SortedList();
@@ -162,14 +165,22 @@ public partial class hlasko : System.Web.UI.Page
 
         string res = x_db.update_row("is_hlasko", data, Session["akt_hlasenie"].ToString());
         my_last_user = x_db.getUserInfoByID("is_users", Session["user_id"].ToString());
+
         if (res.IndexOf("ok") != -1)
         {
             //msg_lbl.Text = res;
             last_user.Text = my_last_user["full_name"].ToString();
+
+            if (callBack == true)
+                Response.Write("OK");
+            
+
         }
         else
         {
             msg_lbl.Text = res + Session["akt_hlasenie"].ToString();
+            if (callBack == true)
+                Response.Write("Error: "+res + Session["akt_hlasenie"].ToString());
         }
     }
 
@@ -182,6 +193,7 @@ public partial class hlasko : System.Web.UI.Page
 
         string res = x_db.update_row("is_hlasko", data, Session["akt_hlasenie"].ToString());
         my_last_user = x_db.getUserInfoByID("is_users", Session["user_id"].ToString());
+
         if (res.IndexOf("ok") != -1)
         {
             //msg_lbl.Text = res;
@@ -198,7 +210,7 @@ public partial class hlasko : System.Web.UI.Page
     protected void send_Click(object sender, EventArgs e)
     {
 
-        this.saveData(false);
+        this.saveData(false,false);
 
     }
 
@@ -253,7 +265,7 @@ public partial class hlasko : System.Web.UI.Page
 
         if (hlasenie.Visible == true)
         {
-            this.saveData(true);
+            this.saveData(true,false);
             Response.Redirect("print.aspx?den=" + Calendar1.SelectedDate.Day.ToString() + "&datum=" + Calendar1.SelectedDate.ToLongDateString() + "&m=" + Calendar1.SelectedDate.Month.ToString());
         }
         else
@@ -273,7 +285,7 @@ public partial class hlasko : System.Web.UI.Page
 
         if (hlasenie.Visible == true)
         {
-            this.saveData(true);
+            this.saveData(true,false);
             Response.Redirect("print.aspx?den=" + Calendar1.SelectedDate.Day.ToString() + "&datum=" + Calendar1.SelectedDate.ToLongDateString() + "&m=" + Calendar1.SelectedDate.Month.ToString() + "&w=1");
         }
         else

@@ -24,6 +24,8 @@ public partial class sestrhlas : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        Response.AppendHeader("Refresh", 300 + "; URL=sestrhlas.aspx"); 
+
         if (Session["tuisegumdrum"] == null)
         {
             Response.Redirect("error.html");
