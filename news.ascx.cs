@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Web;
@@ -41,22 +42,26 @@ public partial class news : System.Web.UI.UserControl
                 op_table.Controls.Add(riadok);
             }
         }
+        
+            
+         List<String> data = x_db.getNews();
+         int cnt = data.Count;
 
-
-
-        SortedList data = x_db.getNews();
-
-        if (data["status"] == null)
+        if (cnt > 0)
         {
 
-            foreach (DictionaryEntry novinka in data)
+            for (int i = 0; i < cnt; i++) 
             {
                 TableRow riadok = new TableRow();
 
                 TableCell cela = new TableCell();
                 cela.BorderWidth = 0;
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("{0} <a href='is_news_show.aspx?id={1}' target='_self'> >> </a><hr/>", novinka.Value.ToString(), Convert.ToInt32(novinka.Key.ToString()));
+
+                string[] str = data[i].Split(new char[] { '|' });
+
+
+                sb.AppendFormat("{0} <a href='is_news_show.aspx?id={1}' target='_self'> >> </a><hr/>", str[1], str[0]);
                 cela.Text = sb.ToString();
                 riadok.Controls.Add(cela);
                 news_tbl.Controls.Add(riadok);

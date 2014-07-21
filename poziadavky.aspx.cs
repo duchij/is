@@ -11,11 +11,6 @@ public partial class poziadavky : System.Web.UI.Page
     my_db x_db = new my_db();
     x2_var my_x2 = new x2_var();
 
- 
-    
-
-       
-
     protected void Page_Load(object sender, EventArgs e)
     {
 

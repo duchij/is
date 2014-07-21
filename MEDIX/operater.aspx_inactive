@@ -1,0 +1,139 @@
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="operater.aspx.cs" Inherits="MEDIX_operater" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+<link href="../css/style.css" rel="stylesheet" type="text/css" />
+    <title>Operatéri</title>
+</head>
+<body>
+    <form id="form1" runat="server">
+    <div>
+    <div id="medixwrapper">
+    <h1>Operatéri</h1>
+     <a href="opdg.aspx" target="_self">Operačné diagnózy</a>  --- <a href="operater.aspx" target="_self">Operatéri</a><br />
+        <asp:Label ID="debug_lbl" runat="server" Text=""></asp:Label>
+        
+     <div id="medixdata">
+     <hr />
+        <asp:Label ID="odbornostID" runat="server" Text="Všetky odbornosti"></asp:Label><asp:Label ID="odbornostLabel" runat="server" Text="- Aktuálna odbornosť"></asp:Label>
+        <hr />
+     
+     <asp:Button ID="kdch_btn" runat="server" Text="Detska chirurgia" OnClick="odbornostFnc" />
+        <asp:Button ID="urol_btn" runat="server" Text="Detska urologia" OnClick="odbornostFnc"/>
+        <asp:Button ID="ortop_btn" runat="server" Text="Detska ortopedia" OnClick="odbornostFnc"/>
+         <asp:Button ID="orl_btn" runat="server" Text="Detska otorinolaryngologia" OnClick="odbornostFnc"/>
+         <asp:Button ID="oftal_btn" runat="server" Text="Detska oftalmologia" OnClick="odbornostFnc" />
+         <asp:Button ID="onko_btn" runat="server" Text="Detska onkologia" OnClick="odbornostFnc"/>
+         <asp:Button ID="aro_btn" runat="server" Text="Detska anesteziológia.." OnClick="odbornostFnc"/>
+         <%--<asp:Button ID="allData_btn" runat="server" Text="Všetky dáta" onclick="allData_btn_Click" />--%>
+     <br />
+     Osobné číslo: 
+         <asp:TextBox ID="s_osobcislo_txt" runat="server"></asp:TextBox>
+         <asp:Button ID="s_osobcislo_btn"
+             runat="server" Text="Hľadaj" onclick="s_osobcislo_btn_Click" /><br />
+         Priezvisko:<asp:TextBox ID="s_priezvisko_txt" runat="server"></asp:TextBox><asp:Button
+             ID="s_priezvisko_btn" runat="server" Text="Hľadaj" 
+             onclick="s_priezvisko_btn_Click" /><br />
+         Odbornosť:
+         <asp:DropDownList ID="s_odbornost_dl" runat="server" 
+             onselectedindexchanged="s_odbornost_dl_SelectedIndexChanged" 
+             AutoPostBack="True">
+         </asp:DropDownList><br /><br />
+         <asp:GridView ID="operater_dg" runat="server" AutoGenerateColumns="False" 
+             BackColor="White" BorderColor="#DEDFDE" BorderStyle="None" BorderWidth="1px" 
+             CellPadding="4" ForeColor="Black" GridLines="Vertical" 
+             onpageindexchanging="operater_dg_PageIndexChanging" 
+             onselectedindexchanging="operater_dg_SelectedIndexChanging" Width="100%" 
+             AllowPaging="True" onrowdeleting="operater_dg_RowDeleting" PageSize="20">
+             <RowStyle BackColor="#F7F7DE" />
+             <Columns>
+                 <asp:CommandField SelectText="Vyber" ShowSelectButton="True" >
+                     <ControlStyle ForeColor="#006600" />
+                 </asp:CommandField>
+                 <asp:BoundField DataField="id" HeaderText="id" />
+                 <asp:BoundField DataField="osobcisl" HeaderText="Osobné číslo" />
+                 <asp:BoundField DataField="meno" HeaderText="Meno" />
+                 <asp:BoundField DataField="priezvisko" HeaderText="Priezvisko" />
+                 <asp:CommandField DeleteText="Zmazať" ShowDeleteButton="True">
+                     <ControlStyle ForeColor="#CC0000" />
+                 </asp:CommandField>
+             </Columns>
+             <FooterStyle BackColor="#CCCC99" />
+             <PagerStyle BackColor="#F7F7DE" ForeColor="Black" HorizontalAlign="Right" />
+             <SelectedRowStyle BackColor="#CE5D5A" Font-Bold="True" ForeColor="White" />
+             <HeaderStyle BackColor="#6B696B" Font-Bold="True" ForeColor="White" />
+             <AlternatingRowStyle BackColor="White" />
+         </asp:GridView>
+     
+     
+     </div>
+     <div id="medixform">
+     <table>
+         <tr>
+            <td>Osobné číslo:</td>
+            <td>
+                <asp:TextBox ID="osobcisl_txt" runat="server"></asp:TextBox></td>
+         </tr>
+         <tr>
+            <td>Meno:</td>
+            <td>
+                <asp:TextBox ID="meno_txt" runat="server"></asp:TextBox></td>
+         </tr>
+         <tr>
+            <td>Priezvisko:</td>
+            <td>
+                <asp:TextBox ID="priezvisko_txt" runat="server"></asp:TextBox></td>
+         </tr>
+          <tr>
+            <td>Titul:</td>
+            <td>
+                <asp:TextBox ID="titul_txt" runat="server"></asp:TextBox></td>
+         </tr>
+          <tr>
+            <td>Skratka:</td>
+            <td>
+                <asp:TextBox ID="skratka_txt" runat="server"></asp:TextBox></td>
+         </tr>
+          <tr>
+            <td>Funkcia:</td>
+            <td>
+                <asp:DropDownList ID="funkcia_dl" runat="server">
+                <asp:ListItem Value="lekar" Selected="True">Lekár</asp:ListItem>
+                 <asp:ListItem Value="sestra">Sestra</asp:ListItem>
+                </asp:DropDownList>
+            </td>
+         </tr>
+         <tr>
+            <td>Odbornosť:</td>
+            <td>
+                <asp:DropDownList ID="odbornost_dl" runat="server">
+                </asp:DropDownList><br />
+                <asp:TextBox ID="odbornost_txt" runat="server" ReadOnly = "true"></asp:TextBox>
+                <asp:Button ID="odbAdd_btn" runat="server" Text="Pridaj" 
+                    onclick="odbAdd_btn_Click" />
+                <asp:Button ID="odbDel_btn" runat="server" Text="Odober" 
+                    onclick="odbDel_btn_Click" />
+                </td>
+         </tr>
+         <tr>
+         <td colspan="2" valign="right">
+             <asp:Button ID="newRow_btn" runat="server" Text="Nový záznam" 
+                 onclick="newRow_btn_Click" />
+             <asp:Button ID="saveRow_btn" runat="server" Text="Uložiť" 
+                 onclick="saveRow_btn_Click" /></td>
+         
+         </tr>
+     
+     
+     
+     </table>
+     
+     </div>
+     
+    </div>
+    </div>
+    </form>
+</body>
+</html>

@@ -22,33 +22,34 @@ public partial class hlasko : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        
-
-        Response.AppendHeader("Refresh", 300 + "; URL=hlasko.aspx"); 
-
-
         if (Session["tuisegumdrum"] == null)
         {
             Response.Redirect("error.html");
         }
+        
 
+        if (Session["newsToShow"] != null)
+        {
+           
+                int id = Convert.ToInt32(Session["newsToShow"].ToString());
 
+                string news = x_db.getNewsByID(id);
 
+                this.news_lbl.Text = "<hr/><h1>Novinka</h1>" + news + "<br/><hr/>";
+                Session.Remove("newsToShow");
+           
+
+        }
+
+        Response.AppendHeader("Refresh", 300 + "; URL=hlasko.aspx"); 
 
 
         if (IsPostBack == false)
         {
             // Calendar1.SelectedDate = DateTime.Today;
             this.setMyDate();
-
-
-
             this.loadHlasko();
         }
-
-
-
-
     }
 
 

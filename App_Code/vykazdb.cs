@@ -36,18 +36,13 @@ public class vykazdb : my_db
         {
 
             String[][] data = myX2.parseSluzba(data_info["rozpis"].ToString());
-
-
-
-            
-
             int tmp = 0;
             string meno = "";
             for (int i = 0; i < pocet_dni; i++)
             {
                 tmp = data[i].Length;
 
-                for (int j = 0; j < tmp; j++)
+                for (int j = 0; j < tmp-1; j++)
                 {
                     meno = data[i][j].ToString();
 
@@ -91,7 +86,7 @@ public class vykazdb : my_db
             {
                 tmp = data[i].Length;
 
-                for (int j = 0; j < tmp; j++)
+                for (int j = 0; j < tmp-1; j++) //kvoli tomu ze ambulancia sa nerata ako sluzba
                 {
                     meno = data[i][j].ToString();
 

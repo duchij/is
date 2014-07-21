@@ -25,7 +25,7 @@ public partial class vykaz : System.Web.UI.Page
             Response.Redirect("error.html");
         }
 
-        this.zaMesiac_lbl.Text = "Maj,2012";
+        //this.zaMesiac_lbl.Text = "Maj,2012";
 
         this.msg_lbl.Visible = false;
 
@@ -86,6 +86,8 @@ public partial class vykaz : System.Web.UI.Page
 
     protected void onMonthChangedFnc(object sender, EventArgs e)
     {
+        this.predMes_txt.Text = "";
+        this.pocetHod_txt.Text = "";
         string mesiac = this.mesiac_cb.SelectedValue.ToString();
         string rok = this.rok_cb.SelectedValue.ToString();
 
@@ -97,6 +99,9 @@ public partial class vykaz : System.Web.UI.Page
 
     protected void onYearChangedFnc(object sender, EventArgs e)
     {
+        this.predMes_txt.Text = "";
+        this.pocetHod_txt.Text = "";
+
         string mesiac = this.mesiac_cb.SelectedValue.ToString();
         string rok = this.rok_cb.SelectedValue.ToString();
         Session.Remove("vykaz_id");
@@ -381,15 +386,15 @@ public partial class vykaz : System.Web.UI.Page
         SortedList result = new SortedList();
 
         result["normDen"]           = "7,15,7.5,0,0,0,0,0,0,0,0";
-        result["malaSluzba"]        = "7,0,11.5,5,0,0,5,0,7,0,0";
-        result["malaSluzba2"]       = "0,9,2,0,0,0,0,0,0,0,0";
+        result["malaSluzba"]        = "7,19,11.5,5,0,0,5,0,7,0,0";
+        result["malaSluzba2"]       = "0,0,0,0,0,0,0,0,0,0,0";
 
-        result["velkaSluzba"]       = "8,0,11.5,5,16.5,0,0,5,0,7,0,0";
-        result["velkaSluzba2"]      = "0,8,0,0,0,0,0,0,0,0,0,0";
-        result["velkaSluzba2a"]     = "0,9,2,0,0,0,0,0,0,0,0,0";
+        result["velkaSluzba"]       = "7,19,11.5,5,16.5,0,0,5,0,7,0,0";
+        result["velkaSluzba2"]      = "0,0,0,0,0,0,0,0,0,0,0,0";
+        result["velkaSluzba2a"]     = "0,0,0,0,0,0,0,0,0,0,0,0";
 
-        result["sviatokVikend"]     = "8,0,11.5,5,16.5,16.5,0,5,0,7,0,0";
-        result["sviatok"]           = "8,0,11.5,5,0,16.5,0,5,0,7,0,0";
+        result["sviatokVikend"]     = "7,19,11.5,5,16.5,16.5,0,5,0,7,0,0";
+        result["sviatok"]           = "7,19,11.5,5,0,16.5,0,5,0,7,0,0";
         result["exday"]             = "0,0,0,0,0,0,0,0,0,0,0,0";
         result["sviatokNieVikend"]  = "0,0,7.5,0,0,0,0,0,0,0,0,0";
         
@@ -432,7 +437,9 @@ public partial class vykaz : System.Web.UI.Page
     {
         int rok = Convert.ToInt32(this.rok_cb.SelectedValue.ToString());
         int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue.ToString());
+
             int days = DateTime.DaysInMonth(rok, mesiac);
+
             decimal odpracHod        = this.getColumSum(3, days, "textBox_");
             this.hodiny_lbl.Text    = odpracHod.ToString();
             
@@ -450,13 +457,23 @@ public partial class vykaz : System.Web.UI.Page
 
             int pocetVolnychDni = my_x2.pocetVolnychDniBezSviatkov(od_date, do_date);
             int pocetPracdni = days - pocetVolnychDni;
-
+            //zaMesiac_lbl.Text ="days:"+days.ToString()+"....prac"+ pocetPracdni.ToString();
             string prenosStr = this.predMes_txt.Text.ToString();
             //prenosStr = prenosStr.Replace(",", ".");
 
             //decimal prenos = Convert.ToDecimal(prenosStr);
+            decimal pocetPracHod = 0;
 
-            decimal pocetPracHod = pocetPracdni * Convert.ToDecimal("7,5");
+            if (Session["pracdoba"] != null)
+            {
+                Session["pracdoba"] = Session["pracdoba"].ToString().Replace(".", ",");
+                pocetPracHod = pocetPracdni * Convert.ToDecimal(Session["pracdoba"]);
+            }
+            else
+            {
+                pocetPracHod = pocetPracdni * Convert.ToDecimal("7,5");
+            }
+
 
             decimal rozdiel = odpracHod - pocetPracHod + Convert.ToDecimal(prenosStr);
 

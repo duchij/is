@@ -26,13 +26,18 @@ public class my_db
 		//
 		// TODO: Add constructor logic here
 		//
-     
+
         Configuration myConfig = WebConfigurationManager.OpenWebConfiguration("/is");
         ConnectionStringSettings connString;
         connString = myConfig.ConnectionStrings.ConnectionStrings["kdch_sk"];
-
         my_con.ConnectionString = connString.ToString();
-    
+
+            //my_con.ConnectionString = @"Driver=duch;uid=root;password=aa;Server=localhost;Option=3;Database=kdch_sk";
+
+        //my_con.ConnectionString = @"Provider=MSDASQL;Driver={MySQL ODBC 5.3 ANSI Driver};Server=127.0.0.1;Database=kdch_sk;uid=root;Password=aa;Option=3;";
+       
+             
+
     }
 
     public DataSet getData_opvykon(string druh)
@@ -1205,11 +1210,45 @@ public class my_db
 
     }
 
-    public SortedList getNews()
+  
+
+    public List<string> getLastNews()
+    {
+        string query = "SELECT *, DATE(`datum`) as 'n_d', DATE(NOW()) - DATE(`datum`) as 'days' FROM `is_news` where 'days' <=43200 ORDER BY `datum` DESC LIMIT 1";
+
+        List<string> result = new List<string>();
+        //int i = 0;
+
+        my_con.Open();
+
+        OdbcCommand my_com = new OdbcCommand(query, my_con);
+
+        OdbcDataReader reader = my_com.ExecuteReader();
+
+        if (reader.HasRows)
+        {
+            while (reader.Read())
+            {
+                result.Add(reader["id"].ToString());
+            }
+            my_con.Close();
+        }
+        else
+        {
+            my_con.Close();
+        }
+
+        return result;
+
+    }
+
+    public List<string> getNews()
     {
         string query = "SELECT *, DATE(`datum`) as `n_d` FROM `is_news` ORDER BY `n_d` DESC LIMIT 5";
 
-        SortedList result = new SortedList();
+        //SortedList result = new SortedList();
+
+        List<string> result = new List<string>(); 
         //int i = 0;
 
         my_con.Open();
@@ -1223,7 +1262,7 @@ public class my_db
             while (reader.Read())
             {
 
-                result.Add(reader["id"].ToString(), "<strong>" + reader["n_d"].ToString() + "</strong><br/>" + reader["kratka_sprava"].ToString());
+                result.Add(reader["id"].ToString()+"|<strong>" + reader["datum_txt"].ToString() + "</strong><br/>" + reader["kratka_sprava"].ToString());
                 //i++;  
 
             }
@@ -1234,7 +1273,7 @@ public class my_db
             my_con.Close();
 
 
-            result.Add("status", "empty");
+            //result.Add("status", "empty");
 
 
         }

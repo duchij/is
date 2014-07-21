@@ -114,6 +114,7 @@ function myAlert()
                    Prihlasený: <strong><asp:Label ID="user" runat="server" Text="Label" ForeColor="#990000"></asp:Label></strong><br />
                    Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="Label" ForeColor="#990000"></asp:Label></strong><br />
                 <hr />
+                <asp:Label ID="news_lbl" runat="server" Text=""></asp:Label>
                 <table>
                 <tr>
                 <td valign="top">

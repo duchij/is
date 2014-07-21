@@ -112,10 +112,27 @@ public partial class _Default : System.Web.UI.Page
 
                             if (this.maVyplnPoziadavky(Response.Cookies["user_id"].Value.ToString()) == true)
                             {
-                                Response.Redirect(@"hlasko.aspx");
+                                List<string> news = db_obj.getLastNews();
+
+                                if (news.Count > 0)
+                                {
+                                    Session["newsToShow"] = news[0];
+                                    Response.Redirect(@"hlasko.aspx");
+                                }
+                                else
+                                {
+                                    Response.Redirect(@"hlasko.aspx");
+                                }
                             }
                             else
                             {
+                                List<string> news = db_obj.getLastNews();
+
+                                if (news.Count > 0)
+                                {
+                                    Response.Redirect(@"hlasko.aspx?news=" + news[0]);
+                                }
+                                
                                 if (DateTime.Today < Convert.ToDateTime(poz_data["datum"].ToString()))
                                 {
                                     Response.Redirect(@"poziadavky.aspx?a=1");

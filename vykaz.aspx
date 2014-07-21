@@ -53,6 +53,7 @@
                     <asp:ListItem Value="2011">Rok 2011</asp:ListItem>
                     <asp:ListItem Value="2012">Rok 2012</asp:ListItem>
                     <asp:ListItem Value="2013">Rok 2013</asp:ListItem>
+                     <asp:ListItem Value="2014">Rok 2014</asp:ListItem>
                 </asp:DropDownList>
                 
                 
@@ -63,7 +64,7 @@
                 <asp:Button ID="createPdf_btn" runat="server" Text="Tlac" 
                     OnClick="createPdf_btn_fnc" Enabled="False" />
                     <hr />
-                    Pocet hodin podla dni:<asp:TextBox ID="pocetHod_txt" runat="server" Width="50"> </asp:TextBox><%--<asp:Label ID="pocetHod_lbl" runat="server"></asp:Label> --%>Rozdiel medzi:<asp:Label ID="rozdiel_lbl" runat="server"></asp:Label><br /><hr />
+                    Pocet hodin podla dni:<asp:TextBox ID="pocetHod_txt" runat="server" Width="50"> </asp:TextBox><%--<asp:Label ID="pocetHod_lbl" runat="server"></asp:Label> --%>Rozdiel medzi: <strong><asp:Label ID="rozdiel_lbl" runat="server"></asp:Label></strong><br /><hr />
                       <table border="1" style="border:none;">
                         <tr>
                             <td width="45" style="font-size:9px;" ></td>

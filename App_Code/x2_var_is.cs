@@ -95,12 +95,13 @@ public class x2_var
     public int pocetVolnychDniBezSviatkov(DateTime datum1, DateTime datum2)
     {
         int pocetDni = (datum2 - datum1).Days;
-        int pocetDniVikendu = (pocetDni / 7) * 2;
-        int pom = pocetDni % 7;
+        int pocetDniVikendu = 0;
+        //int pocetDniVikendu = (pocetDni / 7) * 2;
+        //int pom = pocetDni % 7;
 
-        for (int i = 1; i <= pom; i++)
+        for (int i = 1; i <= pocetDni; i++)
         {
-            DateTime x = datum1.AddDays(i);
+            DateTime x = datum1.AddDays(i-1);
 
             if ((x.DayOfWeek == DayOfWeek.Saturday) || (x.DayOfWeek == DayOfWeek.Sunday))
             {
