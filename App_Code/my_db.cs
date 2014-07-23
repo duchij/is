@@ -1638,4 +1638,63 @@ public class my_db
 
         return result;
     }
+
+    public SortedList registerTempFile(string filename, Int32 days)
+    {
+        SortedList data = new SortedList();
+
+        Int32 unixTimestamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+        Int32 tolivetime = unixTimestamp + days*24*60*60;
+
+
+        data.Add("file_name", filename);
+        data.Add("time_in", unixTimestamp);
+        data.Add("time_out", tolivetime);
+
+        SortedList tmp = this.insert_rows("is_register_temp", data);
+
+        SortedList result = new SortedList();
+
+        if (tmp["status"].ToString() == "ok")
+        {
+            result.Add("status", "ok");
+            result.Add("last_id", tmp["last_id"].ToString());
+        }
+        if (tmp["status"].ToString() == "error")
+        {
+            result.Add("status", "error");
+            result.Add("message", tmp["message"].ToString());
+        }
+
+
+        return result;
+    }
+
+    public List<string> loadTmpFilesToDelete(Int32 days)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("select file_name, ((time_out - time_in)/60/60/24) as 'setTime', UNIX_TIMESTAMP(date(now())) as 'nowTime', ('nowTime'-'setTime')/60/60/24 as 'result' from is_register_temp where 'result' > {0}", days);
+
+        my_con.Open();
+
+        List<string> result = new List<string>();
+
+        OdbcCommand my_com = new OdbcCommand(sb.ToString(), my_con);
+
+        OdbcDataReader reader = my_com.ExecuteReader();
+
+        if (reader.HasRows)
+        {
+            while (reader.Read())
+            {
+                result.Add(reader["file_name"].ToString());
+
+            }
+            my_con.Close();
+        }
+
+        return result;
+
+    }
+
 }

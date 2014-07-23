@@ -40,9 +40,9 @@ public class vykazdb : my_db
             string meno = "";
             for (int i = 0; i < pocet_dni; i++)
             {
-                tmp = data[i].Length;
+                tmp = data[i].Length-1;
 
-                for (int j = 0; j < tmp-1; j++)
+                for (int j = 0; j < tmp; j++)
                 {
                     meno = data[i][j].ToString();
 
@@ -84,9 +84,9 @@ public class vykazdb : my_db
             string meno = "";
             for (int i = 0; i < pocet_dni; i++)
             {
-                tmp = data[i].Length;
+                tmp = data[i].Length-1;
 
-                for (int j = 0; j < tmp-1; j++) //kvoli tomu ze ambulancia sa nerata ako sluzba
+                for (int j = 0; j < tmp; j++) //kvoli tomu ze ambulancia sa nerata ako sluzba
                 {
                     meno = data[i][j].ToString();
 

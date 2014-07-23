@@ -134,10 +134,11 @@ public partial class vykaz : System.Web.UI.Page
 
             int colsLen = cols.Length;
 
-            for (int j = 0; j < 12; j++)
+            for (int j = 0; j < colsLen; j++)
             {
                 Control tbox = FindControl("textBox_" + i.ToString() + "_" + j.ToString());
                 TextBox my_text_box = (TextBox)tbox;
+
                 if (cols[j].ToString() != "0")
                 {
                     my_text_box.Text = cols[j].ToString();
@@ -241,8 +242,8 @@ public partial class vykaz : System.Web.UI.Page
         }
 
         
-        int prevDay = 0;
-        int exDay = 0;
+      //  int prevDay = 0;
+      //  int exDay = 0;
 
         SortedList vykazVypis = this.getValueFromSluzba();
         string[] sviatky = x_db.getFreeDays();
@@ -254,7 +255,7 @@ public partial class vykaz : System.Web.UI.Page
             int den = i + 1;
             DateTime my_date = new DateTime(Convert.ToInt32(rok), Convert.ToInt32(mesiac), den);
             int dnesJe = (int)my_date.DayOfWeek;
-            int pos = 0;
+        //    int pos = 0;
             string[] rozpis = new string[11];
 
            
@@ -355,7 +356,7 @@ public partial class vykaz : System.Web.UI.Page
     {
         //rozpis = this.denCisla(vykazVypis["exday"].ToString());
 
-        for (int j = 0; j < 12; j++)
+        for (int j = 0; j < 11; j++)
         {
             if (j > 0)
             {
@@ -577,6 +578,8 @@ public partial class vykaz : System.Web.UI.Page
 
 
         string newFile = @path + "\\vykaz_"+hash+".pdf";
+
+        
         this.msg_lbl.Text = oldFile;
         // open the reader
         PdfReader reader = new PdfReader(oldFile);
@@ -857,10 +860,21 @@ public partial class vykaz : System.Web.UI.Page
         reader.Close();
 
         //Response.Redirect(@path + "\\vykaz_new.pdf");
-        Response.ContentType = "Application/pdf";
-        Response.AppendHeader("Content-Disposition", "attachment; filename=vykaz_"+hash+".pdf");
-        Response.TransmitFile(@path + "\\vykaz_"+hash+".pdf");
-        Response.End();
+        SortedList res = x_db.registerTempFile("vykaz_"+hash+".pdf", 5);
+        
+
+        if (res["status"].ToString() == "ok")
+        {
+
+            Response.ContentType = "Application/pdf";
+            Response.AppendHeader("Content-Disposition", "attachment; filename=vykaz_" + hash + ".pdf");
+            Response.TransmitFile(@path + "\\vykaz_" + hash + ".pdf");
+            Response.End();
+        }
+        else
+        {
+            this.msg_lbl.Text = ",,,,,,="+ res["message"].ToString();
+        }
 
 
         //

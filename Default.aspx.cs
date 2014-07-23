@@ -1,8 +1,10 @@
 ﻿using System;
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 //using System.Linq;
 using System.Web;
+using System.Threading;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web.UI.HtmlControls;
@@ -80,6 +82,22 @@ public partial class _Default : System.Web.UI.Page
                 if (l_pass == g_pass) 
                 {
                     e.Authenticated = true;
+
+                    List<string> filesToDelete = db_obj.loadTmpFilesToDelete(1);
+
+                    if (filesToDelete.Count > 0)
+                    {
+                        for (int i=0; i<filesToDelete.Count; i++)
+                        {
+                            if (File.Exists(@Server.MapPath("App_Data")+@"\"+filesToDelete[i]));
+                            {
+                                File.Delete(@Server.MapPath("App_Data")+@"\"+filesToDelete[i]);
+                            }
+                        }
+                    }
+
+
+
 
                     Session.Add("tuisegumdrum", "activado");
                     Session.Add("user_id", data["id"].ToString());

@@ -1,0 +1,17 @@
+CREATE TABLE `is_register_temp` (
+  `item_id` bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `file_name` text COLLATE 'utf8_general_ci' NOT NULL,
+  `time_in` timestamp NOT NULL,
+  `time_out` timestamp NOT NULL
+) COMMENT='' ENGINE='MyISAM' COLLATE 'utf8_general_ci';
+
+
+ALTER TABLE `is_register_temp`
+CHANGE `time_in` `time_in` bigint NOT NULL AFTER `file_name`,
+CHANGE `time_out` `time_out` bigint NOT NULL AFTER `time_in`,
+COMMENT='';
+
+ALTER TABLE `is_vykaz`
+CHANGE `vykaz` `vykaz` longtext COLLATE 'utf8_slovak_ci' NOT NULL AFTER `rok`,
+CHANGE `prenos` `prenos` text COLLATE 'utf8_slovak_ci' NULL AFTER `vykaz`,
+COMMENT='';
