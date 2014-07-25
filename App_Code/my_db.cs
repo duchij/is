@@ -27,14 +27,14 @@ public class my_db
 		// TODO: Add constructor logic here
 		//
 
-        Configuration myConfig = WebConfigurationManager.OpenWebConfiguration("/is");
+       Configuration myConfig = WebConfigurationManager.OpenWebConfiguration("/is");
         ConnectionStringSettings connString;
         connString = myConfig.ConnectionStrings.ConnectionStrings["kdch_sk"];
         my_con.ConnectionString = connString.ToString();
 
-            //my_con.ConnectionString = @"Driver=duch;uid=root;password=aa;Server=localhost;Option=3;Database=kdch_sk";
+        // my_con.ConnectionString = @"Driver=duch;uid=root;password=aa;Server=127.0.0.1;Option=3;Database=kdch_sk";
 
-        //my_con.ConnectionString = @"Provider=MSDASQL;Driver={MySQL ODBC 5.3 ANSI Driver};Server=127.0.0.1;Database=kdch_sk;uid=root;Password=aa;Option=3;";
+        //my_con.ConnectionString = @"Driver={MySQL ODBC 5.3 ANSI Driver};Server=127.0.0.1;Database=kdch_sk;uid=root;Password=aa;Option=3;";
        
              
 
@@ -1537,7 +1537,7 @@ public class my_db
         //string conn = @"Driver={MySQL ODBC 3.51 Driver};uid=root;password=aa;Server=127.0.0.1;Option=3;Database=kdch_sk;";
         my_con.Open();
 
-        OdbcDataAdapter da = new OdbcDataAdapter(query, conn);
+        OdbcDataAdapter da = new OdbcDataAdapter(query, my_con);
         DataSet ds = new DataSet();
         da.Fill(ds);
         my_con.Close();
@@ -1673,7 +1673,14 @@ public class my_db
     public List<string> loadTmpFilesToDelete(Int32 days)
     {
         StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("select file_name, ((time_out - time_in)/60/60/24) as 'setTime', UNIX_TIMESTAMP(date(now())) as 'nowTime', ('nowTime'-'setTime')/60/60/24 as 'result' from is_register_temp where 'result' > {0}", days);
+        //string ss = "select `file_name`, ((`time_out` - `time_in`)/60/60/24) as 'setTime', UNIX_TIMESTAMP(date(now())) as 'nowTime', ('nowTime'-'setTime')/60/60/24 as 'result' from `is_register_temp` where 'result' > {0}";
+        
+        //test
+        //string ss = "select `file_name`, ((`time_out` - `time_in`)/60/60/24) as 'setTime' from `is_register_temp` where 'setTime' = {0}";
+
+        string ss = "select * from `is_register_temp` where (`time_out` - `time_in`)/60/60/24 = {0}"; 
+
+        sb.AppendFormat(ss, days);
 
         my_con.Open();
 
@@ -1690,11 +1697,35 @@ public class my_db
                 result.Add(reader["file_name"].ToString());
 
             }
-            my_con.Close();
+           
         }
-
+        my_con.Close();
         return result;
 
     }
+
+    public void deleteFilesInDb(int days)
+    {
+        string ss = "delete from `is_register_temp` where (`time_out` - `time_in`)/60/60/24 = {0}";
+        StringBuilder sb = new StringBuilder();
+
+
+        sb.AppendFormat(ss, days);
+
+        my_con.Open();
+
+        List<string> result = new List<string>();
+
+        OdbcCommand my_com = new OdbcCommand(sb.ToString(), my_con);
+
+        my_com.ExecuteNonQuery();
+        my_con.Close();
+
+        
+
+       
+
+    }
+
 
 }

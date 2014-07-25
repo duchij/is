@@ -1,8 +1,8 @@
 CREATE TABLE `is_register_temp` (
-  `item_id` bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `id` bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `file_name` text COLLATE 'utf8_general_ci' NOT NULL,
-  `time_in` timestamp NOT NULL,
-  `time_out` timestamp NOT NULL
+  `time_in` bigint NOT NULL,
+  `time_out` bigint NOT NULL
 ) COMMENT='' ENGINE='MyISAM' COLLATE 'utf8_general_ci';
 
 

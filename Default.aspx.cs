@@ -83,22 +83,7 @@ public partial class _Default : System.Web.UI.Page
                 {
                     e.Authenticated = true;
 
-                    List<string> filesToDelete = db_obj.loadTmpFilesToDelete(1);
-
-                    if (filesToDelete.Count > 0)
-                    {
-                        for (int i=0; i<filesToDelete.Count; i++)
-                        {
-                            if (File.Exists(@Server.MapPath("App_Data")+@"\"+filesToDelete[i]));
-                            {
-                                File.Delete(@Server.MapPath("App_Data")+@"\"+filesToDelete[i]);
-                            }
-                        }
-                    }
-
-
-
-
+                    this.deleteFilesPerDays(0);
                     Session.Add("tuisegumdrum", "activado");
                     Session.Add("user_id", data["id"].ToString());
                     Session.Add("rights", data["group"].ToString());
@@ -106,12 +91,9 @@ public partial class _Default : System.Web.UI.Page
                     Session.Add("login", data["name"].ToString());
                     Session.Add("email", data["email"].ToString());
 
-
-
                     Session.Add("pracdoba", data["pracdoba"].ToString());
                     Session.Add("tyzdoba", data["tyzdoba"].ToString());
                     Session.Add("osobcisl",data["osobcisl"].ToString());
-
 
                     Response.Cookies["tuisegumdrum"].Value = " activado";
                     Response.Cookies["user_id"].Value = data["id"].ToString();
@@ -191,6 +173,25 @@ public partial class _Default : System.Web.UI.Page
         }
 
         
+    }
+
+    protected void deleteFilesPerDays(int days)
+    {
+        List<string> filesToDelete = db_obj.loadTmpFilesToDelete(days);
+
+        if (filesToDelete.Count > 0)
+        {
+            for (int i=0; i<filesToDelete.Count; i++)
+            {
+                if (File.Exists(@Server.MapPath("App_Data")+@"\"+filesToDelete[i]));
+                {
+                    File.Delete(@Server.MapPath("App_Data") + @"\" + filesToDelete[i]);
+                }
+            }
+
+            db_obj.deleteFilesInDb(days);
+
+        }
     }
 
     protected bool maVyplnPoziadavky(string user_id)

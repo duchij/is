@@ -44,12 +44,24 @@ public class vykazdb : my_db
 
                 for (int j = 0; j < tmp; j++)
                 {
+
+                    /*if (j == 1)
+                    {
+                        string[] tmpId = data[i][j].Split(new char['|']);
+                        meno = tmpId[0];
+                    }
+                    else
+                    {
+
+                        meno = data[i][j].ToString();
+                    }*/
+
                     meno = data[i][j].ToString();
 
-                    if (meno == id)
+                    if (meno.IndexOf(id) != -1 )
                     {
                         sluzbyName[i] = true;
-                        break;
+                        j=tmp;
                     }
                     else
                     {
