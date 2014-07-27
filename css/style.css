@@ -193,4 +193,10 @@ td
 	top:50px;
 	left:506px;
 }
+
+	
+.tinymce-content p{
+padding:0;
+margin:2px 0;
+}
 	

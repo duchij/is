@@ -41,7 +41,7 @@ public partial class hlasko : System.Web.UI.Page
 
         }
 
-        Response.AppendHeader("Refresh", 300 + "; URL=hlasko.aspx"); 
+        Response.AppendHeader("Refresh", 300 + "; URL=hlasko.aspx");
 
 
         if (IsPostBack == false)
@@ -50,6 +50,16 @@ public partial class hlasko : System.Web.UI.Page
             this.setMyDate();
             this.loadHlasko();
         }
+        /*else
+        {
+            this.msg_lbl1.Text = "test1";
+        }
+
+        if (IsCallback)
+        {
+            this.msg_lbl1.Text="test";
+        }*/
+
     }
 
 
@@ -174,6 +184,8 @@ public partial class hlasko : System.Web.UI.Page
 
             if (callBack == true)
                 Response.Write("OK");
+
+            this.generateOsirix();
             
 
         }

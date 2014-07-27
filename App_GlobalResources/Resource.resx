@@ -282,4 +282,10 @@
   <data name="adduser_relogin" xml:space="preserve">
     <value>Na to aby sa zmeny aktualizovali je nutné sa odhlásiť a nanovo prihlásiť !!!</value>
   </data>
+  <data name="lmenu_dfnsp" xml:space="preserve">
+    <value>Veci v DFNsP</value>
+  </data>
+  <data name="lmenu_dfnsp_note" xml:space="preserve">
+    <value>Pozor!!! Tieto odkazy fungujú len vrámci DFNsP</value>
+  </data>
 </root>

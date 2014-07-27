@@ -33,7 +33,17 @@
                     <div id="menu_small_title"><asp:label ID="Label4" runat="server" Text="<%$ Resources:Resource,lmenu_user %>"></asp:label></div>
                     <ul>
                     <li><a href="adduser.aspx" target="_self">Užívateľ</a> </li>  
-                    </ul>  
+                    </ul> 
+                    
+                    <div id="menu_small_title"><asp:label ID="Label5" runat="server" Text="<%$ Resources:Resource,lmenu_dfnsp %>"></asp:label></div>
+                    <div style="font-size:10px;text-align:left;"><asp:label ID="Label6" runat="server" Text="<%$ Resources:Resource,lmenu_dfnsp_note %>"></asp:label></div>
+                    <ul>
+                    <li><a href="http://10.10.2.83/gallery3" target="_blank">Galéria KDCH</a> </li>  
+                     <li><a href="http://10.10.2.83/kdch" target="_blank">KDCH Intranet</a> </li>
+                     <li><a href="http://10.10.2.49:3333" target="_blank">OSIRIX portál</a> </li> 
+                    
+                    </ul>
+                     
                     <!--<li><a href="opkniha.aspx" target="_self">Operačná kniha</a> </li>!-->          
                     
                     

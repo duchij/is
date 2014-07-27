@@ -45,15 +45,19 @@
 tinymce.init({
     selector: ".dtextbox",
     //theme:"advanced",
-    toolbar:"undo redo | alignleft aligncenter alignright | bold italic | bullist numlist | fontsizeselect | fontselect",
+    toolbar:"undo redo | alignleft aligncenter alignright | bold italic | bullist numlist | fontsizeselect | fontselect | forecolor",
     
     fontsize_formats: "8pt 10pt 12pt 14pt 18pt 24pt 36pt",
-    font_formats: "Arial=arial,helvetica,sans-serif;Courier New=courier new,courier,monospace;",
+    font_formats: "Arial=arial,helvetica,sans-serif;Courier New=courier new,courier,monospace;Verdana=verdana",
     menubar:true,
-    plugins : 'paste',
+    plugins : 'paste textcolor code',
     paste_word_valid_elements: "b,strong,i,em,h1,h2",
-    paste_as_text: true
+    paste_as_text: true,
+    force_p_newlines: false,
+   // forced_root_block : 'div',
+    force_br_newlines : true,
 
+    autosave_retention: "30m"
 
  });
 
@@ -93,6 +97,7 @@ function myAlert()
 </head>
 
 <body onload="">
+<asp:Label ID="msg_lbl1" runat="server" Text="Label"></asp:Label>
     
     <form id="form1" runat="server">
     
@@ -154,9 +159,9 @@ function myAlert()
                     </tr>
                     <tr>
                     <td>
-                        <asp:TextBox ID="osirix_txt" runat="server" Width="80%" Height="150px" TextMode="MultiLine" ></asp:TextBox>
+                        <asp:TextBox ID="osirix_txt" runat="server" Width="60%" Height="150px" TextMode="MultiLine" ></asp:TextBox>
                         <asp:Button ID="osirix_btn"
-                            runat="server" Text="Ulož" onclick="osirix_btn_Click"  /></td>
+                            runat="server" Text="Ulož a Generuj" onclick="osirix_btn_Click" BackColor="#990000" ForeColor="Yellow"  /></td>
                         <td valign="top">
                         
                             <div style="text-align:center;"><asp:Label ID="osirix_url" runat="server" Text="Label"></asp:Label></div></td>

@@ -1532,7 +1532,7 @@ public class my_db
     public DataSet getData_OpProgram()
     {
 
-        string query = "SELECT * FROM is_opprogram ORDER BY DATE(datum) DESC LIMIT 15 ";
+        string query = "SELECT * FROM is_opprogram ORDER BY DATE(datum) DESC LIMIT 7 ";
         string conn = my_con.ConnectionString.ToString();
         //string conn = @"Driver={MySQL ODBC 3.51 Driver};uid=root;password=aa;Server=127.0.0.1;Option=3;Database=kdch_sk;";
         my_con.Open();

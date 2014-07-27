@@ -16,13 +16,19 @@
     tinymce.init({
     selector: ".dtextbox",
     //theme:"advanced",
-    toolbar:"undo redo | alignleft aligncenter alignright | bold italic | bullist numlist | fontsizeselect | fontselect",
+    toolbar: "undo redo | alignleft aligncenter alignright | bold italic | bullist numlist | fontsizeselect | fontselect | forecolor",
+
     fontsize_formats: "8pt 10pt 12pt 14pt 18pt 24pt 36pt",
-    font_formats: "Arial=arial,helvetica,sans-serif;Courier New=courier new,courier,monospace;",
-    menubar:true,
-    plugins : 'paste',
+    font_formats: "Arial=arial,helvetica,sans-serif;Courier New=courier new,courier,monospace;Verdana=verdana",
+    menubar: true,
+    plugins: 'paste textcolor code',
     paste_word_valid_elements: "b,strong,i,em,h1,h2",
-    paste_as_text: true
+    paste_as_text: true,
+    force_p_newlines: false,
+    // forced_root_block : 'div',
+    force_br_newlines: true,
+
+    autosave_retention: "30m"
 
 
  })
