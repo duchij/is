@@ -97,7 +97,7 @@ function myAlert()
 </head>
 
 <body onload="">
-<asp:Label ID="msg_lbl1" runat="server" Text="Label"></asp:Label>
+<%--<asp:Label ID="msg_lbl1" runat="server" Text="Label"></asp:Label>--%>
     
     <form id="form1" runat="server">
     
