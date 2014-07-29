@@ -32,6 +32,7 @@ public class vykazdb : my_db
         SortedList data_info = this.loadSluzbaMonthYear("is_sluzby", mesiac, rok);
         int pocet_dni = DateTime.DaysInMonth(Convert.ToInt32(rok), Convert.ToInt32(mesiac));
         Boolean[] sluzbyName = new bool[pocet_dni];
+
         if (data_info["rozpis"] != null)
         {
 
@@ -45,20 +46,20 @@ public class vykazdb : my_db
                 for (int j = 0; j < tmp; j++)
                 {
 
-                    /*if (j == 1)
+                    if (j == 1)
                     {
-                        string[] tmpId = data[i][j].Split(new char['|']);
+                        string[] tmpId = data[i][j].Split('|');
                         meno = tmpId[0];
                     }
                     else
                     {
 
                         meno = data[i][j].ToString();
-                    }*/
+                    }
 
-                    meno = data[i][j].ToString();
+                   // meno = data[i][j].ToString();
 
-                    if (meno.IndexOf(id) != -1 )
+                    if (meno == id )
                     {
                         sluzbyName[i] = true;
                         j=tmp;

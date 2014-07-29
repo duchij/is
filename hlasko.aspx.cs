@@ -41,7 +41,7 @@ public partial class hlasko : System.Web.UI.Page
 
         }
 
-        Response.AppendHeader("Refresh", 300 + "; URL=hlasko.aspx");
+        Response.AppendHeader("Refresh", 6000 + "; URL=hlasko.aspx");
 
 
         if (IsPostBack == false)
