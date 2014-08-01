@@ -39,7 +39,7 @@ public class vykazdb : my_db
             String[][] data = myX2.parseSluzba(data_info["rozpis"].ToString());
             int tmp = 0;
             string meno = "";
-            for (int i = 0; i < pocet_dni; i++)
+            for (int i = 0; i < pocet_dni; i++) 
             {
                 tmp = data[i].Length-1;
 
