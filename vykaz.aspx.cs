@@ -88,6 +88,8 @@ public partial class vykaz : System.Web.UI.Page
     {
         this.predMes_txt.Text = "";
         this.pocetHod_txt.Text = "";
+        this.hodiny_lbl.Text = "0";
+        this.rozdiel_lbl.Text = "0";
         string mesiac = this.mesiac_cb.SelectedValue.ToString();
         string rok = this.rok_cb.SelectedValue.ToString();
 
@@ -101,7 +103,8 @@ public partial class vykaz : System.Web.UI.Page
     {
         this.predMes_txt.Text = "";
         this.pocetHod_txt.Text = "";
-
+        this.hodiny_lbl.Text = "0";
+        this.rozdiel_lbl.Text = "0";
         string mesiac = this.mesiac_cb.SelectedValue.ToString();
         string rok = this.rok_cb.SelectedValue.ToString();
         Session.Remove("vykaz_id");
@@ -442,6 +445,7 @@ public partial class vykaz : System.Web.UI.Page
             int days = DateTime.DaysInMonth(rok, mesiac);
 
             decimal odpracHod        = this.getColumSum(3, days, "textBox_");
+            
             this.hodiny_lbl.Text    = odpracHod.ToString();
             
             this.nocpraca_lbl.Text  = this.getColumSum(4, days, "textBox_").ToString();
@@ -460,8 +464,10 @@ public partial class vykaz : System.Web.UI.Page
             int pocetPracdni = days - pocetVolnychDni;
             //zaMesiac_lbl.Text ="days:"+days.ToString()+"....prac"+ pocetPracdni.ToString();
             string prenosStr = this.predMes_txt.Text.ToString();
-            //prenosStr = prenosStr.Replace(",", ".");
-
+        
+            prenosStr = prenosStr.Replace(".", ",");
+            decimal tmpOdpHod = odpracHod + Convert.ToDecimal(prenosStr);
+            this.hodiny_lbl.Text = tmpOdpHod.ToString();
             //decimal prenos = Convert.ToDecimal(prenosStr);
             decimal pocetPracHod = 0;
 
@@ -477,6 +483,8 @@ public partial class vykaz : System.Web.UI.Page
 
 
             decimal rozdiel = odpracHod - pocetPracHod + Convert.ToDecimal(prenosStr);
+
+            
 
             this.pocetHod_txt.Text = pocetPracHod.ToString();
             this.rozdiel_lbl.Text = rozdiel.ToString();

@@ -51,9 +51,6 @@ public partial class _Default : System.Web.UI.Page
 
                 g_pass = data["passwd"].ToString();
 
-
-
-
                 if (Login1.UserName == Login1.Password && g_pass.Length == 0 && data["name"].ToString() == Login1.Password  )
                 {
                     Session.Add("tuisegumdrum", "activado");
@@ -83,7 +80,8 @@ public partial class _Default : System.Web.UI.Page
                 {
                     e.Authenticated = true;
 
-                    this.deleteFilesPerDays(0);
+                    this.deleteFilesPerDays();
+
                     Session.Add("tuisegumdrum", "activado");
                     Session.Add("user_id", data["id"].ToString());
                     Session.Add("rights", data["group"].ToString());
@@ -175,9 +173,9 @@ public partial class _Default : System.Web.UI.Page
         
     }
 
-    protected void deleteFilesPerDays(int days)
+    protected void deleteFilesPerDays()
     {
-        List<string> filesToDelete = db_obj.loadTmpFilesToDelete(days);
+        List<string> filesToDelete = db_obj.loadTmpFilesToDelete();
 
         if (filesToDelete.Count > 0)
         {
@@ -189,7 +187,7 @@ public partial class _Default : System.Web.UI.Page
                 }
             }
 
-            db_obj.deleteFilesInDb(days);
+            db_obj.deleteFilesInDb();
 
         }
     }

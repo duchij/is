@@ -1214,7 +1214,7 @@ public class my_db
 
     public List<string> getLastNews()
     {
-        string query = "SELECT *, DATE(`datum`) as 'n_d', DATE(NOW()) - DATE(`datum`) as 'days' FROM `is_news` where 'days' <=43200 ORDER BY `datum` DESC LIMIT 1";
+        string query = "SELECT *, DATE(`datum`) as 'n_d' FROM `is_news` where DATE(NOW()) - DATE(`datum`) <= 7 ORDER BY `datum` DESC LIMIT 1";
 
         List<string> result = new List<string>();
         //int i = 0;
@@ -1670,23 +1670,15 @@ public class my_db
         return result;
     }
 
-    public List<string> loadTmpFilesToDelete(Int32 days)
+    public List<string> loadTmpFilesToDelete()
     {
-        StringBuilder sb = new StringBuilder();
-        //string ss = "select `file_name`, ((`time_out` - `time_in`)/60/60/24) as 'setTime', UNIX_TIMESTAMP(date(now())) as 'nowTime', ('nowTime'-'setTime')/60/60/24 as 'result' from `is_register_temp` where 'result' > {0}";
-        
-        //test
-        //string ss = "select `file_name`, ((`time_out` - `time_in`)/60/60/24) as 'setTime' from `is_register_temp` where 'setTime' = {0}";
-
-        string ss = "select * from `is_register_temp` where (`time_out` - `time_in`)/60/60/24 = {0}"; 
-
-        sb.AppendFormat(ss, days);
-
+      
+        string ss = "select *  from `is_register_temp` where (unix_timestamp (now()) - `time_out`)/60/60/24 - (`time_out` - `time_in`)/60/60/24 = 0"; 
         my_con.Open();
 
         List<string> result = new List<string>();
 
-        OdbcCommand my_com = new OdbcCommand(sb.ToString(), my_con);
+        OdbcCommand my_com = new OdbcCommand(ss, my_con);
 
         OdbcDataReader reader = my_com.ExecuteReader();
 
@@ -1704,19 +1696,15 @@ public class my_db
 
     }
 
-    public void deleteFilesInDb(int days)
+    public void deleteFilesInDb()
     {
-        string ss = "delete from `is_register_temp` where (`time_out` - `time_in`)/60/60/24 = {0}";
-        StringBuilder sb = new StringBuilder();
-
-
-        sb.AppendFormat(ss, days);
+        string ss = "delete  from `is_register_temp` where (unix_timestamp (now()) - `time_out`)/60/60/24 - (`time_out` - `time_in`)/60/60/24 = 0";
 
         my_con.Open();
 
         List<string> result = new List<string>();
 
-        OdbcCommand my_com = new OdbcCommand(sb.ToString(), my_con);
+        OdbcCommand my_com = new OdbcCommand(ss, my_con);
 
         my_com.ExecuteNonQuery();
         my_con.Close();
