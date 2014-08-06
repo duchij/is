@@ -1492,17 +1492,16 @@ public class my_db
 
     }
 
-    public SortedList getOpProgram()
+    public List<string> getOpProgram()
     {
-        string query = "SELECT * FROM is_opprogram ORDER BY DATE(datum) DESC LIMIT 5";
+        string query = "SELECT * FROM `is_opprogram` ORDER BY DATE(`datum`) DESC LIMIT 5";
 
-        SortedList result = new SortedList();
+        List<string> result = new List<string>();
         //int i = 0;
 
         my_con.Open();
 
         OdbcCommand my_com = new OdbcCommand(query, my_con);
-
         OdbcDataReader reader = my_com.ExecuteReader();
 
         if (reader.HasRows)
@@ -1510,7 +1509,7 @@ public class my_db
             while (reader.Read())
             {
 
-                result.Add(reader["id"].ToString(), "<strong>" + reader["datum_txt"].ToString() + "</strong><br/>" + reader["kratka_sprava"].ToString());
+                result.Add(reader["id"].ToString()+"|<strong>" + reader["datum_txt"].ToString() + "</strong><br/>" + reader["kratka_sprava"].ToString());
                 //i++;  
 
             }
@@ -1521,7 +1520,7 @@ public class my_db
             my_con.Close();
 
 
-            result.Add("status", "empty");
+            //result.Add("status", "empty");
 
 
         }
@@ -1673,7 +1672,7 @@ public class my_db
     public List<string> loadTmpFilesToDelete()
     {
       
-        string ss = "select *  from `is_register_temp` where (unix_timestamp (now()) - `time_out`)/60/60/24 - (`time_out` - `time_in`)/60/60/24 = 0"; 
+        string ss = "select *  from `is_register_temp` where (unix_timestamp (now()) - `time_out`)/60/60/24 - (`time_out` - `time_in`)/60/60/24 < 0"; 
         my_con.Open();
 
         List<string> result = new List<string>();

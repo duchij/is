@@ -25,7 +25,7 @@ public partial class is_news : System.Web.UI.Page
             Response.Redirect("error.html");
         }
 
-        full_text.ImageGalleryPath = "img/";
+       // full_text.ImageGalleryPath = "img/";
         
 
         if (!IsPostBack)

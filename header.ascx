@@ -15,7 +15,7 @@
     <td><strong>Odd B: </strong>
         <asp:Label ID="oddb_lbl" runat="server" Text="Label" ForeColor="Red"></asp:Label></td>
     <td><strong>Op.pohotovost: </strong><asp:Label ID="op_lbl" runat="server" Text="Label" ForeColor="Red"></asp:Label></td>
-    <td><strong>TRP:</strong> <asp:Label ID="trp_lbl" runat="server" Text="Label" ForeColor="Red" ></asp:Label></td>
+    <td><strong>Prijm.amb.:</strong> <asp:Label ID="trp_lbl" runat="server" Text="Label" ForeColor="Red" ></asp:Label></td>
     <td align="right">Dnes je:<strong>
         <asp:Label ID="date_lbl" runat="server" Text="Label"></asp:Label></strong></td>
     </tr>
