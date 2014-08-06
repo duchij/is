@@ -65,11 +65,11 @@ public class my_db
         return ds;
     }
 
-    public SortedList getAllUsers(string table,string skupina)
+    public List<string> getAllUsers(string table,string skupina)
     {
-        SortedList result = new SortedList();
+        List<string> result = new List<string>();
         StringBuilder query = new StringBuilder();
-        query.AppendFormat("SELECT id, full_name,`group` FROM `{0}` WHERE `group` = '{1}' OR `group`= 'poweruser' ORDER BY full_name DESC",table,skupina);
+        query.AppendFormat("SELECT id, full_name,`group` FROM `{0}` WHERE `group` = '{1}' OR `group`= 'poweruser' AND `active`= 1 ORDER BY SUBSTR(`name`,2)",table,skupina);
         my_con.Open();
 
         OdbcCommand my_com = new OdbcCommand(query.ToString(), my_con);
@@ -80,7 +80,7 @@ public class my_db
         {
             while (reader.Read())
             {
-                result.Add(reader[0].ToString(), reader[1].ToString());
+                result.Add(reader[0].ToString()+"|"+reader[1].ToString());
             }
         }
         my_con.Close();
@@ -773,6 +773,36 @@ public class my_db
         return result;
     }
 
+    public ArrayList getDovolenkyByID(int month, int year, int id)
+    {
+        ArrayList result = new ArrayList();
+
+        StringBuilder query = new StringBuilder();
+        query.AppendFormat("SELECT is_users.id,is_users.full_name,is_dovolenky.id AS dov_id,is_dovolenky.user_id,is_dovolenky.od,is_dovolenky.do FROM is_users INNER JOIN is_dovolenky on is_users.id = is_dovolenky.user_id WHERE (MONTH(is_dovolenky.od) = '{0}' OR MONTH(is_dovolenky.do) = '{0}') AND (YEAR(is_dovolenky.od) = '{1}' OR YEAR(is_dovolenky.do) = '{1}') AND is_users.id = {2}", month, year, id);
+
+        //string query = "SELECT is_users.id,is_users.full_name,is_dovolenky.id AS dov_id,is_dovolenky.user_id,is_dovolenky.od,is_dovolenky.do FROM is_users INNER JOIN is_dovolenky on is_users.id = is_dovolenky.user_id WHERE is_dovolenky.od >= '" + od_datum + "' AND is_dovolenky.do <= '" + do_datum+"'";
+
+        my_con.Open();
+        OdbcCommand my_com = new OdbcCommand(query.ToString(), my_con);
+
+        OdbcDataReader reader = my_com.ExecuteReader();
+
+        //int j = 0;
+        if (reader.HasRows)
+        {
+            while (reader.Read())
+            {
+                result.Add(reader["full_name"].ToString() + ";" + reader["od"].ToString() + ";" + reader["do"].ToString() + ";" + reader["dov_id"].ToString());
+            }
+
+        }
+        my_con.Close();
+
+
+        return result;
+    }
+
+
     public string eraseRowByID(string table, string id)
     {
         //string result = "";
@@ -979,7 +1009,7 @@ public class my_db
 
     }
 
-    public SortedList getAllPoziadavky(DateTime datum)
+    public List<string> getAllPoziadavky(DateTime datum)
     {
 
         int mesiac = datum.AddMonths(1).Month;
@@ -990,12 +1020,12 @@ public class my_db
             rok += 1;
         }
 
-        SortedList result = new SortedList();
+         List<string> result = new List<string>();
         StringBuilder sb = new StringBuilder();
         sb.Append("SELECT is_users.id, is_users.full_name, is_poziadavky_info.id AS info_id, is_poziadavky_info.user_id, is_poziadavky_info.mesiac , is_poziadavky_info.rok, is_poziadavky_info.info ");
 
         sb.Append("FROM is_users INNER JOIN is_poziadavky_info ON is_poziadavky_info.user_id = is_users.id ");
-        sb.AppendFormat("WHERE is_poziadavky_info.mesiac = {0} AND is_poziadavky_info.rok = {1}", mesiac, rok);
+        sb.AppendFormat("WHERE is_poziadavky_info.mesiac = {0} AND is_poziadavky_info.rok = {1} ORDER BY SUBSTR(is_users.name ,2)", mesiac, rok);
 
         my_con.Open();
 
@@ -1009,20 +1039,17 @@ public class my_db
             while (reader.Read())
             {
                 
-                result.Add(reader["full_name"].ToString(), reader["info"].ToString());
+                result.Add(reader["full_name"].ToString()+"|"+reader["info"].ToString());
                 
             }
             my_con.Close();
         }
-        else
-        {
-            result.Add("status", "empty");
-        }
+        
 
         return result;
     }
 
-    public SortedList getAllPoziadavkySel(string month, string year)
+    public List<string> getAllPoziadavkySel(string month, string year)
     {
 
         int mesiac = Convert.ToInt32(month);
@@ -1033,12 +1060,9 @@ public class my_db
        //     rok += 1;
        // }
 
-        SortedList result = new SortedList();
+        List<string> result = new List<string>();
         StringBuilder sb = new StringBuilder();
-        sb.Append("SELECT is_users.id, is_users.full_name, is_poziadavky_info.id AS info_id, is_poziadavky_info.user_id, is_poziadavky_info.mesiac , is_poziadavky_info.rok, is_poziadavky_info.info ");
-
-        sb.Append("FROM is_users INNER JOIN is_poziadavky_info ON is_poziadavky_info.user_id = is_users.id ");
-        sb.AppendFormat("WHERE is_poziadavky_info.mesiac = {0} AND is_poziadavky_info.rok = {1}", mesiac, rok);
+        sb.AppendFormat("SELECT is_users.id, is_users.full_name, is_poziadavky_info.id AS info_id, is_poziadavky_info.user_id, is_poziadavky_info.mesiac , is_poziadavky_info.rok, is_poziadavky_info.info FROM is_users INNER JOIN is_poziadavky_info ON is_poziadavky_info.user_id = is_users.id WHERE is_poziadavky_info.mesiac = {0} AND is_poziadavky_info.rok = {1} ORDER BY SUBSTR(is_users.name ,2)", mesiac, rok);
 
         my_con.Open();
 
@@ -1052,15 +1076,12 @@ public class my_db
             while (reader.Read())
             {
 
-                result.Add(reader["full_name"].ToString(), reader["info"].ToString());
+                result.Add(reader["full_name"].ToString()+"|"+reader["info"].ToString());
 
             }
             my_con.Close();
         }
-        else
-        {
-            result.Add("status", "empty");
-        }
+        
 
         return result;
     }
@@ -1244,7 +1265,7 @@ public class my_db
 
     public List<string> getNews()
     {
-        string query = "SELECT *, DATE(`datum`) as `n_d` FROM `is_news` ORDER BY `n_d` DESC LIMIT 5";
+        string query = "SELECT *, DATE(`datum`) as `n_d` FROM `is_news` ORDER BY `datum` DESC LIMIT 5";
 
         //SortedList result = new SortedList();
 

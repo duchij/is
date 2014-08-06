@@ -52,6 +52,8 @@
                 <asp:Label ID="Lab" runat="server" Text="Label" Visible="false"></asp:Label>
                 <asp:Table ID="dovolenky_tab" runat="server" CellSpacing="2" BorderWidth="1" Width="100%" BorderColor="#990000" ></asp:Table> 
                 <br /> 
+                
+                
                  <asp:PlaceHolder ID="vkladanie_dov" runat="server">
                  
                  <hr />
@@ -127,11 +129,83 @@
                  </table>
                   <asp:Label ID="warning_lbl" runat="server" Visible="false"></asp:Label>
                  <hr />
-                 <h2>Zoznam všetkých dovoleniek pre mesiac <asp:Label ID="month_lbl" runat="server" Text=""></asp:Label></h2>
+                 <h2> 
+                     <asp:Label ID="all_vacations" runat="server" Text="<%$ Resources:Resource, vacation_all %>"></asp:Label><asp:Label ID="month_lbl" runat="server" Text=""></asp:Label></h2>
                      <asp:Table ID="zoznam_tbl" runat="server">
                      </asp:Table>
                      <hr />
                  </asp:PlaceHolder>
+                
+                
+                <asp:PlaceHolder ID="uziv_dovolenka" runat="server">
+                 
+                 <hr />
+                 
+                 
+                 
+                 
+                 <table width="99%">
+                 
+                 
+                 
+                 <tr>
+                 <td colspan="3">
+                   <h2> <asp:Label ID="Label2" runat="server" Text="<%$ Resources:Resource, vacation_select %>"></asp:Label></h2> </td></tr>
+                   <tr>
+                   <td></td>
+                 <td valign="top"><strong>OD:</strong></td>
+                 <td valign="top"><strong>DO:</strong></td>
+                 </tr>
+                 <tr>
+                <td></td>
+                 <td valign="top">
+                     <asp:Calendar ID="dovOd_user" runat="server" BackColor="White" 
+                         BorderColor="#999999" CellPadding="4" DayNameFormat="Shortest" 
+                         Font-Names="Verdana" Font-Size="8pt" ForeColor="Black" Height="180px" 
+                         Width="200px">
+                         <SelectedDayStyle BackColor="#CCCCFF" Font-Bold="True" />
+                        <SelectorStyle BackColor="#FFCC66" />
+                        <TodayDayStyle BackColor="#FFCC66" ForeColor="White" />
+                        <OtherMonthDayStyle ForeColor="#CC9966" />
+                        <NextPrevStyle Font-Size="9pt" ForeColor="#FFFFCC" />
+                        <DayHeaderStyle BackColor="#FFCC66" Font-Bold="True" Height="1px" />
+                        <TitleStyle BackColor="#990000" Font-Bold="True" Font-Size="9pt" 
+                            ForeColor="#FFFFCC" />
+                     </asp:Calendar>
+                 </td>
+                 <td valign="top">
+                     <asp:Calendar ID="dovDo_user" runat="server" BackColor="White" 
+                         BorderColor="#999999" CellPadding="4" DayNameFormat="Shortest" 
+                         Font-Names="Verdana" Font-Size="8pt" ForeColor="Black" Height="180px" 
+                         Width="200px">
+                        <SelectedDayStyle BackColor="#CCCCFF" Font-Bold="True" />
+                        <SelectorStyle BackColor="#FFCC66" />
+                        <TodayDayStyle BackColor="#FFCC66" ForeColor="White" />
+                        <OtherMonthDayStyle ForeColor="#CC9966" />
+                        <NextPrevStyle Font-Size="9pt" ForeColor="#FFFFCC" />
+                        <DayHeaderStyle BackColor="#FFCC66" Font-Bold="True" Height="1px" />
+                        <TitleStyle BackColor="#990000" Font-Bold="True" Font-Size="9pt" 
+                            ForeColor="#FFFFCC" />
+                     </asp:Calendar>
+                 </td>
+                 <td></td>
+                 </tr>
+                 
+                 <tr>
+                 <td colspan="3" align="right">
+                     <asp:Button ID="Button2" runat="server" Text="<%$ Resources:Resource, save %>" onclick="save_user_btn_Click"  /> </td>
+                 </tr>
+                 
+                 </table>
+                  <asp:Label ID="Label1" runat="server" Visible="false"></asp:Label>
+                 <hr />
+                <h2>Zoznam dovoleniek aktuálneho užívateľa pre mesiac <asp:Label ID="monthUser_lbl" runat="server" Text=""></asp:Label></h2>
+                     <asp:Table ID="zoznamUser_tbl" runat="server">
+                     </asp:Table>
+                     <hr />
+                 </asp:PlaceHolder>
+                
+                
                 
                  
                   

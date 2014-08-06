@@ -288,4 +288,16 @@
   <data name="lmenu_dfnsp_note" xml:space="preserve">
     <value>Pozor!!! Tieto odkazy fungujú len vrámci DFNsP</value>
   </data>
+  <data name="erase" xml:space="preserve">
+    <value>Zmaž</value>
+  </data>
+  <data name="save" xml:space="preserve">
+    <value>Uložiť</value>
+  </data>
+  <data name="vacation_all" xml:space="preserve">
+    <value>Aktuálne dovolenky všetkých pracovníkov pre mesiac: </value>
+  </data>
+  <data name="vacation_select" xml:space="preserve">
+    <value>Výber dovolenky pre aktuálne prihláseného uživateľa</value>
+  </data>
 </root>

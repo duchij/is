@@ -17,6 +17,8 @@ public partial class dovolenky : System.Web.UI.Page
     my_db x_db = new my_db();
     x2_var my_x2 = new x2_var();
 
+    public string rights = ""; 
+
     protected void Page_Load(object sender, EventArgs e)
     {
         if (Session["tuisegumdrum"] == null)
@@ -30,41 +32,45 @@ public partial class dovolenky : System.Web.UI.Page
            // this.deleteDovolenka();
         }
 
-        string rights = Session["rights"].ToString();
+        this.rights = Session["rights"].ToString();
 
-        if (rights.IndexOf("users") != -1) 
+        if (this.rights == "users") 
         {
-            vkladanie_dov.Visible = false;
+            this.vkladanie_dov.Visible = false;
+            this.uziv_dovolenka.Visible = true;
 
         }
-        else
+        else if (this.rights == "admin" || this.rights == "poweruser")
         {
-            vkladanie_dov.Visible = true;
+            this.vkladanie_dov.Visible = true;
+            this.uziv_dovolenka.Visible = true;
         }
-
-
 
         if (!IsPostBack)
         {
             this.mesiac_cb.SelectedValue = DateTime.Today.Month.ToString();
             this.rok_cb.SelectedValue = DateTime.Today.Year.ToString();
-            if (rights.IndexOf("users") == -1)
+
+            if (this.rights.IndexOf("users") == -1)
             {
                 od_cal.SelectedDate = DateTime.Today;
                 do_cal.SelectedDate = DateTime.Today;
-                SortedList data = x_db.getAllUsers("is_users","users");
 
-                foreach (DictionaryEntry tmp in data)
+                List<string> data = x_db.getAllUsers("is_users","users");
+                int cnt = data.Count;
+                for (int i = 0; i < cnt; i++ )
                 {
-                    if (tmp.Value.ToString() != "Administrator")
+                    string[] strTmp = data[i].Split('|');
+                    if(strTmp[0] != "Administrator")
                     {
-                        zamestnanci.Items.Add(new ListItem(tmp.Value.ToString(), tmp.Key.ToString()));
-                       // zamen_zoz.Items.Add(new ListItem(tmp.Value.ToString(), tmp.Key.ToString()));
+                        zamestnanci.Items.Add(new ListItem(strTmp[1].ToString(), strTmp[0].ToString()));
+                        // zamen_zoz.Items.Add(new ListItem(tmp.Value.ToString(), tmp.Key.ToString()));
                     }
                 }
                 
 
                 this.month_lbl.Text = mesiac_cb.SelectedItem.ToString();
+                this.monthUser_lbl.Text = mesiac_cb.SelectedItem.ToString();
 
                 dovolenky_tab.Controls.Clear();
 
@@ -75,13 +81,15 @@ public partial class dovolenky : System.Web.UI.Page
             else
             {
                 this.drawDovolenTab();
+                this.drawUserActDovolenky();
                 //this.actStatusDovol();
             }
         }
         else
         {
             dovolenky_tab.Controls.Clear();
-            if (rights.IndexOf("users") == -1)
+
+            if (this.rights.IndexOf("users") == -1)
             {
 
                 this.drawDovolenTab();
@@ -93,6 +101,7 @@ public partial class dovolenky : System.Web.UI.Page
             else
             {
                 this.drawDovolenTab();
+                this.drawUserActDovolenky();
             }
         }
 
@@ -142,7 +151,16 @@ public partial class dovolenky : System.Web.UI.Page
             this.dovolenky_tab.Controls.Clear();
             this.zoznam_tbl.Controls.Clear();
             this.drawDovolenTab();
-            this.drawActDovolenky();
+
+
+            if (this.rights.IndexOf("users") == -1)
+            {
+                this.drawActDovolenky();
+            }
+            else
+            {
+                this.drawUserActDovolenky();
+            }
             
         
 
@@ -359,7 +377,53 @@ public partial class dovolenky : System.Web.UI.Page
 
     //}
 
+    protected void save_user_btn_Click(object sender, EventArgs e)
+    {
+        if (dovOd_user.SelectedDate > dovDo_user.SelectedDate)
+        {
+            this.msg_lbl.Text = "Do Datum nemoze byt mensi ako Od datum...";
+        }
+        else
+        {
+            if (x_db.checkDovExists(Session["user_id"].ToString(), my_x2.unixDate(dovOd_user.SelectedDate), my_x2.unixDate(dovDo_user.SelectedDate)) == false)
+            {
+                SortedList data = new SortedList();
+                data.Add("user_id", Session["user_id"].ToString());
+                data.Add("od", my_x2.unixDate(dovOd_user.SelectedDate));
+                // if (do_cal.s
+                data.Add("do", my_x2.unixDate(dovDo_user.SelectedDate));
+                //ata.Add("rok",
 
+                SortedList tmp = x_db.insert_rows("is_dovolenky", data);
+
+                if (tmp["status"].ToString() == "error")
+                {
+                    msg_lbl.Text = tmp["message"].ToString();
+                }
+                else
+                {
+                    dovolenky_tab.Controls.Clear();
+                    this.drawDovolenTab();
+
+                    if (this.rights.IndexOf("users") == -1)
+                    {
+                        this.drawActDovolenky();
+                    }
+                    else
+                    {
+                        this.drawUserActDovolenky();
+                    }
+                }
+
+
+            }
+            else
+            {
+                warning_lbl.Visible = true;
+                warning_lbl.Text = Resources.Resource.info_dov_status;
+            }
+        }
+    }
    
 
 
@@ -456,6 +520,58 @@ public partial class dovolenky : System.Web.UI.Page
 
 
     }
+
+    public void drawUserActDovolenky()
+    {
+        this.zoznamUser_tbl.Controls.Clear();
+        // DateTime datum = DateTime.Now;
+
+
+        int tc_month = Convert.ToInt32(this.mesiac_cb.SelectedValue.ToString());
+        int tc_year = Convert.ToInt32(this.rok_cb.SelectedValue.ToString());
+        int pocetDni = DateTime.DaysInMonth(tc_year, tc_month);
+        string tmp_od = my_x2.unixDate(new DateTime(tc_year, tc_month, 1));
+
+        // string tmp_do = my_x2.unixDate(new DateTime(datum.Year, datum.Month, pocetDni));
+        ArrayList data = x_db.getDovolenkyByID(tc_month, tc_year, Convert.ToInt32(Session["user_id"].ToString()));
+
+        int pocetDov = data.Count;
+
+        for (int i = 0; i < pocetDov; i++)
+        {
+
+            TableRow mojRiadok = new TableRow();
+            string[] tmp = new string[4];
+
+            tmp = data[i].ToString().Split(new char[] { ';' });
+
+            for (int j = 0; j < 5; j++)
+            {
+                TableCell mojaCela = new TableCell();
+                mojaCela.ID = "mojaCela_" + i.ToString() + "_" + j.ToString();
+                mojaCela.Width = 150;
+                if (j < 3)
+                {
+                    mojaCela.Text = tmp[j].ToString();
+                }
+                if (j == 4)
+                {
+                    Button mojeTlac = new Button();
+                    mojeTlac.Command += new CommandEventHandler(this.deleteDovolenka);
+                    mojeTlac.ID = "Button_" + tmp[3].ToString();
+                    mojeTlac.Text = Resources.Resource.erase.ToString();
+
+
+                    //mojaCela.Text = "<a href='dovolenky.aspx?del="+tmp[3].ToString()+"' style='color:red;'>Zmaž"+"</a>";
+                    mojaCela.Controls.Add(mojeTlac);
+                }
+                mojRiadok.Controls.Add(mojaCela);
+            }
+            zoznamUser_tbl.Controls.Add(mojRiadok);
+        }
+    }
+
+
 
     public void drawActDovolenky()
     {
