@@ -79,6 +79,8 @@ public partial class vykaz : System.Web.UI.Page
         {
             this.generateVykazTable(rok.ToString(), mesiac.ToString(), true);
         }
+
+        
     }
 
 
