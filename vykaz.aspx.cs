@@ -25,6 +25,15 @@ public partial class vykaz : System.Web.UI.Page
             Response.Redirect("error.html");
         }
 
+        if (Session["pracdoba"].ToString().Trim().Length == 0 || Session["tyzdoba"].ToString().Trim().Length == 0 || Session["osobcisl"].ToString().Trim().Length == 0)
+        {
+
+           // Page page = HttpContext.Current.CurrentHandler as Page;
+            Page.ClientScript.RegisterStartupScript(this.GetType(), "ErrorAlert", "alert('"+Resources.Resource.vykaz_error+"');", true);
+
+            //Response.Redirect("adduser.aspx");
+        }
+
         //this.zaMesiac_lbl.Text = "Maj,2012";
 
         this.msg_lbl.Visible = false;
@@ -83,7 +92,10 @@ public partial class vykaz : System.Web.UI.Page
         
     }
 
-
+    protected void fillInVacations()
+    {
+           
+    }
     
 
     protected void onMonthChangedFnc(object sender, EventArgs e)
@@ -463,6 +475,7 @@ public partial class vykaz : System.Web.UI.Page
             DateTime do_date = new DateTime(rok, mesiac, days);
 
             int pocetVolnychDni = my_x2.pocetVolnychDniBezSviatkov(od_date, do_date);
+
             int pocetPracdni = days - pocetVolnychDni;
             //zaMesiac_lbl.Text ="days:"+days.ToString()+"....prac"+ pocetPracdni.ToString();
             string prenosStr = this.predMes_txt.Text.ToString();

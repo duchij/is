@@ -2,7 +2,7 @@
 <%@ Register TagPrefix="menu" TagName="left_menu" Src="left_menu.ascx" %>
 <%@ Register TagPrefix="info" TagName="info_bar" Src="news.ascx" %>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeFile="vykaz.aspx.cs" Inherits="vykaz"  Culture="Sk-sk"%>
+<%@ Page Language="C#" AutoEventWireup="true" CodeFile="vykaz.aspx.cs" Inherits="vykaz"  Culture="Sk-sk" ValidateRequest="False" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 

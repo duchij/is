@@ -94,12 +94,15 @@ public class x2_var
 
     public int pocetVolnychDniBezSviatkov(DateTime datum1, DateTime datum2)
     {
+
+        int days = DateTime.DaysInMonth(datum1.Year, datum1.Month);
+
         int pocetDni = (datum2 - datum1).Days;
         int pocetDniVikendu = 0;
         //int pocetDniVikendu = (pocetDni / 7) * 2;
         //int pom = pocetDni % 7;
 
-        for (int i = 1; i <= pocetDni; i++)
+        for (int i = 1; i <= days; i++)
         {
             DateTime x = datum1.AddDays(i-1);
 

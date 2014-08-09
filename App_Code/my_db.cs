@@ -1728,11 +1728,17 @@ public class my_db
 
         my_com.ExecuteNonQuery();
         my_con.Close();
+    }
 
-        
+    public List<string> vacationsByID(int id, int mesiac, int rok)
+    {
+        List<string> result = new List<string>();
 
-       
+        string ss = "SELECT * FROM `is_dovolenky` WHERE `user_id` = {0} AND" +
+                    " ";
 
+
+        return result;
     }
 
 

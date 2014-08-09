@@ -300,4 +300,7 @@
   <data name="vacation_select" xml:space="preserve">
     <value>Výber dovolenky pre aktuálne prihláseného uživateľa</value>
   </data>
+  <data name="vykaz_error" xml:space="preserve">
+    <value>Nemáte nastavenú pracovnú dobu, alebo týždennú pracovnú dobu alebo osobné číslo!!!! Prosím vyplňte si ich v menu Užívateľ inak sa Vám nemusí vygenerovať správny mesačný výkaz.</value>
+  </data>
 </root>

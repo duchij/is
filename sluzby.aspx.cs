@@ -480,6 +480,18 @@ public partial class sluzby : System.Web.UI.Page
 
         if (data_info["id"] != null)
         {
+
+            if (data_info["publish"].ToString() == "1" && IsPostBack == false)
+            {
+
+                this.publish_ck.Checked = true;
+            }
+
+            if (data_info["publish"].ToString() == "0" && IsPostBack == false)
+            {
+                this.publish_ck.Checked = false;
+            }
+
             
             Session.Add("akt_sluzba", data_info["id"].ToString());
 
@@ -491,20 +503,7 @@ public partial class sluzby : System.Web.UI.Page
 
             rok_cb.SelectedValue = data_info["rok"].ToString();
 
-            if (Convert.ToInt32(data_info["publish"]) == 1 && IsPostBack == false)
-            {
-
-                publish_ck.Checked = true;
-            }
-			
-			if (Convert.ToInt32(data_info["publish"]) == 0 && IsPostBack == false)
-            {
-                publish_ck.Checked = false;
-            }
-			
-				
-			
-
+            
 
             days_lbl.Text = DateTime.DaysInMonth(Convert.ToInt32(rok), Convert.ToInt32(mesiac)).ToString();
 

@@ -108,19 +108,19 @@ tinyMCE.init({
                     
                     </tr>
                     <tr>
-                        <td>Pracovna doba:</td>
-                        <td><asp:TextBox ID="pracdoba_txt" runat="server" Text="7,5"></asp:TextBox></td>
+                        <td>Pracovná doba:</td>
+                        <td><asp:TextBox ID="pracdoba_txt" runat="server" Text=""></asp:TextBox></td>
                     
                     </tr>
                     
                      <tr>
-                        <td>Tyzdenna pracovna doba:</td>
-                        <td><asp:TextBox ID="tyzdoba_txt" runat="server" Text="37,5"></asp:TextBox></td>
+                        <td>Týždenná pracovná doba:</td>
+                        <td><asp:TextBox ID="tyzdoba_txt" runat="server" Text=""></asp:TextBox></td>
                     
                     </tr>
                     
                      <tr>
-                        <td>Osobne cislo:</td>
+                        <td>Osobné číslo:</td>
                         <td><asp:TextBox ID="osobcisl_txt" runat="server" Text=""></asp:TextBox></td>
                     
                     </tr>

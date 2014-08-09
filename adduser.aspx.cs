@@ -233,10 +233,10 @@ public partial class adduser : System.Web.UI.Page
         data.Add("full_name", meno);
         data.Add("email", email);
 
-        data.Add("pracdoba", this.pracdoba_txt.Text.ToString());
-        data.Add("tyzdoba", this.tyzdoba_txt.Text.ToString());
+        data.Add("pracdoba", this.pracdoba_txt.Text.ToString().Trim());
+        data.Add("tyzdoba", this.tyzdoba_txt.Text.ToString().Trim());
 
-        data.Add("osobcisl", this.osobcisl_txt.Text.ToString());
+        data.Add("osobcisl", this.osobcisl_txt.Text.ToString().Trim());
 
 
         string res = x_db.update_row("is_users", data, Session["user_id"].ToString());

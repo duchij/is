@@ -78,6 +78,9 @@ public partial class _Default : System.Web.UI.Page
 
                 if (l_pass == g_pass) 
                 {
+                   
+
+
                     e.Authenticated = true;
 
                     this.deleteFilesPerDays();
@@ -93,12 +96,19 @@ public partial class _Default : System.Web.UI.Page
                     Session.Add("tyzdoba", data["tyzdoba"].ToString());
                     Session.Add("osobcisl",data["osobcisl"].ToString());
 
+
+                    
+
                     Response.Cookies["tuisegumdrum"].Value = " activado";
                     Response.Cookies["user_id"].Value = data["id"].ToString();
                     Response.Cookies["rights"].Value = data["group"].ToString();
                     Response.Cookies["fullname"].Value = data["full_name"].ToString();
                     Response.Cookies["login"].Value = data["name"].ToString();
                     Response.Cookies["email"].Value = data["email"].ToString();
+
+
+
+                  
 
                     string group = data["group"].ToString();
 

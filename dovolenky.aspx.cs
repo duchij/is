@@ -314,8 +314,8 @@ public partial class dovolenky : System.Web.UI.Page
                         mojaCela.ForeColor = System.Drawing.Color.FromArgb(0x990000);
                     }
 
-                    mojaCela.Text = "<strong>" + my_den.ToString() + "<font style='font-size:10px;'>" + nazov + "</font><br></strong><br>";
-                    mojaCela.Text += "<font style='font-size:11px;'>"+mes_dov[my_den-1].ToString()+"</font>";
+                    mojaCela.Text = "<strong>" + my_den.ToString() + "<font style='font-size:9px;'> " + nazov + "</font><br></strong><br>";
+                    mojaCela.Text += "<font style='font-size:10px;'>"+mes_dov[my_den-1].ToString()+"</font>";
                 }
                 
                 //counter++;
