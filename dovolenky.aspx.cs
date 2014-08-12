@@ -243,7 +243,8 @@ public partial class dovolenky : System.Web.UI.Page
         for (int o=0; o<pocetDni; o++)
         {
             lila += o.ToString() + "..";
-            mes_dov.Add("");
+            mes_dov.Add("<ul>");
+            
             for (int i=0 ;i<data.Count; i++)
             {
                 
@@ -260,16 +261,23 @@ public partial class dovolenky : System.Web.UI.Page
                     
                     if (mes_dov[o].ToString().IndexOf(lo_name) == -1)
                     {
-                        mes_dov[o] += tmp[0] + "<br>";
+                        if (i % 2 == 0)
+                        {
+                            mes_dov[o] += "<li><strong>" + tmp[0] + "</strong></li>";
+                        }
+                        else
+                        {
+                            mes_dov[o] += "<li>" + tmp[0] + "</li>";
+                        }
                     }
                 }
 
             }
-            
+          mes_dov[o]+="</ul>";  
             
         }
-        int riadkov = 5;
-        int counter = 0;
+       // int riadkov = 5;
+       // int counter = 0;
         int my_den = 0;
 
         for (int i = 0; i < 5; i++)
@@ -282,7 +290,8 @@ public partial class dovolenky : System.Web.UI.Page
                 TableCell mojaCela = new TableCell();
                 mojaCela.ID = "mojaCelb_" + i.ToString() + "_" + x.ToString();
                 mojaCela.VerticalAlign = VerticalAlign.Top;
-                mojaCela.Width = 100;
+                mojaCela.CssClass = "duch";
+               // mojaCela.Width = 100;
                 my_den++;
 
                 //DateTime tmp_den_mes = new DateTime(tc_rok, tc_month, o + 1);
@@ -314,8 +323,9 @@ public partial class dovolenky : System.Web.UI.Page
                         mojaCela.ForeColor = System.Drawing.Color.FromArgb(0x990000);
                     }
 
-                    mojaCela.Text = "<strong>" + my_den.ToString() + "<font style='font-size:9px;'> " + nazov + "</font><br></strong><br>";
-                    mojaCela.Text += "<font style='font-size:10px;'>"+mes_dov[my_den-1].ToString()+"</font>";
+                    mojaCela.Text = "<strong>" + my_den.ToString() + "<br/><font style='font-size:9px;'> " + nazov + "</font><br></strong><br/>";
+                    //mojaCela.Text += "<font style='font-size:10px;'>"+mes_dov[my_den-1].ToString()+"</font>";
+                    mojaCela.Text +=  mes_dov[my_den - 1].ToString() ;
                 }
                 
                 //counter++;
@@ -601,7 +611,7 @@ public partial class dovolenky : System.Web.UI.Page
             {
                 TableCell mojaCela = new TableCell();
                 mojaCela.ID = "mojaCela_" + i.ToString() + "_" + j.ToString();
-                mojaCela.Width = 150;
+               // mojaCela.Width = 150;
                 if (j < 3)
                 {
                     mojaCela.Text = tmp[j].ToString();

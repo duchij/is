@@ -9,6 +9,17 @@
 <head runat="server">
 <link href="css/style.css" rel="stylesheet" type="text/css" />
     <title>IS-Dovolenky</title>
+    <style type="text/css">
+    .duch {
+   
+    }
+    .duch ul {
+    padding-left:8px;
+    }
+    .duch li {
+        font-size:10px;
+        }
+    </style>
 </head>
 <body>
     <form id="form1" runat="server">

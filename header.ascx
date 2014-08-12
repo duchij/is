@@ -3,22 +3,30 @@
 
 <head>
     <link href="css/style.css" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+    .headTd {
+    width:150px;
+    }
+    
+    </style>
 </head>
 
 <table width="100%" border="0">
     <tr>
-    <td>Dnes slúži:</td>
-    <td><strong>OUP: </strong>
+    <td style="width:80px;">Dnes slúži:</td>
+    <td class="headTd"><strong>OUP: </strong>
         <asp:Label ID="oup_lbl" runat="server" Text="Label" ForeColor="Red"></asp:Label></td>
     <td><strong>Odd A:</strong> 
         <asp:Label ID="odda_lbl" runat="server" Text="Label" ForeColor="Red"></asp:Label></td>
     <td><strong>Odd B: </strong>
         <asp:Label ID="oddb_lbl" runat="server" Text="Label" ForeColor="Red"></asp:Label></td>
-    <td><strong>Op.pohotovost: </strong><asp:Label ID="op_lbl" runat="server" Text="Label" ForeColor="Red"></asp:Label></td>
+    <td><strong>Op.pohot.: </strong><asp:Label ID="op_lbl" runat="server" Text="Label" ForeColor="Red"></asp:Label></td>
     <td><strong>Prijm.amb.:</strong> <asp:Label ID="trp_lbl" runat="server" Text="Label" ForeColor="Red" ></asp:Label></td>
     <td align="right">Dnes je:<strong>
         <asp:Label ID="date_lbl" runat="server" Text="Label"></asp:Label></strong></td>
     </tr>
+    </table>
+    <table width="100%">
    <tr>
         <td>Dnes je poslužbe: </td>
         <td colspan="5">

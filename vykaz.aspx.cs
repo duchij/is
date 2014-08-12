@@ -83,20 +83,68 @@ public partial class vykaz : System.Web.UI.Page
         {
             Session["vykaz_id"] = curVykaz["id"].ToString();
             this.createVykazFromData(curVykaz, rok, mesiac);
+
         }
         else
         {
             this.generateVykazTable(rok.ToString(), mesiac.ToString(), true);
         }
 
+        this.fillInVacations(mesiac, rok, Session["user_id"].ToString());
         
     }
 
-    protected void fillInVacations()
+    protected void fillInVacations(int mesiac, int rok, string id)
     {
-           
+        ArrayList dovolenky = x_db.getDovolenkyByID(mesiac,rok,Convert.ToInt32(id)); 
+        int dovCnt = dovolenky.Count;
+
+        for (int i = 0; i < dovCnt; i++)
+        {
+            string[] data = dovolenky[i].ToString().Split(';');
+
+            //string dd1 = my_x2.MSDate(data[1].ToString());
+            //string dd2 = my_x2.MSDate(data[2].ToString());
+
+            DateTime odDov = Convert.ToDateTime(data[1].ToString());
+            DateTime doDov = Convert.ToDateTime(data[2].ToString());
+
+            for (DateTime ddStart = odDov; ddStart <= doDov; ddStart += TimeSpan.FromDays(1))
+            {
+                if (ddStart.Month == mesiac && ddStart.Year == rok)
+                {
+                    int vikend = (int)ddStart.DayOfWeek;
+
+                    string[] freeDays = x_db.getFreeDays();
+
+                    string mesDen = ddStart.Day.ToString() + "." + mesiac;
+
+                    int rs_tmp = Array.IndexOf(freeDays, mesDen);
+
+                    if (vikend != 0 && vikend != 6 && rs_tmp == -1)
+                    {
+
+                        int ddTemp = ddStart.Day - 1;
+                        Control tbox = FindControl("textBox_" + ddTemp.ToString() + "_2");
+                        Control tbox1 = FindControl("textBox_" + ddTemp.ToString() + "_1");
+
+
+                        TextBox my_text_box = (TextBox)tbox;
+                        TextBox my_text_box1 = (TextBox)tbox1;
+
+                        my_text_box.Text = "D";
+                        my_text_box1.Text = "D";
+                    }
+                }
+
+            }
+
+
+
+        }
+
     }
-    
+
 
     protected void onMonthChangedFnc(object sender, EventArgs e)
     {
