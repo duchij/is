@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections;
 using System.Globalization;
 using System.Configuration;
+using System.Text;
 using System.Data;
 using System.Web;
 using System.Web.Security;
@@ -451,18 +452,47 @@ public partial class vykaz : System.Web.UI.Page
     {
         SortedList result = new SortedList();
 
-        result["normDen"]           = "7,15,7.5,0,0,0,0,0,0,0,0";
-        result["malaSluzba"]        = "7,19,11.5,5,0,0,5,0,7,0,0";
+        StringBuilder sb = new StringBuilder();
+
+        double pracDoba = Convert.ToDouble(Session["pracdoba"]);
+        double dlzkaPrace = 7+pracDoba+0.5;
+
+        string pracDobaTmp = pracDoba.ToString().Replace(',', '.');
+
+        sb.AppendFormat("7,{0},{1},0,0,0,0,0,0,0,0", dlzkaPrace, pracDobaTmp);
+        result["normDen"] = sb.ToString();
+
+        sb.Length = 0;
+
+        double sluzbaCas = 15 + 4;
+        dlzkaPrace = pracDoba + 4;
+        
+        string dlzkaPraceStr = dlzkaPrace.ToString();
+
+        dlzkaPraceStr = dlzkaPraceStr.Replace(',', '.');
+
+        sb.AppendFormat("7,{0},{1},5,0,0,5,0,7,0,0", sluzbaCas, dlzkaPraceStr);
+        result["malaSluzba"] = sb.ToString();
+
         result["malaSluzba2"]       = "0,0,0,0,0,0,0,0,0,0,0";
 
-        result["velkaSluzba"]       = "7,19,11.5,5,16.5,0,0,5,0,7,0,0";
+        sb.Length = 0;
+        sb.AppendFormat("7,{0},{1},5,16.5,0,0,5,0,7,0,0", sluzbaCas, dlzkaPraceStr);
+        result["velkaSluzba"]       = sb.ToString();
         result["velkaSluzba2"]      = "0,0,0,0,0,0,0,0,0,0,0,0";
         result["velkaSluzba2a"]     = "0,0,0,0,0,0,0,0,0,0,0,0";
 
-        result["sviatokVikend"]     = "7,19,11.5,5,16.5,16.5,0,5,0,7,0,0";
-        result["sviatok"]           = "7,19,11.5,5,0,16.5,0,5,0,7,0,0";
+        sb.Length = 0;
+        sb.AppendFormat("7,{0},{1},5,16.5,16.5,0,5,0,7,0,0", sluzbaCas, dlzkaPraceStr);
+        result["sviatokVikend"] = sb.ToString();
+        sb.Length = 0;
+
+        sb.AppendFormat("7,{0},{1},5,0,16.5,0,5,0,7,0,0", sluzbaCas, dlzkaPraceStr);
+        result["sviatok"]           = sb.ToString();
         result["exday"]             = "0,0,0,0,0,0,0,0,0,0,0,0";
-        result["sviatokNieVikend"]  = "0,0,7.5,0,0,0,0,0,0,0,0,0";
+        sb.Length = 0;
+        sb.AppendFormat("0,0,{0},0,0,0,0,0,0,0,0,0", pracDobaTmp);
+        result["sviatokNieVikend"]  = sb.ToString();
         
 
         return result;

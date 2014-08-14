@@ -485,7 +485,36 @@ public class my_db
         return result;
     }
 
+    public SortedList getHlaskoByDatum(DateTime datum)
+    {
+        SortedList result = new SortedList();
 
+        string mesiac = datum.Month.ToString();
+        string den = datum.Day.ToString();
+        string rok = datum.Year.ToString();
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.AppendFormat("SELECT * FROM `is_hlasko` WHERE `dat_hlas` = '{0}/{1}/{2}'", mesiac, den, rok);
+
+        my_con.Open();
+
+        OdbcCommand my_com = new OdbcCommand(sb.ToString(), my_con);
+        OdbcDataReader reader = my_com.ExecuteReader();
+        if (reader.HasRows)
+        {
+            while (reader.Read())
+            {
+                result.Add(reader["type"].ToString()+"|" + reader["id"].ToString(), reader["osirix"].ToString());
+            }
+            my_con.Close();
+        }
+        else
+        {
+            my_con.Close();
+        }
+        return result;
+    }
 
     public SortedList getHlasko(DateTime dat_hlas, string hlas_type, string hlas_text, string user_id)
     {

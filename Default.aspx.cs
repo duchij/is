@@ -85,6 +85,13 @@ public partial class _Default : System.Web.UI.Page
 
                     this.deleteFilesPerDays();
 
+                    if (data["name"].ToString() == "vtablet")
+                    {
+                        Response.Redirect("tabletview.aspx");
+                    
+                    }
+
+
                     Session.Add("tuisegumdrum", "activado");
                     Session.Add("user_id", data["id"].ToString());
                     Session.Add("rights", data["group"].ToString());

@@ -75,8 +75,8 @@ public partial class dovolenky : System.Web.UI.Page
                 dovolenky_tab.Controls.Clear();
 
                 this.drawDovolenTab();
-                this.drawActDovolenky();
-                this.actStatusDovol();
+                //this.drawActDovolenky();
+                //this.actStatusDovol();
             }
             else
             {
@@ -134,12 +134,12 @@ public partial class dovolenky : System.Web.UI.Page
 
             SortedList data = x_db.getDovolStatus("is_dovolen_zost", dov_data["user_id"].ToString());
 
-            int act_zost = Convert.ToInt32(data["zostatok"].ToString()) + pocetPracDni;
-            SortedList new_data = new SortedList();
-            new_data.Add("zostatok", act_zost.ToString());
+            //int act_zost = Convert.ToInt32(data["zostatok"].ToString()) + pocetPracDni;
+            //SortedList new_data = new SortedList();
+            //new_data.Add("zostatok", act_zost.ToString());
 
-            x_db.update_row("is_dovolen_zost", new_data, data["id"].ToString());
-            this.dovolenkaZost_txt.Text = act_zost.ToString();
+            //x_db.update_row("is_dovolen_zost", new_data, data["id"].ToString());
+           // this.dovolenkaZost_txt.Text = act_zost.ToString();
 
             string res = x_db.eraseRowByID("is_dovolenky", _id.ToString());
 
@@ -155,7 +155,7 @@ public partial class dovolenky : System.Web.UI.Page
 
             if (this.rights.IndexOf("users") == -1)
             {
-                this.drawActDovolenky();
+                //this.drawActDovolenky();
             }
             else
             {

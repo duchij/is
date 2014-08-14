@@ -6,7 +6,7 @@
 <head runat="server">
 <link href="css/style.css" rel="stylesheet" type="text/css" />
     <title></title>
-    
+ <link rel="icon" type="image/png" href="http://is.kdch.sk/kdch.png" />   
     
 </head>
 <body>
