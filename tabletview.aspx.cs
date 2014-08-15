@@ -113,4 +113,13 @@ public partial class tabletview : System.Web.UI.Page
     {
         this.loadData();
     }
+
+    protected void saveData(string id, string text)
+    {
+        SortedList data = new SortedList();
+        data["osirix"] = text;
+
+
+    }
+
 }
