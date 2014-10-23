@@ -54,6 +54,7 @@ public class my_db
     }
     public DataSet getData_operacie()
     {
+       
         string query = "SELECT * FROM is_opkniha ORDER BY DESC";
         string conn = my_con.ConnectionString.ToString();
         my_con.Open();

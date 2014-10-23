@@ -15,7 +15,7 @@ public partial class tabletview : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
 
-        this.OddA_diag_btn.Enabled = false;
+        this.kojenci_diag_btn.Enabled = false;
         this.OddB_diag_btn.Enabled = false;
         this.Pohotovost_diag_btn.Enabled = false;
 
@@ -49,10 +49,10 @@ public partial class tabletview : System.Web.UI.Page
 
     protected void setData()
     {
-        this.OddA_diag_btn.Enabled = true;
+        this.kojenci_diag_btn.Enabled = true;
         this.OddB_diag_btn.Enabled = true;
         this.Pohotovost_diag_btn.Enabled = true;
-        this.OddA_txt.Text = this.makeLink(this.OddA_diag.Text.ToString());
+        this.kojenci_txt.Text = this.makeLink(this.kojenci_diag.Text.ToString());
         this.OddB_txt.Text = this.makeLink(this.OddB_diag.Text.ToString());
         this.Pohotovost_txt.Text = this.makeLink(this.Pohotovost_diag.Text.ToString());
     }
@@ -60,14 +60,14 @@ public partial class tabletview : System.Web.UI.Page
     protected void loadData()
     {
         this.OddB_txt.Text = "";
-        this.OddA_txt.Text = "";
+        this.kojenci_txt.Text = "";
         this.Pohotovost_txt.Text = "";
 
         this.OddB_diag.Text = "";
-        this.OddA_diag.Text = "";
+        this.kojenci_diag.Text = "";
         this.Pohotovost_diag.Text = "";
 
-        this.OddA_diag_btn.Enabled = false;
+        this.kojenci_diag_btn.Enabled = false;
         this.OddB_diag_btn.Enabled = false;
         this.Pohotovost_diag_btn.Enabled = false;
 
@@ -95,21 +95,21 @@ public partial class tabletview : System.Web.UI.Page
 
             if (odd.IndexOf("A") != -1)
             {
-                this.OddA_txt.Text = this.makeLink(type.Value.ToString());
-                this.OddA_diag.Text = type.Value.ToString();
+                this.kojenci_txt.Text = this.makeLink(type.Value.ToString());
+                this.kojenci_diag.Text = type.Value.ToString();
                 
-                Session["oddA"] = tmp[1];
+                Session["kojneci"] = tmp[1];
                 String strTmp = type.Value.ToString().Trim();
 
-                this.OddA_diag_btn.Enabled = true;
+                this.kojenci_diag_btn.Enabled = true;
 
                 /*if (strTmp.Length > 0)
                 {
-                    this.OddA_diag_btn.Enabled = true;
+                    this.kojneci_diag_btn.Enabled = true;
                 }
                 else
                 {
-                    this.OddA_diag_btn.Enabled = false;
+                    this.kojneci_diag_btn.Enabled = false;
                 }*/
             }
             
@@ -174,13 +174,13 @@ public partial class tabletview : System.Web.UI.Page
         }
     }
 
-    protected void OddA_diag_btn_Click(object sender, EventArgs e)
+    protected void kojenci_diag_btn_Click(object sender, EventArgs e)
     {
-        //string tmp = x_db.getOsirixData(Session["oddA"].ToString();
+        //string tmp = x_db.getOsirixData(Session["kojneci"].ToString();
 
-        string defRes = x2_var.UTFtoASCII(this.OddA_diag.Text.ToString());
+        string defRes = x2_var.UTFtoASCII(this.kojenci_diag.Text.ToString());
 
-        this.saveData(Session["oddA"].ToString(), defRes);
+        this.saveData(Session["kojneci"].ToString(), defRes);
        // this.saveData()
     }
 

@@ -303,4 +303,7 @@
   <data name="vykaz_error" xml:space="preserve">
     <value>Nemáte nastavenú pracovnú dobu, alebo týždennú pracovnú dobu alebo osobné číslo!!!! Prosím vyplňte si ich v menu Užívateľ inak sa Vám nemusí vygenerovať správny mesačný výkaz.</value>
   </data>
+  <data name="add" xml:space="preserve">
+    <value>Pridať</value>
+  </data>
 </root>

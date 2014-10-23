@@ -34,7 +34,7 @@
             <br />
             <asp:TextBox ID="osirix_search_txt" runat="server" Font-Size="x-Large" Width="70%"></asp:TextBox>
             
-            <asp:Button ID="Button1" runat="server" Text="Najdi studiu" CssClass="Button" onClick="search_fnc" OnClientClick="aspnetForm.target ='_blank';" Font-Size="X-Large"/>
+            <asp:Button ID="Button1" runat="server" Text="Najdi studiu" onClick="search_fnc" OnClientClick="aspnetForm.target ='_blank';" Font-Size="X-Large"/>
            
             <asp:Calendar ID="Calendar1" runat="server" BackColor="#FFFFCC" 
                 BorderColor="#FFCC66" BorderWidth="1px" DayNameFormat="Shortest" 
@@ -57,12 +57,13 @@
             <tr>
             <td colspan="2" valign="middle" style="background-color:#FF7A00;height:40px;"  ><div style="font-size:x-large;color:black;"> Kojenci</div></td></tr>
             <tr>
-                <td width="50%"> <asp:Label ID="OddA_txt" runat="server" Text="" CssClass="links"></asp:Label> </td>
+                <td width="50%"> <asp:Label ID="kojenci_txt" runat="server" Text="" CssClass="links"></asp:Label> </td>
                 <td width="50%">
-                    <asp:TextBox ID="OddA_diag" runat="server" Width="337px" Height="200px" 
-                        TextMode="MultiLine" Font-Size="X-Large"></asp:TextBox><br />
-                    <asp:Button ID="OddA_diag_btn" runat="server" 
-                        Text="<%$ Resources:Resource,save %>" onclick="OddA_diag_btn_Click"  Font-Size="X-Large" />  </td>
+                    Priezvisko:<asp:TextBox ID="kojenci_diag" runat="server" Width="200px" Height="23px" 
+                        TextMode="SingleLine" Font-Size="X-Large"></asp:TextBox><br />
+                        Poznamka:<asp:TextBox ID="kojenci_note" runat="server" Width="200px"></asp:TextBox>
+                    <asp:Button ID="kojenci_diag_btn" runat="server" 
+                        Text="<%$ Resources:Resource,add %>" onclick="kojenci_diag_btn_Click"  Font-Size="X-Large" />  </td>
            
             </tr>
             </table>
@@ -72,7 +73,7 @@
             <table border="1" width="100%" style="border:1px solid #A65000; border-collapse:collapse;">
             <tr>
             <td colspan="2" valign="middle" style="background-color:#A65000;height:40px;" >
-            <div style="font-size:x-large;color:black;">Dievcata</div>
+            <div style="font-size:x-large;color:black;">Dievcata - MSV</div>
             </td>
             </tr>
             <tr>
@@ -82,7 +83,7 @@
                         TextMode="MultiLine" Font-Size="X-Large"></asp:TextBox><br />
                     <asp:Button ID="OddB_diag_btn" runat="server" Text="<%$ Resources:Resource,save %>" Font-Size="X-Large" />  </td>
             
-            </td>
+           
             
             </tr>
             </table>
