@@ -156,8 +156,6 @@ public partial class poziadavky : System.Web.UI.Page
             this.lock_date.SelectedDate = Convert.ToDateTime(result["datum"].ToString());
             //Session.Add("lock_date",
             Response.Redirect("poziadavky.aspx");
-           
-           
         }
     }
 
@@ -183,10 +181,7 @@ public partial class poziadavky : System.Web.UI.Page
         else
         {
             //msg_lbl.Text = result["info"].ToString();
-            
-           
         }
-
     }
 
     protected void getPoziadavky_fnc(object sender, EventArgs e)

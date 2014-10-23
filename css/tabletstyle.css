@@ -1,0 +1,20 @@
+﻿body {
+}
+
+#wrapper {
+    width:1000px;
+    margin:0 auto;
+    }
+    
+ #left {
+ float:left;
+ width:45%;
+ background-color:Aqua;
+ 
+ }
+#right {
+float:left;
+width:55%;
+background-color:Fuchsia;
+
+}    

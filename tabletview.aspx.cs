@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
+
 public partial class tabletview : System.Web.UI.Page
 {
     my_db x_db = new my_db();
@@ -13,6 +14,11 @@ public partial class tabletview : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
+
+        this.OddA_diag_btn.Enabled = false;
+        this.OddB_diag_btn.Enabled = false;
+        this.Pohotovost_diag_btn.Enabled = false;
+
         if (IsPostBack == false)
         {
             this.setMyDate();
@@ -20,7 +26,7 @@ public partial class tabletview : System.Web.UI.Page
         }
         else
         {
-            this.loadData();
+           this.setData();
         }
 
     }
@@ -41,8 +47,30 @@ public partial class tabletview : System.Web.UI.Page
         }
     }
 
+    protected void setData()
+    {
+        this.OddA_diag_btn.Enabled = true;
+        this.OddB_diag_btn.Enabled = true;
+        this.Pohotovost_diag_btn.Enabled = true;
+        this.OddA_txt.Text = this.makeLink(this.OddA_diag.Text.ToString());
+        this.OddB_txt.Text = this.makeLink(this.OddB_diag.Text.ToString());
+        this.Pohotovost_txt.Text = this.makeLink(this.Pohotovost_diag.Text.ToString());
+    }
+
     protected void loadData()
     {
+        this.OddB_txt.Text = "";
+        this.OddA_txt.Text = "";
+        this.Pohotovost_txt.Text = "";
+
+        this.OddB_diag.Text = "";
+        this.OddA_diag.Text = "";
+        this.Pohotovost_diag.Text = "";
+
+        this.OddA_diag_btn.Enabled = false;
+        this.OddB_diag_btn.Enabled = false;
+        this.Pohotovost_diag_btn.Enabled = false;
+
         /*DateTime tc = DateTime.Now;
         DateTime datum = new DateTime();
 
@@ -63,27 +91,44 @@ public partial class tabletview : System.Web.UI.Page
         {
             string odd = type.Key.ToString();
             string[] tmp = odd.Split('|');
+            
+
             if (odd.IndexOf("A") != -1)
             {
-               this.OddA_txt.Text =  this.makeLink(type.Value.ToString());
+                this.OddA_txt.Text = this.makeLink(type.Value.ToString());
+                this.OddA_diag.Text = type.Value.ToString();
+                
+                Session["oddA"] = tmp[1];
+                String strTmp = type.Value.ToString().Trim();
 
-               Session["oddA"] = tmp[1];
+                this.OddA_diag_btn.Enabled = true;
+
+                /*if (strTmp.Length > 0)
+                {
+                    this.OddA_diag_btn.Enabled = true;
+                }
+                else
+                {
+                    this.OddA_diag_btn.Enabled = false;
+                }*/
             }
+            
             if (odd.IndexOf("B") != -1)
             {
                 this.OddB_txt.Text = this.makeLink(type.Value.ToString());
+                this.OddB_diag.Text = type.Value.ToString();
                 Session["oddB"] = tmp[1];
+                this.OddB_diag_btn.Enabled = true;
             }
 
             if (odd.IndexOf("OP") != -1)
             {
                 this.Pohotovost_txt.Text = this.makeLink(type.Value.ToString());
+                this.Pohotovost_diag.Text = type.Value.ToString();
                 Session["OP"] = tmp[1];
+                this.Pohotovost_diag_btn.Enabled = true;
             }
         }
-
-        
-
     }
 
     public string makeLink(string str)
@@ -118,8 +163,39 @@ public partial class tabletview : System.Web.UI.Page
     {
         SortedList data = new SortedList();
         data["osirix"] = text;
+        string res = x_db.update_row("is_hlasko", data, id);
+        if (res != "ok")
+        {
+            Label1.Text = res;
+        }
+        else
+        {
+            Label1.Text = res;
+        }
+    }
 
+    protected void OddA_diag_btn_Click(object sender, EventArgs e)
+    {
+        //string tmp = x_db.getOsirixData(Session["oddA"].ToString();
 
+        string defRes = x2_var.UTFtoASCII(this.OddA_diag.Text.ToString());
+
+        this.saveData(Session["oddA"].ToString(), defRes);
+       // this.saveData()
+    }
+
+    protected void search_fnc(object sender, EventArgs e)
+    {
+        string searchName = this.osirix_search_txt.Text.ToString().Trim();
+
+        if (searchName.Length > 0)
+        {
+            Response.Write("<script>window.open('http://10.10.2.49:3333/studyList?search=" + searchName + "','_blank','');</script>");
+        }
+        else
+        {
+            Response.Write("<script>alert('Prazdny retazec....')</script>");
+        }
     }
 
 }

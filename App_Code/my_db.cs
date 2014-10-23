@@ -485,6 +485,32 @@ public class my_db
         return result;
     }
 
+    public string getOsirixData(string id)
+    {
+        string result = "";
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("SELECT `osirix` WHERE `id`={0}", id);
+        my_con.Open();
+
+        OdbcCommand my_com = new OdbcCommand(sb.ToString(), my_con);
+        OdbcDataReader reader = my_com.ExecuteReader();
+        if (reader.HasRows)
+        {
+            while (reader.Read())
+            {
+                result = reader["osirix"].ToString();
+            }
+            my_con.Close();
+        }
+        else
+        {
+            my_con.Close();
+        }
+        return result;
+
+
+    }
+
     public SortedList getHlaskoByDatum(DateTime datum)
     {
         SortedList result = new SortedList();

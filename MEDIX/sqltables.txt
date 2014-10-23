@@ -1,0 +1,22 @@
+--tvorba operacnych dg
+
+CREATE TABLE `medix_opdg` (
+  `id` bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `typop` text COLLATE 'utf8_slovak_ci' NOT NULL,
+  `popis` longtext COLLATE 'utf8_slovak_ci' NOT NULL,
+  `dlzka` int NOT NULL,
+  `vzpkod` text NOT NULL,
+  `odbornost` longtext NOT NULL,
+  `platnostod` text NOT NULL,
+  `platnostdo` text NOT NULL
+) COMMENT='' ENGINE='MyISAM' COLLATE 'utf8_slovak_ci';
+
+
+
+CREATE TABLE `medix_odbornost` (
+  `id` bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `odbkod` bigint NOT NULL,
+  `text` text NOT NULL,
+  `typlek` text NOT NULL,
+  `preskript` text NOT NULL
+) COMMENT='' ENGINE='MyISAM' COLLATE 'cp1250_czech_cs';

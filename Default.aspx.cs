@@ -16,6 +16,23 @@ public partial class _Default : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        //System.Web.HttpBrowserCapabilities browser = Request.Browser;
+        bool isIdevice = false;
+        if (Request.UserAgent.ToLower().Contains("ipad") || Request.UserAgent.ToLower().Contains("iphone"))
+        {
+            isIdevice = true;
+        }
+       // bool isIpad = Request.UserAgent.ToLower().Contains("ipad");
+        if (isIdevice)
+        {
+            this.Login1.Width = Unit.Pixel(400);
+            this.Login1.CssClass = "duchsB";
+            
+            
+            //this.Login1.TitleTextStyle.Width = Unit.Percentage(200);
+        }
+
+
         Response.Cookies["akt_sluzba"].Expires = DateTime.Now.AddDays(-1);
         Response.Cookies["akt_hlasenie "].Expires = DateTime.Now.AddDays(-1);
         //Response.Cookies["tuisegumdrum"].Expires = DateTime.Now.AddDays(-1);
