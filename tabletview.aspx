@@ -53,20 +53,17 @@
             <br /> <br />
             </div>
               <div id="right">
-            <table border="1" width="100%" style="border:1px solid #FF7A00; border-collapse:collapse;">
-            <tr>
-            <td colspan="2" valign="middle" style="background-color:#FF7A00;height:40px;"  ><div style="font-size:x-large;color:black;"> Kojenci</div></td></tr>
-            <tr>
-                <td width="50%"> <asp:Label ID="kojenci_txt" runat="server" Text="" CssClass="links"></asp:Label> </td>
-                <td width="50%">
+                  
+           <p>
+               <asp:Table ID="kojenci_tbl" runat="server">
+               </asp:Table>
                     Priezvisko:<asp:TextBox ID="kojenci_diag" runat="server" Width="200px" Height="23px" 
                         TextMode="SingleLine" Font-Size="X-Large"></asp:TextBox><br />
-                        Poznamka:<asp:TextBox ID="kojenci_note" runat="server" Width="200px"></asp:TextBox>
+                        Poznamka:<asp:TextBox ID="kojenci_note" runat="server" Width="200px" Height="23px" Font-Size="X-Large"></asp:TextBox>
                     <asp:Button ID="kojenci_diag_btn" runat="server" 
-                        Text="<%$ Resources:Resource,add %>" onclick="kojenci_diag_btn_Click"  Font-Size="X-Large" />  </td>
+                        Text="<%$ Resources:Resource,add %>" onclick="kojenci_diag_btn_Click"  Font-Size="X-Large" /> 
+           </p>
            
-            </tr>
-            </table>
           
           
            

@@ -15,18 +15,18 @@ public partial class tabletview : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
 
-        this.kojenci_diag_btn.Enabled = false;
+       /* this.kojenci_diag_btn.Enabled = false;
         this.OddB_diag_btn.Enabled = false;
-        this.Pohotovost_diag_btn.Enabled = false;
+        this.Pohotovost_diag_btn.Enabled = false;*/
 
         if (IsPostBack == false)
         {
-            this.setMyDate();
-            this.loadData();
+          // this.setMyDate();
+          //  this.loadData();
         }
         else
         {
-           this.setData();
+          // this.setData();
         }
 
     }
@@ -52,7 +52,7 @@ public partial class tabletview : System.Web.UI.Page
         this.kojenci_diag_btn.Enabled = true;
         this.OddB_diag_btn.Enabled = true;
         this.Pohotovost_diag_btn.Enabled = true;
-        this.kojenci_txt.Text = this.makeLink(this.kojenci_diag.Text.ToString());
+        //this.kojenci_txt.Text = this.makeLink(this.kojenci_diag.Text.ToString());
         this.OddB_txt.Text = this.makeLink(this.OddB_diag.Text.ToString());
         this.Pohotovost_txt.Text = this.makeLink(this.Pohotovost_diag.Text.ToString());
     }
@@ -60,7 +60,7 @@ public partial class tabletview : System.Web.UI.Page
     protected void loadData()
     {
         this.OddB_txt.Text = "";
-        this.kojenci_txt.Text = "";
+        //this.kojenci_txt.Text = "";
         this.Pohotovost_txt.Text = "";
 
         this.OddB_diag.Text = "";
@@ -95,7 +95,7 @@ public partial class tabletview : System.Web.UI.Page
 
             if (odd.IndexOf("A") != -1)
             {
-                this.kojenci_txt.Text = this.makeLink(type.Value.ToString());
+                //this.kojenci_txt.Text = this.makeLink(type.Value.ToString());
                 this.kojenci_diag.Text = type.Value.ToString();
                 
                 Session["kojneci"] = tmp[1];
@@ -178,9 +178,33 @@ public partial class tabletview : System.Web.UI.Page
     {
         //string tmp = x_db.getOsirixData(Session["kojneci"].ToString();
 
-        string defRes = x2_var.UTFtoASCII(this.kojenci_diag.Text.ToString());
+       // string defRes = x2_var.UTFtoASCII(this.kojenci_diag.Text.ToString());
 
-        this.saveData(Session["kojneci"].ToString(), defRes);
+        //this.saveData(Session["kojneci"].ToString(), defRes);
+
+        HyperLink meno_lnk = new HyperLink();
+        meno_lnk.ID = "meno_1";
+        meno_lnk.Text = this.kojenci_diag.Text.ToString();
+        meno_lnk.NavigateUrl = "http://10.10.2.49:3333/studyList?search=" + this.kojenci_diag.Text.ToString();
+        meno_lnk.Target = "_blank";
+
+
+        TableCell kojenci_cell = new TableCell();
+        kojenci_cell.ID = "kojenec_cell_1";
+        kojenci_cell.Controls.Add(meno_lnk);
+       
+        Button delete_btn = new Button();
+        delete_btn.ID = "delete_1";
+        delete_btn.Text = "Zmaz";
+        kojenci_cell.Controls.Add(delete_btn);
+       
+        
+
+        TableRow row_tbl = new TableRow();
+        row_tbl.ID = "kojenci_row_1";
+        row_tbl.Controls.Add(kojenci_cell);
+
+        this.kojenci_tbl.Controls.Add(row_tbl);
        // this.saveData()
     }
 
