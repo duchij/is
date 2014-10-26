@@ -1,4 +1,4 @@
-﻿
+﻿using System;
 using System.Configuration;
 using System.Collections;
 using System.Collections.Generic;
@@ -62,6 +62,14 @@ public class mysql_db
 
 	}
 
+    private string parseQuery(string query)
+    {
+        query = query.Replace('[', '`');
+        query = query.Replace(']', '`');
+
+        return query;
+    }
+
     public SortedList mysql_insert(string table, SortedList data)
     {
 
@@ -78,17 +86,141 @@ public class mysql_db
 
         StringBuilder sb = new StringBuilder();
 
-        ArrayList columns = new ArrayList();
+        string[] columns = new string[data.Count];
+        string[] values = new string[data.Count];
+        string[] col_val = new string[data.Count];
 
-        foreach (
+
+        int i = 0;
+        foreach (DictionaryEntry row in data)
+        {
+            
+            columns[i] = "["+row.Key.ToString()+"]";
+            values[i] = "'" + row.Value.ToString() + "'";
+            col_val[i] = "[" + row.Key + "] =  values([" + row.Key + "])";
+            i++;
+        }
+
+        string t_cols = string.Join(",", columns);
+        string t_values = string.Join(",", values);
+        string col_val_str = string.Join(",", col_val);
+
+        sb.AppendFormat("INSERT INTO [{0}] ({1}) VALUES ({2}) ON DUPLICATE KEY UPDATE {3};", table, t_cols, t_values, col_val_str);
+
+        string query = this.parseQuery(sb.ToString());
+        
+        int id = 0;
+        try
+        {
+            cmdtrans.CommandText = query;
+            cmdtrans.ExecuteNonQuery();
+            cmdtrans.CommandText = "SELECT last_insert_id();";
+            id = Convert.ToInt32(cmdtrans.ExecuteScalar());
+            trans1.Commit();
+            result.Add("status", true);
+            result.Add("last_id", id);
+        }
+        catch (Exception e)
+        {
+            result.Add("status",false);
+            result.Add("msg",e.ToString());
+            result.Add("last_id", 0);
+            trans1.Rollback();
+          
+        } 
+        my_con.Close();
+        return result;
+
+    }
+
+    public SortedList execute(string query)
+    {
+        query = this.parseQuery(query);
+
+        SortedList result = new SortedList();
+        OdbcTransaction trans1 = null;
+        my_con.Open();
+        trans1 = my_con.BeginTransaction();
+
+        OdbcCommand cmdtrans = new OdbcCommand();
+        cmdtrans.Connection = my_con;
+        cmdtrans.Transaction = trans1;
+        try
+        {
+            cmdtrans.CommandText = query;
+            cmdtrans.ExecuteNonQuery();
+            trans1.Commit();
+            result.Add("status", true);
+        }
+        catch (Exception e)
+        {
+            trans1.Rollback();
+            result.Add("status", false);
+            result.Add("msg", e.ToString());
+        }
+        my_con.Close();
+
+        return result;
+
+    }
+    public SortedList getRow(string query)
+    {
+        SortedList result = new SortedList();
+        my_con.Open();
+
+        OdbcCommand my_com = new OdbcCommand(this.parseQuery(query.ToString()), my_con);
+
+        OdbcDataReader reader = my_com.ExecuteReader();
+        int row = 0;
+
+        if (reader.HasRows)
+        {
+            while (reader.Read())
+            {
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                    result.Add(reader.GetName(i).ToString(), reader.GetValue(i).ToString());
+                }
+              
+            }
+        }
+        my_con.Close();
 
 
+        return result;
+    }
 
-        sb.AppendFormat("INSERT INTO [{0}] ({1}) VALUES ({2}) ON DUPLICATE KEY UPDATE {3}");
 
+    public Dictionary<int, SortedList> getTable(string query)
+    {
+
+        Dictionary<int, SortedList> result = new Dictionary<int, SortedList>();
+
+        my_con.Open();
+
+        OdbcCommand my_com = new OdbcCommand(this.parseQuery(query.ToString()), my_con);
+
+        OdbcDataReader reader = my_com.ExecuteReader();
+        int row = 0;
+
+        if (reader.HasRows)
+        {
+            while (reader.Read())
+            {
+                SortedList tmp = new SortedList();
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                    tmp.Add(reader.GetName(i).ToString(), reader.GetValue(i).ToString());
+                }
+                result.Add(row, tmp);
+                row++;
+            }
+        }
+        my_con.Close();
 
 
         return result;
 
     }
+
 }

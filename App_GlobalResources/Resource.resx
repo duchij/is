@@ -306,4 +306,7 @@
   <data name="add" xml:space="preserve">
     <value>Pridať</value>
   </data>
+  <data name="ranne_sed" xml:space="preserve">
+    <value>Ranné sedenie</value>
+  </data>
 </root>

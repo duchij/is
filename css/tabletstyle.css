@@ -1,8 +1,26 @@
 ﻿body 
 {
-	font-family:Verdana;
+	font-family:Helvetica;
 	font-size:x-large;
 }
+
+a { text-decoration:none;
+    font-weight:bold;
+    
+}
+
+input button
+{
+	height:23px;
+	}
+	
+	td 
+	{
+		font-size:x-large;}
+	
+	td input button
+	{
+		height:23px;}
 
 #wrapper {
     width:1000px;
@@ -12,12 +30,12 @@
  #left {
  float:left;
  width:45%;
- background-color:Aqua;
+ /*background-color:Aqua;*/
  
  }
 #right {
 float:left;
 width:55%;
-background-color:Fuchsia;
+/*background-color:Fuchsia;*/
 
 }    

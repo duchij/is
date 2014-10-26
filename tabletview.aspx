@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="tabletview.aspx.cs" Inherits="tabletview" ValidateRequest="False"   %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="tabletview.aspx.cs" Inherits="tabletview" ValidateRequest="False"%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -28,14 +28,16 @@
 <body>
     <form id="form1" runat="server">
     <div id="wrapper">
+    
      <div style="text-align:right;"><asp:HyperLink ID="HyperLink1" runat="server" NavigateUrl="default.aspx" Font-Size="X-Large"  >Odhlásiť....</asp:HyperLink></div>
         <div id="left">
            
             <br />
-            <asp:TextBox ID="osirix_search_txt" runat="server" Font-Size="x-Large" Width="70%"></asp:TextBox>
-            
-            <asp:Button ID="Button1" runat="server" Text="Najdi studiu" onClick="search_fnc" OnClientClick="aspnetForm.target ='_blank';" Font-Size="X-Large"/>
-           
+            <asp:TextBox ID="osirix_search_txt" runat="server" Font-Size="x-Large" Width="60%"></asp:TextBox>
+          
+            <asp:Button ID="Button1" runat="server" Text="Nájdi štúdiu" onClick="search_fnc" OnClientClick="aspnetForm.target ='_blank';" Font-Size="X-Large"/>
+             <br />
+               <br />
             <asp:Calendar ID="Calendar1" runat="server" BackColor="#FFFFCC" 
                 BorderColor="#FFCC66" BorderWidth="1px" DayNameFormat="Shortest" 
                 Font-Names="Verdana" Font-Size="Large" ForeColor="#663399" Height="350px" 
@@ -50,60 +52,104 @@
                 <TitleStyle BackColor="#990000" Font-Bold="True" Font-Size="16pt" 
                     ForeColor="#FFFFCC" />
             </asp:Calendar>
-            <br /> <br />
+            <h1 style="font-size:20px;"> Služby</h1><hr />
+            <asp:PlaceHolder ID="hlasenie" runat="server">
+            
+            </asp:PlaceHolder>
             </div>
+            
               <div id="right">
-                  
-           <p>
-               <asp:Table ID="kojenci_tbl" runat="server">
+                  <h1 style="font-size:20px;"> Ranné sedenie</h1><hr />
+          
+               <asp:Label ID="kojenci_title" runat="server" Text="Kojenci" Font-Size ="X-Large" BackColor="#FFAD10" Width="100%" Height="40px"></asp:Label>
+               
+               <asp:Table ID="kojenci_tbl" runat="server" BackColor="#FFAD10" Width="100%">
                </asp:Table>
-                    Priezvisko:<asp:TextBox ID="kojenci_diag" runat="server" Width="200px" Height="23px" 
-                        TextMode="SingleLine" Font-Size="X-Large"></asp:TextBox><br />
-                        Poznamka:<asp:TextBox ID="kojenci_note" runat="server" Width="200px" Height="23px" Font-Size="X-Large"></asp:TextBox>
-                    <asp:Button ID="kojenci_diag_btn" runat="server" 
-                        Text="<%$ Resources:Resource,add %>" onclick="kojenci_diag_btn_Click"  Font-Size="X-Large" /> 
-           </p>
-           
-          
-          
-           
-            <table border="1" width="100%" style="border:1px solid #A65000; border-collapse:collapse;">
-            <tr>
-            <td colspan="2" valign="middle" style="background-color:#A65000;height:40px;" >
-            <div style="font-size:x-large;color:black;">Dievcata - MSV</div>
-            </td>
-            </tr>
-            <tr>
-                <td width="50%"><asp:Label ID="OddB_txt" runat="server" Text="" CssClass="links"></asp:Label></td>
-                <td width="50%">
-                <asp:TextBox ID="OddB_diag" runat="server" Width="337px" Height="200px" 
-                        TextMode="MultiLine" Font-Size="X-Large"></asp:TextBox><br />
-                    <asp:Button ID="OddB_diag_btn" runat="server" Text="<%$ Resources:Resource,save %>" Font-Size="X-Large" />  </td>
+             
+               <table style="background-color:#FFAD10;width:100%;">
+               <tr>
+               <td colspan="2"> <hr /></td>
+               </tr>
+               <tr>
+               <td> Priezvisko:</td>
+               <td><asp:TextBox ID="kojenci_diag" runat="server" Width="200px" Height="23px" 
+                        TextMode="SingleLine" Font-Size="X-Large"></asp:TextBox></td>
+               </tr>
+               <tr>
+               <td>
+               Poznámka:
+               </td>
+               <td>
+               <asp:TextBox ID="kojenci_note" runat="server" Width="400px" Height="23px" Font-Size="X-Large"></asp:TextBox>
+               </td>
+               </tr>
+               <tr>
+               <td colspan="2" align="right">  <asp:Button ID="kojenci_diag_btn" runat="server" 
+                        Text="<%$ Resources:Resource,add %>" onclick="kojenci_diag_btn_Click"  Font-Size="X-Large" /> </td>
+               </tr>
+               </table>
+                <hr />  
+                     
+                  
+         <asp:Label ID="dievcata_titel" runat="server" Text="Dievčatá" Font-Size ="X-Large" BackColor="#B17400" Width="100%" Height="40px" ></asp:Label>
+               
+               <asp:Table ID="dievcata_tbl" runat="server" BackColor="#B17400" Width="100%" >
+               </asp:Table>
+               
+               <table style="background-color:#B17400;width:100%;">
+                  <tr>
+               <td colspan="2"> <hr /></td>
+               </tr>
+               <tr>
+               <td> Priezvisko:</td>
+               <td><asp:TextBox ID="dievcata_diag" runat="server" Width="200px" Height="23px" 
+                        TextMode="SingleLine" Font-Size="X-Large"></asp:TextBox></td>
+               </tr>
+               <tr>
+               <td>
+               Poznámka:
+               </td>
+               <td>
+               <asp:TextBox ID="dievcata_note" runat="server" Width="400px" Height="23px" Font-Size="X-Large"></asp:TextBox>
+               </td>
+               </tr>
+               <tr>
+               <td colspan="2" align="right">  <asp:Button ID="dievcata_diag_btn" runat="server" 
+                        Text="<%$ Resources:Resource,add %>" onclick="dievcata_diag_btn_Click"  Font-Size="X-Large" /> </td>
+               </tr>
+               </table>
             
-           
+            <hr />
+                   
+                  
+         <asp:Label ID="chlapci_titel" runat="server" Text="Chlapci" Font-Size ="X-Large" BackColor="#FF7810" Width="100%" Height="40px" ></asp:Label>
+               
+               <asp:Table ID="chlapci_tbl" runat="server" BackColor="#FF7810" Width="100%">
+               </asp:Table>
+             
+               <table style="background-color:#FF7810;width:100%">
+                  <tr>
+               <td colspan="2"> <hr /></td>
+               </tr>
+               <tr>
+               <td> Priezvisko:</td>
+               <td><asp:TextBox ID="chlapci_diag" runat="server" Width="200px" Height="23px" 
+                        TextMode="SingleLine" Font-Size="X-Large"></asp:TextBox></td>
+               </tr>
+               <tr>
+               <td>
+               Poznamka:
+               </td>
+               <td>
+               <asp:TextBox ID="chlapci_note" runat="server" Width="400px" Height="23px" Font-Size="X-Large"></asp:TextBox>
+               </td>
+               </tr>
+               <tr>
+               <td colspan="2" align="right">  <asp:Button ID="chlapci_diag_btn" runat="server" 
+                        Text="<%$ Resources:Resource,add %>" onclick="chlapci_diag_btn_Click"  Font-Size="X-Large" /> </td>
+               </tr>
+               </table>
             
-            </tr>
-            </table>
-            <hr /><br />
-            
-            <table border="1" width="100%" style="border:1px solid #FF9b40; border-collapse:collapse;">
-            <tr>
-            <td colspan="2" valign="middle" style="background-color:#FF9b40;height:40px;">
-            <div style="font-size:x-large;color:black;">Velke deti </div></td>
-            </tr>
-            <tr>
-                <td width="50%"><asp:Label ID="Pohotovost_txt" runat="server" Text="" CssClass="links"></asp:Label></td>
-                <td>
-                    <asp:TextBox ID="Pohotovost_diag" runat="server" Width="340px" Height="200px" 
-                        TextMode="MultiLine" Font-Size="X-Large"></asp:TextBox><br />
-                    <asp:Button ID="Pohotovost_diag_btn" runat="server" Text="<%$ Resources:Resource,save %>" Font-Size="X-Large" /> 
-                
-                
-                </td>
-                
-                
-            </tr>
-            </table>
         
         </div>
     <asp:Label ID="Label1" runat="server" Text=""></asp:Label>
