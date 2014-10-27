@@ -72,9 +72,6 @@ public class mysql_db
 
     public SortedList mysql_insert(string table, SortedList data)
     {
-
-
-
         SortedList result = new SortedList();
         OdbcTransaction trans1 = null;
         my_con.Open();

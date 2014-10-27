@@ -82,7 +82,7 @@ public partial class tabletview : System.Web.UI.Page
         this.kojenci_tbl.Controls.Clear();
 
         StringBuilder sb = new StringBuilder();
-        DateTime datum = this.Calendar1.SelectedDate;
+        DateTime datum = this.Calendar2.SelectedDate;
 
         sb.AppendFormat("SELECT * FROM [is_osirix] WHERE [date] = '{0}' AND [odd] = '{1}'", my_x2.unixDate(datum), "KOJ");
 
@@ -105,7 +105,7 @@ public partial class tabletview : System.Web.UI.Page
         this.chlapci_tbl.Controls.Clear();
 
         StringBuilder sb = new StringBuilder();
-        DateTime datum = this.Calendar1.SelectedDate;
+        DateTime datum = this.Calendar2.SelectedDate;
 
         sb.AppendFormat("SELECT * FROM [is_osirix] WHERE [date] = '{0}' AND [odd] = '{1}'", my_x2.unixDate(datum), "VD");
 
@@ -128,7 +128,7 @@ public partial class tabletview : System.Web.UI.Page
         this.dievcata_tbl.Controls.Clear();
 
         StringBuilder sb = new StringBuilder();
-        DateTime datum = this.Calendar1.SelectedDate;
+        DateTime datum = this.Calendar2.SelectedDate;
 
         sb.AppendFormat("SELECT * FROM [is_osirix] WHERE [date] = '{0}' AND [odd] = '{1}'", my_x2.unixDate(datum), "MSV");
 
@@ -152,7 +152,7 @@ public partial class tabletview : System.Web.UI.Page
     {
         DateTime tc = DateTime.Now;
         //DateTime datum = new DateTime();
-
+        this.Calendar2.SelectedDate = DateTime.Today;
         if (tc.Hour > 9)
         {
             Calendar1.SelectedDate = DateTime.Today;
@@ -192,7 +192,14 @@ public partial class tabletview : System.Web.UI.Page
 
     protected void Calendar1_SelectionChanged(object sender, EventArgs e)
     {
-        this.loadPostData();
+        this.loadSluzby();
+    }
+
+    protected void Calendar2_SelectionChanged(object sender, EventArgs e)
+    {
+        this.loadKojenciData();
+        this.loadDievcataData();
+        this.loadChlapciData();
     }
 
     protected void saveData(string id, string text)
@@ -331,7 +338,7 @@ public partial class tabletview : System.Web.UI.Page
 
             data.Add("name", name);
             data.Add("poznamka", this.kojenci_note.Text.ToString());
-            DateTime datum = this.Calendar1.SelectedDate;
+            DateTime datum = this.Calendar2.SelectedDate;
             data.Add("date", my_x2.unixDate(datum));
             data.Add("odd", "KOJ");
 
@@ -380,7 +387,7 @@ public partial class tabletview : System.Web.UI.Page
 
             data.Add("name", name);
             data.Add("poznamka", this.dievcata_note.Text.ToString());
-            DateTime datum = this.Calendar1.SelectedDate;
+            DateTime datum = this.Calendar2.SelectedDate;
             data.Add("date", my_x2.unixDate(datum));
             data.Add("odd", "MSV");
 
@@ -429,7 +436,7 @@ public partial class tabletview : System.Web.UI.Page
 
             data.Add("name", name);
             data.Add("poznamka", this.chlapci_note.Text.ToString());
-            DateTime datum = this.Calendar1.SelectedDate;
+            DateTime datum = this.Calendar2.SelectedDate;
             data.Add("date", my_x2.unixDate(datum));
             data.Add("odd", "VD");
 

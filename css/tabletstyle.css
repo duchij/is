@@ -23,19 +23,22 @@ input button
 		height:23px;}
 
 #wrapper {
-    width:1000px;
+    width:768px;
     margin:0 auto;
     }
     
  #left {
  float:left;
- width:45%;
+ width:50%;
+ margin:0;
+ text-align:center;
  /*background-color:Aqua;*/
  
  }
 #right {
 float:left;
-width:55%;
+width:50%;
+margin:0;
 /*background-color:Fuchsia;*/
 
 }    

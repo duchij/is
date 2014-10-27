@@ -2,7 +2,7 @@
 <%@ Register TagPrefix="menu" TagName="left_menu" Src="left_menu.ascx" %>
 <%@ Register TagPrefix="info" TagName="info_bar" Src="news.ascx" %>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeFile="ransed.aspx.cs" Inherits="ransed" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeFile="ransed.aspx.cs" Inherits="ransed"  Culture="sk-SK" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -45,20 +45,23 @@
                         ForeColor="#FFFFCC" />
                      </asp:Calendar>
                  Priezvisko: 
-                <asp:TextBox ID="TextBox1" runat="server"></asp:TextBox>  
-                Poznámka:<asp:TextBox ID="TextBox2" runat="server"></asp:TextBox>
+                <asp:TextBox ID="name_txt" runat="server"></asp:TextBox>  
+                Poznámka:<asp:TextBox ID="note_txt" runat="server"></asp:TextBox>
                 Oddelenie
-                <asp:DropDownList ID="DropDownList1" runat="server">
+                <asp:DropDownList ID="odd_dl" runat="server">
+                        <asp:ListItem Value="MSV">Dievčatá</asp:ListItem>
+                        <asp:ListItem Value="KOJ">Kojenci</asp:ListItem>
+                        <asp:ListItem Value="VD">Chlapci</asp:ListItem>
                 </asp:DropDownList>    
                 <br />
-                <asp:Button ID="pacient_add_btn" runat="server" Text="Pridaj" />
+                <asp:Button ID="pacient_add_btn" runat="server" Text="Pridaj" OnClick="add_patient_click_fnc" />
                 <hr />
                 <h2>Služba</h2><hr />
                 <asp:PlaceHolder ID="sluzba_pl" runat="server"></asp:PlaceHolder>
                 <h2>Kojenci</h2><hr />
                 <asp:PlaceHolder ID="kojenci_pl" runat="server"></asp:PlaceHolder>
                 <h2>Dievčatá</h2><hr />
-                <asp:PlaceHolder ID="dievacta_pl" runat="server"></asp:PlaceHolder>
+                <asp:PlaceHolder ID="dievcata_pl" runat="server"></asp:PlaceHolder>
                 <h2>Chlapci</h2><hr />
                 <asp:PlaceHolder ID="chlapci_pl" runat="server"></asp:PlaceHolder>
                 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Web;
@@ -18,47 +19,65 @@ public partial class ransed : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {   
         this.setMyDate();
-        this.loadSluzby();
+
+        if (IsPostBack == false)
+        {
+            this.loadData();
+        }
+        
     }
+
+    protected void loadData()
+    {
+        this.name_txt.Text = "";
+        this.note_txt.Text = "";
+
+        this.loadSluzby();
+        this.loadKojenci();
+        this.loadDievcata();
+        this.loadChlapci();
+    }
+
 
      protected void setMyDate()
     {
         DateTime tc = DateTime.Now;
         //DateTime datum = new DateTime();
+        this.Calendar1.SelectedDate = DateTime.Today;
 
-        if (tc.Hour > 9)
+       /* if (tc.Hour > 9)
         {
-            Calendar1.SelectedDate = DateTime.Today;
+            this.Calendar1.SelectedDate = DateTime.Today;
             //datum = DateTime.Today;
         }
         else
         {
-            Calendar1.SelectedDate = DateTime.Today.AddDays(-1);
+            this.Calendar1.SelectedDate = DateTime.Today.AddDays(-1);
             // datum = DateTime.Today.AddDays(-1);
-        }
+        }*/
     }
 
     protected void loadSluzby()
     {
-         DateTime datum = this.Calendar1.SelectedDate;
+         DateTime datum = this.Calendar1.SelectedDate.AddDays(-1);
 
         StringBuilder sb = new StringBuilder();
         sb.AppendFormat("SELECT GROUP_CONCAT([osirix] SEPARATOR ' ') AS [osirix] FROM [is_hlasko] WHERE [dat_hlas] = '{0}/{1}/{2}'", datum.Month, datum.Day, datum.Year);
         SortedList result = x2db.getRow(sb.ToString());
-
+        sb.Length = 0;
         string tmp = result["osirix"].ToString().Replace((char)13,' ');
 
         string[] str = tmp.Split(' ');
-
+        sb.AppendLine("<ul>");
+        Label meno_lnk = new Label();
         for (int i = 0; i < str.Length; i++)
         {
-            HyperLink meno_lnk = new HyperLink();
-            meno_lnk.ID = "sluzba_" + i.ToString();
-            meno_lnk.Text = "<li><strong>"+str[i].ToUpper()+" >>></strong></li>";
-            meno_lnk.NavigateUrl = "http://10.10.2.49:3333/studyList?search=" + str[i];
-            meno_lnk.Target = "_blank";
-            this.sluzba_pl.Controls.Add(meno_lnk);
+            meno_lnk.ID = "sluzba";
+            sb.AppendFormat("<li><a href='http://10.10.2.49:3333/studyList?search={0}' target='_blank'>{0}</a></li>", str[i].ToString());
         }
+        sb.AppendLine("</ul>");
+        meno_lnk.Text = sb.ToString();
+        this.sluzba_pl.Controls.Add(meno_lnk);
 
     }
 
@@ -70,10 +89,102 @@ public partial class ransed : System.Web.UI.Page
         sb.AppendFormat("SELECT * FROM [is_osirix] WHERE [date] = '{0}' AND [odd] = '{1}'", my_x2.unixDate(datum), "KOJ");
 
         Dictionary<int, SortedList> result = x2db.getTable(sb.ToString());
+        sb.Length = 0;
+        Label meno_lnk = new Label();
+        meno_lnk.ID = "kojenci";
+
+        sb.AppendFormat("<ul>");
+
+        for (int i = 0; i < result.Count; i++)
+        {
+                sb.AppendFormat("<li><a href='http://10.10.2.49:3333/studyList?search={0}' target='_blank'>{0}</a><br>{1}</li>",result[i]["name"].ToString(),result[i]["poznamka"].ToString());
+           
+        }
+        sb.AppendFormat("</ul>");
+        meno_lnk.Text = sb.ToString();
+        this.kojenci_pl.Controls.Add(meno_lnk);
+    }
+
+    protected void loadDievcata()
+    {
+        DateTime datum = this.Calendar1.SelectedDate;
+
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("SELECT * FROM [is_osirix] WHERE [date] = '{0}' AND [odd] = '{1}'", my_x2.unixDate(datum), "MSV");
+
+        Dictionary<int, SortedList> result = x2db.getTable(sb.ToString());
+        sb.Length = 0;
+        Label meno_lnk = new Label();
+        meno_lnk.ID = "dievacata";
+
+        sb.AppendFormat("<ul>");
+
+        for (int i = 0; i < result.Count; i++)
+        {
+            sb.AppendFormat("<li><a href='http://10.10.2.49:3333/studyList?search={0}' target='_blank'>{0}</a><br>{1}</li>", result[i]["name"].ToString(), result[i]["poznamka"].ToString());
+
+        }
+        sb.AppendFormat("</ul>");
+        meno_lnk.Text = sb.ToString();
+        this.dievcata_pl.Controls.Add(meno_lnk);
+    }
 
 
+    protected void loadChlapci()
+    {
+        DateTime datum = this.Calendar1.SelectedDate;
+
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("SELECT * FROM [is_osirix] WHERE [date] = '{0}' AND [odd] = '{1}'", my_x2.unixDate(datum), "VD");
+
+        Dictionary<int, SortedList> result = x2db.getTable(sb.ToString());
+        sb.Length = 0;
+        Label meno_lnk = new Label();
+        meno_lnk.ID = "chlapci";
+
+        sb.AppendFormat("<ul>");
+
+        for (int i = 0; i < result.Count; i++)
+        {
+            sb.AppendFormat("<li><a href='http://10.10.2.49:3333/studyList?search={0}' target='_blank'>{0}</a><br>{1}</li>", result[i]["name"].ToString(), result[i]["poznamka"].ToString());
+
+        }
+        sb.AppendFormat("</ul>");
+        meno_lnk.Text = sb.ToString();
+        this.chlapci_pl.Controls.Add(meno_lnk);
+    }
+
+    protected void add_patient_click_fnc(object sender, EventArgs e)
+    {
+        SortedList data = new SortedList();
+        
+        data["name"] = this.name_txt.Text.ToString();
+        data["poznamka"] = this.note_txt.Text.ToString();
+        data["odd"] = this.odd_dl.SelectedValue.ToString();
+        data["date"] = my_x2.unixDate(this.Calendar1.SelectedDate);
+
+        SortedList res = x2db.mysql_insert("is_osirix", data);
+
+        bool status = Convert.ToBoolean(res["status"].ToString());
+
+        if (status == false)
+        {
+            this.alert("Chyba: " + res["msg"].ToString());
+        }
+        else
+        {
+            this.loadData();
+        }
 
     }
- 
+
+    protected void alert(string message)
+    {
+        Response.Write("<script>alert('" + message + "');</script>");
+    }
+
+
+
+
 
 }
