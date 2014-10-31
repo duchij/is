@@ -61,7 +61,7 @@
             </div>
             
               <div id="right">
-                  <h1 style="font-size:20px;"> Ranné sedenie</h1><hr />
+                  <h1 style="font-size:20px;"> RDG diagnostika:</h1><hr />
                   <div style="text-align:center;">
                   <asp:Calendar ID="Calendar2" runat="server" BackColor="White" 
                       BorderColor="#3366CC" BorderWidth="1px" CellPadding="1" 
