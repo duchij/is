@@ -1,6 +1,6 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%--<%@ Register TagPrefix="FTB" Namespace="FreeTextBoxControls" Assembly="FreeTextBox" %>--%>
-<%@ Page Language="C#" AutoEventWireup="true" CodeFile="sestrhlas.aspx.cs" Inherits="sestrhlas" ValidateRequest="False" Culture="sk-Sk" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeFile="sestrhlas.aspx.cs" Inherits="sestrhlas" ValidateRequest="False" Culture="sk-Sk"  %>
 <%@ Register TagPrefix="duch" TagName="my_header" src="header.ascx" %>
 <%@ Register TagPrefix="menu" TagName="left_menu" Src="left_menu.ascx" %>
 <%@ Register TagPrefix="info" TagName="info_bar" Src="news.ascx" %>
@@ -64,6 +64,7 @@
 <body>
     <form id="form1" runat="server">
     <div id="wrapper">   
+    <asp:Label ID="msg_lbl" runat="server" Text="" ForeColor="Red"></asp:Label>
     <div id="header">
         <h1>Informačný systém Kliniky detskej chirurgie LF UK a DFNsP</h1> 
         <duch:my_header runat="server"></duch:my_header>
@@ -125,15 +126,14 @@ runat="Server"></FTB:FreeTextBox>--%>
    
                  <asp:Label ID="hlasko_lbl" runat="server" Visible="False" Font-Size="Small" >Hlasenie:</asp:Label>
                 <asp:Label ID="view_hlasko" runat="server" Visible="False" Font-Size="Small"></asp:Label>
-                <asp:TextBox ID="dodatok" runat="server" Width="90%" Rows="10" Height="100" TextMode="MultiLine" Visible="False">dodatok</asp:TextBox><br />
+               <%-- <asp:TextBox ID="dodatok" runat="server" Width="90%" Rows="10" Height="100" TextMode="MultiLine" Visible="False">dodatok</asp:TextBox><br />--%>
                     <asp:Button ID="send" runat="server" Text="Ulož zmenu"  OnClick="save_fnc" />
                     
                     <asp:Button ID="copyYesterday_btn" runat="server" Text="<%$Resources:Resource,odd_vloz_clip %>" onclick="copyYesterday_btn_Click" />
                 <asp:Button ID="print_btn" runat="server"  Text="Vytlač" onClick = "print_fnc" />
                 <asp:Button ID="def_lock_btn" runat="server" Text="Uzavrieť a vytlačiť hlásko" 
                      BackColor="#990000" ForeColor="Yellow" OnClick="def_loc_fnc" />
-                <asp:Button ID="addInfo_btn" runat="server" Text="Ulož dodatok" Enabled="False" onclick="addInfo_btn_Click"
-                    />
+                <%--<asp:Button ID="addInfo_btn" runat="server" Text="Ulož dodatok" Enabled="False" onclick="addInfo_btn_Click"/>--%>
             </div>
          </div>
             <div id="menu">
@@ -152,7 +152,7 @@ runat="Server"></FTB:FreeTextBox>--%>
     </div>
  
     
-    <asp:Label ID="msg_lbl" runat="server" Text="Label"></asp:Label>
+    
     </form>
 </body>
 </html>

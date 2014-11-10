@@ -18,10 +18,11 @@ public partial class ransed : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {   
-        this.setMyDate();
+        
 
         if (IsPostBack == false)
         {
+            this.setMyDate();
             this.loadData();
         }
         
@@ -57,6 +58,11 @@ public partial class ransed : System.Web.UI.Page
         }*/
     }
 
+     protected void date_changed_fnc(object sender, EventArgs e)
+     {
+         this.loadData();
+     }
+
     protected void loadSluzby()
     {
          DateTime datum = this.Calendar1.SelectedDate.AddDays(-1);
@@ -73,7 +79,10 @@ public partial class ransed : System.Web.UI.Page
         for (int i = 0; i < str.Length; i++)
         {
             meno_lnk.ID = "sluzba";
-            sb.AppendFormat("<li><a href='http://10.10.2.49:3333/studyList?search={0}' target='_blank'>{0}</a></li>", str[i].ToString());
+            if (str[i].ToString().Trim().Length > 0 )
+            {
+                sb.AppendFormat("<li><a href='http://10.10.2.49:3333/studyList?search={0}' target='_blank'>{0}</a></li>", str[i].ToString());
+            }
         }
         sb.AppendLine("</ul>");
         meno_lnk.Text = sb.ToString();

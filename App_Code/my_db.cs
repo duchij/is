@@ -20,6 +20,7 @@ using System.Text;
 public class my_db
 {
     public  OdbcConnection my_con = new OdbcConnection();
+    x2_var x2 = new x2_var();
 
 	public my_db()
 	{
@@ -424,8 +425,6 @@ public class my_db
         string rok = dat_hlas.Year.ToString();
         string unix_date = rok + "-" + mesiac + "-" + den;
 
-        string query = "SELECT * FROM `is_hlasko_sestry` WHERE `dat_hlas` = '" + unix_date + "' AND `oddelenie` ='" + oddelenie + "'" + " AND `lokalita` = '" + lokalita + "' AND `cas`='" + cas + "'";
-
         string query1 = "SELECT * FROM `is_hlasko_sestry` WHERE (`dat_hlas` = '{0}' AND `oddelenie` ='{1}') AND (`lokalita` = '{2}' AND `cas`='{3}')";
         StringBuilder sb = new StringBuilder();
 
@@ -442,7 +441,6 @@ public class my_db
 
         if (reader.HasRows)
         {
-            result.Add("update", "1");
             while (reader.Read())
             {
                 for (int i = 0; i < reader.FieldCount; i++)
@@ -450,39 +448,14 @@ public class my_db
                     result.Add(reader.GetName(i).ToString(), reader.GetValue(i).ToString());
                 }
             }
-            my_con.Close();
+            
         }
         else
         {
-            my_con.Close();
-            SortedList data = new SortedList();
-            data.Add("oddelenie", oddelenie);
-            data.Add("lokalita", lokalita);
-            data.Add("dat_hlas", unix_date);
-            data.Add("hlasko", lbl_hlaskoSestr);
-           
-            data.Add("creat_user", user_id);
-            data.Add("last_user", user_id);
-            data.Add("uzavri", "0");
-            data.Add("cas", cas);
-
-
-            SortedList res = this.insert_rows("is_hlasko_sestry", data);
-            my_con.Close();
-            if (res["status"] == "ok")
-            {
-                result.Add("new_ins", "true");
-                result.Add("hlasko", lbl_hlaskoSestr);
-                result.Add("akt_hlasenie", res["last_id"]);
-                result.Add("last_user", user_id);
-                result.Add("uzavri", "0");
-                result.Add("cas", cas);
-            }
-            else
-            {
-                result.Add("error", res["message"]);
-            }
+            result.Add("id", 0);
+            result.Add("hlasko", "...");
         }
+        my_con.Close();
         return result;
     }
 
@@ -520,9 +493,11 @@ public class my_db
         string den = datum.Day.ToString();
         string rok = datum.Year.ToString();
 
+        string myDatum = x2.unixDate(datum);
+
         StringBuilder sb = new StringBuilder();
 
-        sb.AppendFormat("SELECT * FROM `is_hlasko` WHERE `dat_hlas` = '{0}/{1}/{2}'", mesiac, den, rok);
+        sb.AppendFormat("SELECT * FROM `is_hlasko` WHERE `dat_hlas` = '{0}'", myDatum);
 
         my_con.Open();
 
@@ -534,36 +509,35 @@ public class my_db
             {
                 result.Add(reader["type"].ToString()+"|" + reader["id"].ToString(), reader["osirix"].ToString());
             }
-            my_con.Close();
+            
         }
-        else
-        {
-            my_con.Close();
-        }
+        
+        my_con.Close();
         return result;
     }
 
-    public SortedList getHlasko(DateTime dat_hlas, string hlas_type, string hlas_text, string user_id)
+    public SortedList getHlasko(DateTime dat_hlas, string hlas_type,  string user_id)
     {
         SortedList result = new SortedList();
-        string mesiac = dat_hlas.Month.ToString();
+
+        /*string mesiac = dat_hlas.Month.ToString();
         string den = dat_hlas.Day.ToString();
         string rok = dat_hlas.Year.ToString();
-        string unix_date = mesiac + "/" + den + "/" + rok;
+        string unix_date = mesiac + "/" + den + "/" + rok;*/
 
-        string query = "SELECT * FROM is_hlasko WHERE dat_hlas = '" + unix_date+"' AND type ='"+hlas_type+"'";
+        string myDate = x2.unixDate(dat_hlas);
+
+        StringBuilder query = new StringBuilder();
+        query.AppendFormat("SELECT * FROM `is_hlasko` WHERE `dat_hlas` = '{0}' AND `type` = '{1}'", myDate, hlas_type); 
+        //string query = "SELECT * FROM is_hlasko WHERE dat_hlas = '" + unix_date+"' AND type ='"+hlas_type+"'";
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(query, my_con);
-
-
+        OdbcCommand my_com = new OdbcCommand(query.ToString(), my_con);
         OdbcDataReader reader = my_com.ExecuteReader();
-
-
         string lbl_hlasko = Resources.Resource.odd_hlasko_html.ToString();
         if (reader.HasRows)
         {
-            result.Add("update", "1");
+            //result.Add("update", "1");
             while (reader.Read())
             {
                 for (int i = 0; i < reader.FieldCount; i++)
@@ -571,37 +545,12 @@ public class my_db
                     result.Add(reader.GetName(i).ToString(), reader.GetValue(i).ToString());
                 }
             }
-            my_con.Close();
         }
         else
         {
-            my_con.Close();
-            SortedList data = new SortedList();
-            data.Add("type", hlas_type);
-            data.Add("dat_hlas", unix_date);
-            data.Add("text", lbl_hlasko);
-            data.Add("date", dat_hlas.ToString());
-            data.Add("creat_user", user_id);
-            data.Add("last_user", user_id);
-            data.Add("uzavri", "0");
-            data.Add("osirix", "");
-
-            SortedList res = this.insert_rows("is_hlasko", data);
-            my_con.Close();
-            if (res["status"] == "ok")
-            {
-                result.Add("new_ins", "true");
-                result.Add("text", lbl_hlasko);
-                result.Add("akt_hlasenie", res["last_id"]);
-                result.Add("last_user", user_id);
-                result.Add("uzavri", "0");
-                result.Add("osirix", "");
-            }
-            else
-            {
-                result.Add("error", res["message"]);
-            }
+            result.Add("last_id", 0); 
         }
+        my_con.Close();
         return result;
     }
 

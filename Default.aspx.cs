@@ -13,11 +13,23 @@ using System.Security.Cryptography;
 public partial class _Default : System.Web.UI.Page 
 {
     my_db db_obj = new my_db();
+    x2_var x2 = new x2_var();
 
     protected void Page_Load(object sender, EventArgs e)
     {
         //System.Web.HttpBrowserCapabilities browser = Request.Browser;
+        /*Boolean status = x2.offline();
+
+        if (status == false)
+        {
+            Session.Clear();
+            Response.Redirect("offline.html");
+        }*/
+
         bool isIdevice = false;
+
+       
+
         if (Request.UserAgent.ToLower().Contains("ipad") || Request.UserAgent.ToLower().Contains("iphone"))
         {
             isIdevice = true;
@@ -70,6 +82,7 @@ public partial class _Default : System.Web.UI.Page
 
                 if (Login1.UserName == Login1.Password && g_pass.Length == 0 && data["name"].ToString() == Login1.Password  )
                 {
+                    
                     Session.Add("tuisegumdrum", "activado");
                     Session.Add("user_id", data["id"].ToString());
                     Session.Add("rights",data["group"].ToString());
@@ -154,6 +167,7 @@ public partial class _Default : System.Web.UI.Page
                                 else
                                 {
                                     Response.Redirect(@"hlasko.aspx");
+                                    //Response.Redirect(@"Default2.aspx");
                                 }
                             }
                             else

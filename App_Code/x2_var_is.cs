@@ -22,12 +22,22 @@ using iTextSharp.text.html.simpleparser;
 /// </summary>
 public class x2_var
 {
+    mysql_db x2MySql = new mysql_db();
+
 	public x2_var()
 	{
 		//
 		// TODO: Add constructor logic here
 		//
 	}
+
+    public Boolean offline()
+    {
+        SortedList res = x2MySql.getRow("SELECT [name],[data] FROM [is_settings] WHERE [name]='webstatus'");
+        Boolean status = Convert.ToBoolean(res["data"]);
+        return status;
+    }
+
 
     public static string UTFtoASCII(string value)
     {
@@ -54,6 +64,8 @@ public class x2_var
 
         return new string(nonunicodeChars);
     }
+
+    
 
     public int pocetVolnychDni(DateTime datum1, DateTime datum2, string[] volneDni)
     {
@@ -383,6 +395,7 @@ public class x2_var
 
         }
 
+        
 
         
 

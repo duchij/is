@@ -11,6 +11,7 @@ public partial class hlasko : System.Web.UI.Page
 {
     my_db x_db = new my_db();
     x2_var my_x2 = new x2_var();
+    mysql_db x2MySQL = new mysql_db();
 
     // protected System.Web.UI.HtmlControls.HtmlGenericControl hlavicka;
     protected void Page_Init(object sender, EventArgs e)
@@ -68,7 +69,8 @@ public partial class hlasko : System.Web.UI.Page
         DateTime now = DateTime.Now;
 
         int hour = now.Hour;
-        msg_lbl.Text = "hod:" + hour.ToString();
+        //msg_lbl.Text = "hod:" + hour.ToString();
+
         if (hour >= 9)
         {
             Calendar1.SelectedDate = DateTime.Today;
@@ -98,63 +100,76 @@ public partial class hlasko : System.Web.UI.Page
     {
         //msg_lbl.Text = Calendar1.SelectedDate.ToString();
 
-        SortedList data = x_db.getHlasko(Calendar1.SelectedDate, hlas_type.SelectedValue.ToString(), hlasenie.Text.ToString(), Session["user_id"].ToString());
-        this.osirix_txt.Text = data["osirix"].ToString();
-        if (data["uzavri"].ToString() == "1")
+        SortedList data = x_db.getHlasko(Calendar1.SelectedDate, hlas_type.SelectedValue.ToString(), Session["user_id"].ToString());
+
+        if (data["last_id"] == null)
         {
-            hlasenie.Visible = false;
-            dodatok.Visible = true;
-            def_lock_btn.Enabled = false;
-            addInfo_btn.Enabled = true;
-            view_hlasko.Visible = true;
-            hlasko_lbl.Visible = true;
-            view_hlasko.Text = data["text"].ToString();
-           // osirix_txt = data["osirix"].ToString();
-            send.Enabled = false;
+            this.osirix_txt.Text = data["osirix"].ToString();
 
+            if (data["uzavri"].ToString() == "1")
+            {
+                this.hlasenie.Visible = false;
+                this.dodatok.Visible = true;
+                this.def_lock_btn.Enabled = false;
+                this.addInfo_btn.Enabled = true;
+                this.view_hlasko.Visible = true;
+                this.hlasko_lbl.Visible = true;
+                this.view_hlasko.Text = data["text"].ToString();
+                // osirix_txt = data["osirix"].ToString();
+                this.send.Enabled = false;
+            }
+            else
+            {
+                this.hlasenie.Visible = true;
+                this.dodatok.Visible = false;
+                this.def_lock_btn.Enabled = true;
+                this.view_hlasko.Visible = false;
+                this.addInfo_btn.Enabled = false;
+                this.send.Enabled = true;
+                this.hlasko_lbl.Visible = false;
+                this.view_hlasko.Text = data["text"].ToString();
+            }
+            //SortedList akt_user_info = x_db.getUserInfoByID("is_users", Session["user_id"].ToString();
+            this.user.Text = Session["fullname"].ToString();
 
-        }
-        else
-        {
-
-            hlasenie.Visible = true;
-            dodatok.Visible = false;
-            def_lock_btn.Enabled = true;
-            view_hlasko.Visible = false;
-            addInfo_btn.Enabled = false;
-            send.Enabled = true;
-            hlasko_lbl.Visible = false;
-            view_hlasko.Text = data["text"].ToString();
-        }
-        SortedList akt_user_info = x_db.getUserInfoByID("is_users", Session["user_id"].ToString());
-        user.Text = akt_user_info["full_name"].ToString();
-
-        SortedList my_last_user = new SortedList();
-
-        //SortedList lekari = this.getSluzbyByDen(Convert.ToInt32(Calendar1.SelectedDate.Day));
-
-        if (data["new_ins"] == "true")
-        {
-
-            hlasenie.Text = data["text"].ToString();
-            my_last_user = x_db.getUserInfoByID("is_users", data["last_user"].ToString());
-            last_user.Text = my_last_user["full_name"].ToString();
-            Session.Add("akt_hlasenie", data["akt_hlasenie"].ToString());
-        }
-
-        if (data["update"] != null)
-        {
+            SortedList my_last_user = new SortedList();
             hlasenie.Text = data["text"].ToString();
             my_last_user = x_db.getUserInfoByID("is_users", data["last_user"].ToString());
             last_user.Text = my_last_user["full_name"].ToString();
             Session.Add("akt_hlasenie", data["id"].ToString());
+
+            Session.Add("akt_hlasenie_creat_user", data["creat_user"].ToString());
+            Session.Add("akt_hlasenie_last_user", data["last_user"].ToString());
         }
-
-
-        if (data.ContainsKey("error"))
+        else
         {
-            msg_lbl.Text = data["error"].ToString();
+            SortedList newData = new SortedList();
+            newData.Add("type",this.hlas_type.SelectedValue.ToString());
+            newData.Add("dat_hlas",my_x2.unixDate(this.Calendar1.SelectedDate));
+            newData.Add("text", Resources.Resource.odd_hlasko_html.ToString());
+            newData.Add("date", my_x2.unixDate(this.Calendar1.SelectedDate));
+            newData.Add("creat_user",Session["user_id"].ToString());
+            newData.Add("last_user", Session["user_id"].ToString());
+
+            SortedList res = x2MySQL.mysql_insert("is_hlasko", newData);
+
+            Boolean status = Convert.ToBoolean(res["status"]);
+
+            if (status == true)
+            {
+                Session.Add("akt_hlasenie", res["last_id"].ToString());
+                this.hlasenie.Text = newData["text"].ToString();
+                this.user.Text = Session["fullname"].ToString();
+                this.last_user.Text = Session["fullname"].ToString();
+            }
+            else
+            {
+                this.msg_lbl.Text = res["msg"].ToString();
+            }
+
         }
+
+
         this.generateOsirix();
 
     }
@@ -165,35 +180,35 @@ public partial class hlasko : System.Web.UI.Page
     protected void saveData(bool uzavri,bool callBack)
     {
         SortedList data = new SortedList();
-        SortedList my_last_user = new SortedList();
+        data.Add("dat_hlas", this.Calendar1.SelectedDate);
         data.Add("text", hlasenie.Text.ToString());
         data.Add("last_user", Session["user_id"].ToString());
+        data.Add("creat_user", Session["akt_hlasenie_creat_user"].ToString());
+        data.Add("type", this.hlas_type.SelectedValue.ToString());
 
         if (uzavri == true)
         {
             data.Add("uzavri", "1");
         }
 
-        string res = x_db.update_row("is_hlasko", data, Session["akt_hlasenie"].ToString());
+        //string res = x_db.update_row("is_hlasko", data, Session["akt_hlasenie"].ToString());
+
+        SortedList res = x2MySQL.mysql_insert("is_hlasko", data);
+
+        SortedList my_last_user = new SortedList();
         my_last_user = x_db.getUserInfoByID("is_users", Session["user_id"].ToString());
 
-        if (res.IndexOf("ok") != -1)
+        Boolean status = Convert.ToBoolean(res["status"]);
+
+        if (status == true)
         {
             //msg_lbl.Text = res;
             last_user.Text = my_last_user["full_name"].ToString();
-
-            if (callBack == true)
-                Response.Write("OK");
-
             this.generateOsirix();
-            
-
         }
         else
         {
-            msg_lbl.Text = res + Session["akt_hlasenie"].ToString();
-            if (callBack == true)
-                Response.Write("Error: "+res + Session["akt_hlasenie"].ToString());
+            msg_lbl.Text = res["msg"].ToString();
         }
     }
 

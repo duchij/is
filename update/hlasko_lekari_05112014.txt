@@ -1,0 +1,52 @@
+﻿ALTER TABLE `is_hlasko`
+COMMENT='' ENGINE='InnoDB';
+
+ALTER TABLE `is_hlasko`
+CHANGE `type` `type` enum('A','B','OP') COLLATE 'utf8_slovak_ci' NOT NULL AFTER `id`,
+CHANGE `creat_user` `creat_user` bigint NOT NULL AFTER `date`,
+CHANGE `last_user` `last_user` bigint NOT NULL AFTER `creat_user`,
+CHANGE `uzavri` `uzavri` tinyint NULL DEFAULT '0' AFTER `last_user`,
+COMMENT='';
+
+/////////////
+ALTER TABLE `is_hlasko`
+ADD UNIQUE `type_dat_hlas` (`type`, `dat_hlas`(40));
+
+update is_hlasko set uzavri=0 where uzavri  is null;
+
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `REPAIR_DATE_IN_HLASKO`()
+begin
+
+declare datum text;
+
+declare done int default 0;
+
+declare tID int;
+
+DECLARE cur1 CURSOR FOR SELECT id, dat_hlas FROM is_hlasko_pok;
+
+DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+open cur1;
+
+while done = 0 do
+fetch cur1 into tID, datum;
+set @dlzka = length(datum);
+set @pos1 = locate("/",datum,1);
+set @pos2 = locate("/",datum,@pos1+1);
+set @mesiac = mid(datum,1,@pos1-1);
+set @den = mid(datum,@pos1+1,(@pos2-@pos1)-1);
+set @rok = mid(datum,@pos2+1,4);
+
+if length(@den) > 0 and length(@mesiac) > 0 THEN 
+
+	set @res = concat_ws('-',@rok,@mesiac,@den);
+	set datum = @res;
+	update is_hlasko_pok set dat_hlas = datum where id=tID;
+	select tID,datum;
+end if;
+end while;
+close cur1;
+end
+
+///////////

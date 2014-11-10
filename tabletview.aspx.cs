@@ -473,7 +473,7 @@ public partial class tabletview : System.Web.UI.Page
 
     protected void search_fnc(object sender, EventArgs e)
     {
-        string searchName = this.osirix_search_txt.Text.ToString().Trim();
+        string searchName = x2_var.UTFtoASCII(this.osirix_search_txt.Text.ToString().Trim());
 
         if (searchName.Length > 0)
         {

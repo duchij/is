@@ -1,0 +1,44 @@
+﻿<%@ Register TagPrefix="duch" TagName="my_header" src="header.ascx" %>
+<%@ Register TagPrefix="menu" TagName="left_menu" Src="left_menu.ascx" %>
+<%@ Register TagPrefix="info" TagName="info_bar" Src="news.ascx" %>
+<%@ Master Language="C#" AutoEventWireup="true" CodeFile="MasterPage.master.cs" Inherits="MasterPage" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>ISESKO</title>
+    <asp:ContentPlaceHolder id="head" runat="server">
+    </asp:ContentPlaceHolder>
+    <link href="css/style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <form id="form1" runat="server">
+  /
+     <div id="wrapper">
+        <div id="header">
+            <h1>Informačný systém Kliniky detskej chirurgie LF UK a DFNsP</h1> 
+                <duch:my_header ID="my_header" runat="server"></duch:my_header>
+        </div>
+        
+        <div id="content">
+        
+             <div id="menu2">
+                <info:info_bar ID="info_bar" runat="server" />
+             </div>
+             <div id="cont_text">
+                <asp:ContentPlaceHolder id="ContentPlaceHolder1" runat="server">
+        
+                </asp:ContentPlaceHolder>
+            </div>
+            
+            <div id="menu"> lolo
+                 <menu:left_menu ID="left_menu" runat="server" />
+            </div>
+        </div>
+            <div id="footer">Design by Boris Duchaj</div>
+    </div>
+    </form>
+</body>
+</html>

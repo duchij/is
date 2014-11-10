@@ -100,7 +100,7 @@ function myAlert()
 <%--<asp:Label ID="msg_lbl1" runat="server" Text="Label"></asp:Label>--%>
     
     <form id="form1" runat="server">
-    
+    <asp:Label ID="msg_lbl" runat="server" Text="" ForeColor="Red"></asp:Label>
     <div id="wrapper">   
     <div id="header">
         <h1>Informačný systém Kliniky detskej chirurgie LF UK a DFNsP</h1> 
@@ -174,7 +174,7 @@ function myAlert()
                     <hr />
                  <asp:Label ID="hlasko_lbl" runat="server" Visible="False" Font-Size="Small" >Hlasenie:</asp:Label><br />
                 <asp:Label ID="view_hlasko" runat="server" Visible="False" Font-Size="Small"></asp:Label>
-                <asp:TextBox ID="dodatok" runat="server" Width="90%" Rows="10" Height="100" TextMode="MultiLine" Visible="False">dodatok</asp:TextBox><br />
+                <asp:TextBox ID="dodatok"  CssClass="dtextbox" runat="server" Width="90%" Rows="10" Height="100" TextMode="MultiLine" Visible="False">dodatok</asp:TextBox><br />
                     <asp:Button ID="send" runat="server" Text="Ulož zmenu" onclick="send_Click" />
                 
                
@@ -210,7 +210,7 @@ function myAlert()
     </div>
  
     
-    <asp:Label ID="msg_lbl" runat="server" Text="Label"></asp:Label>
+    
  
     
     </form>

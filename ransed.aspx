@@ -34,7 +34,7 @@
                 <asp:Calendar ID="Calendar1" runat="server" BackColor="#FFFFCC" 
                          BorderColor="#FFCC66" BorderWidth="1px" DayNameFormat="Shortest" 
                          Font-Names="Verdana" Font-Size="8pt" ForeColor="#663399" Height="200px" 
-                         ShowGridLines="True" Width="220px">
+                         ShowGridLines="True" Width="220px" OnSelectionChanged="date_changed_fnc">
                     <SelectedDayStyle BackColor="#CCCCFF" Font-Bold="True" />
                     <SelectorStyle BackColor="#FFCC66" />
                     <TodayDayStyle BackColor="#FFCC66" ForeColor="White" />
@@ -53,7 +53,7 @@
                         <asp:ListItem Value="KOJ">Kojenci</asp:ListItem>
                         <asp:ListItem Value="VD">Chlapci</asp:ListItem>
                 </asp:DropDownList>    
-                <br />
+                
                 <asp:Button ID="pacient_add_btn" runat="server" Text="Pridaj" OnClick="add_patient_click_fnc" />
                 <hr />
                 <h2>Služba</h2><hr />

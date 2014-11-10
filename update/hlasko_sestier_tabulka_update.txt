@@ -1,0 +1,43 @@
+﻿zmenit na innodb
+
+nasledne
+
+delete from is_hlasko_sestry
+where oddelenie !="msv"
+and oddelenie !="vd"
+and oddelenie !="koj"
+
+potom
+
+ALTER TABLE `is_hlasko_sestry`
+CHANGE `oddelenie` `oddelenie` enum('msv','koj','vd') COLLATE 'utf8_czech_ci' NOT NULL AFTER `dat_hlas`,
+CHANGE `lokalita` `lokalita` enum('pred','zad') COLLATE 'utf8_slovak_ci' NOT NULL AFTER `oddelenie`,
+COMMENT='';
+
+ALTER TABLE `is_hlasko_sestry`
+CHANGE `cas` `cas` enum('d','n') COLLATE 'utf8_slovak_ci' NOT NULL DEFAULT 'd' AFTER `lokalita`,
+COMMENT='';
+
+
+ALTER TABLE `is_hlasko_sestry`
+CHANGE `uzavri` `uzavri` tinyint NOT NULL DEFAULT '0' AFTER `last_user`,
+COMMENT='';
+
+delete from is_hlasko_sestry where length(hlasko) < 100
+
+ALTER TABLE `is_hlasko_sestry`
+ADD UNIQUE `dat_hlas_oddelenie_lokalita_cas` (`dat_hlas`, `oddelenie`, `lokalita`, `cas`);
+
+aLTER TABLE `is_hlasko_sestry`
+CHANGE `id` `id` bigint NOT NULL AUTO_INCREMENT FIRST,
+COMMENT='';
+
+ALTER TABLE `is_hlasko_sestry`
+CHANGE `hlasko` `hlasko` longtext COLLATE 'utf8_slovak_ci' NULL AFTER `cas`,
+COMMENT='';
+
+ALTER TABLE `is_hlasko_sestry`
+CHANGE `creat_user` `creat_user` bigint NOT NULL AFTER `hlasko`,
+CHANGE `last_user` `last_user` bigint NOT NULL AFTER `creat_user`,
+COMMENT='';
+
