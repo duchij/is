@@ -41,3 +41,19 @@ CHANGE `creat_user` `creat_user` bigint NOT NULL AFTER `hlasko`,
 CHANGE `last_user` `last_user` bigint NOT NULL AFTER `creat_user`,
 COMMENT='';
 
+
+CREATE DEFINER=`root`@`localhost` TRIGGER `is_hlasko_sestry_bu` BEFORE UPDATE ON `is_hlasko_sestry` FOR EACH ROW
+begin
+set @oldId = OLD.last_user;
+set @oldCreatId = OLD.creat_user;
+
+if NEW.last_user = 0 THEN
+ set NEW.last_user = @oldId;
+end if;
+
+if NEW.creat_user = 0 THEN
+set NEW.creat_user = @oldCreatId;
+end if;
+
+end
+

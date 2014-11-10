@@ -190,12 +190,12 @@ public partial class sestrhlas : System.Web.UI.Page
     {
         SortedList data = new SortedList();
         data.Add("hlasko", hlasenie.Text.ToString());
-        data.Add("last_user", Session["user_id"].ToString());
+        data.Add("last_user",Session["user_id"].ToString());
         data.Add("dat_hlas", x2.unixDate(this.Calendar1.SelectedDate));
         data.Add("oddelenie", this.oddType_cb.SelectedValue.ToString());
         data.Add("lokalita", this.predZad_cb.SelectedValue.ToString());
         data.Add("cas", this.time_cb.SelectedValue.ToString());
-        data.Add("creat_user", Session["hlasko_creat_user"].ToString());
+        data.Add("creat_user", 0);
 
         if (uzavri == true)
         {

@@ -93,7 +93,14 @@ public class mysql_db
         {
             
             columns[i] = "["+row.Key.ToString()+"]";
-            values[i] = "'" + row.Value.ToString() + "'";
+            if (row.Value == null)
+            {
+                values[i] = "NULL";
+            }
+            else
+            {
+                values[i] = "'" + row.Value.ToString() + "'";
+            }
             col_val[i] = "[" + row.Key + "] =  values([" + row.Key + "])";
             i++;
         }
