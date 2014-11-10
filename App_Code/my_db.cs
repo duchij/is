@@ -548,7 +548,7 @@ public class my_db
         }
         else
         {
-            result.Add("last_id", 0); 
+            result.Add("id", 0); 
         }
         my_con.Close();
         return result;

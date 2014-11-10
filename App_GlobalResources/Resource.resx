@@ -235,7 +235,7 @@
     <value>Pohotovosť</value>
   </data>
   <data name="slu_primar" xml:space="preserve">
-    <value>Vypracoval:&lt;br /&gt;MUDr. Ľubomír Sýkora,&lt;br /&gt;primár KDCH</value>
+    <value>Vypracoval:&lt;br /&gt;MUDr. Ľubomír Sýkora, PhD.&lt;br /&gt;primár KDCH</value>
   </data>
   <data name="slu_title" xml:space="preserve">
     <value>ÚPS KDCH, KPU  a DOrK</value>
@@ -308,5 +308,11 @@
   </data>
   <data name="ranne_sed" xml:space="preserve">
     <value>RDG Diagnostika</value>
+  </data>
+  <data name="back" xml:space="preserve">
+    <value>Naspäť</value>
+  </data>
+  <data name="print" xml:space="preserve">
+    <value>Tlačiť</value>
   </data>
 </root>

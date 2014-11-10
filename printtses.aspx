@@ -44,8 +44,8 @@ function varitext(text)
     Pečiatka a podpis<br /><br />!-->
      <div class="nonprint">
     <asp:Label ID="msg_lbl" runat="server" Text="Label"></asp:Label>
-   <a href="" onclick="window.print();" style="font-size:12px;" />Tlacit </a> &nbsp
-    <asp:HyperLink ID="HyperLink1" runat="server" NavigateUrl="sestrhlas.aspx" Font-Size="12px">Naspäť</asp:HyperLink></div> 
+   <a href="" onclick="window.print();" style="font-size:12px;" /><asp:Label ID="print_lbl" runat="server" Text="<%$ Resources:Resource, print %>" Font-Bold="true" Font-Size="X-Large"></asp:Label></a> &nbsp
+    <asp:HyperLink ID="HyperLink1" runat="server" NavigateUrl="sestrhlas.aspx" Font-Bold="true" Font-Size="X-Large" Text="<%$ Resources:Resource, back %>"></asp:HyperLink></div> 
     </form>
     
 </body>

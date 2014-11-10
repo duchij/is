@@ -57,3 +57,8 @@ end if;
 
 end
 
+ALTER TABLE `is_hlasko_sestry`
+CHANGE `creat_user` `creat_user` bigint(20) NOT NULL COMMENT 'ak je 0 tak povodna hodnota' AFTER `hlasko`,
+CHANGE `last_user` `last_user` bigint(20) NOT NULL COMMENT 'ak je 0 tak povodna hodnota' AFTER `creat_user`,
+COMMENT='';
+

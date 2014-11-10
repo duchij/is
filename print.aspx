@@ -47,10 +47,10 @@ function varitext(text)
    
     </table>
      <div class="nonprint">
-    <asp:Label ID="msg_lbl" runat="server" Text="Label"></asp:Label>
-   <a href="" onclick="window.print();" />Tlacit </a> &nbsp
+    <asp:Label ID="msg_lbl" runat="server" Text=""></asp:Label>
+   <a href="" onclick="window.print();" style="font-weight:bolder;font-size:x-large;" /><asp:Label ID="print_lbl" runat="server" Text="<%$ Resources:Resource, print %>"></asp:Label> </a> &nbsp
     <asp:HyperLink ID="HyperLink1" runat="server" 
-        NavigateUrl="hlasko.aspx">Naspäť</asp:HyperLink></div> 
+        NavigateUrl="hlasko.aspx" Font-Bold="true" Font-Size="X-Large" Text="<%$ Resources:Resource, back %>"></asp:HyperLink></div> 
     </form>
     
 </body>

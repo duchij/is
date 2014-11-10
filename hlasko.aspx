@@ -124,7 +124,7 @@ function myAlert()
                 <tr>
                 <td valign="top">
                     <asp:DropDownList ID="hlas_type" runat="server" Height="21px" Width="187px" 
-                        AutoPostBack="True" onselectedindexchanged="Calendar1_SelectionChanged" 
+                        AutoPostBack="True" OnSelectedIndexChanged="Calendar1_SelectionChanged" 
                         ontextchanged="hlas_type_SelectedIndexChanged">
                         <asp:ListItem Value="A">Oddelenie A</asp:ListItem>
                         <asp:ListItem Value="B">Oddelenie B</asp:ListItem>
@@ -133,7 +133,7 @@ function myAlert()
                     <td valign="top"><asp:Calendar ID="Calendar1" runat="server" BackColor="#FFFFCC" 
                             BorderColor="#FFCC66" DayNameFormat="Shortest" 
                             Font-Names="Verdana" Font-Size="8pt" ForeColor="#663399" Height="200px" 
-                            onselectionchanged="Calendar1_SelectionChanged" Width="220px" 
+                            OnSelectionChanged="Calendar1_SelectionChanged" Width="220px" 
                             BorderWidth="1px" ShowGridLines="True">
                         <SelectedDayStyle BackColor="#CCCCFF" Font-Bold="True" />
                         <SelectorStyle BackColor="#FFCC66" />

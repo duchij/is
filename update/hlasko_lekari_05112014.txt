@@ -50,3 +50,13 @@ close cur1;
 end
 
 ///////////
+
+ALTER TABLE `is_hlasko`
+CHANGE `creat_user` `creat_user` bigint(20) NOT NULL COMMENT 'ak 0 tak povodna hodnota vid trigger' AFTER `date`,
+CHANGE `last_user` `last_user` bigint(20) NOT NULL COMMENT 'ak 0 tak povodna hodnota vid trigger' AFTER `creat_user`,
+COMMENT='';
+
+ALTER TABLE `is_hlasko`
+DROP `date`,
+COMMENT='';
+
