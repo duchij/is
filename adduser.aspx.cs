@@ -14,6 +14,7 @@ public partial class adduser : System.Web.UI.Page
 {
     user x_db = new user();
     x2_var my_x2 = new x2_var();
+    mysql_db x2MySql = new mysql_db();
     
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -34,7 +35,7 @@ public partial class adduser : System.Web.UI.Page
         SortedList akt_user_info = x_db.getUserInfoByID("is_users", Session["user_id"].ToString());
 
 
-        if (rights.IndexOf("users") != -1 || rights.IndexOf("sestra") !=-1  || Session["login"].ToString() == "vcingel" || rights.IndexOf("poweruser") != -1 )
+        if (rights.IndexOf("users") != -1 || rights.IndexOf("sestra") !=-1  || rights.IndexOf("poweruser") != -1 )
         {
             this.adminsectionPlace.Visible = false;
             login_txt.ReadOnly = true;
@@ -141,6 +142,8 @@ public partial class adduser : System.Web.UI.Page
             data.Add("pracdoba", this.pracdoba_txt.Text.ToString());
             data.Add("tyzdoba", this.tyzdoba_txt.Text.ToString());
             data.Add("osobcisl", this.osobcisl_txt.Text.ToString());
+            data.Add("titul_pred", this.titul_pred.Text.ToString());
+            data.Add("titul_za", this.titul_za.Text.ToString());
 
             string res = x_db.update_row("is_users", data, id.ToString());
 
@@ -163,7 +166,7 @@ public partial class adduser : System.Web.UI.Page
 
 
         }
-        catch (Exception eror)
+        catch (Exception e)
         {
 
 
@@ -184,6 +187,8 @@ public partial class adduser : System.Web.UI.Page
                     data.Add("tyzdoba", this.tyzdoba_txt.Text.ToString());
 
                     data.Add("osobcisl", this.osobcisl_txt.Text.ToString());
+                    data.Add("titul_pred", this.titul_pred.Text.ToString());
+                    data.Add("titul_za", this.titul_za.Text.ToString());
 
 
                     if (email.Length == 0)
@@ -199,15 +204,17 @@ public partial class adduser : System.Web.UI.Page
                     }
                     else
                     {
-                        SortedList res = x_db.insert_rows("is_users", data);
-                    
-                        if (res["status"].ToString() == "ok")
+                        SortedList res = x2MySql.mysql_insert("is_users", data);
+                       // SortedList res = x_db.insert_rows("is_users", data);
+                        Boolean status = Convert.ToBoolean(res["status"]);
+
+                        if (status == true)
                         {
                             msg_lbl.Text = "Užívateľ bol pridaný !!!!";
                         }
                         else
                         {
-                            msg_lbl.Text = "Chyba:" + res["message"].ToString();
+                            msg_lbl.Text = "Chyba:" + res["msg"].ToString();
                         }
                     }
                 }

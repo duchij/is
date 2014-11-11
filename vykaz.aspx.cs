@@ -788,6 +788,11 @@ public partial class vykaz : System.Web.UI.Page
         cb.MoveText(362, size.Height - 41);
         cb.ShowText(rok.ToString());
         cb.EndText();
+
+        cb.BeginText();
+        cb.MoveText(446, size.Height - 41);
+        cb.ShowText("KDCH");
+        cb.EndText();
         
         cb.BeginText();
         cb.MoveText(121, size.Height - 60);

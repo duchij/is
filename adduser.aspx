@@ -94,9 +94,20 @@ tinyMCE.init({
                     
                     <table>
                     <tr>
+                    <td>Titul pred menom:</td>
+                    <td>
+                        <asp:TextBox ID="titul_pred" runat="server"></asp:TextBox></td>
+                    </tr>
+                                       
+                    <tr>
                         <td>Meno a priezvisko:</td>
                         <td><asp:TextBox ID="name_txt" runat="server"></asp:TextBox></td>
                     
+                    </tr>
+                    <tr>
+                    <td>Titul za menom:</td>
+                    <td>
+                        <asp:TextBox ID="titul_za" runat="server"></asp:TextBox></td>
                     </tr>
                     <tr>
                         <td>Login:</td>

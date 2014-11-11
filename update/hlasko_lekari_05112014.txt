@@ -60,3 +60,7 @@ ALTER TABLE `is_hlasko`
 DROP `date`,
 COMMENT='';
 
+ALTER TABLE `is_hlasko`
+CHANGE `dat_hlas` `dat_hlas` date NOT NULL AFTER `type`,
+COMMENT='';
+

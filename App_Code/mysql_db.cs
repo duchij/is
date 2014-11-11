@@ -69,6 +69,80 @@ public class mysql_db
 
         return query;
     }
+    /// <summary>
+    /// Funkcia update single table, single row nejde cez foreign keys funguje na transakcii
+    /// </summary>
+    /// <param name="table">Nazov tabulky kam to dat</param>
+    /// <param name="data">Data format SortedList nazvy columns</param>
+    /// <param name="id">1. WHERE [nejake_id]=idecko, alebo len idecko</param>
+    /// <returns></returns>
+
+    public string mysql_update(string table, SortedList data, string id)
+    {
+        OdbcTransaction trans1 = null;
+        my_con.Open();
+
+        trans1 = my_con.BeginTransaction();
+
+        OdbcCommand cmdtrans = new OdbcCommand();
+        cmdtrans.Connection = my_con;
+        cmdtrans.Transaction = trans1;
+
+        //StringBuilder sb = sb.AppendFormat("UPDATE [{0}] SET {1} WHERE [id]={2}");
+
+       
+        string[] strArr = new String[data.Count];
+        int i = 0;
+
+        foreach (DictionaryEntry tmp in data)
+        {
+            //cols = cols + tmp.Key + ",";
+            strArr[i] = "["+tmp.Key.ToString()+"] ='"+tmp.Value.ToString()+"'";
+           // parse_str = parse_str.Replace("'", "*");
+        }
+        string setStr = String.Join(",", strArr);
+        
+        StringBuilder sb =  new StringBuilder();
+
+        if (id.IndexOf("WHERE") != -1)
+        {
+            sb.AppendFormat("UPDATE [{0}] SET {1} {2}", table, setStr, id);
+        }
+        else
+        {
+            sb.AppendFormat("UPDATE [{0}] SET {1} WHERE [id] = {2}", table, setStr, id);
+        }
+
+         //= sb.AppendFormat("UPDATE [{0}] SET {1} WHERE [id]={2}", table, setStr, id);
+        string query = sb.ToString();
+        query = parseQuery(query);
+        //return query;
+
+       // int id = 0;
+
+        SortedList result = new SortedList();
+        try
+        {
+            cmdtrans.CommandText = query;
+            cmdtrans.ExecuteNonQuery();
+            //cmdtrans.CommandText = "SELECT last_insert_id();";
+            //id = Convert.ToInt32(cmdtrans.ExecuteScalar());
+            trans1.Commit();
+            result.Add("status", true);
+            result.Add("last_id", id);
+        }
+        catch (Exception e)
+        {
+            result.Add("status", false);
+            result.Add("msg", e.ToString());
+            result.Add("last_id", 0);
+            trans1.Rollback();
+
+        } 
+
+        //return query;
+    }
+
 
     public SortedList mysql_insert(string table, SortedList data)
     {

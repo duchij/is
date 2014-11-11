@@ -1,0 +1,17 @@
+﻿ALTER TABLE `is_users`
+DROP INDEX `name`;
+
+update is_users set osobcisl = NULL where length(trim(`osobcisl`)) = 0
+
+ALTER TABLE `is_users`
+CHANGE `name` `name` varchar(100) COLLATE 'ascii_general_ci' NOT NULL AFTER `full_name`,
+CHANGE `passwd` `passwd` text COLLATE 'ascii_general_ci' NULL AFTER `name`,
+CHANGE `group` `group` varchar(100) COLLATE 'ascii_general_ci' NULL AFTER `passwd`,
+CHANGE `email` `email` varchar(150) COLLATE 'ascii_general_ci' NULL AFTER `active`,
+CHANGE `pracdoba` `pracdoba` text NULL AFTER `email`,
+CHANGE `tyzdoba` `tyzdoba` text NULL AFTER `pracdoba`,
+CHANGE `osobcisl` `osobcisl` varchar(100) NULL AFTER `tyzdoba`,
+ADD `titul_pred` varchar(100) COLLATE 'utf8_slovak_ci' NULL,
+ADD `titul_za` varchar(100) COLLATE 'utf8_slovak_ci' NULL AFTER `titul_pred`,
+COMMENT='' ENGINE='InnoDB'
+
