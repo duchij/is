@@ -33,7 +33,7 @@
                 </asp:ContentPlaceHolder>
             </div>
             
-            <div id="menu"> lolo
+            <div id="menu"> 
                  <menu:left_menu ID="left_menu" runat="server" />
             </div>
         </div>

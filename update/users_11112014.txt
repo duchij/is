@@ -1,6 +1,10 @@
 ﻿ALTER TABLE `is_users`
 DROP INDEX `name`;
 
+ALTER TABLE `is_users`
+CHANGE `id` `id` bigint NOT NULL AUTO_INCREMENT FIRST,
+COMMENT='';
+
 update is_users set osobcisl = NULL where length(trim(`osobcisl`)) = 0
 
 ALTER TABLE `is_users`
@@ -14,4 +18,7 @@ CHANGE `osobcisl` `osobcisl` varchar(100) NULL AFTER `tyzdoba`,
 ADD `titul_pred` varchar(100) COLLATE 'utf8_slovak_ci' NULL,
 ADD `titul_za` varchar(100) COLLATE 'utf8_slovak_ci' NULL AFTER `titul_pred`,
 COMMENT='' ENGINE='InnoDB'
+
+ALTER TABLE `is_users`
+ADD INDEX `id` (`id`);
 

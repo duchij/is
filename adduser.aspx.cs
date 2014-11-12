@@ -28,7 +28,7 @@ public partial class adduser : System.Web.UI.Page
         {
             Response.Redirect("error.html");
         }
-
+        this.msg_lbl.Text = "";
         //string rights = Request.Cookies["rights"].Value.ToString();
         string rights = Session["rights"].ToString();
 
@@ -54,6 +54,8 @@ public partial class adduser : System.Web.UI.Page
                 this.name_txt.Text = "";
                 this.login_txt.Text = "";
                 this.email_txt.Text = "";
+                this.titul_pred.Text = "";
+                this.titul_za.Text = "";
                 this.passwd_txt.ReadOnly = false;
                 this.loadData();
             }
@@ -141,26 +143,31 @@ public partial class adduser : System.Web.UI.Page
             data.Add("email", email);
             data.Add("passwd", passwd);
             data.Add("active", this.active_txt.Text);
-            data.Add("`group`", rights_cb.SelectedValue.ToString());
+            data.Add("group", rights_cb.SelectedValue.ToString());
             data.Add("pracdoba", this.pracdoba_txt.Text.ToString());
             data.Add("tyzdoba", this.tyzdoba_txt.Text.ToString());
             data.Add("osobcisl", this.osobcisl_txt.Text.ToString());
             data.Add("titul_pred", this.titul_pred.Text.ToString());
             data.Add("titul_za", this.titul_za.Text.ToString());
 
-            string res = x_db.update_row("is_users", data, id.ToString());
+            SortedList result = x2MySql.mysql_update("is_users", data, id.ToString());
 
-            if (res != "ok")
+            Boolean status = Convert.ToBoolean(result["status"]);
+
+            if (status == false)
             {
-                msg_lbl.Text = res;
+                msg_lbl.Text = result["msg"].ToString();
             }
             else
             {
-                name_txt.Text = "";
-                login_txt.Text = "";
-                email_txt.Text = "";
+                this.name_txt.Text = "";
+                this.login_txt.Text = "";
+                this.email_txt.Text = "";
                 this.users_gv.SelectedIndex = -1;
                 this.passwd_txt.Text = "";
+                this.titul_pred.Text = "";
+                this.titul_za.Text = "";
+
                 this.Page_Load(sender, e);
               
             }
@@ -183,7 +190,7 @@ public partial class adduser : System.Web.UI.Page
 
                     data.Add("full_name", meno);
                     data.Add("name", login);
-                    data.Add("`group`", rights_cb.SelectedValue.ToString());
+                    data.Add("group", rights_cb.SelectedValue.ToString());
                     data.Add("active", this.active_txt.Text);
 
                     data.Add("pracdoba", this.pracdoba_txt.Text.ToString());

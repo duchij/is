@@ -102,7 +102,7 @@ public partial class sestrhlas : System.Web.UI.Page
             my_last_user = x_db.getUserInfoByID("is_users", data["last_user"].ToString());
             last_user.Text = my_last_user["full_name"].ToString();
             Session.Add("akt_hlasenie", data["id"].ToString());
-            Session.Add("hlasko_creat_user",data["creat_user"].ToString());
+            //Session.Add("hlasko_creat_user",data["creat_user"].ToString());
         }
         else
         {
@@ -125,13 +125,14 @@ public partial class sestrhlas : System.Web.UI.Page
             newData.Add("creat_user", Session["user_id"].ToString());
             newData.Add("last_user", Session["user_id"].ToString());
             newData.Add("hlasko", "Hlasenie sestier");
+
             SortedList result = x2MySql.mysql_insert("is_hlasko_sestry",newData);
 
             Boolean status = Convert.ToBoolean(result["status"]);
             if (status == true)
             {
                 Session.Add("akt_hlasenie", result["last_id"].ToString());
-                Session.Add("hlasko_creat_user", Session["user_id"].ToString());
+                //Session.Add("hlasko_creat_user", Session["user_id"].ToString());
                 this.hlasenie.Text = "Hlasenie sestier...";
                 last_user.Text = Session["fullname"].ToString();
             }

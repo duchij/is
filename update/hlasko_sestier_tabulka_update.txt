@@ -62,3 +62,7 @@ CHANGE `creat_user` `creat_user` bigint(20) NOT NULL COMMENT 'ak je 0 tak povodn
 CHANGE `last_user` `last_user` bigint(20) NOT NULL COMMENT 'ak je 0 tak povodna hodnota' AFTER `creat_user`,
 COMMENT='';
 
+ALTER TABLE `is_hlasko_sestry`
+ADD INDEX `creat_user` (`creat_user`),
+ADD INDEX `last_user` (`last_user`);
+
