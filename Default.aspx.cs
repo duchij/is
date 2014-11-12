@@ -95,6 +95,9 @@ public partial class _Default : System.Web.UI.Page
                     Session.Add("tyzdoba", data["tyzdoba"].ToString());
                     Session.Add("osobcisl", data["osobcisl"].ToString());
 
+                    Session.Add("titul_pred", data["titul_pred"].ToString());
+                    Session.Add("titul_za", data["titul_za"].ToString());
+
 
 
                     Response.Cookies["tuisegumdrum"].Value = "activado";
@@ -134,6 +137,8 @@ public partial class _Default : System.Web.UI.Page
                     Session.Add("tyzdoba", data["tyzdoba"].ToString());
                     Session.Add("osobcisl",data["osobcisl"].ToString());
 
+                    Session.Add("titul_pred", data["titul_pred"].ToString());
+                    Session.Add("titul_za", data["titul_za"].ToString());
 
                     
 
@@ -143,6 +148,7 @@ public partial class _Default : System.Web.UI.Page
                     Response.Cookies["fullname"].Value = data["full_name"].ToString();
                     Response.Cookies["login"].Value = data["name"].ToString();
                     Response.Cookies["email"].Value = data["email"].ToString();
+
 
 
 

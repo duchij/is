@@ -796,7 +796,7 @@ public partial class vykaz : System.Web.UI.Page
         
         cb.BeginText();
         cb.MoveText(121, size.Height - 60);
-        cb.ShowText(Session["fullname"].ToString());
+        cb.ShowText(Session["titul_pred"].ToString()+Session["fullname"].ToString()+" "+Session["titul_za"].ToString());
         cb.EndText();
 
         cb.BeginText();

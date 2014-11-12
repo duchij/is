@@ -77,7 +77,7 @@ public class mysql_db
     /// <param name="id">1. WHERE [nejake_id]=idecko, alebo len idecko</param>
     /// <returns></returns>
 
-    public string mysql_update(string table, SortedList data, string id)
+    public SortedList mysql_update(string table, SortedList data, string id)
     {
         OdbcTransaction trans1 = null;
         my_con.Open();
@@ -98,6 +98,7 @@ public class mysql_db
         {
             //cols = cols + tmp.Key + ",";
             strArr[i] = "["+tmp.Key.ToString()+"] ='"+tmp.Value.ToString()+"'";
+            i++;
            // parse_str = parse_str.Replace("'", "*");
         }
         string setStr = String.Join(",", strArr);
@@ -140,7 +141,7 @@ public class mysql_db
 
         } 
 
-        //return query;
+        return result;
     }
 
 

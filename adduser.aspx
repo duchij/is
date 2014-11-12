@@ -24,6 +24,7 @@ tinyMCE.init({
 </head>
 <body>
     <form id="form1" runat="server">
+     <asp:Label ID="msg_lbl" runat="server" Text=""></asp:Label>
     <div id="wrapper">
     <div id="header"><h1>Informačný systém Kliniky detskej chirurgie LF UK a DFNsP</h1> 
     <duch:my_header ID="My_header1" runat="server"></duch:my_header>
@@ -181,7 +182,7 @@ tinyMCE.init({
     </div>
  
     
-    <asp:Label ID="msg_lbl" runat="server" Text="Label"></asp:Label>
+   
     </form>
 </body>
 </html>
