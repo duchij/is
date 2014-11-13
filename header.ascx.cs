@@ -17,9 +17,12 @@ public partial class header : System.Web.UI.UserControl
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (Session["tuisegumdrum"] == null)
+        if (IsPostBack == false)
         {
-            Response.Redirect("error.html");
+            if (Session["tuisegumdrum"] == null)
+            {
+                Response.Redirect("error.html");
+            }
         }
         string userRights = Session["rights"].ToString();
        
@@ -231,7 +234,7 @@ public partial class header : System.Web.UI.UserControl
     protected void log_out_Click(object sender, EventArgs e)
     {
         Session.Abandon();
-        Session.Clear();
+        //Session.Clear();
        // Response.Cookies["tuisegumdrum"].Expires = DateTime.Now.AddDays(-1);
         //Response.Cookies.Clear();
         Response.Redirect("default.aspx");

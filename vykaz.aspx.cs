@@ -671,7 +671,7 @@ public partial class vykaz : System.Web.UI.Page
         string path = Server.MapPath("App_Data");
         string imagepath = Server.MapPath("App_Data");
 
-        string oldFile = @path+"\\List1.pdf";
+        string oldFile = @path+"\\vykaz.pdf";
 
 
 
@@ -798,6 +798,12 @@ public partial class vykaz : System.Web.UI.Page
         cb.MoveText(121, size.Height - 60);
         cb.ShowText(Session["titul_pred"].ToString()+Session["fullname"].ToString()+" "+Session["titul_za"].ToString());
         cb.EndText();
+
+        cb.BeginText();
+        cb.MoveText(375, size.Height - 60);
+        cb.ShowText(Session["zaradenie"].ToString());
+        cb.EndText();
+
 
         cb.BeginText();
 

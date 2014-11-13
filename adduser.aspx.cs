@@ -56,6 +56,7 @@ public partial class adduser : System.Web.UI.Page
                 this.email_txt.Text = "";
                 this.titul_pred.Text = "";
                 this.titul_za.Text = "";
+                this.zaradenie_txt.Text = "";
                 this.passwd_txt.ReadOnly = false;
                 this.loadData();
             }
@@ -90,6 +91,9 @@ public partial class adduser : System.Web.UI.Page
 
                 this.titul_pred.Text = Session["titul_pred"].ToString();
                 this.titul_za.Text = Session["titul_za"].ToString();
+
+                this.zaradenie_txt.Text = Session["zaradenie"].ToString();
+
 
                 string pracdoba = my_x2.getStr(Session["pracdoba"].ToString());
                 string tyzdoba = my_x2.getStr(Session["tyzdoba"].ToString());
@@ -149,6 +153,7 @@ public partial class adduser : System.Web.UI.Page
             data.Add("osobcisl", this.osobcisl_txt.Text.ToString());
             data.Add("titul_pred", this.titul_pred.Text.ToString());
             data.Add("titul_za", this.titul_za.Text.ToString());
+            data.Add("zaradenie", this.zaradenie_txt.Text.ToString());
 
             SortedList result = x2MySql.mysql_update("is_users", data, id.ToString());
 
@@ -167,7 +172,7 @@ public partial class adduser : System.Web.UI.Page
                 this.passwd_txt.Text = "";
                 this.titul_pred.Text = "";
                 this.titul_za.Text = "";
-
+                this.zaradenie_txt.Text = "";
                 this.Page_Load(sender, e);
               
             }
@@ -200,7 +205,7 @@ public partial class adduser : System.Web.UI.Page
                     data.Add("titul_pred", this.titul_pred.Text.ToString());
                     data.Add("titul_za", this.titul_za.Text.ToString());
 
-
+                    data.Add("zaradenie", this.zaradenie_txt.Text.ToString());
                     if (email.Length == 0)
                     {
                         email = "x";
@@ -256,6 +261,8 @@ public partial class adduser : System.Web.UI.Page
         data.Add("osobcisl", this.osobcisl_txt.Text.ToString().Trim());
         data.Add("titul_pred", this.titul_pred.Text.ToString().Trim());
         data.Add("titul_za", this.titul_za.Text.ToString().Trim());
+        data.Add("zaradenie", this.zaradenie_txt.Text.ToString().Trim());
+
        // string res = x_db.update_row("is_users", data, Session["user_id"].ToString());
 
         SortedList res = x2MySql.mysql_update("is_users", data, Session["user_id"].ToString());
@@ -290,6 +297,9 @@ public partial class adduser : System.Web.UI.Page
         this.pracdoba_txt.Text = "";
         this.tyzdoba_txt.Text = "";
         this.osobcisl_txt.Text = "";
+        this.titul_pred.Text = "";
+        this.titul_za.Text = "";
+        this.zaradenie_txt.Text = "";
     }
 
     protected void users_gv_SelectedIndexChanging(object sender, GridViewSelectEventArgs e)
@@ -306,7 +316,7 @@ public partial class adduser : System.Web.UI.Page
         this.active_txt.Text = result["active"].ToString();
         this.titul_pred.Text = result["titul_pred"].ToString();
         this.titul_za.Text = result["titul_za"].ToString();
-
+        this.zaradenie_txt.Text = result["zaradenie"].ToString();
         string pracdoba = my_x2.getStr(result["pracdoba"].ToString());
         string tyzdoba = my_x2.getStr(result["tyzdoba"].ToString());
 

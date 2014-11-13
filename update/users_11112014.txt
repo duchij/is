@@ -22,3 +22,7 @@ COMMENT='' ENGINE='InnoDB'
 ALTER TABLE `is_users`
 ADD INDEX `id` (`id`);
 
+ALTER TABLE `is_users`
+ADD `zaradenie` text COLLATE 'utf8_slovak_ci' NULL AFTER `tyzdoba`,
+COMMENT='';
+

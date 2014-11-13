@@ -140,6 +140,8 @@ public partial class _Default : System.Web.UI.Page
                     Session.Add("titul_pred", data["titul_pred"].ToString());
                     Session.Add("titul_za", data["titul_za"].ToString());
 
+                    Session.Add("zaradenie", data["zaradenie"].ToString());
+
                     
 
                     Response.Cookies["tuisegumdrum"].Value = " activado";

@@ -39,6 +39,10 @@ public class x2_var
     }
 
 
+
+
+
+
     public static string UTFtoASCII(string value)
     {
         if (String.IsNullOrEmpty(value))

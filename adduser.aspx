@@ -119,6 +119,12 @@ tinyMCE.init({
                         <td><asp:TextBox ID="email_txt" runat="server"></asp:TextBox></td>
                     
                     </tr>
+                    
+                     <tr>
+                        <td>Pracovné zaradenie:</td>
+                        <td><asp:TextBox ID="zaradenie_txt" runat="server"></asp:TextBox></td>
+                    
+                    </tr>
                     <tr>
                         <td>Pracovná doba:</td>
                         <td><asp:TextBox ID="pracdoba_txt" runat="server" Text=""></asp:TextBox></td>

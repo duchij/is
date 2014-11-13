@@ -25,6 +25,8 @@
 
     void Session_Start(object sender, EventArgs e) 
     {
+
+        Session.Timeout = 10;
         // Code that runs when a new session is started
         
 
@@ -32,6 +34,7 @@
 
     void Session_End(object sender, EventArgs e) 
     {
+        Server.Transfer("error.html");
         // Code that runs when a session ends. 
         // Note: The Session_End event is raised only when the sessionstate mode
         // is set to InProc in the Web.config file. If session mode is set to StateServer 
@@ -46,9 +49,20 @@
 
         if (status == false)
         {
-            Session["tuisegundrum"] = "";
-            //Response.Redirect("offline.html");
-            Server.Transfer("offline.html");
+            try
+            {
+                if (Session != null)
+                {
+                    Session.Abandon();
+
+                }
+                //Response.Redirect("offline.html");
+                Server.Transfer("offline.html");
+            }
+            catch (Exception error)
+            {
+                Server.Transfer("offline.html");
+            }
             //Session.Abandon();
         }
 

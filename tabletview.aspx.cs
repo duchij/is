@@ -48,6 +48,9 @@ public partial class tabletview : System.Web.UI.Page
 
     protected void loadSluzby()
     {
+
+        this.hlasenie.Controls.Clear();
+
         DateTime datum = this.Calendar1.SelectedDate;
 
         StringBuilder sb = new StringBuilder();

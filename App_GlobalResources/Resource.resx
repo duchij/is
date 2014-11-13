@@ -315,4 +315,7 @@
   <data name="print" xml:space="preserve">
     <value>Tlačiť</value>
   </data>
+  <data name="delete" xml:space="preserve">
+    <value>Zmazať</value>
+  </data>
 </root>
