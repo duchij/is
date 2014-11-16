@@ -155,12 +155,12 @@ public partial class sluzby : System.Web.UI.Page
 
             rok_cb.SelectedValue = data_info["rok"].ToString();
 
-            if (Convert.ToInt32(data_info["publish"]) == 1)
+            if (Convert.ToInt32(data_info["publish"]) == 1 && IsPostBack == false)
             {
 
                 publish_ck.Checked = true;
             }
-            else
+            if (Convert.ToInt32(data_info["publish"]) == 0 && IsPostBack == false)
             {
                 publish_ck.Checked = false;
             }
@@ -415,7 +415,8 @@ public partial class sluzby : System.Web.UI.Page
         {
             //data.Add("id", Request.Cookies["akt_sluzba"].Value.ToString);
             data.Add("rozpis", this.getStaze());
-            if (publish_ck.Checked)
+
+            if (publish_ck.Checked == true)
             {
                 data.Add("publish", "1");
             }

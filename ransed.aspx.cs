@@ -68,7 +68,7 @@ public partial class ransed : System.Web.UI.Page
          DateTime datum = this.Calendar1.SelectedDate.AddDays(-1);
 
         StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("SELECT GROUP_CONCAT([osirix] SEPARATOR ' ') AS [osirix] FROM [is_hlasko] WHERE [dat_hlas] = '{0}/{1}/{2}'", datum.Month, datum.Day, datum.Year);
+        sb.AppendFormat("SELECT GROUP_CONCAT([osirix] SEPARATOR ' ') AS [osirix] FROM [is_hlasko] WHERE [dat_hlas] = '{0}'", my_x2.unixDate(datum));
         SortedList result = x2db.getRow(sb.ToString());
         sb.Length = 0;
         string tmp = result["osirix"].ToString().Replace((char)13,' ');
