@@ -30,7 +30,7 @@ public partial class header : System.Web.UI.UserControl
         SortedList data = x_db.getNextPozDatum(DateTime.Today);
         poziadav_lbl.Text = data["datum"].ToString();
 
-        if (userRights == "admin" || userRights == "poweruser")
+      /*  if (userRights == "admin" || userRights == "poweruser")
         {
             this.news_link.NavigateUrl = "is_news.aspx";
         }
@@ -55,7 +55,7 @@ public partial class header : System.Web.UI.UserControl
         else
         {
             this.opprogram_link.NavigateUrl = "";
-        }
+        }*/
 
         SortedList aktSluz = this.getDnesSluzby();
 
@@ -231,13 +231,6 @@ public partial class header : System.Web.UI.UserControl
         return result;
     }
 
-    protected void log_out_Click(object sender, EventArgs e)
-    {
-        Session.Abandon();
-        //Session.Clear();
-       // Response.Cookies["tuisegumdrum"].Expires = DateTime.Now.AddDays(-1);
-        //Response.Cookies.Clear();
-        Response.Redirect("default.aspx");
-    }
+   
 
 }

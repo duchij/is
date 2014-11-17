@@ -15,14 +15,14 @@ public partial class sluzby : System.Web.UI.Page
     x2_var my_x2 = new x2_var();
     sluzbyclass x_db = new sluzbyclass();
     //string tabulka = "";
-    string user_rights= "";
+    string user_rights = "";
 
 
-    
-    
+
+
     protected void Page_Init(object sender, EventArgs e)
     {
-       
+
     }
 
 
@@ -32,8 +32,8 @@ public partial class sluzby : System.Web.UI.Page
         {
             Response.Redirect("error.html");
         }
-        
-      
+
+
         user_rights = Session["rights"].ToString();
 
         if ((user_rights == "admin") || (user_rights == "poweruser"))
@@ -48,15 +48,15 @@ public partial class sluzby : System.Web.UI.Page
         }
 
         this.msg_lbl.Visible = false;
-		
+
         if (IsPostBack == false)
         {
             DateTime akt_datum = DateTime.Today;
-            
+
             string mesiac = akt_datum.Month.ToString();
             string rok = akt_datum.Year.ToString();
             //vypis_lbl.Text = rok;
-            
+
             this.drawSluzby(mesiac, rok);
         }
         else
@@ -81,18 +81,18 @@ public partial class sluzby : System.Web.UI.Page
                 
                 this.drawTable(rok, mesiac);
             }*/
-            
-           // Response.Cookies["mesiac"].Value = mesiac_cb.SelectedValue.ToString();
-           // Response.Cookies["rok"].Value = rok_cb.SelectedValue.ToString();
+
+            // Response.Cookies["mesiac"].Value = mesiac_cb.SelectedValue.ToString();
+            // Response.Cookies["rok"].Value = rok_cb.SelectedValue.ToString();
             //vypis_lbl.Text = rok_cb.SelectedValue.ToString();
-           // this.drawSluzby(Request.Cookies["mesiac"].Value.ToString(), Request.Cookies["rok"].Value.ToString());
+            // this.drawSluzby(Request.Cookies["mesiac"].Value.ToString(), Request.Cookies["rok"].Value.ToString());
             //this.saveSluzby();
             //vypis_lbl.Text = Session.Count.ToString();
-            
+
         }
     }
 
-    
+
     private void drawTable(string rok, string mesiac)
     {
 
@@ -102,7 +102,7 @@ public partial class sluzby : System.Web.UI.Page
         for (int i = 0; i < days; i++)
         {
             TableRow riadok = new TableRow();
-           
+
             Table1.Controls.Add(riadok);
             for (int j = 0; j < 6; j++)
             {
@@ -185,18 +185,18 @@ public partial class sluzby : System.Web.UI.Page
                     DropDownList my_text_box = new DropDownList();
 
                     ListItem[] newItem = new ListItem[doctorList.Count];
-                    
 
-                    for (int po=0; po < doctorList.Count; po++)
+
+                    for (int po = 0; po < doctorList.Count; po++)
                     {
-						
-			char[] del = { '|' };
-			string strTmp = doctorList[po].ToString();
+
+                        char[] del = { '|' };
+                        string strTmp = doctorList[po].ToString();
 
                         string[] docId = strTmp.Split(del);
 
                         newItem[po] = new ListItem(docId[1].ToString(), docId[0].ToString());
-                     
+
 
                     }
 
@@ -232,7 +232,7 @@ public partial class sluzby : System.Web.UI.Page
                         my_text_box.BackColor = System.Drawing.Color.Yellow;
                         my_text_box.ForeColor = System.Drawing.Color.FromArgb(0x990000);
                     }
-                    
+
 
                     //my_text_box.TextChanged += new System.EventHandler(this.my_text_box_TextChanged);
                     my_text_box.ID = "textBox_" + i.ToString() + "_" + j.ToString();
@@ -279,11 +279,11 @@ public partial class sluzby : System.Web.UI.Page
                     my_text_box.Width = 100;
                     my_cell.Controls.Add(my_text_box);
                 }
-                 //my_text_box.AutoPostBack = true;
-                
+                //my_text_box.AutoPostBack = true;
 
 
-               
+
+
 
                 //form1.Controls.Add(my_text_box);
                 riadok.Controls.Add(my_cell);
@@ -296,7 +296,7 @@ public partial class sluzby : System.Web.UI.Page
     {
         if (data_info["id"] != null)
         {
-            Session.Add("akt_sluzba",data_info["id"].ToString());
+            Session.Add("akt_sluzba", data_info["id"].ToString());
 
 
             String[][] data = my_x2.parseSluzba(data_info["rozpis"].ToString());
@@ -393,7 +393,7 @@ public partial class sluzby : System.Web.UI.Page
             mesiac_cb.SelectedValue = mesiac;
             rok_cb.SelectedValue = rok;
             // Response.Cookies["akt_sluzba"].Expires = DateTime.Now.AddDays(-1);
-            Session.Add("akt_sluzba","0");
+            Session.Add("akt_sluzba", "0");
             for (int i = 0; i < days; i++)
             {
                 TableRow riadok = new TableRow();
@@ -476,7 +476,7 @@ public partial class sluzby : System.Web.UI.Page
     protected void __drawSluzby2(SortedList data_info, string mesiac, string rok, int days)
     {
         ArrayList doctorList = x_db.getDoctorsForDl();
-        this.msg_lbl.Text = "dl "+doctorList.Count.ToString();
+        this.msg_lbl.Text = "dl " + doctorList.Count.ToString();
 
         if (data_info["id"] != null)
         {
@@ -492,7 +492,7 @@ public partial class sluzby : System.Web.UI.Page
                 this.publish_ck.Checked = false;
             }
 
-            
+
             Session.Add("akt_sluzba", data_info["id"].ToString());
 
 
@@ -503,7 +503,7 @@ public partial class sluzby : System.Web.UI.Page
 
             rok_cb.SelectedValue = data_info["rok"].ToString();
 
-            
+
 
             days_lbl.Text = DateTime.DaysInMonth(Convert.ToInt32(rok), Convert.ToInt32(mesiac)).ToString();
 
@@ -511,12 +511,12 @@ public partial class sluzby : System.Web.UI.Page
             {
                 TableRow riadok = new TableRow();
                 Table1.Controls.Add(riadok);
-                
+
 
 
                 for (int j = 0; j < data[i].Length; j++)
                 {
-                    
+
                     TableCell my_cell = new TableCell();
 
                     my_cell.BorderWidth = 1;
@@ -532,21 +532,21 @@ public partial class sluzby : System.Web.UI.Page
                         my_text_box.ID = "textBox_" + i.ToString() + "_" + j.ToString();
 
                         ListItem[] newItem = new ListItem[doctorList.Count];
-                        
-                        
-                       for (int po=0; po < doctorList.Count; po++)
-                    	{
-						
-			char[] del = { '|' };
 
-                        string strTmp = doctorList[po].ToString();
 
-                        string[] docId = strTmp.Split(del);
+                        for (int po = 0; po < doctorList.Count; po++)
+                        {
 
-                        newItem[po] = new ListItem(docId[1].ToString(), docId[0].ToString());
-                      
+                            char[] del = { '|' };
 
-                    	}
+                            string strTmp = doctorList[po].ToString();
+
+                            string[] docId = strTmp.Split(del);
+
+                            newItem[po] = new ListItem(docId[1].ToString(), docId[0].ToString());
+
+
+                        }
 
                         my_text_box.Items.AddRange(newItem);
 
@@ -578,7 +578,7 @@ public partial class sluzby : System.Web.UI.Page
                             my_text_box.ForeColor = System.Drawing.Color.FromArgb(0x990000);
                         }
 
-                        
+
 
                         if ((user_rights == "admin") || (user_rights == "poweruser"))
                         {
@@ -589,14 +589,14 @@ public partial class sluzby : System.Web.UI.Page
                         {
                             // my_text_box.ReadOnly = true;
                             my_text_box.Enabled = false;
-                           // my_text_box.BackColor = System.Drawing.Color.Black;
+                            // my_text_box.BackColor = System.Drawing.Color.Black;
                             //my_text_box.ForeColor = System.Drawing.Color.Black;
                         }
 
                         //my_text_box.ReadOnly = true;
                         //my_cell.Text = "textBox_" + i.ToString() + "_" + j.ToString();
 
-                       
+
 
                         my_cell.Controls.Add(my_text_box);
 
@@ -616,7 +616,7 @@ public partial class sluzby : System.Web.UI.Page
                             my_cell.Controls.Add(noteTxt);
                         }
 
-                        
+
 
 
                         my_text_box.SelectedValue = oup[0];
@@ -625,7 +625,7 @@ public partial class sluzby : System.Web.UI.Page
                         //form1.Controls.Add(my_text_box);
                         riadok.Controls.Add(my_cell);
 
-                       
+
                     }
                     else
                     {
@@ -668,8 +668,8 @@ public partial class sluzby : System.Web.UI.Page
                         riadok.Controls.Add(my_cell);
 
                     }
-                    
-                }	
+
+                }
 
             }
         }
@@ -684,43 +684,43 @@ public partial class sluzby : System.Web.UI.Page
             {
                 TableRow riadok = new TableRow();
                 Table1.Controls.Add(riadok);
-                
+
 
                 for (int j = 0; j < 6; j++)
                 {
-                    
+
                     TableCell my_cell = new TableCell();
                     my_cell.Width = 100;
-                
+
                     if (j > 0)
                     {
 
                         my_cell.BorderWidth = 1;
                         my_cell.BorderColor = System.Drawing.Color.FromArgb(0x990000);
-                        
+
 
                         DropDownList my_text_box = new DropDownList();
                         my_text_box.BorderStyle = BorderStyle.None;
-                        
+
 
                         my_text_box.ID = "textBox_" + i.ToString() + "_" + j.ToString();
 
                         ListItem[] newItem = new ListItem[doctorList.Count];
                         int nl = 0;
-                       
-                        for (int po=0; po < doctorList.Count; po++)
-                    {
-						
-			char[] del = { '|' };
 
-                        string strTmp = doctorList[po].ToString();
+                        for (int po = 0; po < doctorList.Count; po++)
+                        {
 
-                        string[] docId = strTmp.Split(del);
+                            char[] del = { '|' };
 
-                        newItem[po] = new ListItem(docId[1].ToString(), docId[0].ToString());
+                            string strTmp = doctorList[po].ToString();
 
-                       
-                    }
+                            string[] docId = strTmp.Split(del);
+
+                            newItem[po] = new ListItem(docId[1].ToString(), docId[0].ToString());
+
+
+                        }
                         my_text_box.Items.AddRange(newItem);
 
                         my_text_box.ID = "textBox_" + i.ToString() + "_" + j.ToString();
@@ -821,7 +821,7 @@ public partial class sluzby : System.Web.UI.Page
                         my_cell.Controls.Add(my_text_box);
                     }
 
-                    
+
 
 
                     //form1.Controls.Add(my_text_box);
@@ -833,7 +833,7 @@ public partial class sluzby : System.Web.UI.Page
         }
     }
 
-    
+
 
 
     protected void drawSluzby(string mesiac, string rok)
@@ -852,7 +852,7 @@ public partial class sluzby : System.Web.UI.Page
         if (data_info["rozpis"] != null)
         {
 
-            if (((rights == "users") || (rights == "sestra"))  && (data_info["publish"].ToString() == "0"))
+            if (((rights == "users") || (rights == "sestra")) && (data_info["publish"].ToString() == "0"))
             {
                 vypis_lbl.Text = "<font style='color:red'>Služby, ešte nie sú dokončené!</font> ";
             }
@@ -866,7 +866,7 @@ public partial class sluzby : System.Web.UI.Page
                 {
                     this.__drawSluzby(data_info, mesiac, rok, days);
                 }
-                
+
             }
         }
         else
@@ -881,7 +881,7 @@ public partial class sluzby : System.Web.UI.Page
             }
         }
 
-        
+
 
         /*LinkButton my_link_btn = new LinkButton();
         my_link_btn.Text = "ulozit";
@@ -894,12 +894,12 @@ public partial class sluzby : System.Web.UI.Page
     {
         int pocet_dni = Convert.ToInt32(days_lbl.Text);
         string[] month = new string[pocet_dni];
-        string def ="";
+        string def = "";
 
         int mesTmp = Convert.ToInt32(this.mesiac_cb.SelectedValue.ToString());
         int rokTmp = Convert.ToInt32(this.rok_cb.SelectedValue.ToString());
 
-	DateTime pDate = Convert.ToDateTime("01.07.2012");
+        DateTime pDate = Convert.ToDateTime("01.07.2012");
         DateTime oDate = Convert.ToDateTime("01." + mesTmp + "." + rokTmp);
 
         if (oDate >= pDate)
@@ -919,13 +919,13 @@ public partial class sluzby : System.Web.UI.Page
                         if (j == 1)
                         {
 
-                          
-                            Control myTxt =FindControl("noteTxt_"+i.ToString());
+
+                            Control myTxt = FindControl("noteTxt_" + i.ToString());
                             TextBox myNote = (TextBox)myTxt;
                             string note = myNote.Text.ToString();
-							note = note.Replace(",",";");
-                            month[i] = "," + mtext+"|"+note;
-                        
+                            note = note.Replace(",", ";");
+                            month[i] = "," + mtext + "|" + note;
+
                         }
                         else
                         {
@@ -946,7 +946,7 @@ public partial class sluzby : System.Web.UI.Page
                 {
 
                     Control tbox = FindControl("textBox_" + i.ToString() + "_" + j.ToString());
-                   
+
 
                     if (tbox != null)
                     {
@@ -957,7 +957,7 @@ public partial class sluzby : System.Web.UI.Page
                         {
                             month[i] = month[i] + mtext;
                         }
-                        
+
                         else
                         {
                             month[i] = month[i] + "," + mtext;
@@ -967,22 +967,22 @@ public partial class sluzby : System.Web.UI.Page
                 }
             }
 
-            
 
 
-            
+
+
         }
         def = String.Join("\r", month);
         return def;
     }
 
 
-   
+
 
     protected void saveSluzby()
     {
         SortedList data = new SortedList();
-               
+
         if (Session["akt_sluzba"].ToString() != "0")
         {
             //data.Add("id", Request.Cookies["akt_sluzba"].Value.ToString);
@@ -1026,7 +1026,7 @@ public partial class sluzby : System.Web.UI.Page
 
             if (ins_data["status"].ToString() == "ok")
             {
-                Session.Add("akt_sluzba",ins_data["last_id"].ToString());
+                Session.Add("akt_sluzba", ins_data["last_id"].ToString());
                 vypis_lbl.Text = "Aktuálne sluzby boli uložené v poriadku....." + Session["akt_sluzba"].ToString();
             }
             else if (ins_data["status"].ToString() == "error")
@@ -1043,7 +1043,7 @@ public partial class sluzby : System.Web.UI.Page
     {
         //this.drawSluzby(mesiac_cb.SelectedValue.ToString(), rok_cb.SelectedValue.ToString());
         this.saveSluzby();
-       // tabulka = "pokus";
+        // tabulka = "pokus";
         //Session.Add("moje", "lila");
     }
 
@@ -1052,19 +1052,19 @@ public partial class sluzby : System.Web.UI.Page
         this.Table1.Controls.Clear();
 
         //vypis_lbl.Text = mesiac_cb.SelectedValue.ToString();
-       // Response.Cookies["rok"].Value = rok_cb.SelectedValue.ToString();
+        // Response.Cookies["rok"].Value = rok_cb.SelectedValue.ToString();
 
-       this.drawSluzby(this.mesiac_cb.SelectedValue.ToString(), this.rok_cb.SelectedValue.ToString());
+        this.drawSluzby(this.mesiac_cb.SelectedValue.ToString(), this.rok_cb.SelectedValue.ToString());
     }
 
-   
+
 
     protected void toWord_btn_Click(object sender, EventArgs e)
     {
-        Response.Redirect("sltoword.aspx?rok=" + rok_cb.SelectedValue.ToString()+"&mesiac="+mesiac_cb.SelectedValue.ToString()+"&mes="+mesiac_cb.SelectedItem.ToString());
+        Response.Redirect("sltoword.aspx?rok=" + rok_cb.SelectedValue.ToString() + "&mesiac=" + mesiac_cb.SelectedValue.ToString() + "&mes=" + mesiac_cb.SelectedItem.ToString());
     }
     protected void print_btn_Click(object sender, EventArgs e)
     {
-        Response.Redirect("sltoword.aspx?rok=" + rok_cb.SelectedValue.ToString() + "&mesiac=" + mesiac_cb.SelectedValue.ToString() + "&mes=" + mesiac_cb.SelectedItem.ToString()+"&print=1");
+        Response.Redirect("sltoword.aspx?rok=" + rok_cb.SelectedValue.ToString() + "&mesiac=" + mesiac_cb.SelectedValue.ToString() + "&mes=" + mesiac_cb.SelectedItem.ToString() + "&print=1");
     }
 }

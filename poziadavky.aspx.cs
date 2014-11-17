@@ -14,7 +14,7 @@ public partial class poziadavky : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
 
-       
+
         if (Session["tuisegumdrum"] == null)
         {
             Response.Redirect("error.html");
@@ -25,8 +25,8 @@ public partial class poziadavky : System.Web.UI.Page
         if (Request.QueryString["a"] != null)
         {
 
-           Page.ClientScript.RegisterStartupScript(this.GetType(), "ErrorAlert", "alert('"+Resources.Resource.odd_poziadavky_alert+"');", true);
-            
+            Page.ClientScript.RegisterStartupScript(this.GetType(), "ErrorAlert", "alert('" + Resources.Resource.odd_poziadavky_alert + "');", true);
+
         }
 
 
@@ -50,7 +50,7 @@ public partial class poziadavky : System.Web.UI.Page
         }
 
 
-        
+
 
         poziadav_lbl.Text = data["datum"].ToString();
         poziadav2_lbl.Text = data["datum"].ToString();
@@ -64,9 +64,9 @@ public partial class poziadavky : System.Web.UI.Page
             poziadavky_txt.ReadOnly = false;
         }
 
-        
+
         //this.lock_date.SelectedDate = Convert.ToDateTime(data["datum"].ToString());
-      // this.lock_date.SelectMonthText = DateTime.Today.AddMonths(1).ToString();
+        // this.lock_date.SelectMonthText = DateTime.Today.AddMonths(1).ToString();
 
         //this.lock_date.SelectedDate = DateTime.Today.AddMonths(1);
 
@@ -76,10 +76,10 @@ public partial class poziadavky : System.Web.UI.Page
 
             //this.lock_date.SelectedDate = DateTime.Today.AddMonths(1);
             this.mesiac_cb.SelectedValue = Convert.ToString(DateTime.Today.AddMonths(1).Month);
-            
+
             //this.msg_lbl.Text = this.mesiac_cb.SelectedIndex.ToString();
-            
-            
+
+
             int mes_tmp = DateTime.Today.Month;
             if (mes_tmp == 12)
             {
@@ -90,8 +90,8 @@ public partial class poziadavky : System.Web.UI.Page
             {
                 this.rok_cb.SelectedValue = Convert.ToString(DateTime.Today.Year);
             }
-                //this.msg_lbl.Text = this.mesiac_cb.SelectedIndex.ToString(); 
-            
+            //this.msg_lbl.Text = this.mesiac_cb.SelectedIndex.ToString(); 
+
 
 
             SortedList akt_user_info = x_db.getUserInfoByID("is_users", Session["user_id"].ToString());
@@ -101,9 +101,9 @@ public partial class poziadavky : System.Web.UI.Page
         }
         else
         {
-            
-              //  this.lock_date.SelectedDate = Convert.ToDateTime(data["datum"].ToString());
-                //this.lock_date.SelectedDate = DateTime.Today.AddMonths(+1);
+
+            //  this.lock_date.SelectedDate = Convert.ToDateTime(data["datum"].ToString());
+            //this.lock_date.SelectedDate = DateTime.Today.AddMonths(+1);
         }
 
 
@@ -120,13 +120,13 @@ public partial class poziadavky : System.Web.UI.Page
             this.poziadavky_txt.Text = data["info"].ToString();
         }
 
-       // this.lock_date.SelectedDate = DateTime.Now.AddMonths(1);
-       // this.lock_date.SelectMonthText = DateTime.Today.AddMonths(1).ToString();
+        // this.lock_date.SelectedDate = DateTime.Now.AddMonths(1);
+        // this.lock_date.SelectMonthText = DateTime.Today.AddMonths(1).ToString();
     }
 
     protected void savePoziadavka_fnc_Click(object sender, EventArgs e)
     {
-       
+
         SortedList data = new SortedList();
         DateTime datum = this.lock_date.SelectedDate;
 
@@ -134,22 +134,22 @@ public partial class poziadavky : System.Web.UI.Page
 
         data.Add("mesiac", datum.Month.ToString());
         data.Add("rok", datum.Year.ToString());
-        data.Add("datum",datum.ToShortDateString());
+        data.Add("datum", datum.ToShortDateString());
 
         msg_lbl.Text = datum.ToShortDateString();
-        SortedList result =  x_db.savePoziadavky("is_poziadavky_data", data);
+        SortedList result = x_db.savePoziadavky("is_poziadavky_data", data);
         //msg_lbl.Text = data["datum"].ToString();
         if (result["status"] != null)
         {
             if (result["status"].ToString() == "error")
             {
-               msg_lbl.Text = result["message"].ToString();
+                msg_lbl.Text = result["message"].ToString();
             }
-            
+
         }
         else
         {
-           // msg_lbl.Text = result["datum"].ToString();
+            // msg_lbl.Text = result["datum"].ToString();
             poziadav_lbl.Text = result["datum"].ToString();
             poziadav2_lbl.Text = data["datum"].ToString();
 
@@ -163,8 +163,8 @@ public partial class poziadavky : System.Web.UI.Page
     protected void saveUserPoziadav_Click(object sender, EventArgs e)
     {
         SortedList data = new SortedList();
-        data.Add("user_id",Session["user_id"].ToString());
-        data.Add("info",poziadavky_txt.Text.ToString());
+        data.Add("user_id", Session["user_id"].ToString());
+        data.Add("info", poziadavky_txt.Text.ToString());
         data.Add("mesiac", mesiac_cb.SelectedValue.ToString());
         data.Add("rok", rok_cb.SelectedValue.ToString());
 

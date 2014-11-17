@@ -41,15 +41,17 @@ public partial class news : System.Web.UI.UserControl
                 string[] strTmp = opprog[i].Split('|');
                 if (i == 0)
                 {
-                    sb.AppendFormat("<div style='background-color:#FACE0A;padding:3px;'<strong>{0}</strong> <a href='is_op_show.aspx?id={1}' target='_self'> >> </a><hr/></div>", strTmp[1], Convert.ToInt32(strTmp[0]));
+                    sb.AppendFormat("<div style='background-color:#FACE0A;padding:0px;'<strong>{0}</strong> <a href='is_op_show.aspx?id={1}' target='_self'> >> </a></div>", strTmp[1], Convert.ToInt32(strTmp[0]));
                 }
                 else
                 {
-                    sb.AppendFormat("{0} <a href='is_op_show.aspx?id={1}' target='_self'> >> </a><hr/>", strTmp[1], Convert.ToInt32(strTmp[0]));
+                    sb.AppendFormat("{0} <a href='is_op_show.aspx?id={1}' target='_self'> >> </a>", strTmp[1], Convert.ToInt32(strTmp[0]));
                 }
 
                 cela.Text = sb.ToString();
                 riadok.Controls.Add(cela);
+                this.op_table.CellPadding = 0;
+                this.op_table.CellSpacing = 0;
                 op_table.Controls.Add(riadok);
             }
         }
@@ -66,6 +68,7 @@ public partial class news : System.Web.UI.UserControl
                 TableRow riadok = new TableRow();
 
                 TableCell cela = new TableCell();
+                
                 cela.BorderWidth = 0;
                 StringBuilder sb = new StringBuilder();
 
@@ -73,14 +76,17 @@ public partial class news : System.Web.UI.UserControl
 
                 if (i == 0)
                 {
-                    sb.AppendFormat("<div style='background-color:#FACE0A;padding:3px;'<strong>{0} <a href='is_news_show.aspx?id={1}' target='_self'> >> </a><hr/></div>", str[1], str[0]);
+                    sb.AppendFormat("<div style='background-color:#FACE0A;padding:0px;'<strong>{0} <a href='is_news_show.aspx?id={1}' target='_self'> >> </a></div>", str[1], str[0]);
                 }
                 else
                 {
-                    sb.AppendFormat("{0} <a href='is_news_show.aspx?id={1}' target='_self'> >> </a><hr/>", str[1], str[0]);
+                    sb.AppendFormat("{0} <a href='is_news_show.aspx?id={1}' target='_self'> >> </a>", str[1], str[0]);
                 }
                 cela.Text = sb.ToString();
                 riadok.Controls.Add(cela);
+                this.news_tbl.CellPadding = 0;
+                this.news_tbl.CellSpacing = 0;
+
                 news_tbl.Controls.Add(riadok);
             }
         }

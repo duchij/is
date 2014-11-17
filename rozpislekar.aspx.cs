@@ -10,21 +10,21 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 
-public partial class sluzby : System.Web.UI.Page
+public partial class rozpislekar : System.Web.UI.Page
 {
     x2_var my_x2 = new x2_var();
     my_db x_db = new my_db();
     //string tabulka = "";
-    string user_rights= "";
+    string user_rights = "";
     string u_name = "";
-    
+
     protected void Page_Init(object sender, EventArgs e)
     {
         if (Session["tuisegumdrum"] == null)
         {
 
             Response.Redirect("error.html");
-            
+
         }
     }
 
@@ -38,11 +38,11 @@ public partial class sluzby : System.Web.UI.Page
         }
 
 
-       // this.drawTable();
+        // this.drawTable();
         user_rights = Session["rights"].ToString();
         u_name = Session["login"].ToString();
- 
-        if ((user_rights == "admin") || (user_rights == "poweruser") )
+
+        if ((user_rights == "admin") || (user_rights == "poweruser"))
         {
             Button1.Visible = true;
             Button2.Visible = true;
@@ -61,16 +61,16 @@ public partial class sluzby : System.Web.UI.Page
             Button6.Visible = false;
         }
 
-        
+
         if (IsPostBack == false)
         {
             DateTime akt_datum = DateTime.Today;
             this.rok_cb.SelectedValue = akt_datum.Year.ToString();
             this.mesiac_cb.SelectedValue = akt_datum.Month.ToString();
-           //string mesiac = akt_datum.Month.ToString();
-           //string rok = akt_datum.Year.ToString();
-           //vypis_lbl.Text = rok;
-           // this.drawStaze(mesiac, rok);
+            //string mesiac = akt_datum.Month.ToString();
+            //string rok = akt_datum.Year.ToString();
+            //vypis_lbl.Text = rok;
+            // this.drawStaze(mesiac, rok);
 
             string rok = rok_cb.SelectedValue.ToString();
             string mesiac = mesiac_cb.SelectedValue.ToString();
@@ -83,18 +83,18 @@ public partial class sluzby : System.Web.UI.Page
             string mesiac = mesiac_cb.SelectedValue.ToString();
             //this.drawRozpis(mesiac, rok);
             this.drawTable(rok, mesiac);
-            
-           // Response.Cookies["mesiac"].Value = mesiac_cb.SelectedValue.ToString();
-           // Response.Cookies["rok"].Value = rok_cb.SelectedValue.ToString();
+
+            // Response.Cookies["mesiac"].Value = mesiac_cb.SelectedValue.ToString();
+            // Response.Cookies["rok"].Value = rok_cb.SelectedValue.ToString();
             //vypis_lbl.Text = rok_cb.SelectedValue.ToString();
-           // this.drawStaze(Request.Cookies["mesiac"].Value.ToString(), Request.Cookies["rok"].Value.ToString());
+            // this.drawStaze(Request.Cookies["mesiac"].Value.ToString(), Request.Cookies["rok"].Value.ToString());
             //this.saveSluzby();
             //vypis_lbl.Text = Session.Count.ToString();
-            
+
         }
     }
 
-    
+
     private void drawTable(string rok, string mesiac)
     {
 
@@ -188,14 +188,14 @@ public partial class sluzby : System.Web.UI.Page
     {
 
         SortedList data_info = x_db.loadRozpisMonthYear(Convert.ToInt32(mesiac), Convert.ToInt32(rok));
-        
+
         DateTime dnesDatum = DateTime.Today;
         int days = DateTime.DaysInMonth(dnesDatum.Year, dnesDatum.Month);
 
         if (data_info["id"] != null)
         {
             String[][] data = my_x2.parseRozpis(data_info["rozpis"].ToString());
-           
+
             for (int i = 0; i < days; i++)
             {
                 string[] row_tmp = new string[7];
@@ -217,8 +217,8 @@ public partial class sluzby : System.Web.UI.Page
                 }
                 for (int j = 0; j < row_tmp.Length; j++)
                 {
-                    
-                    Control tbox = FindControl("textBox_"+i.ToString()+"_"+j.ToString());
+
+                    Control tbox = FindControl("textBox_" + i.ToString() + "_" + j.ToString());
                     TextBox my_text = (TextBox)tbox;
                     my_text.Text = row_tmp[j].ToString();
 
@@ -232,7 +232,7 @@ public partial class sluzby : System.Web.UI.Page
     {
         if (data_info["id"] != null)
         {
-            Session.Add("akt_rozpis",data_info["id"].ToString());
+            Session.Add("akt_rozpis", data_info["id"].ToString());
 
 
             String[][] data = my_x2.parseRozpis(data_info["rozpis"].ToString());
@@ -242,15 +242,15 @@ public partial class sluzby : System.Web.UI.Page
 
             rok_cb.SelectedValue = data_info["rok"].ToString();
 
-           /* if (Convert.ToInt32(data_info["publish"]) == 1)
-            {
+            /* if (Convert.ToInt32(data_info["publish"]) == 1)
+             {
 
-                publish_ck.Checked = true;
-            }
-            else
-            {
-                publish_ck.Checked = false;
-            }*/
+                 publish_ck.Checked = true;
+             }
+             else
+             {
+                 publish_ck.Checked = false;
+             }*/
 
 
             days_lbl.Text = DateTime.DaysInMonth(Convert.ToInt32(rok), Convert.ToInt32(mesiac)).ToString();
@@ -318,8 +318,8 @@ public partial class sluzby : System.Web.UI.Page
                     my_text_box.Height = 80;
                     my_text_box.TextMode = TextBoxMode.MultiLine;
                     my_text_box.Text = data[i][j];
-                    
-                    if ((user_rights == "admin") || (user_rights == "poweruser") )
+
+                    if ((user_rights == "admin") || (user_rights == "poweruser"))
                     {
                         my_text_box.ReadOnly = false;
                     }
@@ -345,7 +345,7 @@ public partial class sluzby : System.Web.UI.Page
             mesiac_cb.SelectedValue = mesiac;
             rok_cb.SelectedValue = rok;
             // Response.Cookies["akt_sluzba"].Expires = DateTime.Now.AddDays(-1);
-            Session.Add("akt_rozpis","0");
+            Session.Add("akt_rozpis", "0");
             for (int i = 0; i < days; i++)
             {
                 TableRow riadok = new TableRow();
@@ -419,8 +419,8 @@ public partial class sluzby : System.Web.UI.Page
                     }
 
 
-                   
-                    if ((user_rights == "admin") || (user_rights == "poweruser") )
+
+                    if ((user_rights == "admin") || (user_rights == "poweruser"))
                     {
                         my_text_box.ReadOnly = false;
                     }
@@ -443,7 +443,7 @@ public partial class sluzby : System.Web.UI.Page
         }
     }
 
-    
+
 
 
     protected void drawRozpis(string mesiac, string rok)
@@ -459,7 +459,7 @@ public partial class sluzby : System.Web.UI.Page
         if (data_info["rozpis"] != null)
         {
 
-            if (((rights.IndexOf("users") != -1) || (rights.IndexOf("sestra") != -1))  && (data_info["publish"].ToString() == "0"))
+            if (((rights.IndexOf("users") != -1) || (rights.IndexOf("sestra") != -1)) && (data_info["publish"].ToString() == "0"))
             {
                 vypis_lbl.Text = "<font style='color:red'>Staze, ešte nie sú dokončené!</font> ";
                 vypis1_lbl.Text = "<font style='color:red'>Staze, ešte nie sú dokončené!</font> ";
@@ -475,7 +475,7 @@ public partial class sluzby : System.Web.UI.Page
             this.__drawStaze(data_info, mesiac, rok, days);
         }
 
-        
+
 
         /*LinkButton my_link_btn = new LinkButton();
         my_link_btn.Text = "ulozit";
@@ -488,48 +488,48 @@ public partial class sluzby : System.Web.UI.Page
     {
         int pocet_dni = Convert.ToInt32(days_lbl.Text);
         string[] month = new string[pocet_dni];
-        string def ="";
+        string def = "";
 
         for (int i = 0; i < pocet_dni; i++)
         {
             for (int j = 0; j < 7; j++)
             {
-                
-                    Control tbox = FindControl("textBox_"+i.ToString()+"_"+j.ToString());
 
-                    if (tbox != null)
+                Control tbox = FindControl("textBox_" + i.ToString() + "_" + j.ToString());
+
+                if (tbox != null)
+                {
+                    TextBox my_box = (TextBox)tbox;
+                    string mtext = my_box.Text.ToString();
+
+                    if (j == 0)
                     {
-                        TextBox my_box = (TextBox)tbox;
-                        string mtext = my_box.Text.ToString();
-
-                        if (j == 0)
-                        {
-                            month[i] = month[i] + mtext;
-                        }
-                        else
-                        {
-                            month[i] = month[i] + "|" + mtext;
-                        }
+                        month[i] = month[i] + mtext;
                     }
-               
+                    else
+                    {
+                        month[i] = month[i] + "|" + mtext;
+                    }
+                }
+
             }
 
-            
 
 
-            
+
+
         }
         def = String.Join("~", month);
         return def;
     }
 
 
-   
+
 
     protected void saveStaze()
     {
         SortedList data = new SortedList();
-               
+
         if (Session["akt_rozpis"].ToString() != "0")
         {
             //data.Add("id", Request.Cookies["akt_sluzba"].Value.ToString);
@@ -575,7 +575,7 @@ public partial class sluzby : System.Web.UI.Page
 
             if (ins_data["status"].ToString() == "ok")
             {
-                Session.Add("akt_ropis",ins_data["last_id"].ToString());
+                Session.Add("akt_ropis", ins_data["last_id"].ToString());
                 vypis_lbl.Text = "Aktuálne staze boli uložené v poriadku....." + Session["akt_rozpis"].ToString();
                 vypis1_lbl.Text = "Aktuálne staze boli uložené v poriadku....." + Session["akt_rozpis"].ToString();
             }
@@ -594,7 +594,7 @@ public partial class sluzby : System.Web.UI.Page
     {
         //this.drawStaze(mesiac_cb.SelectedValue.ToString(), rok_cb.SelectedValue.ToString());
         this.saveStaze();
-       // tabulka = "pokus";
+        // tabulka = "pokus";
         //Session.Add("moje", "lila");
     }
 
@@ -603,8 +603,8 @@ public partial class sluzby : System.Web.UI.Page
         Table1.Controls.Clear();
 
         //vypis_lbl.Text = mesiac_cb.SelectedValue.ToString();
-       // Response.Cookies["rok"].Value = rok_cb.SelectedValue.ToString();
-       this.drawRozpis(mesiac_cb.SelectedValue.ToString(), rok_cb.SelectedValue.ToString());
+        // Response.Cookies["rok"].Value = rok_cb.SelectedValue.ToString();
+        this.drawRozpis(mesiac_cb.SelectedValue.ToString(), rok_cb.SelectedValue.ToString());
     }
 
     protected void prevMonth_Click(object sender, EventArgs e)
@@ -626,14 +626,14 @@ public partial class sluzby : System.Web.UI.Page
     }
 
 
-   
+
 
     protected void toWord_btn_Click(object sender, EventArgs e)
     {
-        Response.Redirect("rozpisword.aspx?rok=" + rok_cb.SelectedValue.ToString()+"&mesiac="+mesiac_cb.SelectedValue.ToString()+"&mes="+mesiac_cb.SelectedItem.ToString());
+        Response.Redirect("rozpisword.aspx?rok=" + rok_cb.SelectedValue.ToString() + "&mesiac=" + mesiac_cb.SelectedValue.ToString() + "&mes=" + mesiac_cb.SelectedItem.ToString());
     }
     protected void print_btn_Click(object sender, EventArgs e)
     {
-        Response.Redirect("rozpisword.aspx?rok=" + rok_cb.SelectedValue.ToString() + "&mesiac=" + mesiac_cb.SelectedValue.ToString() + "&mes=" + mesiac_cb.SelectedItem.ToString()+"&print=1");
+        Response.Redirect("rozpisword.aspx?rok=" + rok_cb.SelectedValue.ToString() + "&mesiac=" + mesiac_cb.SelectedValue.ToString() + "&mes=" + mesiac_cb.SelectedItem.ToString() + "&print=1");
     }
 }

@@ -1,83 +1,10 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<%--<%@ Register TagPrefix="FTB" Namespace="FreeTextBoxControls" Assembly="FreeTextBox" %>--%>
-<%@ Page Language="C#" AutoEventWireup="true" CodeFile="sestrhlas.aspx.cs" Inherits="sestrhlas" ValidateRequest="False" Culture="sk-Sk"  %>
-<%@ Register TagPrefix="duch" TagName="my_header" src="header.ascx" %>
-<%@ Register TagPrefix="menu" TagName="left_menu" Src="left_menu.ascx" %>
-<%@ Register TagPrefix="info" TagName="info_bar" Src="news.ascx" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="sestrhlas.aspx.cs" Inherits="sestrhlas" %>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head runat="server">
-<link href="css/style.css" rel="stylesheet" type="text/css" />
-    <title>IS -KDCH Hlásenie sestier</title>
-     <script type="text/javascript" src="tinymce/js/tinymce/tinymce.min.js"></script>
-     <%--<script type="text/javascript" src="zeroclipboard/ZeroClipboard.js"></script> --%>
-     
-    <script type="text/javascript">
-    tinymce.init({
-    selector: ".dtextbox",
-    //theme:"advanced",
-    toolbar: "undo redo | alignleft aligncenter alignright | bold italic | bullist numlist | fontsizeselect | fontselect | forecolor",
-
-    fontsize_formats: "8pt 10pt 12pt 14pt 18pt 24pt 36pt",
-    font_formats: "Arial=arial,helvetica,sans-serif;Courier New=courier new,courier,monospace;Verdana=verdana",
-    menubar: true,
-    plugins: 'paste textcolor code',
-    paste_word_valid_elements: "b,strong,i,em,h1,h2",
-    paste_as_text: true,
-    force_p_newlines: false,
-    // forced_root_block : 'div',
-    force_br_newlines: true,
-
-    autosave_retention: "30m"
-
-
- })
-   
-         
-/*tinyMCE.init({
-        language :"sk",
-        theme : "advanced",
-        plugins : "paste",
-        theme_advanced_buttons3_add : "pastetext,pasteword,selectall,pastetext",
-        mode : "textareas",
-        force_br_newlines : true,
-        force_p_newlines : false,
-        
-        paste_use_dialog : false,
-        paste_auto_cleanup_on_paste : true,
-        theme_advanced_toolbar_location : "top",
-        
-         paste_preprocess : function(pl, o) {
-            // Content string containing the HTML from the clipboard
-            //alert(o.content);
-            o.content = "-: CLEANED :-\n" + o.content;
-        },
-       paste_postprocess : function(pl, o) {
-            // Content DOM node containing the DOM structure of the clipboard
-            //alert(o.node.innerHTML);
-            o.node.innerHTML = o.node.innerHTML + "\n-: CLEANED :-";
-        }
-        
-});*/
-</script>
-</head>
-<body>
-    <form id="form1" runat="server">
-    <div id="wrapper">   
-    <asp:Label ID="msg_lbl" runat="server" Text="" ForeColor="Red"></asp:Label>
-    <div id="header">
-        <h1>Informačný systém Kliniky detskej chirurgie LF UK a DFNsP</h1> 
-        <duch:my_header runat="server"></duch:my_header>
-    </div>
-        
-        <div id="content">
-         <div id="menu2">
-           <info:info_bar ID="info_bar" runat="server" />
-            <info:info_bar />
-        </div>
-            <div id="cont_text">
-            
-                <h2>Hlásenie sestier KDCH</h2>
+<asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
+    <asp:Label ID="msg_lbl" runat="server" Text="Label"></asp:Label>
+<h2>Hlásenie sestier KDCH</h2>
                 <hr />
                    Prihlasený: <strong><asp:Label ID="user" runat="server" Text="Label" ForeColor="#990000"></asp:Label></strong><br />
                    Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="Label" ForeColor="#990000"></asp:Label></strong><br />
@@ -134,25 +61,5 @@ runat="Server"></FTB:FreeTextBox>--%>
                 <asp:Button ID="def_lock_btn" runat="server" Text="Uzavrieť a vytlačiť hlásko" 
                      BackColor="#990000" ForeColor="Yellow" OnClick="def_loc_fnc" />
                 <%--<asp:Button ID="addInfo_btn" runat="server" Text="Ulož dodatok" Enabled="False" onclick="addInfo_btn_Click"/>--%>
-            </div>
-         </div>
-            <div id="menu">
-            
-                <menu:left_menu ID="Left_menu1" runat="server" /><menu:left_menu />
-            
-            </div>
-            
-            
-            
-        
-       
-        <div id="footer">Design by Boris Duchaj</div>
-    
-    
-    </div>
- 
-    
-    
-    </form>
-</body>
-</html>
+</asp:Content>
+

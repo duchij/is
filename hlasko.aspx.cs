@@ -31,14 +31,14 @@ public partial class hlasko : System.Web.UI.Page
 
         if (Session["newsToShow"] != null)
         {
-           
-                int id = Convert.ToInt32(Session["newsToShow"].ToString());
 
-                string news = x_db.getNewsByID(id);
+            int id = Convert.ToInt32(Session["newsToShow"].ToString());
 
-                this.news_lbl.Text = "<hr/><h1>Novinka</h1>" + news + "<br/><hr/>";
-                Session.Remove("newsToShow");
-           
+            string news = x_db.getNewsByID(id);
+
+            this.news_lbl.Text = "<hr/><h1>Novinka</h1>" + news + "<br/><hr/>";
+            Session.Remove("newsToShow");
+
 
         }
 
@@ -50,7 +50,7 @@ public partial class hlasko : System.Web.UI.Page
             // Calendar1.SelectedDate = DateTime.Today;
             this.setMyDate();
             this.loadHlasko();
-            
+
         }
         else
         {
@@ -62,7 +62,7 @@ public partial class hlasko : System.Web.UI.Page
             this.msg_lbl1.Text="test";
         }*/
 
-        
+
 
     }
 
@@ -151,10 +151,10 @@ public partial class hlasko : System.Web.UI.Page
         else
         {
             SortedList newData = new SortedList();
-            newData.Add("type",this.hlas_type.SelectedValue.ToString());
-            newData.Add("dat_hlas",my_x2.unixDate(this.Calendar1.SelectedDate));
+            newData.Add("type", this.hlas_type.SelectedValue.ToString());
+            newData.Add("dat_hlas", my_x2.unixDate(this.Calendar1.SelectedDate));
             newData.Add("text", Resources.Resource.odd_hlasko_html.ToString());
-            newData.Add("creat_user",Session["user_id"].ToString());
+            newData.Add("creat_user", Session["user_id"].ToString());
             newData.Add("last_user", Session["user_id"].ToString());
 
             SortedList res = x2MySQL.mysql_insert("is_hlasko", newData);
@@ -183,7 +183,7 @@ public partial class hlasko : System.Web.UI.Page
     /// Ulozi hlasenie, ak sa fnc zavola s 1 ulozi a uzavrie akt. hlasenie potom je mozne pisat len dodatky.. Nula urobi len save
     /// </summary>
     /// <param name="uzavri"></param>
-    protected void saveData(bool uzavri,bool callBack)
+    protected void saveData(bool uzavri, bool callBack)
     {
         SortedList data = new SortedList();
         data.Add("dat_hlas", my_x2.unixDate(this.Calendar1.SelectedDate));
@@ -250,7 +250,7 @@ public partial class hlasko : System.Web.UI.Page
     protected void send_Click(object sender, EventArgs e)
     {
 
-        this.saveData(false,false);
+        this.saveData(false, false);
 
     }
 
@@ -305,7 +305,7 @@ public partial class hlasko : System.Web.UI.Page
 
         if (hlasenie.Visible == true)
         {
-            this.saveData(true,false);
+            this.saveData(true, false);
             Response.Redirect("print.aspx?den=" + Calendar1.SelectedDate.Day.ToString() + "&datum=" + Calendar1.SelectedDate.ToLongDateString() + "&m=" + Calendar1.SelectedDate.Month.ToString());
         }
         else
@@ -325,7 +325,7 @@ public partial class hlasko : System.Web.UI.Page
 
         if (hlasenie.Visible == true)
         {
-            this.saveData(true,false);
+            this.saveData(true, false);
             Response.Redirect("print.aspx?den=" + Calendar1.SelectedDate.Day.ToString() + "&datum=" + Calendar1.SelectedDate.ToLongDateString() + "&m=" + Calendar1.SelectedDate.Month.ToString() + "&w=1");
         }
         else
@@ -355,7 +355,7 @@ public partial class hlasko : System.Web.UI.Page
         string text = this.osirix_txt.Text.ToString();
 
         string asciiTxt = x2_var.UTFtoASCII(text);
-      
+
 
         SortedList data = new SortedList();
 
@@ -396,7 +396,7 @@ public partial class hlasko : System.Web.UI.Page
 
     public string[] returnStrArray(string str)
     {
-        string[] result = Regex.Split(str,"\r\n");
+        string[] result = Regex.Split(str, "\r\n");
         return result;
     }
 }

@@ -318,4 +318,7 @@
   <data name="delete" xml:space="preserve">
     <value>Zmazať</value>
   </data>
+  <data name="web_titel" xml:space="preserve">
+    <value>Informačný portál Kliniky detskej chirurgie LF UK a DFNsP</value>
+  </data>
 </root>

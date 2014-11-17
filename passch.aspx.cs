@@ -23,7 +23,7 @@ public partial class passch : System.Web.UI.Page
         string my_passwd1 = passwd1.Text.ToString();
         string my_passwd2 = passwd2.Text.ToString();
 
-        if ((my_passwd1 != my_passwd2) || ( my_passwd1.Length ==0) || (my_passwd2.Length ==0))
+        if ((my_passwd1 != my_passwd2) || (my_passwd1.Length == 0) || (my_passwd2.Length == 0))
         {
             info_lbl.Visible = true;
             info_lbl.Text = "Hesla nie sú rovnaké, alebo heslo nezadané !!!!!";

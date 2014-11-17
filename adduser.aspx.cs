@@ -15,7 +15,7 @@ public partial class adduser : System.Web.UI.Page
     user x_db = new user();
     x2_var my_x2 = new x2_var();
     mysql_db x2MySql = new mysql_db();
-    
+
     protected void Page_Load(object sender, EventArgs e)
     {
 
@@ -35,7 +35,7 @@ public partial class adduser : System.Web.UI.Page
         SortedList akt_user_info = x_db.getUserInfoByID("is_users", Session["user_id"].ToString());
 
 
-        if (rights.IndexOf("users") != -1 || rights.IndexOf("sestra") !=-1  || rights.IndexOf("poweruser") != -1 )
+        if (rights.IndexOf("users") != -1 || rights.IndexOf("sestra") != -1 || rights.IndexOf("poweruser") != -1)
         {
             this.adminsectionPlace.Visible = false;
             login_txt.ReadOnly = true;
@@ -98,13 +98,13 @@ public partial class adduser : System.Web.UI.Page
                 string pracdoba = my_x2.getStr(Session["pracdoba"].ToString());
                 string tyzdoba = my_x2.getStr(Session["tyzdoba"].ToString());
                 string osobcisl = my_x2.getStr(Session["osobcisl"].ToString());
-              
+
 
                 if (pracdoba.Length > 0)
                 {
                     this.pracdoba_txt.Text = Session["pracdoba"].ToString();
                 }
-                if (tyzdoba.Length > 0 )
+                if (tyzdoba.Length > 0)
                 {
                     this.tyzdoba_txt.Text = Session["tyzdoba"].ToString();
                 }
@@ -113,10 +113,10 @@ public partial class adduser : System.Web.UI.Page
                 {
                     this.osobcisl_txt.Text = Session["osobcisl"].ToString();
                 }
-                    
+
 
             }
-        }      
+        }
 
 
     }
@@ -132,10 +132,10 @@ public partial class adduser : System.Web.UI.Page
         string login = login_txt.Text;
         string email = email_txt.Text;
         string passwd = this.passwd_txt.Text;
-         SortedList data = new SortedList();
+        SortedList data = new SortedList();
         int id = 0;
-       
-          
+
+
         try
         {
             id = Convert.ToInt32(this.users_gv.SelectedRow.Cells[1].Text.ToString());
@@ -174,7 +174,7 @@ public partial class adduser : System.Web.UI.Page
                 this.titul_za.Text = "";
                 this.zaradenie_txt.Text = "";
                 this.Page_Load(sender, e);
-              
+
             }
 
 
@@ -187,7 +187,7 @@ public partial class adduser : System.Web.UI.Page
 
             if (meno.Length != 0)
             {
-                if ((my_x2.isAlfaNum(login) == true ) && (login.Length !=0))
+                if ((my_x2.isAlfaNum(login) == true) && (login.Length != 0))
                 {
                     //msg_lbl.Text = "tu sme";
 
@@ -212,15 +212,15 @@ public partial class adduser : System.Web.UI.Page
                     }
                     data.Add("email", email);
                     SortedList user = x_db.getUserPasswd(login);
-                    
-                    if ((user.Count != 0 ) && (user["name"].ToString() == login))
+
+                    if ((user.Count != 0) && (user["name"].ToString() == login))
                     {
                         msg_lbl.Text = "Daný užívateľ už v databáze existuje !!!!!";
                     }
                     else
                     {
                         SortedList res = x2MySql.mysql_insert("is_users", data);
-                       // SortedList res = x_db.insert_rows("is_users", data);
+                        // SortedList res = x_db.insert_rows("is_users", data);
                         Boolean status = Convert.ToBoolean(res["status"]);
 
                         if (status == true)
@@ -229,7 +229,7 @@ public partial class adduser : System.Web.UI.Page
                         }
                         else
                         {
-                            msg_lbl.Text = "Chyba:" + error.ToString()+"<br>"+res["msg"].ToString();
+                            msg_lbl.Text = "Chyba:" + error.ToString() + "<br>" + res["msg"].ToString();
                         }
                     }
                 }
@@ -242,7 +242,7 @@ public partial class adduser : System.Web.UI.Page
             {
                 msg_lbl.Text = "Meno musi byt vypisane";
             }
-        
+
         }
     }
     protected void uprav_btn_Click(object sender, EventArgs e)
@@ -263,7 +263,7 @@ public partial class adduser : System.Web.UI.Page
         data.Add("titul_za", this.titul_za.Text.ToString().Trim());
         data.Add("zaradenie", this.zaradenie_txt.Text.ToString().Trim());
 
-       // string res = x_db.update_row("is_users", data, Session["user_id"].ToString());
+        // string res = x_db.update_row("is_users", data, Session["user_id"].ToString());
 
         SortedList res = x2MySql.mysql_update("is_users", data, Session["user_id"].ToString());
 
@@ -307,7 +307,7 @@ public partial class adduser : System.Web.UI.Page
         string id = this.users_gv.Rows[e.NewSelectedIndex].Cells[1].Text.ToString();
 
 
-        SortedList result = x_db.getUserInfoByID("is_users",id);
+        SortedList result = x_db.getUserInfoByID("is_users", id);
 
         this.name_txt.Text = result["full_name"].ToString();
         this.login_txt.Text = result["name"].ToString();

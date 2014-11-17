@@ -13,25 +13,25 @@ public partial class is_news : System.Web.UI.Page
 {
 
     my_db x_db = new my_db();
-   // x2_var my_x2 = new x2_var();
+    // x2_var my_x2 = new x2_var();
 
     protected void Page_Load(object sender, EventArgs e)
     {
-       // SortedList akt_user_info = x_db.getUserInfoByID("is_users", Request.Cookies["user_id"].Value.ToString());
-      //  user.Text = akt_user_info["full_name"].ToString();
+        // SortedList akt_user_info = x_db.getUserInfoByID("is_users", Request.Cookies["user_id"].Value.ToString());
+        //  user.Text = akt_user_info["full_name"].ToString();
 
         if (Request.Cookies["tuisegumdrum"] == null)
         {
             Response.Redirect("error.html");
         }
 
-       // full_text.ImageGalleryPath = "img/";
-        
+        // full_text.ImageGalleryPath = "img/";
+
 
         if (!IsPostBack)
         {
             //SortedList akt_user_info = x_db.getUserInfoByID("is_users", Request.Cookies["user_id"].Value.ToString());
-           // user.Text = akt_user_info["full_name"].ToString();
+            // user.Text = akt_user_info["full_name"].ToString();
 
             //GridView1.Data
 
@@ -60,12 +60,12 @@ public partial class is_news : System.Web.UI.Page
         {
             id = Convert.ToInt32(news_gv.Rows[news_gv.SelectedIndex].Cells[1].Text.ToString());
         }
-        
+
         SortedList data = new SortedList();
         if (id <= 0)
         {
 
-            
+
 
             data.Add("kratka_sprava", small_text.Text.ToString());
             data.Add("cela_sprava", full_text.Text.ToString());
@@ -108,7 +108,7 @@ public partial class is_news : System.Web.UI.Page
             msg_lbl.Text = result;
         }
         //msg_lbl.Text = Convert.ToString(news_gv.SelectedRow.Cells[0].Text);
-        
+
         //news_gv.DataBind();
 
     }
@@ -116,7 +116,7 @@ public partial class is_news : System.Web.UI.Page
     protected void news_gv_selectRow(object sender, GridViewSelectEventArgs e)
     {
         //msg_lbl.Text = "tu";
-       // msg_lbl.Text += news_gv.Rows[e.NewSelectedIndex].Cells[1].Text.ToString();
+        // msg_lbl.Text += news_gv.Rows[e.NewSelectedIndex].Cells[1].Text.ToString();
 
         SortedList data = x_db.getInfoNewsData(Convert.ToInt32(news_gv.Rows[e.NewSelectedIndex].Cells[1].Text.ToString()));
 

@@ -13,16 +13,16 @@ using System.Text;
 
 public partial class sestrhlas : System.Web.UI.Page
 {
-   
+
 
     my_db x_db = new my_db();
     mysql_db x2MySql = new mysql_db();
     x2_var x2 = new x2_var();
 
-   string userRights = "";
-   
- 
-    
+    string userRights = "";
+
+
+
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -106,7 +106,7 @@ public partial class sestrhlas : System.Web.UI.Page
         }
         else
         {
-           /* Calendar1.SelectedDate, oddType_cb.SelectedValue.ToString(), predZad_cb.SelectedValue.ToString(), hlasenie.Text.ToString(), Session["user_id"].ToString(), this.time_cb.SelectedValue.ToString()*/
+            /* Calendar1.SelectedDate, oddType_cb.SelectedValue.ToString(), predZad_cb.SelectedValue.ToString(), hlasenie.Text.ToString(), Session["user_id"].ToString(), this.time_cb.SelectedValue.ToString()*/
 
             this.hlasenie.Visible = true;
             //dodatok.Visible = false;
@@ -119,14 +119,14 @@ public partial class sestrhlas : System.Web.UI.Page
 
             SortedList newData = new SortedList();
             newData.Add("dat_hlas", x2.unixDate(this.Calendar1.SelectedDate));
-            newData.Add("oddelenie",this.oddType_cb.SelectedValue.ToString());
-            newData.Add("lokalita",this.predZad_cb.SelectedValue.ToString());
-            newData.Add("cas",this.time_cb.SelectedValue.ToString());
+            newData.Add("oddelenie", this.oddType_cb.SelectedValue.ToString());
+            newData.Add("lokalita", this.predZad_cb.SelectedValue.ToString());
+            newData.Add("cas", this.time_cb.SelectedValue.ToString());
             newData.Add("creat_user", Session["user_id"].ToString());
             newData.Add("last_user", Session["user_id"].ToString());
             newData.Add("hlasko", "Hlasenie sestier");
 
-            SortedList result = x2MySql.mysql_insert("is_hlasko_sestry",newData);
+            SortedList result = x2MySql.mysql_insert("is_hlasko_sestry", newData);
 
             Boolean status = Convert.ToBoolean(result["status"]);
             if (status == true)
@@ -149,11 +149,11 @@ public partial class sestrhlas : System.Web.UI.Page
         //Response.Write("<script>Alert('" + msg + "');</script>");
         StringBuilder sb = new StringBuilder();
         sb.Append("<script type='text/javascript'>");
-        sb.Append ("window.onLoad=function() {");
-        sb.Append ("alert('");
-        sb.Append (msg);
-        sb.Append ("')};</script>");
-        ClientScript.RegisterClientScriptBlock(this.Page.GetType(),"alert",sb.ToString());
+        sb.Append("window.onLoad=function() {");
+        sb.Append("alert('");
+        sb.Append(msg);
+        sb.Append("')};</script>");
+        ClientScript.RegisterClientScriptBlock(this.Page.GetType(), "alert", sb.ToString());
 
     }
 
@@ -166,14 +166,14 @@ public partial class sestrhlas : System.Web.UI.Page
 
         if (this.time_cb.SelectedValue.ToString() == "d")
         {
-           data = x_db.getSestrHlasko(Calendar1.SelectedDate.AddDays(-1), oddType_cb.SelectedValue.ToString(), predZad_cb.SelectedValue.ToString(), hlasenie.Text.ToString(), Session["user_id"].ToString(), "n");
+            data = x_db.getSestrHlasko(Calendar1.SelectedDate.AddDays(-1), oddType_cb.SelectedValue.ToString(), predZad_cb.SelectedValue.ToString(), hlasenie.Text.ToString(), Session["user_id"].ToString(), "n");
         }
 
         if (this.time_cb.SelectedValue.ToString() == "n")
         {
             data = x_db.getSestrHlasko(Calendar1.SelectedDate, oddType_cb.SelectedValue.ToString(), predZad_cb.SelectedValue.ToString(), hlasenie.Text.ToString(), Session["user_id"].ToString(), "d");
         }
-        
+
         hlasenie.Text += Resources.Resource.odd_prev_hlasko + data["hlasko"].ToString();
 
         if (data.ContainsKey("error"))
@@ -191,7 +191,7 @@ public partial class sestrhlas : System.Web.UI.Page
     {
         SortedList data = new SortedList();
         data.Add("hlasko", hlasenie.Text.ToString());
-        data.Add("last_user",Session["user_id"].ToString());
+        data.Add("last_user", Session["user_id"].ToString());
         data.Add("dat_hlas", x2.unixDate(this.Calendar1.SelectedDate));
         data.Add("oddelenie", this.oddType_cb.SelectedValue.ToString());
         data.Add("lokalita", this.predZad_cb.SelectedValue.ToString());
@@ -237,7 +237,7 @@ public partial class sestrhlas : System.Web.UI.Page
         SortedList data = new SortedList();
         SortedList my_last_user = new SortedList();
         data.Add("hlasko", my_dodatok);
-        data.Add("last_user",Session["user_id"].ToString());
+        data.Add("last_user", Session["user_id"].ToString());
 
         string res = x_db.update_row("is_hlasko_sestry", data, Session["akt_hlasenie"].ToString());
         my_last_user = x_db.getUserInfoByID("is_users", Session["user_id"].ToString());
@@ -292,7 +292,7 @@ public partial class sestrhlas : System.Web.UI.Page
 
     protected void copyYesterday_btn_Click(object sender, EventArgs e)
     {
-       
+
         this.loadPrevHlasko();
 
     }

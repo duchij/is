@@ -9,7 +9,7 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 
-public partial class is_news : System.Web.UI.Page
+public partial class opprogram : System.Web.UI.Page
 {
 
     my_db x_db = new my_db();
@@ -17,20 +17,20 @@ public partial class is_news : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-       // SortedList akt_user_info = x_db.getUserInfoByID("is_users", Request.Cookies["user_id"].Value.ToString());
-      //  user.Text = akt_user_info["full_name"].ToString();
+        // SortedList akt_user_info = x_db.getUserInfoByID("is_users", Request.Cookies["user_id"].Value.ToString());
+        //  user.Text = akt_user_info["full_name"].ToString();
         if (Session["tuisegumdrum"] == null)
         {
             Response.Redirect("error.html");
         }
 
         full_text.ImageGalleryPath = "img/";
-        
+
 
         if (!IsPostBack)
         {
             //SortedList akt_user_info = x_db.getUserInfoByID("is_users", Request.Cookies["user_id"].Value.ToString());
-           // user.Text = akt_user_info["full_name"].ToString();
+            // user.Text = akt_user_info["full_name"].ToString();
 
             //GridView1.Data
 
@@ -61,7 +61,7 @@ public partial class is_news : System.Web.UI.Page
         {
             id = Convert.ToInt32(news_gv.Rows[news_gv.SelectedIndex].Cells[1].Text.ToString());
         }
-        
+
         SortedList data = new SortedList();
         if (id <= 0)
         {
@@ -112,7 +112,7 @@ public partial class is_news : System.Web.UI.Page
             msg_lbl.Text = result;
         }
         //msg_lbl.Text = Convert.ToString(news_gv.SelectedRow.Cells[0].Text);
-        
+
         //news_gv.DataBind();
 
     }
@@ -120,7 +120,7 @@ public partial class is_news : System.Web.UI.Page
     protected void news_gv_selectRow(object sender, GridViewSelectEventArgs e)
     {
         //msg_lbl.Text = "tu";
-       // msg_lbl.Text += news_gv.Rows[e.NewSelectedIndex].Cells[1].Text.ToString();
+        // msg_lbl.Text += news_gv.Rows[e.NewSelectedIndex].Cells[1].Text.ToString();
 
         SortedList passPhrase = x_db.getPassPhrase();
 
@@ -140,7 +140,7 @@ public partial class is_news : System.Web.UI.Page
     {
 
         // Add here your method for DataBinding
-       // news_gv.DataSource = x_db.getData_OpProgram();
+        // news_gv.DataSource = x_db.getData_OpProgram();
 
         news_gv.PageIndex = e.NewPageIndex;
         news_gv.DataBind();

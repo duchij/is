@@ -17,7 +17,7 @@ public partial class dovolenky : System.Web.UI.Page
     my_db x_db = new my_db();
     x2_var my_x2 = new x2_var();
 
-    public string rights = ""; 
+    public string rights = "";
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -25,16 +25,16 @@ public partial class dovolenky : System.Web.UI.Page
         {
             Response.Redirect("error.html");
         }
-        warning_lbl.Visible = false;
-       // Lab.Text = sender.GetType().TypeHandle.ToString();
+        this.warning_lbl.Visible = false;
+        // Lab.Text = sender.GetType().TypeHandle.ToString();
         if (Request["del"] != null)
         {
-           // this.deleteDovolenka();
+            // this.deleteDovolenka();
         }
 
         this.rights = Session["rights"].ToString();
 
-        if (this.rights == "users") 
+        if (this.rights == "users")
         {
             this.vkladanie_dov.Visible = false;
             this.uziv_dovolenka.Visible = true;
@@ -56,18 +56,18 @@ public partial class dovolenky : System.Web.UI.Page
                 od_cal.SelectedDate = DateTime.Today;
                 do_cal.SelectedDate = DateTime.Today;
 
-                List<string> data = x_db.getAllUsers("is_users","users");
+                List<string> data = x_db.getAllUsers("is_users", "users");
                 int cnt = data.Count;
-                for (int i = 0; i < cnt; i++ )
+                for (int i = 0; i < cnt; i++)
                 {
                     string[] strTmp = data[i].Split('|');
-                    if(strTmp[0] != "Administrator")
+                    if (strTmp[0] != "Administrator")
                     {
                         zamestnanci.Items.Add(new ListItem(strTmp[1].ToString(), strTmp[0].ToString()));
                         // zamen_zoz.Items.Add(new ListItem(tmp.Value.ToString(), tmp.Key.ToString()));
                     }
                 }
-                
+
 
                 this.month_lbl.Text = mesiac_cb.SelectedItem.ToString();
                 this.monthUser_lbl.Text = mesiac_cb.SelectedItem.ToString();
@@ -95,7 +95,7 @@ public partial class dovolenky : System.Web.UI.Page
                 this.drawDovolenTab();
                 this.drawActDovolenky();
                 //this.actStatusDovol();
-                
+
 
             }
             else
@@ -114,55 +114,55 @@ public partial class dovolenky : System.Web.UI.Page
 
         SortedList dov_data = x_db.getDovolenkaByID(_id.ToString());
 
-        
 
 
 
-            DateTime do_date = Convert.ToDateTime(dov_data["do"].ToString());
-            DateTime od_date = Convert.ToDateTime(dov_data["od"].ToString());
 
-            //DateTime 
+        DateTime do_date = Convert.ToDateTime(dov_data["do"].ToString());
+        DateTime od_date = Convert.ToDateTime(dov_data["od"].ToString());
 
-
-            int pocetVolnychDni = my_x2.pocetVolnychDni(od_date, do_date, x_db.getFreeDays());
-
-            int pocetDni = (do_date - od_date).Days +1;
-
-            //msg_lbl.Text = "volne:" + pocetVolnychDni.ToString() + "...." + pocetDni.ToString();
-
-            int pocetPracDni = pocetDni - pocetVolnychDni;
-
-            SortedList data = x_db.getDovolStatus("is_dovolen_zost", dov_data["user_id"].ToString());
-
-            //int act_zost = Convert.ToInt32(data["zostatok"].ToString()) + pocetPracDni;
-            //SortedList new_data = new SortedList();
-            //new_data.Add("zostatok", act_zost.ToString());
-
-            //x_db.update_row("is_dovolen_zost", new_data, data["id"].ToString());
-           // this.dovolenkaZost_txt.Text = act_zost.ToString();
-
-            string res = x_db.eraseRowByID("is_dovolenky", _id.ToString());
-
-            if (res != "ok")
-            {
-                msg_lbl.Text = res;
-            }
-
-            this.dovolenky_tab.Controls.Clear();
-            this.zoznam_tbl.Controls.Clear();
-            this.drawDovolenTab();
+        //DateTime 
 
 
-            if (this.rights.IndexOf("users") == -1)
-            {
-                //this.drawActDovolenky();
-            }
-            else
-            {
-                this.drawUserActDovolenky();
-            }
-            
-        
+        int pocetVolnychDni = my_x2.pocetVolnychDni(od_date, do_date, x_db.getFreeDays());
+
+        int pocetDni = (do_date - od_date).Days + 1;
+
+        //msg_lbl.Text = "volne:" + pocetVolnychDni.ToString() + "...." + pocetDni.ToString();
+
+        int pocetPracDni = pocetDni - pocetVolnychDni;
+
+        SortedList data = x_db.getDovolStatus("is_dovolen_zost", dov_data["user_id"].ToString());
+
+        //int act_zost = Convert.ToInt32(data["zostatok"].ToString()) + pocetPracDni;
+        //SortedList new_data = new SortedList();
+        //new_data.Add("zostatok", act_zost.ToString());
+
+        //x_db.update_row("is_dovolen_zost", new_data, data["id"].ToString());
+        // this.dovolenkaZost_txt.Text = act_zost.ToString();
+
+        string res = x_db.eraseRowByID("is_dovolenky", _id.ToString());
+
+        if (res != "ok")
+        {
+            msg_lbl.Text = res;
+        }
+
+        this.dovolenky_tab.Controls.Clear();
+        this.zoznam_tbl.Controls.Clear();
+        this.drawDovolenTab();
+
+
+        if (this.rights.IndexOf("users") == -1)
+        {
+            //this.drawActDovolenky();
+        }
+        else
+        {
+            this.drawUserActDovolenky();
+        }
+
+
 
 
     }
@@ -180,7 +180,7 @@ public partial class dovolenky : System.Web.UI.Page
 
     protected void actStatusDovol()
     {
-       // msg_lbl.Text = "tu dom";
+        // msg_lbl.Text = "tu dom";
 
         SortedList dov_data = x_db.getDovolStatus("is_dovolen_zost", zamestnanci.SelectedValue.ToString());
 
@@ -218,7 +218,7 @@ public partial class dovolenky : System.Web.UI.Page
         {
             msg_lbl.Text = dov_data["error"].ToString();
         }
-       
+
     }
 
 
@@ -229,25 +229,25 @@ public partial class dovolenky : System.Web.UI.Page
         int tc_rok = Convert.ToInt32(this.rok_cb.SelectedValue.ToString());
         //int pocet_dni = datum.day 
         int pocetDni = DateTime.DaysInMonth(tc_rok, tc_month);
-        
-        
-      
+
+
+
         //string tmp_od = my_x2.unixDate(new DateTime(datum.Year, datum.Month, 1));
 
         //string tmp_do = my_x2.unixDate(new DateTime(datum.Year, datum.Month, pocetDni));
-        ArrayList data = x_db.getDovolenky(tc_month,tc_rok);
+        ArrayList data = x_db.getDovolenky(tc_month, tc_rok);
 
         string lila = "";
         string[] tmp = new string[3];
         ArrayList mes_dov = new ArrayList();
-        for (int o=0; o<pocetDni; o++)
+        for (int o = 0; o < pocetDni; o++)
         {
             lila += o.ToString() + "..";
             mes_dov.Add("<ul>");
-            
-            for (int i=0 ;i<data.Count; i++)
+
+            for (int i = 0; i < data.Count; i++)
             {
-                
+
                 //lila += data[i].ToString();
                 string muf = data[i].ToString();
                 tmp = muf.Split(new char[] { ';' });
@@ -255,10 +255,10 @@ public partial class dovolenky : System.Web.UI.Page
                 DateTime tmp_do_mes = Convert.ToDateTime(tmp[2]);
                 DateTime tmp_den_mes = new DateTime(tc_rok, tc_month, o + 1);
 
-                if ((tmp_den_mes >=tmp_od_mes) && (tmp_den_mes <= tmp_do_mes))
+                if ((tmp_den_mes >= tmp_od_mes) && (tmp_den_mes <= tmp_do_mes))
                 {
                     string lo_name = tmp[0];
-                    
+
                     if (mes_dov[o].ToString().IndexOf(lo_name) == -1)
                     {
                         if (i % 2 == 0)
@@ -273,11 +273,11 @@ public partial class dovolenky : System.Web.UI.Page
                 }
 
             }
-          mes_dov[o]+="</ul>";  
-            
+            mes_dov[o] += "</ul>";
+
         }
-       // int riadkov = 5;
-       // int counter = 0;
+        // int riadkov = 5;
+        // int counter = 0;
         int my_den = 0;
 
         for (int i = 0; i < 5; i++)
@@ -286,12 +286,12 @@ public partial class dovolenky : System.Web.UI.Page
             TableRow mojRiadok = new TableRow();
             for (int x = 0; x < 7; x++)
             {
-               
+
                 TableCell mojaCela = new TableCell();
                 mojaCela.ID = "mojaCelb_" + i.ToString() + "_" + x.ToString();
                 mojaCela.VerticalAlign = VerticalAlign.Top;
                 mojaCela.CssClass = "duch";
-               // mojaCela.Width = 100;
+                // mojaCela.Width = 100;
                 my_den++;
 
                 //DateTime tmp_den_mes = new DateTime(tc_rok, tc_month, o + 1);
@@ -300,12 +300,12 @@ public partial class dovolenky : System.Web.UI.Page
                     mojaCela.BackColor = System.Drawing.Color.Yellow;
                     mojaCela.ForeColor = System.Drawing.Color.FromArgb(0x990000);
                 }
-                
+
 
                 mojaCela.BorderWidth = 1;
                 mojaCela.BorderColor = System.Drawing.Color.FromArgb(0x990000);
-                
-                
+
+
                 if (my_den <= pocetDni)
                 {
                     DateTime my_date = new DateTime(tc_rok, tc_month, my_den);
@@ -325,21 +325,21 @@ public partial class dovolenky : System.Web.UI.Page
 
                     mojaCela.Text = "<strong>" + my_den.ToString() + "<br/><font style='font-size:9px;'> " + nazov + "</font><br></strong><br/>";
                     //mojaCela.Text += "<font style='font-size:10px;'>"+mes_dov[my_den-1].ToString()+"</font>";
-                    mojaCela.Text +=  mes_dov[my_den - 1].ToString() ;
+                    mojaCela.Text += mes_dov[my_den - 1].ToString();
                 }
-                
+
                 //counter++;
-               
+
                 mojRiadok.Controls.Add(mojaCela);
-                
+
             }
-           // counter++;
+            // counter++;
             dovolenky_tab.Controls.Add(mojRiadok);
-            
-           
-            
+
+
+
         }
-       
+
 
 
     }
@@ -434,12 +434,12 @@ public partial class dovolenky : System.Web.UI.Page
             }
         }
     }
-   
+
 
 
     protected void save_btn_Click(object sender, EventArgs e)
     {
-        
+
         if (od_cal.SelectedDate > do_cal.SelectedDate)
         {
             msg_lbl.Text = "Do Datum nemoze byt mensi ako Od datum...";
@@ -506,8 +506,8 @@ public partial class dovolenky : System.Web.UI.Page
             }
         }
 
-       
-        
+
+
 
 
 
@@ -515,7 +515,7 @@ public partial class dovolenky : System.Web.UI.Page
 
     protected void deleteDovolenka(object sender, EventArgs e)
     {
-       // msg_lbl.Text = sender.ToString();
+        // msg_lbl.Text = sender.ToString();
 
         Control data = (Control)sender;
 
@@ -523,8 +523,8 @@ public partial class dovolenky : System.Web.UI.Page
         string[] tmp = name.Split(new char[] { '_' });
         this.deleteDovolenka(tmp[1].ToString());
 
-       // this.drawActDovolenky();
-       // this.drawDovolenTab();
+        // this.drawActDovolenky();
+        // this.drawDovolenTab();
 
 
 
@@ -586,43 +586,43 @@ public partial class dovolenky : System.Web.UI.Page
     public void drawActDovolenky()
     {
         zoznam_tbl.Controls.Clear();
-       // DateTime datum = DateTime.Now;
-        
+        // DateTime datum = DateTime.Now;
+
 
         int tc_month = Convert.ToInt32(this.mesiac_cb.SelectedValue.ToString());
         int tc_year = Convert.ToInt32(this.rok_cb.SelectedValue.ToString());
         int pocetDni = DateTime.DaysInMonth(tc_year, tc_month);
         string tmp_od = my_x2.unixDate(new DateTime(tc_year, tc_month, 1));
 
-      // string tmp_do = my_x2.unixDate(new DateTime(datum.Year, datum.Month, pocetDni));
-        ArrayList data = x_db.getDovolenkyWithID(tc_month,tc_year);
+        // string tmp_do = my_x2.unixDate(new DateTime(datum.Year, datum.Month, pocetDni));
+        ArrayList data = x_db.getDovolenkyWithID(tc_month, tc_year);
 
         int pocetDov = data.Count;
-       
+
         for (int i = 0; i < pocetDov; i++)
         {
 
             TableRow mojRiadok = new TableRow();
             string[] tmp = new string[4];
 
-            tmp = data[i].ToString().Split(new char[]{';'});
+            tmp = data[i].ToString().Split(new char[] { ';' });
 
             for (int j = 0; j < 5; j++)
             {
                 TableCell mojaCela = new TableCell();
                 mojaCela.ID = "mojaCela_" + i.ToString() + "_" + j.ToString();
-               // mojaCela.Width = 150;
+                // mojaCela.Width = 150;
                 if (j < 3)
                 {
                     mojaCela.Text = tmp[j].ToString();
                 }
-                if (j==4)
+                if (j == 4)
                 {
                     Button mojeTlac = new Button();
                     mojeTlac.Command += new CommandEventHandler(this.deleteDovolenka);
-                    mojeTlac.ID = "Button_"+tmp[3].ToString();
+                    mojeTlac.ID = "Button_" + tmp[3].ToString();
                     mojeTlac.Text = "Zmaz";
-                    
+
 
                     //mojaCela.Text = "<a href='dovolenky.aspx?del="+tmp[3].ToString()+"' style='color:red;'>Zmaž"+"</a>";
                     mojaCela.Controls.Add(mojeTlac);
@@ -647,12 +647,12 @@ public partial class dovolenky : System.Web.UI.Page
         {
             foreach (DictionaryEntry row_data in data[i])
             {
-               // msg_lbl.Text += row_data.Key.ToString() + "..." + row_data.Value.ToString() + "<br/>";
+                // msg_lbl.Text += row_data.Key.ToString() + "..." + row_data.Value.ToString() + "<br/>";
 
                 DateTime zaciatok = Convert.ToDateTime(data[i]["od"].ToString());
                 DateTime koniec = Convert.ToDateTime(data[i]["do"].ToString());
 
-               // int celk_dov = Convert.ToInt32(this.dovolenkaPravo_txt.ToString());
+                // int celk_dov = Convert.ToInt32(this.dovolenkaPravo_txt.ToString());
 
                 int pocetVolnychDni = my_x2.pocetVolnychDni(zaciatok, koniec, x_db.getFreeDays());
 
@@ -660,8 +660,8 @@ public partial class dovolenky : System.Web.UI.Page
 
                 defDni = pocetDni - pocetVolnychDni;
 
-               
-               
+
+
 
             }
             dovCount += defDni;
@@ -691,7 +691,7 @@ public partial class dovolenky : System.Web.UI.Page
             this.warning_lbl.Text = ex.Message.ToString();
         }
 
-        
+
 
 
 

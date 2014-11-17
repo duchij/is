@@ -1,44 +1,169 @@
 ﻿<%@ Register TagPrefix="duch" TagName="my_header" src="header.ascx" %>
 <%@ Register TagPrefix="menu" TagName="left_menu" Src="left_menu.ascx" %>
 <%@ Register TagPrefix="info" TagName="info_bar" Src="news.ascx" %>
-<%@ Master Language="C#" AutoEventWireup="true" CodeFile="MasterPage.master.cs" Inherits="MasterPage" %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<%@ Master Language="C#" AutoEventWireup="true" CodeFile="MasterPage.master.cs" Inherits="MasterPage"  %>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+
+
+<!DOCTYPE html >
+
+<!--[if lt IE 7]><html class="no-js ie ie6 lt-ie7 lt-ie8 lt-ie9 lt-ie10"><![endif]-->
+<!--[if IE 7]>   <html class="no-js ie ie7 lt-ie8 lt-ie9 lt-ie10"><![endif]-->
+<!--[if IE 8]>   <html class="no-js ie ie8 lt-ie9 lt-ie10"><![endif]-->
+<!--[if IE 9]>   <html class="no-js ie ie9 lt-ie10"><![endif]-->
+<!--[if gt IE 9]><html class="no-js ie ie10"><![endif]-->
+<!--[if !IE]><!-->
+
+<html class="no-js" xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
+     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+	 
+	   <script src="gdw/js/libs/modernizr-2.6.2.min.js"></script>
+	    <!-- jQuery-->
+	  
+	    <!-- framework css --><!--[if gt IE 9]><!-->
+	    <link type="text/css" rel="stylesheet" href="gdw/css/groundwork.css" /><!--<![endif]--><!--[if lte IE 9]>
+	    <link type="text/css" rel="stylesheet" href="css/groundwork-core.css">
+	    <link type="text/css" rel="stylesheet" href="css/groundwork-type.css">
+	    <link type="text/css" rel="stylesheet" href="css/groundwork-ui.css">
+	    <link type="text/css" rel="stylesheet" href="css/groundwork-anim.css">
+	    <link type="text/css" rel="stylesheet" href="css/groundwork-ie.css"><![endif]-->
+	   	<link type="text/css" rel="stylesheet" href="gdw/css/duch.css" />
+	   	 
     <title>ISESKO</title>
     <asp:ContentPlaceHolder id="head" runat="server">
     </asp:ContentPlaceHolder>
-    <link href="css/style.css" rel="stylesheet" type="text/css" />
-</head>
+   <%-- <link href="css/style.css" rel="stylesheet" type="text/css" />--%>
+    <script type="text/javascript" src="tinymce/js/tinymce/tinymce.min.js"></script>
+    <script type="text/javascript">
+        tinymce.init({
+        selector: ".dtextbox",
+        //theme:"advanced",
+        toolbar:"undo redo | alignleft aligncenter alignright | bold italic | bullist numlist | fontsizeselect | fontselect | forecolor",
+        
+        fontsize_formats: "8pt 10pt 12pt 14pt 18pt 24pt 36pt",
+        font_formats: "Arial=arial,helvetica,sans-serif;Courier New=courier new,courier,monospace;Verdana=verdana",
+        menubar:true,
+        plugins : 'paste textcolor code',
+        paste_word_valid_elements: "b,strong,i,em,h1,h2",
+        paste_as_text: true,
+        force_p_newlines: false,
+       // forced_root_block : 'div',
+        force_br_newlines : true,
 
+        autosave_retention: "30m"
+
+     });
+ </script>
+    
+    
+</head>
+<asp:Page EnableEventValidation="False" />
 <body>
     <form id="form1" runat="server">
-  /
-     <div id="wrapper">
-        <div id="header">
-            <h1>Informačný systém Kliniky detskej chirurgie LF UK a DFNsP</h1> 
-                <duch:my_header ID="my_header" runat="server"></duch:my_header>
+ 
+     <div class="container">
+     
+        <nav class="nav" role="navigation" title="Mobile">
+    			 <ul>
+					<!--<li><button>Nav Item 1</button></li>!-->
+					<li><button>Organizacne veci</button>
+						<ul>
+							<li><button>Sluzby</button></li>
+							<!--<li><button>Sub Menu 1</button>
+								<ul>
+									<li><button>Sub Menu Item 1</button></li>
+									<li><button>Sub Menu Item 2</button></li>
+								</ul>
+							</li>!-->
+							<li><button>Staze</button></li>
+							<li><button>RTG Diagnostika</button></li>
+						</ul>
+					</li>
+				<li><button>Nav Item 3</button></li>
+			</ul>
+    	</nav>
+     
+     
+        <div class="row">
+                <div class="three fourth half-padded"><h1>
+                    <asp:Label ID="web_titel" runat="server" Text="<%$ Resources:Resource,web_titel %>"></asp:Label></h1></div>
+		        <div class="one fourth"><div align="right">
+                    <asp:Button ID="log_out" runat="server"  OnClick="log_out_Click" Text="Odhlasenie" class="button red" /></div></div>
+		</div> 
+		
+        <duch:my_header ID="my_header" runat="server"></duch:my_header>
+        
+        
+        <div class="row">
+          <div class="one fourth">
+          <div class="box orange">
+            <asp:HyperLink ID="news_link" runat="server" NavigateUrl="is_news.aspx">
+                <asp:Localize runat="server" ID="localize3" Text="<%$ Resources:Resource, is_news_title %>">
+                </asp:Localize>
+            </asp:HyperLink>
+            </div>
+        </div>
+         <div class="one fourth">
+         <div class="box orange">
+            <asp:HyperLink ID="odd_link" runat="server" NavigateUrl="is_news.aspx" >
+                <asp:Localize runat="server" ID="localize1" Text="<%$ Resources:Resource,tabs_odd %>">
+                </asp:Localize>
+           </asp:HyperLink>
+           </div>
+           </div>
+             <div class="one fourth">
+             <div class="box orange">
+            <asp:HyperLink ID="rozpislek_link" runat="server" NavigateUrl="rozpislekar.aspx" >
+                <asp:Localize runat="server" ID="localize2" Text="<%$ Resources:Resource,tabs_rozpis_lekar %>">
+                </asp:Localize>
+           </asp:HyperLink>
+           </div>
+           </div>
+             <div class="one fourth">
+             <div class="box orange">
+            <asp:HyperLink ID="opprogram_link" runat="server" NavigateUrl="opprogram.aspx" >
+                <asp:Localize runat="server" ID="localize4" Text="<%$ Resources:Resource,tabs_op_program %>">
+                </asp:Localize>
+           </asp:HyperLink>
+           </div>
+           </div>
+           
+           <%-- <td class="tabs"><a href="opkniha.aspx" target="_self" class="tabs_a">
+                <asp:Localize runat="server" ID="localize2" Text="<%$ Resources:Resource,tabs_operacky %>">
+                </asp:Localize>
+            </a></td>--%>
         </div>
         
-        <div id="content">
-        
-             <div id="menu2">
-                <info:info_bar ID="info_bar" runat="server" />
-             </div>
-             <div id="cont_text">
-                <asp:ContentPlaceHolder id="ContentPlaceHolder1" runat="server">
-        
+        <div class="row">
+                
+        </div>
+          
+          <div class="row">
+            <div class="one sixth desktop-only bounceInLeft animated">
+                <menu:left_menu ID="left_menu" runat="server" />
+            </div>
+            <div class="four sixth fourth half-padded">
+                <asp:ContentPlaceHolder id="ContentPlaceHolder1" runat="server">     
                 </asp:ContentPlaceHolder>
             </div>
             
-            <div id="menu"> 
-                 <menu:left_menu ID="left_menu" runat="server" />
+            <div class="one sixth half-padded">
+                  <info:info_bar ID="info_bar" runat="server" /> 
             </div>
-        </div>
-            <div id="footer">Design by Boris Duchaj</div>
-    </div>
+         </div>  
+         
+        <div class="row">
+            <div class="one centered third">
+           Design by <a href="http://duchs.blogspot.sk" target="_blank">Boris Duchaj</a>, C 2010-2014<br />
+            CSS Adaptive Template by <a href="http://groundworkcss.github.io/" target="_blank">GroundWorks  CSS2</a>
+            </div>
+  </div>
     </form>
+    
+    <script type="text/javascript" src="gdw/js/libs/jquery-1.10.2.min.js"></script>
+	<script type="text/javascript" src="gdw/js/groundwork.all.js"></script>
 </body>
 </html>
