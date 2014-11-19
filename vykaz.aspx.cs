@@ -126,8 +126,15 @@ public partial class vykaz : System.Web.UI.Page
                     {
 
                         int ddTemp = ddStart.Day - 1;
-                        Control tbox = FindControl("textBox_" + ddTemp.ToString() + "_2");
-                        Control tbox1 = FindControl("textBox_" + ddTemp.ToString() + "_1");
+
+                        ContentPlaceHolder ctpl = new ContentPlaceHolder();
+                        Control tmp = Page.Master.FindControl("ContentPlaceHolder1");
+
+                        ctpl = (ContentPlaceHolder)ctpl;
+
+
+                        Control tbox = ctpl.FindControl("textBox_" + ddTemp.ToString() + "_2");
+                        Control tbox1 = ctpl.FindControl("textBox_" + ddTemp.ToString() + "_1");
 
 
                         TextBox my_text_box = (TextBox)tbox;
@@ -202,7 +209,12 @@ public partial class vykaz : System.Web.UI.Page
 
             for (int j = 0; j < colsLen; j++)
             {
-                Control tbox = FindControl("textBox_" + i.ToString() + "_" + j.ToString());
+                ContentPlaceHolder ctp = new ContentPlaceHolder();
+                Control tmp = Page.Master.FindControl("ContentPlaceHolder1");
+                ctp = (ContentPlaceHolder)tmp;
+
+
+                Control tbox = ctp.FindControl("textBox_" + i.ToString() + "_" + j.ToString());
                 TextBox my_text_box = (TextBox)tbox;
 
                 if (cols[j].ToString() != "0")
@@ -424,11 +436,16 @@ public partial class vykaz : System.Web.UI.Page
     {
         //rozpis = this.denCisla(vykazVypis["exday"].ToString());
 
+        ContentPlaceHolder ctpl = new ContentPlaceHolder();
+        Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+
+        ctpl = (ContentPlaceHolder)tmpControl;
+
         for (int j = 0; j < 11; j++)
         {
             if (j > 0)
             {
-                Control tbox = FindControl("textBox_" + i.ToString() + "_" + j.ToString());
+                Control tbox = ctpl.FindControl("textBox_" + i.ToString() + "_" + j.ToString());
                 TextBox my_text_box = (TextBox)tbox;
                 //TextBox my_text_box = new TextBox();
 
@@ -509,9 +526,14 @@ public partial class vykaz : System.Web.UI.Page
         decimal result = 0;
         decimal tmp = 0;
 
+        ContentPlaceHolder ctpl = new ContentPlaceHolder();
+        Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+
+        ctpl = (ContentPlaceHolder)tmpControl;
+
         for (int i = 0; i < rows; i++)
         {
-            Control Tbox = FindControl(textBox + i.ToString() + "_" + col.ToString());
+            Control Tbox = ctpl.FindControl(textBox + i.ToString() + "_" + col.ToString());
             TextBox sumBox = (TextBox)Tbox;
             try
             {
@@ -606,11 +628,16 @@ public partial class vykaz : System.Web.UI.Page
         string vykazData = "";
         int days = DateTime.DaysInMonth(rok, mesiac);
 
+        ContentPlaceHolder ctpl = new ContentPlaceHolder();
+        Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+
+        ctpl = (ContentPlaceHolder)tmpControl;
+
         for (int i = 0; i < days; i++)
         {
             for (int j = 0; j < 12; j++)
             {
-                Control Tbox = FindControl("textBox_" + i.ToString() + "_" + j.ToString());
+                Control Tbox = ctpl.FindControl("textBox_" + i.ToString() + "_" + j.ToString());
                 TextBox mBox = (TextBox)Tbox;
 
                 string num = mBox.Text.ToString();
@@ -950,11 +977,15 @@ public partial class vykaz : System.Web.UI.Page
                 ypos = ypos - (float)kof;
            }
 
+           ContentPlaceHolder ctpl = new ContentPlaceHolder();
+           Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+
+           ctpl = (ContentPlaceHolder)tmpControl;
            
             
             for (int j = 0; j < 12; j++)
             {
-                Control Tbox = FindControl("textBox_" + i.ToString() + "_" + j.ToString());
+                Control Tbox = ctpl.FindControl("textBox_" + i.ToString() + "_" + j.ToString());
                 TextBox mBox = (TextBox)Tbox;
                 cb.BeginText();
                 if (j > 0 )

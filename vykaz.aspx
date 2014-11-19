@@ -7,7 +7,7 @@
   
  <h1> Mesacny vykaz</h1>
     <div class="row">
-    <div class="one fourth">
+        <div class="one half">
                 <asp:Label ID="zaMesiac_lbl" runat="server"></asp:Label>
                  
                  Mesiac:<asp:DropDownList ID="mesiac_cb" runat="server" 
@@ -25,8 +25,8 @@
                         <asp:ListItem Value="11">November</asp:ListItem>
                         <asp:ListItem Value="12">December</asp:ListItem>
                     </asp:DropDownList>  
-                     </div>
-        <div class="one fourth">  
+        </div>
+        <div class="one half">  
                     Rok: 
                 <asp:DropDownList ID="rok_cb" runat="server" AutoPostBack="True" OnSelectedIndexChanged = "onYearChangedFnc">
                     <asp:ListItem Value="2010">Rok 2010</asp:ListItem>
@@ -35,8 +35,10 @@
                     <asp:ListItem Value="2013">Rok 2013</asp:ListItem>
                      <asp:ListItem Value="2014">Rok 2014</asp:ListItem>
                 </asp:DropDownList>
-               </div>
-        <div class="one fourth">
+        </div>
+    </div>
+    <div class="row">
+        <div class="one">
                 
                 <hr />
                     <asp:Label ID="predchMes_lbl" runat="server" Text="Prenos z predchadzajuceho mesiaca:"></asp:Label><asp:TextBox ID="predMes_txt"
@@ -45,10 +47,16 @@
                 <asp:Button ID="createPdf_btn" runat="server" Text="Tlac" 
                     OnClick="createPdf_btn_fnc" Enabled="False" />
                     <hr />
-            </div>
-        <div class="one fourth">
+        </div>
+   </div>
+   <div class="row">
+            
+        <div class="one">
                     Pocet hodin podla dni:<asp:TextBox ID="pocetHod_txt" runat="server" Width="50"> </asp:TextBox><%--<asp:Label ID="pocetHod_lbl" runat="server"></asp:Label> --%>Rozdiel medzi: <strong><asp:Label ID="rozdiel_lbl" runat="server"></asp:Label></strong><br /><hr />
-                     
+        </div>
+  </div>
+  <div class="row">
+        <div class="one">
                           <table border="1" style="border:none;">
                         <tr>
                             <td width="45" style="font-size:9px;" ></td>
@@ -67,9 +75,10 @@
                       
                       
                       </table> 
-                      </div>
         </div>
-                    
+ </div>
+           <div class="row">
+        <div class="one">         
                 
                 <table border="1" style="border:none;">
                 <tr>
@@ -91,6 +100,8 @@
         
                 
                 <asp:Table ID="vykaz_tbl" runat="server"></asp:Table>
+                </div>
+                </div>
                         
 </asp:Content>
 

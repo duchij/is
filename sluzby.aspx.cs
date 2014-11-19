@@ -902,14 +902,21 @@ public partial class sluzby : System.Web.UI.Page
         DateTime pDate = Convert.ToDateTime("01.07.2012");
         DateTime oDate = Convert.ToDateTime("01." + mesTmp + "." + rokTmp);
 
+        ContentPlaceHolder ctpl = new ContentPlaceHolder();
+        Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+
+        ctpl = (ContentPlaceHolder)tmpControl;
+
         if (oDate >= pDate)
         {
+          
+
             for (int i = 0; i < pocet_dni; i++)
             {
                 for (int j = 1; j <= 6; j++)
                 {
 
-                    Control tbox = FindControl("textBox_" + i.ToString() + "_" + j.ToString());
+                    Control tbox = ctpl.FindControl("textBox_" + i.ToString() + "_" + j.ToString());
 
                     if (tbox != null)
                     {
@@ -920,7 +927,7 @@ public partial class sluzby : System.Web.UI.Page
                         {
 
 
-                            Control myTxt = FindControl("noteTxt_" + i.ToString());
+                            Control myTxt = ctpl.FindControl("noteTxt_" + i.ToString());
                             TextBox myNote = (TextBox)myTxt;
                             string note = myNote.Text.ToString();
                             note = note.Replace(",", ";");
@@ -938,14 +945,14 @@ public partial class sluzby : System.Web.UI.Page
         }
         else
         {
-
+            
 
             for (int i = 0; i < pocet_dni; i++)
             {
                 for (int j = 0; j < 6; j++)
                 {
 
-                    Control tbox = FindControl("textBox_" + i.ToString() + "_" + j.ToString());
+                    Control tbox = ctpl.FindControl("textBox_" + i.ToString() + "_" + j.ToString());
 
 
                     if (tbox != null)

@@ -371,12 +371,17 @@ public partial class staze : System.Web.UI.Page
         string[] month = new string[pocet_dni];
         string def = "";
 
+        ContentPlaceHolder ctpl = new ContentPlaceHolder();
+        Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+
+        ctpl = (ContentPlaceHolder)tmpControl;
+
         for (int i = 0; i < pocet_dni; i++)
         {
             for (int j = 0; j < 6; j++)
             {
 
-                Control tbox = FindControl("textBox_" + i.ToString() + "_" + j.ToString());
+                Control tbox = ctpl.FindControl("textBox_" + i.ToString() + "_" + j.ToString());
 
                 if (tbox != null)
                 {
