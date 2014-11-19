@@ -29,8 +29,8 @@ public partial class vykaz : System.Web.UI.Page
         if (Session["pracdoba"].ToString().Trim().Length == 0 || Session["tyzdoba"].ToString().Trim().Length == 0 || Session["osobcisl"].ToString().Trim().Length == 0)
         {
 
-            // Page page = HttpContext.Current.CurrentHandler as Page;
-            Page.ClientScript.RegisterStartupScript(this.GetType(), "ErrorAlert", "alert('" + Resources.Resource.vykaz_error + "');", true);
+           // Page page = HttpContext.Current.CurrentHandler as Page;
+            Page.ClientScript.RegisterStartupScript(this.GetType(), "ErrorAlert", "alert('"+Resources.Resource.vykaz_error+"');", true);
 
             //Response.Redirect("adduser.aspx");
         }
@@ -62,10 +62,10 @@ public partial class vykaz : System.Web.UI.Page
 
 
 
-
+        
     }
 
-    protected void runGenerate(int mesiac, int rok)
+    protected void runGenerate(int mesiac,int rok)
     {
         SortedList curVykaz = x_db.getCurrentVykaz(Convert.ToInt32(Session["user_id"].ToString()), mesiac, rok);
         string prenos = x_db.getPrevMonthPrenos(Convert.ToInt32(Session["user_id"].ToString()), mesiac, rok);
@@ -92,12 +92,12 @@ public partial class vykaz : System.Web.UI.Page
         }
 
         this.fillInVacations(mesiac, rok, Session["user_id"].ToString());
-
+        
     }
 
     protected void fillInVacations(int mesiac, int rok, string id)
     {
-        ArrayList dovolenky = x_db.getDovolenkyByID(mesiac, rok, Convert.ToInt32(id));
+        ArrayList dovolenky = x_db.getDovolenkyByID(mesiac,rok,Convert.ToInt32(id)); 
         int dovCnt = dovolenky.Count;
 
         for (int i = 0; i < dovCnt; i++)
@@ -159,7 +159,7 @@ public partial class vykaz : System.Web.UI.Page
         this.vykaz_tbl.Controls.Clear();
         Session.Remove("vykaz_id");
 
-        this.runGenerate(Convert.ToInt32(mesiac), Convert.ToInt32(rok));
+        this.runGenerate(Convert.ToInt32(mesiac),Convert.ToInt32(rok));
     }
 
     protected void onYearChangedFnc(object sender, EventArgs e)
@@ -184,7 +184,7 @@ public partial class vykaz : System.Web.UI.Page
         int days = DateTime.DaysInMonth(Convert.ToInt32(rok), Convert.ToInt32(mesiac));
         string vykazStr = data["vykaz"].ToString();
 
-        char[] delimiter = { '|' };
+        char[] delimiter = {'|'};
 
         string[] rows = vykazStr.Split(delimiter);
 
@@ -213,13 +213,14 @@ public partial class vykaz : System.Web.UI.Page
         }
     }
 
-
+    
 
 
     protected void generateVykazTable(string rok, string mesiac, Boolean activeCalc)
     {
         int days = DateTime.DaysInMonth(Convert.ToInt32(rok), Convert.ToInt32(mesiac));
 
+        this.vykaz_tbl.Controls.Clear();
 
         for (int i = 0; i < days; i++)
         {
@@ -279,9 +280,10 @@ public partial class vykaz : System.Web.UI.Page
             }
 
         }
+
         if (activeCalc)
         {
-            this.enterVykazData(mesiac, rok);
+            //this.enterVykazData(mesiac, rok);
         }
     }
 
@@ -296,7 +298,7 @@ public partial class vykaz : System.Web.UI.Page
         Boolean[] mySluzby = new Boolean[days];
 
         DateTime pDate = Convert.ToDateTime("01.07.2012");
-        DateTime oDate = Convert.ToDateTime("01." + mesiac + "." + rok);
+        DateTime oDate = Convert.ToDateTime("01." + mesiac+ "." + rok);
 
         if (oDate >= pDate)
         {
@@ -307,9 +309,9 @@ public partial class vykaz : System.Web.UI.Page
             mySluzby = x_db.getSluzbyOfUser(my_x2.getVykazName(Session["fullname"].ToString()), mesiac, rok);
         }
 
-
-        //  int prevDay = 0;
-        //  int exDay = 0;
+        
+      //  int prevDay = 0;
+      //  int exDay = 0;
 
         SortedList vykazVypis = this.getValueFromSluzba();
         string[] sviatky = x_db.getFreeDays();
@@ -321,10 +323,10 @@ public partial class vykaz : System.Web.UI.Page
             int den = i + 1;
             DateTime my_date = new DateTime(Convert.ToInt32(rok), Convert.ToInt32(mesiac), den);
             int dnesJe = (int)my_date.DayOfWeek;
-            //    int pos = 0;
+        //    int pos = 0;
             string[] rozpis = new string[11];
 
-
+           
 
             if (mySluzby[i])
             {
@@ -349,34 +351,34 @@ public partial class vykaz : System.Web.UI.Page
 
                     }*/
 
-                if (dnesJe == 0)
-                {
-                    if (res == -1)
+                    if (dnesJe == 0)
                     {
-                        this.fillNumbers(this.denCisla(vykazVypis["velkaSluzba"].ToString()), i);
+                        if (res == -1)
+                        {
+                            this.fillNumbers(this.denCisla(vykazVypis["velkaSluzba"].ToString()), i);
+                        }
+                        else
+                        {
+                            this.fillNumbers(this.denCisla(vykazVypis["sviatokVikend"].ToString()), i);
+                        }
+                        i++;
+                        this.fillNumbers(this.denCisla(vykazVypis["malaSluzba2"].ToString()),i);
                     }
-                    else
+                    else if (dnesJe == 6)
                     {
-                        this.fillNumbers(this.denCisla(vykazVypis["sviatokVikend"].ToString()), i);
-                    }
-                    i++;
-                    this.fillNumbers(this.denCisla(vykazVypis["malaSluzba2"].ToString()), i);
-                }
-                else if (dnesJe == 6)
-                {
-                    if (res == -1)
-                    {
-                        this.fillNumbers(this.denCisla(vykazVypis["velkaSluzba"].ToString()), i);
-                    }
-                    else
-                    {
-                        this.fillNumbers(this.denCisla(vykazVypis["sviatokVikend"].ToString()), i);
-                    }
+                        if (res == -1)
+                        {
+                            this.fillNumbers(this.denCisla(vykazVypis["velkaSluzba"].ToString()), i);
+                        }
+                        else
+                        {
+                            this.fillNumbers(this.denCisla(vykazVypis["sviatokVikend"].ToString()), i);
+                        }
 
-                    i++;
-                    this.fillNumbers(this.denCisla(vykazVypis["velkaSluzba2"].ToString()), i);
-                    i++;
-                    this.fillNumbers(this.denCisla(vykazVypis["exday"].ToString()), i);
+                        i++;
+                        this.fillNumbers(this.denCisla(vykazVypis["velkaSluzba2"].ToString()),i);
+                        i++; 
+                        this.fillNumbers(this.denCisla(vykazVypis["exday"].ToString()),i);
                 }
                 else
                 {
@@ -391,20 +393,20 @@ public partial class vykaz : System.Web.UI.Page
                     i++;
 
 
-                    this.fillNumbers(this.denCisla(vykazVypis["malaSluzba2"].ToString()), i);
+                    this.fillNumbers(this.denCisla(vykazVypis["malaSluzba2"].ToString()),i);
                 }
             }
             else
             {
-                string dentmp = den.ToString() + "." + mesiac;
+                string dentmp = den.ToString()+"."+mesiac;
 
                 int res = Array.IndexOf(sviatky, dentmp);
 
-
+                
 
                 if (dnesJe != 0 && dnesJe != 6 && res == -1)
                 {
-                    this.fillNumbers(this.denCisla(vykazVypis["normDen"].ToString()), i);
+                    this.fillNumbers(this.denCisla(vykazVypis["normDen"].ToString()),i);
                 }
                 else if (res != -1 && dnesJe != 0 && dnesJe != 6)
                 {
@@ -428,11 +430,15 @@ public partial class vykaz : System.Web.UI.Page
             {
                 Control tbox = FindControl("textBox_" + i.ToString() + "_" + j.ToString());
                 TextBox my_text_box = (TextBox)tbox;
+                //TextBox my_text_box = new TextBox();
 
-                if (rozpis[j - 1] != "0")
+                //my_text_box.ID = "textBox_" + i.ToString() + "_" + j.ToString();
+
+                if (rozpis[j-1] != "0")
                 {
+                    string tmp = rozpis[j - 1].ToString();
 
-                    my_text_box.Text = rozpis[j - 1].ToString();
+                    my_text_box.Text = tmp;
                 }
             }
 
@@ -442,10 +448,10 @@ public partial class vykaz : System.Web.UI.Page
 
     protected string[] denCisla(string retaz)
     {
-        char[] delimiter = { ',' };
+        char[] delimiter = {','};
 
         return retaz.Split(delimiter);
-
+        
     }
 
     protected SortedList getValueFromSluzba()
@@ -455,7 +461,7 @@ public partial class vykaz : System.Web.UI.Page
         StringBuilder sb = new StringBuilder();
 
         double pracDoba = Convert.ToDouble(Session["pracdoba"]);
-        double dlzkaPrace = 7 + pracDoba + 0.5;
+        double dlzkaPrace = 7+pracDoba+0.5;
 
         string pracDobaTmp = pracDoba.ToString().Replace(',', '.');
 
@@ -466,7 +472,7 @@ public partial class vykaz : System.Web.UI.Page
 
         double sluzbaCas = 15 + 4;
         dlzkaPrace = pracDoba + 4;
-
+        
         string dlzkaPraceStr = dlzkaPrace.ToString();
 
         dlzkaPraceStr = dlzkaPraceStr.Replace(',', '.');
@@ -474,13 +480,13 @@ public partial class vykaz : System.Web.UI.Page
         sb.AppendFormat("7,{0},{1},5,0,0,5,0,7,0,0", sluzbaCas, dlzkaPraceStr);
         result["malaSluzba"] = sb.ToString();
 
-        result["malaSluzba2"] = "0,0,0,0,0,0,0,0,0,0,0";
+        result["malaSluzba2"]       = "0,0,0,0,0,0,0,0,0,0,0";
 
         sb.Length = 0;
         sb.AppendFormat("7,{0},{1},5,16.5,0,0,5,0,7,0,0", sluzbaCas, dlzkaPraceStr);
-        result["velkaSluzba"] = sb.ToString();
-        result["velkaSluzba2"] = "0,0,0,0,0,0,0,0,0,0,0,0";
-        result["velkaSluzba2a"] = "0,0,0,0,0,0,0,0,0,0,0,0";
+        result["velkaSluzba"]       = sb.ToString();
+        result["velkaSluzba2"]      = "0,0,0,0,0,0,0,0,0,0,0,0";
+        result["velkaSluzba2a"]     = "0,0,0,0,0,0,0,0,0,0,0,0";
 
         sb.Length = 0;
         sb.AppendFormat("7,{0},{1},5,16.5,16.5,0,5,0,7,0,0", sluzbaCas, dlzkaPraceStr);
@@ -488,17 +494,17 @@ public partial class vykaz : System.Web.UI.Page
         sb.Length = 0;
 
         sb.AppendFormat("7,{0},{1},5,0,16.5,0,5,0,7,0,0", sluzbaCas, dlzkaPraceStr);
-        result["sviatok"] = sb.ToString();
-        result["exday"] = "0,0,0,0,0,0,0,0,0,0,0,0";
+        result["sviatok"]           = sb.ToString();
+        result["exday"]             = "0,0,0,0,0,0,0,0,0,0,0,0";
         sb.Length = 0;
         sb.AppendFormat("0,0,{0},0,0,0,0,0,0,0,0,0", pracDobaTmp);
-        result["sviatokNieVikend"] = sb.ToString();
-
+        result["sviatokNieVikend"]  = sb.ToString();
+        
 
         return result;
     }
 
-    protected decimal getColumSum(int col, int rows, string textBox)
+    protected decimal getColumSum(int col,int rows, string textBox)
     {
         decimal result = 0;
         decimal tmp = 0;
@@ -509,16 +515,16 @@ public partial class vykaz : System.Web.UI.Page
             TextBox sumBox = (TextBox)Tbox;
             try
             {
-
+                
                 //tmp = tmp + Convert.ToInt32(sumBox.Text.ToString());
                 string num = sumBox.Text.ToString();
                 num = num.Replace('.', ',');
-
+                
                 tmp = tmp + Convert.ToDecimal(num);
             }
             catch (Exception e)
             {
-
+                
             }
             finally
             {
@@ -528,65 +534,65 @@ public partial class vykaz : System.Web.UI.Page
         return result;
     }
 
-
+    
     protected void calcData_Click(object sender, EventArgs e)
     {
         int rok = Convert.ToInt32(this.rok_cb.SelectedValue.ToString());
         int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue.ToString());
 
-        int days = DateTime.DaysInMonth(rok, mesiac);
+            int days = DateTime.DaysInMonth(rok, mesiac);
 
-        decimal odpracHod = this.getColumSum(3, days, "textBox_");
+            decimal odpracHod        = this.getColumSum(3, days, "textBox_");
+            
+            this.hodiny_lbl.Text    = odpracHod.ToString();
+            
+            this.nocpraca_lbl.Text  = this.getColumSum(4, days, "textBox_").ToString();
+            this.mzdovzvyh_lbl.Text = this.getColumSum(5, days, "textBox_").ToString();
+            this.sviatok_lbl.Text   = this.getColumSum(6, days, "textBox_").ToString();
+            this.a1_lbl.Text        = this.getColumSum(7, days, "textBox_").ToString();
+            this.a2_lbl.Text        = this.getColumSum(8, days, "textBox_").ToString();
+            this.nea1_lbl.Text      = this.getColumSum(9, days, "textBox_").ToString();
+            this.nea2_lbl.Text      = this.getColumSum(10, days, "textBox_").ToString();
+            this.nea3_lbl.Text      = this.getColumSum(11, days, "textBox_").ToString();
 
-        this.hodiny_lbl.Text = odpracHod.ToString();
+            DateTime od_date = new DateTime(rok, mesiac, 1);
+            DateTime do_date = new DateTime(rok, mesiac, days);
 
-        this.nocpraca_lbl.Text = this.getColumSum(4, days, "textBox_").ToString();
-        this.mzdovzvyh_lbl.Text = this.getColumSum(5, days, "textBox_").ToString();
-        this.sviatok_lbl.Text = this.getColumSum(6, days, "textBox_").ToString();
-        this.a1_lbl.Text = this.getColumSum(7, days, "textBox_").ToString();
-        this.a2_lbl.Text = this.getColumSum(8, days, "textBox_").ToString();
-        this.nea1_lbl.Text = this.getColumSum(9, days, "textBox_").ToString();
-        this.nea2_lbl.Text = this.getColumSum(10, days, "textBox_").ToString();
-        this.nea3_lbl.Text = this.getColumSum(11, days, "textBox_").ToString();
+            int pocetVolnychDni = my_x2.pocetVolnychDniBezSviatkov(od_date, do_date);
 
-        DateTime od_date = new DateTime(rok, mesiac, 1);
-        DateTime do_date = new DateTime(rok, mesiac, days);
+            int pocetPracdni = days - pocetVolnychDni;
+            //zaMesiac_lbl.Text ="days:"+days.ToString()+"....prac"+ pocetPracdni.ToString();
+            string prenosStr = this.predMes_txt.Text.ToString();
+        
+            prenosStr = prenosStr.Replace(".", ",");
+            decimal tmpOdpHod = odpracHod + Convert.ToDecimal(prenosStr);
+            this.hodiny_lbl.Text = tmpOdpHod.ToString();
+            //decimal prenos = Convert.ToDecimal(prenosStr);
+            decimal pocetPracHod = 0;
 
-        int pocetVolnychDni = my_x2.pocetVolnychDniBezSviatkov(od_date, do_date);
-
-        int pocetPracdni = days - pocetVolnychDni;
-        //zaMesiac_lbl.Text ="days:"+days.ToString()+"....prac"+ pocetPracdni.ToString();
-        string prenosStr = this.predMes_txt.Text.ToString();
-
-        prenosStr = prenosStr.Replace(".", ",");
-        decimal tmpOdpHod = odpracHod + Convert.ToDecimal(prenosStr);
-        this.hodiny_lbl.Text = tmpOdpHod.ToString();
-        //decimal prenos = Convert.ToDecimal(prenosStr);
-        decimal pocetPracHod = 0;
-
-        if (Session["pracdoba"] != null)
-        {
-            Session["pracdoba"] = Session["pracdoba"].ToString().Replace(".", ",");
-            pocetPracHod = pocetPracdni * Convert.ToDecimal(Session["pracdoba"]);
-        }
-        else
-        {
-            pocetPracHod = pocetPracdni * Convert.ToDecimal("7,5");
-        }
-
-
-        decimal rozdiel = odpracHod - pocetPracHod + Convert.ToDecimal(prenosStr);
+            if (Session["pracdoba"] != null)
+            {
+                Session["pracdoba"] = Session["pracdoba"].ToString().Replace(".", ",");
+                pocetPracHod = pocetPracdni * Convert.ToDecimal(Session["pracdoba"]);
+            }
+            else
+            {
+                pocetPracHod = pocetPracdni * Convert.ToDecimal("7,5");
+            }
 
 
+            decimal rozdiel = odpracHod - pocetPracHod + Convert.ToDecimal(prenosStr);
 
-        this.pocetHod_txt.Text = pocetPracHod.ToString();
-        this.rozdiel_lbl.Text = rozdiel.ToString();
-        //pocetHod_txt.Text += "<br>Prenos do dalsieho mesiaca: " + rozdiel.ToString();
+            
 
-        this.saveData(mesiac, rok);
-        this.createPdf_btn.Enabled = true;
+            this.pocetHod_txt.Text = pocetPracHod.ToString();
+            this.rozdiel_lbl.Text = rozdiel.ToString();
+           //pocetHod_txt.Text += "<br>Prenos do dalsieho mesiaca: " + rozdiel.ToString();
 
-        //this.createPdf(); 
+           this.saveData(mesiac, rok);
+           this.createPdf_btn.Enabled = true;
+
+            //this.createPdf(); 
 
     }
 
@@ -618,7 +624,7 @@ public partial class vykaz : System.Web.UI.Page
 
                 if (j < 11)
                 {
-
+                    
                     vykazData += num + "~";
                 }
                 else
@@ -645,15 +651,15 @@ public partial class vykaz : System.Web.UI.Page
 
         if (Session["vykaz_id"] == null)
         {
-            SortedList res = x_db.insert_rows("is_vykaz", sData);
-            if (res["status"].ToString() != "error")
-            {
-                Session["vykaz_id"] = res["last_id"];
-            }
-            else
-            {
-                this.msg_lbl.Text = res["message"].ToString();
-            }
+             SortedList res =  x_db.insert_rows("is_vykaz", sData);
+             if (res["status"].ToString() != "error")
+             {
+                 Session["vykaz_id"] = res["last_id"];
+             }
+             else
+             {
+                 this.msg_lbl.Text = res["message"].ToString();
+             }
         }
         else
         {
@@ -671,16 +677,16 @@ public partial class vykaz : System.Web.UI.Page
         string path = Server.MapPath("App_Data");
         string imagepath = Server.MapPath("App_Data");
 
-        string oldFile = @path + "\\vykaz.pdf";
+        string oldFile = @path+"\\vykaz.pdf";
 
 
 
-        string hash = my_x2.makeFileHash(Session["login"].ToString() + milis.ToString());
+        string hash = my_x2.makeFileHash(Session["login"].ToString()+milis.ToString());
 
 
-        string newFile = @path + "\\vykaz_" + hash + ".pdf";
+        string newFile = @path + "\\vykaz_"+hash+".pdf";
 
-
+        
         this.msg_lbl.Text = oldFile;
         // open the reader
         PdfReader reader = new PdfReader(oldFile);
@@ -690,8 +696,8 @@ public partial class vykaz : System.Web.UI.Page
         Document myDoc = new Document(PageSize.A4);
 
         //1cm == 28.3pt
-
-
+      
+      
 
         // open the writer
         FileStream fs = new FileStream(newFile, FileMode.Create, FileAccess.Write);
@@ -722,7 +728,7 @@ public partial class vykaz : System.Web.UI.Page
 
         //string lila = "hura";
         BaseFont mojFont = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, false);
-        cb.SetFontAndSize(mojFont, 10);
+        cb.SetFontAndSize(mojFont,10);
 
         //cb.SetColorStroke(new CMYKColor(1f, 0f, 0f, 0f));
         //cb.SetColorFill(new CMYKColor(0f, 0f, 1f, 0f));
@@ -732,7 +738,7 @@ public partial class vykaz : System.Web.UI.Page
 
         string[] freeDays = x_db.getFreeDays();
 
-
+        
 
         int days = DateTime.DaysInMonth(rok, mesiac);
         double kof = 12.1;
@@ -758,14 +764,14 @@ public partial class vykaz : System.Web.UI.Page
                 //vyska stlpca je 11
                 //od lava 46
                 //dlzka je 423.7
-
-                /* cb.MoveTo(46, size-odHora +(11*i));
-                 cb.LineTo(469, size - odHora + (11 * i));
-                 cb.LineTo(469, size - odHora + (11 * i)-11);
-                 cb.LineTo(46, size - odHora + (11 * i) - 11);
-                 //Path closed, stroked and filled
-                 cb.ClosePathFillStroke();*/
-                double recY = (size.Height - (odHora + 1)) - (kof * i);
+                
+               /* cb.MoveTo(46, size-odHora +(11*i));
+                cb.LineTo(469, size - odHora + (11 * i));
+                cb.LineTo(469, size - odHora + (11 * i)-11);
+                cb.LineTo(46, size - odHora + (11 * i) - 11);
+                //Path closed, stroked and filled
+                cb.ClosePathFillStroke();*/
+                double recY = (size.Height - (odHora+1)) - (kof * i);
 
                 float recYY = (float)recY;
 
@@ -793,10 +799,10 @@ public partial class vykaz : System.Web.UI.Page
         cb.MoveText(446, size.Height - 41);
         cb.ShowText("KDCH");
         cb.EndText();
-
+        
         cb.BeginText();
         cb.MoveText(121, size.Height - 60);
-        cb.ShowText(Session["titul_pred"].ToString() + Session["fullname"].ToString() + " " + Session["titul_za"].ToString());
+        cb.ShowText(Session["titul_pred"].ToString()+Session["fullname"].ToString()+" "+Session["titul_za"].ToString());
         cb.EndText();
 
         cb.BeginText();
@@ -822,7 +828,7 @@ public partial class vykaz : System.Web.UI.Page
         cb.EndText();
 
 
-
+        
         cb.BeginText();
         cb.MoveText(121, size.Height - 100);
         String tyzdoba = my_x2.getStr(Session["tyzdoba"].ToString());
@@ -836,7 +842,7 @@ public partial class vykaz : System.Web.UI.Page
         {
             cb.ShowText("37.5");
         }
-
+        
         cb.EndText();
 
         //pocet hodin dla dni
@@ -926,45 +932,45 @@ public partial class vykaz : System.Web.UI.Page
         this.nea1_lbl.Text = this.getColumSum(9, days, "textBox_").ToString();
         this.nea2_lbl.Text = this.getColumSum(10, days, "textBox_").ToString();
         this.nea3_lbl.Text = this.getColumSum(11, days, "textBox_").ToString();*/
+     
 
-
-
+        
         float ypos = 0;
-
-
+       
+       
         for (int i = 0; i < days; i++)
         {
-
-            if (i == 0)
-            {
+           
+           if (i == 0)
+           {
                 ypos = size.Height - (float)odHora;
-            }
-            else
-            {
+           }
+           else
+           {
                 ypos = ypos - (float)kof;
-            }
+           }
 
-
-
+           
+            
             for (int j = 0; j < 12; j++)
             {
                 Control Tbox = FindControl("textBox_" + i.ToString() + "_" + j.ToString());
                 TextBox mBox = (TextBox)Tbox;
                 cb.BeginText();
-                if (j > 0)
+                if (j > 0 )
                 {
                     string num = mBox.Text.ToString();
                     cb.MoveText((float)koor[j], ypos);
                     cb.ShowText(num);
-
+                     
                 }
                 cb.EndText();
             }
         }
-
+        
         PdfImportedPage page = writer.GetImportedPage(reader, 1);
-        cb.AddTemplate(page, 0, 0);
-
+        cb.AddTemplate(page,0,0);
+        
 
         myDoc.Close();
         fs.Close();
@@ -972,8 +978,8 @@ public partial class vykaz : System.Web.UI.Page
         reader.Close();
 
         //Response.Redirect(@path + "\\vykaz_new.pdf");
-        SortedList res = x_db.registerTempFile("vykaz_" + hash + ".pdf", 5);
-
+        SortedList res = x_db.registerTempFile("vykaz_"+hash+".pdf", 5);
+        
 
         if (res["status"].ToString() == "ok")
         {
@@ -985,16 +991,16 @@ public partial class vykaz : System.Web.UI.Page
         }
         else
         {
-            this.msg_lbl.Text = ",,,,,,=" + res["message"].ToString();
+            this.msg_lbl.Text = ",,,,,,="+ res["message"].ToString();
         }
 
 
         //
 
 
-
+        
         //my_x2.createVykazPdf(path, imagepath);
-
+ 
     }
 
     protected float cmPt(double number)
