@@ -4,13 +4,12 @@
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
+<asp:Label ID="msg_lbl" runat="server" Text=""></asp:Label>
 
-    <asp:Label ID="msg_lbl" runat="server" Text=""></asp:Label>
-
- <h2>Hlásenie službieb KDCH, DOrK a KPU</h2>
-                <hr />
-                   Prihlasený: <strong><asp:Label ID="user" runat="server" Text="Label" ForeColor="#990000"></asp:Label></strong><br />
-                   Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="Label" ForeColor="#990000"></asp:Label></strong><br />
+<h2>Hlásenie službieb KDCH, DOrK a KPU</h2>
+<hr />
+Prihlasený: <strong><asp:Label ID="user" runat="server" Text="Label" ForeColor="#990000"></asp:Label></strong><br />
+Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="Label" ForeColor="#990000"></asp:Label></strong><br />
                 <hr />
                 <asp:Label ID="news_lbl" runat="server" Text=""></asp:Label>
                <div class="row">
