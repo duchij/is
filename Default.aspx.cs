@@ -26,23 +26,7 @@ public partial class _Default : System.Web.UI.Page
             Response.Redirect("offline.html");
         }*/
 
-        bool isIdevice = false;
-
-
-
-        if (Request.UserAgent.ToLower().Contains("ipad") || Request.UserAgent.ToLower().Contains("iphone"))
-        {
-            isIdevice = true;
-        }
-        // bool isIpad = Request.UserAgent.ToLower().Contains("ipad");
-        if (isIdevice)
-        {
-            this.Login1.Width = Unit.Pixel(400);
-            this.Login1.CssClass = "duchsB";
-
-
-            //this.Login1.TitleTextStyle.Width = Unit.Percentage(200);
-        }
+        
 
 
         Response.Cookies["akt_sluzba"].Expires = DateTime.Now.AddDays(-1);

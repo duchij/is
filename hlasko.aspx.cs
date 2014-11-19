@@ -28,19 +28,7 @@ public partial class hlasko : System.Web.UI.Page
             Response.Redirect("error.html");
         }
         this.msg_lbl.Text = "";
-
-        if (Session["newsToShow"] != null)
-        {
-
-            int id = Convert.ToInt32(Session["newsToShow"].ToString());
-
-            string news = x_db.getNewsByID(id);
-
-            this.news_lbl.Text = "<hr/><h1>Novinka</h1>" + news + "<br/><hr/>";
-            Session.Remove("newsToShow");
-
-
-        }
+                
 
         Response.AppendHeader("Refresh", 6000 + "; URL=hlasko.aspx");
 

@@ -98,43 +98,11 @@
         
         
         <div class="row">
-          <div class="one fourth">
-          <div class="box orange">
-            <asp:HyperLink ID="news_link" runat="server" NavigateUrl="is_news.aspx">
-                <asp:Localize runat="server" ID="localize3" Text="<%$ Resources:Resource, is_news_title %>">
-                </asp:Localize>
-            </asp:HyperLink>
+            <div class="one">
+            <asp:PlaceHolder ID="info_plh" runat="server">
+                <div class="dismissible info message"><asp:Label ID="info_message_lbl" runat="server"></asp:Label></div>  </asp:PlaceHolder>
             </div>
-        </div>
-         <div class="one fourth">
-         <div class="box orange">
-            <asp:HyperLink ID="odd_link" runat="server" NavigateUrl="is_news.aspx" >
-                <asp:Localize runat="server" ID="localize1" Text="<%$ Resources:Resource,tabs_odd %>">
-                </asp:Localize>
-           </asp:HyperLink>
-           </div>
-           </div>
-             <div class="one fourth">
-             <div class="box orange">
-            <asp:HyperLink ID="rozpislek_link" runat="server" NavigateUrl="rozpislekar.aspx" >
-                <asp:Localize runat="server" ID="localize2" Text="<%$ Resources:Resource,tabs_rozpis_lekar %>">
-                </asp:Localize>
-           </asp:HyperLink>
-           </div>
-           </div>
-             <div class="one fourth">
-             <div class="box orange">
-            <asp:HyperLink ID="opprogram_link" runat="server" NavigateUrl="opprogram.aspx" >
-                <asp:Localize runat="server" ID="localize4" Text="<%$ Resources:Resource,tabs_op_program %>">
-                </asp:Localize>
-           </asp:HyperLink>
-           </div>
-           </div>
-           
-           <%-- <td class="tabs"><a href="opkniha.aspx" target="_self" class="tabs_a">
-                <asp:Localize runat="server" ID="localize2" Text="<%$ Resources:Resource,tabs_operacky %>">
-                </asp:Localize>
-            </a></td>--%>
+         
         </div>
         
         <div class="row">

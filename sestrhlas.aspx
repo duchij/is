@@ -9,43 +9,45 @@
                    Prihlasený: <strong><asp:Label ID="user" runat="server" Text="Label" ForeColor="#990000"></asp:Label></strong><br />
                    Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="Label" ForeColor="#990000"></asp:Label></strong><br />
                 <hr />
-                <table width="99%">
-                <tr>
-                <td valign="top">
-                    <asp:DropDownList ID="oddType_cb" runat="server" Height="18px" Width="113px" 
+                <div class="row">
+                    <div class="one sixth">
+                    <asp:DropDownList ID="oddType_cb" runat="server" 
                         AutoPostBack="True" OnSelectedIndexChanged="Calendar1_SelectionChanged" >
-                       
-                    </asp:DropDownList></td>
-                    <td valign="top"><asp:DropDownList ID="predZad_cb" runat="server" Height="18px" 
-                            Width="146px" AutoPostBack="True" 
+                    </asp:DropDownList>
+                    </div>
+                    <div class="one sixth">
+                    <asp:DropDownList ID="predZad_cb" runat="server"  AutoPostBack="True" 
                             OnSelectedIndexChanged="Calendar1_SelectionChanged">
                         <asp:ListItem Value="pred">Predné hlásenie</asp:ListItem>
                         <asp:ListItem Value="zad">Zadné hlásenie</asp:ListItem>                       
-                    </asp:DropDownList></td>
-                    <td valign="top"><asp:DropDownList ID="time_cb" runat="server" Height="19px" 
-                            Width="131px" AutoPostBack="True" 
+                    </asp:DropDownList>
+                    </div>
+                    
+                    <div class="one sixth">
+                    <asp:DropDownList ID="time_cb" runat="server"  AutoPostBack="True" 
                             OnSelectedIndexChanged="Calendar1_SelectionChanged">
                         <asp:ListItem Value="n">Nočné hlásenie</asp:ListItem>
                         <asp:ListItem Value="d">Denné hlásenie</asp:ListItem>                       
-                    </asp:DropDownList></td>
-                    <td valign="top"><asp:Calendar ID="Calendar1" runat="server" BackColor="#FFFFCC" OnSelectionChanged="Calendar1_SelectionChanged" 
-                            BorderColor="#FFCC66" DayNameFormat="Shortest" 
-                            Font-Names="Verdana" Font-Size="8pt" ForeColor="#663399" Height="200px" 
-                           Width="220px" 
-                            BorderWidth="1px" ShowGridLines="True">
-                        <SelectedDayStyle BackColor="#CCCCFF" Font-Bold="True" />
-                        <SelectorStyle BackColor="#FFCC66" />
+                    </asp:DropDownList>
+                    </div>
+                    
+                    <div class="three sixth">
+                    <asp:Calendar CssClass="responsive" data-max="15" ID="Calendar1" runat="server" BackColor="White" OnSelectionChanged="Calendar1_SelectionChanged" 
+                            BorderColor="#999999" DayNameFormat="Shortest" 
+                            Font-Names="Verdana" Font-Size="8pt" ForeColor="Black"  
+                           CellPadding="4">
+                        <SelectedDayStyle BackColor="#666666" Font-Bold="True" ForeColor="White" />
+                        <SelectorStyle BackColor="#CCCCCC" />
+                        <WeekendDayStyle BackColor="#FFFFCC" />
                         <TodayDayStyle BackColor="#FFCC66" ForeColor="White" />
-                        <OtherMonthDayStyle ForeColor="#CC9966" />
-                        <NextPrevStyle Font-Size="9pt" ForeColor="#FFFFCC" />
-                        <DayHeaderStyle BackColor="#FFCC66" Font-Bold="True" Height="1px" />
-                        <TitleStyle BackColor="#990000" Font-Bold="True" Font-Size="9pt" 
-                            ForeColor="#FFFFCC" />
-                        </asp:Calendar></td>
-                    </tr>
-                    </table>
-                    <br />
-                    <br />
+                        <OtherMonthDayStyle ForeColor="#808080" />
+                        <NextPrevStyle VerticalAlign="Bottom" />
+                        <DayHeaderStyle BackColor="#CCCCCC" Font-Bold="True" Font-Size="7pt" />
+                        <TitleStyle BackColor="#999999" Font-Bold="True" BorderColor="Black" />
+                        </asp:Calendar>
+                    </div>
+                </div>
+                    
                    <asp:TextBox ID="hlasenie" CssClass="dtextbox" runat="server" Width="90%" Rows="30" Height="500" TextMode="MultiLine"> </asp:TextBox> 
                     
                 <%--<FTB:FreeTextBox ID="hlasenie"  Height="500" Width="100%" toolbarlayout="Bold, Italic, Underline,RemoveFormat, Redo, Undo|FontFacesMenu,FontSizesMenu|JustifyLeft,JustifyRight,JustifyCenter,JustifyFull;BulletedList,NumberedList,Indent,Outdent|WordClean,NetSpell"

@@ -6,6 +6,7 @@
                     <li><a href="sluzby.aspx" target="_self"><asp:Localize runat="server" ID="localize1" Text="<%$ Resources:Resource,odd_akt_sluz %>"></asp:Localize></a></li>
                     <li><a href="staze.aspx" target="_self"><asp:Localize runat="server" ID="localize2" Text="<%$ Resources:Resource,odd_staze %>"></asp:Localize></a></li> 
                     <li><a href="ransed.aspx" target="_self"><asp:Localize runat="server" ID="localize3" Text="<%$ Resources:Resource,ranne_sed %>"></asp:Localize></a></li>
+                     <li><a href="is_news.aspx" target="_self"><asp:Localize runat="server" ID="localize4" Text="Novinky"></asp:Localize></a></li>
                     </ul>
                         
                     <asp:PlaceHolder ID="users" runat="server"> 
