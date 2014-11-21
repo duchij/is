@@ -39,7 +39,7 @@ public partial class news : System.Web.UI.UserControl
 
                 if (i == 0)
                 {
-                    sb.AppendFormat("<p><a class='yellow large button'  href='is_op_show.aspx?id={1}' target='_self'>{0}</a></p>", strTmp[1], Convert.ToInt32(strTmp[0]));
+                    sb.AppendFormat("<p><a class='yellow button'  href='is_op_show.aspx?id={1}' target='_self'>{0}</a></p>", strTmp[1], Convert.ToInt32(strTmp[0]));
                 }
                 else
                 {

@@ -1,16 +1,27 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="left_menu.ascx.cs" Inherits="left_menu" %>
 
-<div class="box info half-padded"><h3><asp:label ID="Label2" runat="server" Text="<%$ Resources:Resource,lmenu_rozpis %>"></asp:label></h3></div>
-                <ul>
+ <asp:PlaceHolder ID="operacky" runat="server">
+        <div class="box red half-padded"><h3>Operacky</h3></div>
+        <ul>
+            <li class="box orange"><a href="opprogram.aspx" target="_self">Operacny program</a></li>
+        </ul>
+       
+        
+        </asp:PlaceHolder>
+<div class="box info half-padded">
+    <h3><asp:label ID="Label2" runat="server" Text="<%$ Resources:Resource,lmenu_rozpis %>"></asp:label></h3></div>
+        <ul>
                     
-                    <li><a href="sluzby.aspx" target="_self"><asp:Localize runat="server" ID="localize1" Text="<%$ Resources:Resource,odd_akt_sluz %>"></asp:Localize></a></li>
-                    <li><a href="staze.aspx" target="_self"><asp:Localize runat="server" ID="localize2" Text="<%$ Resources:Resource,odd_staze %>"></asp:Localize></a></li> 
-                    <li><a href="ransed.aspx" target="_self"><asp:Localize runat="server" ID="localize3" Text="<%$ Resources:Resource,ranne_sed %>"></asp:Localize></a></li>
-                     <li><a href="is_news.aspx" target="_self"><asp:Localize runat="server" ID="localize4" Text="Novinky"></asp:Localize></a></li>
-                    </ul>
+            <li><a href="sluzby.aspx" target="_self"><asp:Localize runat="server" ID="localize1" Text="<%$ Resources:Resource,odd_akt_sluz %>"></asp:Localize></a></li>
+            <li><a href="staze.aspx" target="_self"><asp:Localize runat="server" ID="localize2" Text="<%$ Resources:Resource,odd_staze %>"></asp:Localize></a></li> 
+            <li><a href="ransed.aspx" target="_self"><asp:Localize runat="server" ID="localize3" Text="<%$ Resources:Resource,ranne_sed %>"></asp:Localize></a></li>
+         </ul>   
+       
                         
-                    <asp:PlaceHolder ID="users" runat="server"> 
-                    <div class="box info half-padded"> <h3><asp:label ID="Label3" runat="server" Text="<%$ Resources:Resource,lmenu_oddelenie %>"></asp:label></h3></div>
+        <asp:PlaceHolder ID="users" runat="server"> 
+                    <div class="box info half-padded"> 
+                        <h3><asp:label ID="Label3" runat="server" Text="<%$ Resources:Resource,lmenu_oddelenie %>"></asp:label></h3>
+                    </div>
                       <ul>               
                         <li><a href="hlasko.aspx" target="_self">Hlásenie služieb</a></li>
                         <li><a href="vykaz.aspx" target="_self">Mesačný výkaz</a></li>
@@ -21,12 +32,15 @@
                     
                     <asp:PlaceHolder ID="admin" runat="server">
                     <ul>
-                    <li><a href="dov_stat.aspx" target="_self">Dovolenky - stav</a></li>
+                        <li><a href="dov_stat.aspx" target="_self">Dovolenky - stav</a></li>
+                        <li><a href="is_news.aspx" target="_self"><asp:Localize runat="server" ID="localize4" Text="Novinky"></asp:Localize></a></li>
                     </ul>
                     </asp:PlaceHolder>
                     
                     <asp:PlaceHolder ID="sestra" runat="server">
-                    <asp:label ID="Label1" runat="server" Text="<%$ Resources:Resource,lmenu_sestry %>"></asp:label>
+                    <div class="box info half-padded"> 
+                        <asp:label ID="Label1" runat="server" Text="<%$ Resources:Resource,lmenu_sestry %>"></asp:label>
+                    </div>
                     <ul>
                     <li><a href="sestrhlas.aspx" target="_self">Hlásenie sestier</a></li> 
                     </ul>                   

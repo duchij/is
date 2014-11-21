@@ -321,4 +321,10 @@
   <data name="web_titel" xml:space="preserve">
     <value>Informačný portál Kliniky detskej chirurgie LF UK a DFNsP</value>
   </data>
+  <data name="holiday_for_user_month" xml:space="preserve">
+    <value>Zoznam dovoleniek aktuálneho užívateľa pre mesiac</value>
+  </data>
+  <data name="logout" xml:space="preserve">
+    <value>Odhlásenie</value>
+  </data>
 </root>

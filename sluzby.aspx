@@ -38,21 +38,22 @@
                 </div> 
 </div>
                 Počet dní v mesiaci: <asp:Label ID="days_lbl" runat="server" Text="Label"></asp:Label><hr />
-                <asp:Label ID="Label1" runat="server" Text="Víkend" BackColor="#990000" ForeColor="Yellow" Width="130"></asp:Label>
-                <asp:Label ID="Label2" runat="server" Text="Štátny sviatok" BackColor="Yellow" ForeColor="#990000" Width="130"></asp:Label>
-                <table border="0" cellpadding="0" Width="100%" CssClass="responsive" data-max="15" >
+                <asp:Label ID="Label1" runat="server" Text="Víkend" CssClass="red box" Width="130"></asp:Label>
+                <asp:Label ID="Label2" runat="server" Text="Štátny sviatok" CssClass="yellow box" Width="130"></asp:Label>
+                <table border="0" cellpadding="0"  class="responsive no-pad-mobile no-gap-mobile" data-max="15" >
                 <tr>
-                    <td width="130" align="center"><b>Den</b></td>
-                    <td width="130" align="center"><div class="box red">OUP</div></td>
-                    <td width="130" align="center"><div class="box blue">A</div></td>
-                    <td width="130" align="center"><div class="box green">B</div></td>
-                    <td width="130" align="center"><div class="box asphalt">Pohotovost</div></td>
-                    <td width="130" align="center"><div class="box purple">Prijmova AMB</div></td>
+                    <td><div class="box">Den</div></td>
+                    <td><div class="box red">OUP</div></td>
+                    <td><div class="box blue">A</div></td>
+                    <td><div class="box green">B</div></td>
+                    <td><div class="box asphalt">Pohotovost</div></td>
+                    <td><div class="box purple">Prijmova AMB</div></td>
                 
                 </tr>
                 </table>
     
-                <asp:Table ID="Table1" runat="server" BorderWidth="1" BorderColor="#990000" CellPadding="0" CellSpacing="0" Width="100%" CssClass="responsive" data-max="15"></asp:Table>
+                <asp:Table ID="Table1" runat="server" BorderWidth="1" CssClass="responsive no-pad-mobile no-gap-mobile" data-max="15" ></asp:Table>
+                
                 <asp:Button ID="Button1" runat="server" Text="Uložiť" onclick="Button1_Click" />
                 <asp:CheckBox ID="publish_ck" runat="server" Text="Publikovať" />
                 <asp:Button ID="toWord_btn" runat="server" Text="do Wordu" 

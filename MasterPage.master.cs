@@ -13,6 +13,7 @@ public partial class MasterPage : System.Web.UI.MasterPage
 {
     public x2_var X2 = new x2_var();
     public my_db oldDb = new my_db();
+    public string rights;
    /* public string PageName
     {
        get
@@ -26,8 +27,32 @@ public partial class MasterPage : System.Web.UI.MasterPage
     }*/
     protected void Page_Load(object sender, EventArgs e)
     {
-      
+
+           
         this.showInfoMessage();
+        this.current_user_lbl.Text = Session["fullname"].ToString();
+        this.rights = Session["rights"].ToString();
+
+        if (this.rights.IndexOf("sestra") != -1)
+        {
+            this.hlas_lekar_plh.Visible = false;
+            this.hlas_sestier_plh.Visible = true;
+        }
+
+        if (this.rights.IndexOf("users") != -1)
+        {
+            this.hlas_lekar_plh.Visible = true;
+            this.hlas_sestier_plh.Visible = false;
+        }
+
+        if (this.rights == "admin")
+        {
+            this.hlas_lekar_plh.Visible = true;
+            this.hlas_sestier_plh.Visible = true;
+        }
+
+
+
     }
 
     protected void Page_Init(object sender, EventArgs e)

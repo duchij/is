@@ -21,11 +21,11 @@ public partial class vykaz : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
+
         if (Session["tuisegumdrum"] == null)
         {
             Response.Redirect("error.html");
         }
-
         if (Session["pracdoba"].ToString().Trim().Length == 0 || Session["tyzdoba"].ToString().Trim().Length == 0 || Session["osobcisl"].ToString().Trim().Length == 0)
         {
 
@@ -128,9 +128,10 @@ public partial class vykaz : System.Web.UI.Page
                         int ddTemp = ddStart.Day - 1;
 
                         ContentPlaceHolder ctpl = new ContentPlaceHolder();
-                        Control tmp = Page.Master.FindControl("ContentPlaceHolder1");
 
-                        ctpl = (ContentPlaceHolder)ctpl;
+                        Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+
+                        ctpl = (ContentPlaceHolder)tmpControl;
 
 
                         Control tbox = ctpl.FindControl("textBox_" + ddTemp.ToString() + "_2");
@@ -210,8 +211,8 @@ public partial class vykaz : System.Web.UI.Page
             for (int j = 0; j < colsLen; j++)
             {
                 ContentPlaceHolder ctp = new ContentPlaceHolder();
-                Control tmp = Page.Master.FindControl("ContentPlaceHolder1");
-                ctp = (ContentPlaceHolder)tmp;
+                Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+                ctp = (ContentPlaceHolder)tmpControl;
 
 
                 Control tbox = ctp.FindControl("textBox_" + i.ToString() + "_" + j.ToString());
@@ -295,7 +296,7 @@ public partial class vykaz : System.Web.UI.Page
 
         if (activeCalc)
         {
-            //this.enterVykazData(mesiac, rok);
+            this.enterVykazData(mesiac, rok);
         }
     }
 
@@ -453,9 +454,7 @@ public partial class vykaz : System.Web.UI.Page
 
                 if (rozpis[j-1] != "0")
                 {
-                    string tmp = rozpis[j - 1].ToString();
-
-                    my_text_box.Text = tmp;
+                   my_text_box.Text = rozpis[j - 1].ToString();
                 }
             }
 
@@ -629,6 +628,7 @@ public partial class vykaz : System.Web.UI.Page
         int days = DateTime.DaysInMonth(rok, mesiac);
 
         ContentPlaceHolder ctpl = new ContentPlaceHolder();
+
         Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
 
         ctpl = (ContentPlaceHolder)tmpControl;

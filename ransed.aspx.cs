@@ -18,7 +18,10 @@ public partial class ransed : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-
+        if (Session["tuisegumdrum"] == null)
+        {
+            Response.Redirect("error.html");
+        }
 
         if (IsPostBack == false)
         {
@@ -81,7 +84,7 @@ public partial class ransed : System.Web.UI.Page
             meno_lnk.ID = "sluzba";
             if (str[i].ToString().Trim().Length > 0)
             {
-                sb.AppendFormat("<li><a href='http://10.10.2.49:3333/studyList?search={0}' target='_blank'>{0}</a></li>", str[i].ToString());
+                sb.AppendFormat("<li><a class='blue button' href='http://10.10.2.49:3333/studyList?search={0}' target='_blank'>{0}</a></li>", str[i].ToString());
             }
         }
         sb.AppendLine("</ul>");
@@ -106,7 +109,7 @@ public partial class ransed : System.Web.UI.Page
 
         for (int i = 0; i < result.Count; i++)
         {
-            sb.AppendFormat("<li><a href='http://10.10.2.49:3333/studyList?search={0}' target='_blank'>{0}</a><br>{1}</li>", result[i]["name"].ToString(), result[i]["poznamka"].ToString());
+            sb.AppendFormat("<li><a class='blue button' href='http://10.10.2.49:3333/studyList?search={0}' target='_blank'>{0}</a><br>{1}</li>", result[i]["name"].ToString(), result[i]["poznamka"].ToString());
 
         }
         sb.AppendFormat("</ul>");
@@ -130,7 +133,7 @@ public partial class ransed : System.Web.UI.Page
 
         for (int i = 0; i < result.Count; i++)
         {
-            sb.AppendFormat("<li><a href='http://10.10.2.49:3333/studyList?search={0}' target='_blank'>{0}</a><br>{1}</li>", result[i]["name"].ToString(), result[i]["poznamka"].ToString());
+            sb.AppendFormat("<li><a class='blue button' href='http://10.10.2.49:3333/studyList?search={0}' target='_blank'>{0}</a><br>{1}</li>", result[i]["name"].ToString(), result[i]["poznamka"].ToString());
 
         }
         sb.AppendFormat("</ul>");
@@ -155,7 +158,7 @@ public partial class ransed : System.Web.UI.Page
 
         for (int i = 0; i < result.Count; i++)
         {
-            sb.AppendFormat("<li><a href='http://10.10.2.49:3333/studyList?search={0}' target='_blank'>{0}</a><br>{1}</li>", result[i]["name"].ToString(), result[i]["poznamka"].ToString());
+            sb.AppendFormat("<li><a class='blue button' href='http://10.10.2.49:3333/studyList?search={0}' target='_blank'>{0}</a><br>{1}</li>", result[i]["name"].ToString(), result[i]["poznamka"].ToString());
 
         }
         sb.AppendFormat("</ul>");

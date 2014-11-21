@@ -17,6 +17,12 @@ public partial class tabletview : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
 
+        if (Session["tuisegumdrum"] == null)
+        {
+            Response.Redirect("error.html");
+        }
+
+
        /* this.kojenci_diag_btn.Enabled = false;
         this.OddB_diag_btn.Enabled = false;
         this.Pohotovost_diag_btn.Enabled = false;*/
@@ -57,24 +63,27 @@ public partial class tabletview : System.Web.UI.Page
         sb.AppendFormat("SELECT GROUP_CONCAT([osirix] SEPARATOR ' ') AS [osirix] FROM [is_hlasko] WHERE [dat_hlas] = '{0}'", my_x2.unixDate(datum));
         SortedList result = x2db.getRow(sb.ToString());
 
-        string tmp = result["osirix"].ToString().Replace((char)13,' ');
+        string osirix = result["osirix"].ToString().Trim();
+
+        string tmp = osirix.Replace((char)13,' ');
 
         string[] str = tmp.Split(' ');
 
         for (int i = 0; i < str.Length; i++)
         {
-            HyperLink meno_lnk = new HyperLink();
-            meno_lnk.ID = "sluzba_" + i.ToString();
-            meno_lnk.Text = "<center>"+str[i].ToUpper()+"</center><br>";
-            meno_lnk.NavigateUrl = "http://10.10.2.49:3333/studyList?search=" + str[i];
-            meno_lnk.Target = "_blank";
-            meno_lnk.Style.Add("text-align", "center");
-            meno_lnk.Style.Add("font-size", "x-large");
-            meno_lnk.Style.Add("line-height", "120%");
-                   
-            
-          
-            this.hlasenie.Controls.Add(meno_lnk);
+            if (str[i].Trim().Length > 0)
+            {
+                HyperLink meno_lnk = new HyperLink();
+                meno_lnk.ID = "sluzba_" + i.ToString();
+                meno_lnk.Text = str[i].ToUpper();
+                meno_lnk.NavigateUrl = "http://10.10.2.49:3333/studyList?search=" + str[i];
+                meno_lnk.Target = "_blank";
+                meno_lnk.CssClass = "large button blue align-center";
+
+
+
+                this.hlasenie.Controls.Add(meno_lnk);
+            }
         }
 
     }
@@ -222,6 +231,11 @@ public partial class tabletview : System.Web.UI.Page
 
     protected void makeDynamicTable(SortedList data,string prefix, string _tabulka)
     {
+        ContentPlaceHolder ctpl = new ContentPlaceHolder();
+        Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+
+        ctpl = (ContentPlaceHolder)tmpControl;
+
         string id = "";
         if (data["item_id"] == null)
         {
@@ -233,7 +247,7 @@ public partial class tabletview : System.Web.UI.Page
         }
         //row_tbl.ID = prefix+"_row_" + id.ToString();
 
-        Control tbl = FindControl(_tabulka);
+        Control tbl = ctpl.FindControl(_tabulka);
         Table tabulka = (Table)tbl;
 
         TableRow row_tbl = new TableRow();
@@ -243,14 +257,13 @@ public partial class tabletview : System.Web.UI.Page
 
 
         TableCell cell_tbl = new TableCell();
+        
         //cell_tbl.ID = prefix+"_cell_" + id.ToString();
 
 
         HyperLink meno_lnk = new HyperLink();
         meno_lnk.ID = prefix+"_meno_" + id.ToString();
-        meno_lnk.Style.Add("font-size", "x-large");
-        meno_lnk.Style.Add("padding", "5px");
-        meno_lnk.Style.Add("float", "left");
+        meno_lnk.CssClass = "large button blue";
         if (data["name"] != null)
         {
             meno_lnk.Text = data["name"].ToString(); 
@@ -259,7 +272,7 @@ public partial class tabletview : System.Web.UI.Page
         }
         else
         {
-            Control txt = FindControl(prefix + "_diag");
+            Control txt = ctpl.FindControl(prefix + "_diag");
             TextBox text_tmp = (TextBox)txt;
             meno_lnk.Text = text_tmp.Text.ToString();
             meno_lnk.NavigateUrl = "http://10.10.2.49:3333/studyList?search=" + meno_lnk.Text.ToString();
@@ -271,16 +284,16 @@ public partial class tabletview : System.Web.UI.Page
 
         Label note_lbl = new Label();
         note_lbl.ID = prefix + "_lbl_" + id;
-        note_lbl.Style.Add("float", "left");
+        note_lbl.CssClass = "align-left";
         if (data["poznamka"] != null)
         {
-            note_lbl.Text = "<div style='font-size:small;'>" + data["poznamka"].ToString() + "</div>";
+            note_lbl.Text = data["poznamka"].ToString();
         }
         else
         {
-            Control txt1 = FindControl(prefix + "_note");
+            Control txt1 = ctpl.FindControl(prefix + "_note");
             TextBox text_tmp1 = (TextBox)txt1;
-            note_lbl.Text = "<div style='font-size:small;'>" + text_tmp1.Text.ToString() + "</div>";
+            note_lbl.Text =text_tmp1.Text.ToString() ;
         }
         cell_tbl.Controls.Add(note_lbl);
 
@@ -291,10 +304,7 @@ public partial class tabletview : System.Web.UI.Page
         Button delete_btn = new Button();
         delete_btn.ID = prefix+"_delete_" + id.ToString();
         delete_btn.Text = "Zmaz";
-        delete_btn.Style.Add("font-size", "large");
-        delete_btn.Style.Add("background-color", "red");
-        delete_btn.Style.Add("color", "yellow");
-        delete_btn.Style.Add("float", "right");
+        delete_btn.CssClass = "medium button red pull-right";
         delete_btn.Click += new EventHandler(delete_btn_fnc);
 
         cell_tbl.Controls.Add(delete_btn);

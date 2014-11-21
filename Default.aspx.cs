@@ -103,11 +103,7 @@ public partial class _Default : System.Web.UI.Page
 
                     this.deleteFilesPerDays();
 
-                    if (data["name"].ToString() == "vtablet")
-                    {
-                        Response.Redirect("tabletview.aspx");
-
-                    }
+                    
 
 
                     Session.Add("tuisegumdrum", "activado");
@@ -135,7 +131,11 @@ public partial class _Default : System.Web.UI.Page
                     Response.Cookies["login"].Value = data["name"].ToString();
                     Response.Cookies["email"].Value = data["email"].ToString();
 
+                    if (data["name"].ToString() == "vtablet")
+                    {
+                        Response.Redirect("tabletview.aspx");
 
+                    }
 
 
 

@@ -28,6 +28,7 @@ public partial class adduser : System.Web.UI.Page
         {
             Response.Redirect("error.html");
         }
+
         this.msg_lbl.Text = "";
         //string rights = Request.Cookies["rights"].Value.ToString();
         string rights = Session["rights"].ToString();

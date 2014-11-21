@@ -25,6 +25,7 @@ public partial class dovolenky : System.Web.UI.Page
         {
             Response.Redirect("error.html");
         }
+
         this.warning_lbl.Visible = false;
         // Lab.Text = sender.GetType().TypeHandle.ToString();
         if (Request["del"] != null)
@@ -290,7 +291,7 @@ public partial class dovolenky : System.Web.UI.Page
                 TableCell mojaCela = new TableCell();
                 mojaCela.ID = "mojaCelb_" + i.ToString() + "_" + x.ToString();
                 mojaCela.VerticalAlign = VerticalAlign.Top;
-                mojaCela.CssClass = "duch";
+               // mojaCela.CssClass = "duch";
                 // mojaCela.Width = 100;
                 my_den++;
 
@@ -323,7 +324,7 @@ public partial class dovolenky : System.Web.UI.Page
                         mojaCela.ForeColor = System.Drawing.Color.FromArgb(0x990000);
                     }
 
-                    mojaCela.Text = "<strong>" + my_den.ToString() + "<br/><font style='font-size:9px;'> " + nazov + "</font><br></strong><br/>";
+                    mojaCela.Text = "<strong>" + my_den.ToString() + "<br/></strong><font> " + nazov + "</font><br><br/>";
                     //mojaCela.Text += "<font style='font-size:10px;'>"+mes_dov[my_den-1].ToString()+"</font>";
                     mojaCela.Text += mes_dov[my_den - 1].ToString();
                 }
@@ -567,6 +568,7 @@ public partial class dovolenky : System.Web.UI.Page
                 if (j == 4)
                 {
                     Button mojeTlac = new Button();
+                    mojeTlac.CssClass = "button red";
                     mojeTlac.Command += new CommandEventHandler(this.deleteDovolenka);
                     mojeTlac.ID = "Button_" + tmp[3].ToString();
                     mojeTlac.Text = Resources.Resource.erase.ToString();

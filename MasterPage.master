@@ -60,29 +60,56 @@
     
     
 </head>
-<asp:Page EnableEventValidation="False" />
+
 <body>
     <form id="form1" runat="server">
  
      <div class="container">
      
-        <nav class="nav" role="navigation" title="Mobile">
+        <nav class="nav hide-on-desktop blue responsive" data-max="15" role="navigation" title="Mobile">
     			 <ul>
 					<!--<li><button>Nav Item 1</button></li>!-->
 					<li><button>Organizacne veci</button>
 						<ul>
-							<li><button>Sluzby</button></li>
+							<li><a role="medium button" href="sluzby.aspx" target="_self">Sluzby</a></li>
 							<!--<li><button>Sub Menu 1</button>
 								<ul>
 									<li><button>Sub Menu Item 1</button></li>
 									<li><button>Sub Menu Item 2</button></li>
 								</ul>
 							</li>!-->
-							<li><button>Staze</button></li>
-							<li><button>RTG Diagnostika</button></li>
+							<li><a role="medium button" href="staze.aspx" target="_self">Staze</a></li>
+							<li><a role="medium button" href="ransed.aspx" target="_self">RTG Diagnostika</a></li>
+                            <li><a role="medium button" href="dovolenky.aspx" target="_self">Dovolenky</a></li>
+
 						</ul>
 					</li>
-				<li><button>Nav Item 3</button></li>
+				<asp:PlaceHolder ID="hlas_lekar_plh" runat="server">
+                    <li><button>Lekar</button>
+                        <ul>
+                         <li><a role="medium button" href="hlasko.aspx" target="_self">Hlasenie lekarov</a></li> 
+                         <li><a role="medium button" href="poziadavky.aspx" target="_self">Poziadavky na sluzby</a></li>
+                        </ul>
+                    </li>
+
+                    </li></asp:PlaceHolder>
+                <asp:PlaceHolder ID="hlas_sestier_plh" runat="server">
+                <li><button>Sestra</button>
+                    <ul>
+                        <li><a role="medium button" href="sestrhlas.aspx" target="_self">Hlasenie sestier</a></li>
+                    </ul>
+                </li>
+
+
+                </li></asp:PlaceHolder>
+                <li><button>Ostatne</button>
+                        <ul>
+                            <li><a role="medium button" href="http://10.10.2.83/gallery3" target="_blank">Galeria KDCH</a></li>
+                            <li><a role="medium button" href="http://10.10.2.83/kdch" target="_blank">KDCH Intranet</a></li>
+                            <li><a role="medium button" href="http://10.10.2.49:3333" target="_blank">OSIRIX Portal</a></li>
+                        </ul>
+                    </li>
+                    <li class="align-right"><asp:Button ID="log_out_nav" runat="server"  OnClick="log_out_Click" Text="<%$ Resources:Resource, logout %>" class="button red " /></li>
 			</ul>
     	</nav>
      
@@ -91,7 +118,9 @@
                 <div class="three fourth half-padded"><h1>
                     <asp:Label ID="web_titel" runat="server" Text="<%$ Resources:Resource,web_titel %>"></asp:Label></h1></div>
 		        <div class="one fourth"><div align="right">
-                    <asp:Button ID="log_out" runat="server"  OnClick="log_out_Click" Text="Odhlasenie" class="button red" /></div></div>
+                <asp:Button ID="log_out" runat="server"  OnClick="log_out_Click" Text="<%$ Resources:Resource, logout %>" class="large button red desktop-only" /><br />
+              Prihlaseny:<asp:Label ID="current_user_lbl" Font-Bold="true" runat="server" Text=""></asp:Label>
+              </div></div>
 		</div> 
 		
         <duch:my_header ID="my_header" runat="server"></duch:my_header>
@@ -100,7 +129,7 @@
         <div class="row">
             <div class="one">
             <asp:PlaceHolder ID="info_plh" runat="server">
-                <div class="dismissible info message"><asp:Label ID="info_message_lbl" runat="server"></asp:Label></div>  </asp:PlaceHolder>
+                <div class="dismissible warning message"><asp:Label ID="info_message_lbl" runat="server"></asp:Label></div>  </asp:PlaceHolder>
             </div>
          
         </div>
@@ -110,15 +139,15 @@
         </div>
           
           <div class="row">
-            <div class="one sixth desktop-only bounceInLeft animated">
+            <div class="two tenths desktop-only bounceInLeft animated">
                 <menu:left_menu ID="left_menu" runat="server" />
             </div>
-            <div class="four sixth fourth half-padded">
+            <div class="seven tenths one-up-ipad half-padded">
                 <asp:ContentPlaceHolder id="ContentPlaceHolder1" runat="server">     
                 </asp:ContentPlaceHolder>
             </div>
             
-            <div class="one sixth half-padded">
+            <div class="one tenths three-up-ipad half-padded">
                   <info:info_bar ID="info_bar" runat="server" /> 
             </div>
          </div>  

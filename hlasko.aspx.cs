@@ -27,6 +27,7 @@ public partial class hlasko : System.Web.UI.Page
         {
             Response.Redirect("error.html");
         }
+
         this.msg_lbl.Text = "";
                 
 

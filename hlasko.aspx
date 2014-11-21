@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="hlasko.aspx.cs" Inherits="hlasko" EnableEventValidation="false" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="hlasko.aspx.cs" Inherits="hlasko"  %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
 </asp:Content>
@@ -23,7 +23,7 @@ Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="
                     </asp:DropDownList>
                     </div>
                     <div class="one half">
-                    <asp:Calendar ID="Calendar1" runat="server" BackColor="White"  Font-Size="Medium"
+                    <asp:Calendar ID="Calendar1" runat="server" BackColor="White"  CssClass="responsive" data-max="15"
                             BorderColor="#999999" DayNameFormat="Shortest" 
                               ForeColor="Black" 
                             OnSelectionChanged="Calendar1_SelectionChanged" CellPadding="4" 
@@ -62,20 +62,20 @@ Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="
                  <asp:Label ID="hlasko_lbl" runat="server" Visible="False" Font-Size="Small" >Hlasenie:</asp:Label><br />
                 <asp:Label ID="view_hlasko" runat="server" Visible="False" Font-Size="Small"></asp:Label>
                 <asp:TextBox ID="dodatok"  CssClass="dtextbox" runat="server" Width="90%" Rows="10" Height="100" TextMode="MultiLine" Visible="False">dodatok</asp:TextBox><br />
-                    <asp:Button ID="send" runat="server" Text="Ulož zmenu" onclick="send_Click" />
+                    <asp:Button ID="send" runat="server" Text="Ulož zmenu" onclick="send_Click" CssClass="button green" />
                 
                
-                <asp:Button ID="print_btn" runat="server" onclick="Button1_Click" Text="Vytlač" />
+                <asp:Button ID="print_btn" runat="server" onclick="Button1_Click" Text="Vytlač" CssClass="button blue" />
                 
-                <asp:Button ID="toWord_btn" runat="server" onclick="toWord_Click" Text="Tlač/Word" />
+                <asp:Button ID="toWord_btn" runat="server" onclick="toWord_Click" Text="Tlač/Word"  />
                 
                 <asp:Button ID="def_lock_btn" runat="server" Text="Uzavrieť a vytlačiť hlásko" 
-                    onclick="def_lock_btn_Click" BackColor="#990000" ForeColor="Yellow" />
+                    onclick="def_lock_btn_Click" CssClass="button red" />
                 
                  <asp:Button ID="def_locl_w_btn" runat="server" Text="Uzavrieť a vytlačiť hlásko/Word" 
-                    onclick="def_lock_btn_w_Click" BackColor="#990000" ForeColor="Yellow" />    
+                    onclick="def_lock_btn_w_Click" CssClass="button red" />    
                     
                 <asp:Button ID="addInfo_btn" runat="server" Text="Ulož dodatok" Enabled="False" 
-                    onclick="addInfo_btn_Click" />
+                    onclick="addInfo_btn_Click" CssClass="button asphalt" />
 </asp:Content>
 
