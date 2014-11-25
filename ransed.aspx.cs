@@ -81,6 +81,7 @@ public partial class ransed : System.Web.UI.Page
         Label meno_lnk = new Label();
         for (int i = 0; i < str.Length; i++)
         {
+            
             meno_lnk.ID = "sluzba";
             if (str[i].ToString().Trim().Length > 0)
             {

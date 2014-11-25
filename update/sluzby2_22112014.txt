@@ -1,0 +1,13 @@
+﻿REATE TABLE `is_sluzby_2` (
+  `item_id` bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `datum` date NOT NULL,
+  `typ` enum('OUP','OddA','OddB','OP') COLLATE 'ascii_general_ci' NOT NULL,
+  `user_id` bigint NOT NULL
+) COMMENT='' ENGINE='InnoDB' COLLATE 'utf8_slovak_ci';
+
+
+ALTER TABLE `is_sluzby_2`
+ADD FOREIGN KEY (`user_id`) REFERENCES `is_users` (`id`)
+
+ALTER TABLE `is_sluzby_2`
+ADD UNIQUE `datum_typ` (`datum`, `typ`);
