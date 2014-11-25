@@ -42,7 +42,9 @@ Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="
                     
                     <div class="row">
                         <div class="one half">
-                        <p>Sem <strong style="color:Maroon;">copy/paste priezvisko</strong> z hlásenia následne po jeho vložení za ním stlačiť klávesu enter, tak aby každé priezvisko začínalo na novom riadku, pre uloženie/vygenerovanie stlačiť <strong> uložiť</strong>, nie je nutné dodržiavať veľké malé písmená. Automaticky sa vygeneruje odkaz na OSIRIX</p>
+                        <h3>
+                        <asp:Label ID="osirix_info" runat="server" Text="<%$ Resources:Resource, osirix_info %>"></asp:Label>
+                        </h3>
                         
                          <asp:TextBox ID="osirix_txt" runat="server" Height="150px" TextMode="MultiLine" ></asp:TextBox>
                         <%--<asp:Button ID="osirix_btn" runat="server" Text="Ulož a Generuj" onclick="osirix_btn_Click" BackColor="#990000" ForeColor="Yellow" CssClass="button" />--%>

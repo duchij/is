@@ -44,7 +44,7 @@
             RememberMeText=""  LoginButtonText="Vstúpiť">
             <LayoutTemplate >
               
-                            <table border="0" cellpadding="0" class="responsice" data-max="15">
+                            <table border="0" cellpadding="0" class="responsive" data-max="15">
                                 <tr>
                                     <td align="center" colspan="2">
                                         <div class="box blue centered"><h1 class="responsive half-padded" data-compression="12">Prihlásenie do IS KDCH</h1></div></td>
