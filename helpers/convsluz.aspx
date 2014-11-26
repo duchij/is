@@ -12,7 +12,9 @@
         <p>Mesiac:<asp:TextBox ID="mesiac_txt" runat="server"></asp:TextBox></p>
         <p>Rok:<asp:TextBox ID="rok_txt" runat="server"></asp:TextBox></p>
         <asp:Button ID="run" runat="server" Text="Convert" OnClick="runConversion_fnc" />
+        
     </div>
+    <asp:Label ID="result" runat="server" Text="Label"></asp:Label>
     </form>
 </body>
 </html>
