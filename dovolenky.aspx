@@ -31,6 +31,8 @@
 						<asp:ListItem Value="2013">Rok 2013</asp:ListItem>
 						<asp:ListItem Value="2014">Rok 2014</asp:ListItem>
 						<asp:ListItem Value="2015">Rok 2015</asp:ListItem>
+						<asp:ListItem Value="2016">Rok 2016</asp:ListItem>
+						<asp:ListItem Value="2017">Rok 2017</asp:ListItem>
                     </asp:DropDownList>
     </div>
 </div>
