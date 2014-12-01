@@ -20,6 +20,7 @@ public partial class helpers_convsluz : System.Web.UI.Page
 
     protected void runConversion_fnc(object sender, EventArgs e)
     {
+        this.result.Text = "";
         int rok = Convert.ToInt32(this.rok_txt.Text.ToString());
         int mesiac = Convert.ToInt32(this.mesiac_txt.Text.ToString());
 
@@ -107,7 +108,11 @@ public partial class helpers_convsluz : System.Web.UI.Page
         Boolean status = Convert.ToBoolean(res["status"]);
         if (status == false)
         {
-            this.result.Text = res["query"].ToString()+"<br>"+res["msg"].ToString();
+            this.result.Text = res["query"].ToString() + "<br>" + res["msg"].ToString();
+        }
+        else
+        {
+            this.result.Text = "OK";
         }
 
 
