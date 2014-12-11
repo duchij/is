@@ -321,4 +321,13 @@
   <data name="web_titel" xml:space="preserve">
     <value>Informačný portál Kliniky detskej chirurgie LF UK a DFNsP</value>
   </data>
+  <data name="holiday_for_user_month" xml:space="preserve">
+    <value>Zoznam dovoleniek aktuálneho užívateľa pre mesiac</value>
+  </data>
+  <data name="logout" xml:space="preserve">
+    <value>Odhlásenie</value>
+  </data>
+  <data name="osirix_info" xml:space="preserve">
+    <value>Sem &lt;strong style="color:Maroon;"&gt;Copy/paste len priezvisko&lt;/strong&gt; z hlásenia samostane na každý riadok. Pri uložení hlásenia sa vygenrujú linky !!!!!</value>
+  </data>
 </root>

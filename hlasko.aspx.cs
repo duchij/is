@@ -27,6 +27,7 @@ public partial class hlasko : System.Web.UI.Page
         {
             Response.Redirect("error.html");
         }
+
         this.msg_lbl.Text = "";
                 
 
@@ -342,7 +343,9 @@ public partial class hlasko : System.Web.UI.Page
     {
         string text = this.osirix_txt.Text.ToString();
 
-        string asciiTxt = x2_var.UTFtoASCII(text);
+
+
+        string asciiTxt = x2_var.UTFtoASCII(text.Trim());
 
 
         SortedList data = new SortedList();
@@ -359,7 +362,7 @@ public partial class hlasko : System.Web.UI.Page
                 string[] lines = this.returnStrArray(asciiTxt.ToString());
                 foreach (string line in lines)
                 {
-                    html += "<p><a href='http://10.10.2.49:3333/studyList?search=" + line + "' target='_blank' style='font-size:15px;font-weight:bolder;'>" + line.ToUpper() + "</a></p>";
+                    html += "<p class='align-center'><a class='blue button' href='http://10.10.2.49:3333/studyList?search=" + line + "' target='_blank' >" + line.ToUpper() + "</a></p>";
                 }
 
                 this.osirix_url.Text = html.ToString();

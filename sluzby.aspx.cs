@@ -33,7 +33,6 @@ public partial class sluzby : System.Web.UI.Page
             Response.Redirect("error.html");
         }
 
-
         user_rights = Session["rights"].ToString();
 
         if ((user_rights == "admin") || (user_rights == "poweruser"))
@@ -512,7 +511,7 @@ public partial class sluzby : System.Web.UI.Page
                 TableRow riadok = new TableRow();
                 Table1.Controls.Add(riadok);
 
-
+               
 
                 for (int j = 0; j < data[i].Length; j++)
                 {
@@ -520,8 +519,9 @@ public partial class sluzby : System.Web.UI.Page
                     TableCell my_cell = new TableCell();
 
                     my_cell.BorderWidth = 1;
-                    my_cell.Width = 100;
+                   // my_cell.Width = System.Math.
                     my_cell.BorderColor = System.Drawing.Color.FromArgb(0x990000);
+                    //if (j == 0) my_cell.Width = Unit.Percentage(10);
 
                     if (j > 0)
                     {
@@ -530,7 +530,7 @@ public partial class sluzby : System.Web.UI.Page
                         my_text_box.BorderStyle = BorderStyle.None;
 
                         my_text_box.ID = "textBox_" + i.ToString() + "_" + j.ToString();
-
+                        my_text_box.CssClass = "no-pad-mobile no-gap-mobile";
                         ListItem[] newItem = new ListItem[doctorList.Count];
 
 
@@ -612,7 +612,7 @@ public partial class sluzby : System.Web.UI.Page
                             TextBox noteTxt = new TextBox();
                             noteTxt.ID = "noteTxt_" + i.ToString();
                             noteTxt.Text = oup[1];
-                            noteTxt.Width = 100;
+                           // noteTxt.Width = 100;
                             my_cell.Controls.Add(noteTxt);
                         }
 
@@ -620,7 +620,7 @@ public partial class sluzby : System.Web.UI.Page
 
 
                         my_text_box.SelectedValue = oup[0];
-                        my_text_box.Width = 100;
+                       // my_text_box.Width = 100;
 
                         //form1.Controls.Add(my_text_box);
                         riadok.Controls.Add(my_cell);
@@ -631,7 +631,7 @@ public partial class sluzby : System.Web.UI.Page
                     {
                         Label my_text_box = new Label();
                         my_text_box.ID = "textBox_" + i.ToString() + "_" + j.ToString();
-                        my_text_box.Width = 100;
+                        //my_text_box.Width = 30;
                         int den = i + 1;
                         DateTime my_date = new DateTime(Convert.ToInt32(data_info["rok"].ToString()), Convert.ToInt32(data_info["mesiac"].ToString()), den);
                         int dnesJe = (int)my_date.DayOfWeek;
@@ -661,7 +661,7 @@ public partial class sluzby : System.Web.UI.Page
                             my_text_box.ForeColor = System.Drawing.Color.FromArgb(0x990000);
                         }
                         my_text_box.Text = den.ToString() + "." + nazov.Substring(0, 2);
-
+                        
                         my_cell.Controls.Add(my_text_box);
 
                         //form1.Controls.Add(my_text_box);
@@ -690,7 +690,8 @@ public partial class sluzby : System.Web.UI.Page
                 {
 
                     TableCell my_cell = new TableCell();
-                    my_cell.Width = 100;
+                    if (j == 0) my_cell.Width = Unit.Percentage(10);
+                    //my_cell.Width = 100;
 
                     if (j > 0)
                     {
@@ -701,7 +702,7 @@ public partial class sluzby : System.Web.UI.Page
 
                         DropDownList my_text_box = new DropDownList();
                         my_text_box.BorderStyle = BorderStyle.None;
-
+                        my_text_box.CssClass = "no-pad-mobile no-gap-mobile";
 
                         my_text_box.ID = "textBox_" + i.ToString() + "_" + j.ToString();
 
@@ -758,7 +759,7 @@ public partial class sluzby : System.Web.UI.Page
 
 
 
-                        my_text_box.Width = 100;
+                       // my_text_box.Width = 100;
                         if ((user_rights == "admin") || (user_rights == "poweruser"))
                         {
                             my_text_box.Enabled = true;
@@ -777,7 +778,7 @@ public partial class sluzby : System.Web.UI.Page
                         {
                             TextBox noteTxt = new TextBox();
                             noteTxt.ID = "noteTxt_" + i.ToString();
-                            noteTxt.Width = 100;
+                           // noteTxt.Width = 100;
                             noteTxt.Text = "-";
                             my_cell.Controls.Add(noteTxt);
                         }
@@ -787,7 +788,7 @@ public partial class sluzby : System.Web.UI.Page
                         Label my_text_box = new Label();
 
                         my_text_box.ID = "textBox_" + i.ToString() + "_" + j.ToString();
-                        my_text_box.Width = 100;
+                      //  my_text_box.Width = 100;
                         int den = i + 1;
                         DateTime my_date = new DateTime(Convert.ToInt32(rok), Convert.ToInt32(mesiac), den);
                         int dnesJe = (int)my_date.DayOfWeek;

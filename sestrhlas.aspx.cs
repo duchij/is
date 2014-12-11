@@ -34,6 +34,7 @@ public partial class sestrhlas : System.Web.UI.Page
         }
 
         userRights = Session["rights"].ToString();
+
         if (IsPostBack == false)
         {
             Calendar1.SelectedDate = DateTime.Today;

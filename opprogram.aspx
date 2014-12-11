@@ -42,7 +42,8 @@
                 <h2><asp:Label ID="label1" runat="server" Text="<%$ Resources:Resource, is_opprogram_short %>"></asp:Label></h2><br />
                 <asp:TextBox ID="small_text" runat="server" Width="99%" Height="50px" TextMode="MultiLine" MaxLength="250"></asp:TextBox><br />
                 <h2><asp:Label ID="label2" runat="server" Text="<%$ Resources:Resource, is_news_full %>"></asp:Label></h2><br />
-                  <FTB:FreeTextBox ID="full_text" runat="server" Width="100%" Height="400"  toolbarlayout="Bold, Italic, Underline,RemoveFormat|FontFacesMenu,FontSizesMenu,FontForeColorsMenu|JustifyLeft,JustifyRight,JustifyCenter,JustifyFull| Redo,Undo ,BulletedList,NumberedList,Indent,Outdent|WordClean,NetSpell|InsertImage,InsertImageFromGallery"></FTB:FreeTextBox>
+                
+                  <div class="unstyled"><FTB:FreeTextBox ID="full_text"  runat="server" Width="100%" Height="400"  toolbarlayout="Bold, Italic, Underline,RemoveFormat|FontFacesMenu,FontSizesMenu,FontForeColorsMenu|JustifyLeft,JustifyRight,JustifyCenter,JustifyFull| Redo,Undo ,BulletedList,NumberedList,Indent,Outdent|WordClean,NetSpell|InsertImage,InsertImageFromGallery"></FTB:FreeTextBox></div>
                 <asp:Button ID="save_btn" runat="server" Text="<%$ Resources:Resource, is_news_button_save %>" OnClick="saveMessage_Click" />
 </asp:Content>
 

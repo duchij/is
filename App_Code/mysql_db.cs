@@ -236,6 +236,7 @@ public class mysql_db
             trans1.Rollback();
             result.Add("status", false);
             result.Add("msg", e.ToString());
+            result.Add("query", query);
         }
         my_con.Close();
 

@@ -13,12 +13,18 @@ public partial class left_menu : System.Web.UI.UserControl
 {
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (Request.Cookies["tuisegumdrum"] == null)
-        {
-            Response.Redirect("error.html");
-        }
+       
 
         string rights = Request.Cookies["rights"].Value.ToString();
+
+        if (rights.IndexOf("admin") != -1 || rights.IndexOf("users_op") != -1)
+        {
+            this.operacky.Visible = true;
+        }
+        else
+        {
+            this.operacky.Visible = false;
+        }
 
         if (rights.IndexOf("users") != -1)
 

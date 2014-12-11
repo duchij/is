@@ -20,12 +20,7 @@ public partial class rozpislekar : System.Web.UI.Page
 
     protected void Page_Init(object sender, EventArgs e)
     {
-        if (Session["tuisegumdrum"] == null)
-        {
-
-            Response.Redirect("error.html");
-
-        }
+     
     }
 
 
@@ -33,7 +28,6 @@ public partial class rozpislekar : System.Web.UI.Page
     {
         if (Session["tuisegumdrum"] == null)
         {
-
             Response.Redirect("error.html");
         }
 

@@ -18,7 +18,10 @@ public partial class ransed : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-
+        if (Session["tuisegumdrum"] == null)
+        {
+            Response.Redirect("error.html");
+        }
 
         if (IsPostBack == false)
         {
@@ -74,17 +77,18 @@ public partial class ransed : System.Web.UI.Page
         string tmp = result["osirix"].ToString().Replace((char)13, ' ');
 
         string[] str = tmp.Split(' ');
-        sb.AppendLine("<ul>");
+        //sb.AppendLine("<ul>");
         Label meno_lnk = new Label();
         for (int i = 0; i < str.Length; i++)
         {
+            
             meno_lnk.ID = "sluzba";
             if (str[i].ToString().Trim().Length > 0)
             {
-                sb.AppendFormat("<li><a href='http://10.10.2.49:3333/studyList?search={0}' target='_blank'>{0}</a></li>", str[i].ToString());
+                sb.AppendFormat("<p><a class='blue button' href='http://10.10.2.49:3333/studyList?search={0}' target='_blank'>{0}</a></p>", str[i].ToString());
             }
         }
-        sb.AppendLine("</ul>");
+        //sb.AppendLine("</ul>");
         meno_lnk.Text = sb.ToString();
         this.sluzba_pl.Controls.Add(meno_lnk);
 
@@ -102,14 +106,14 @@ public partial class ransed : System.Web.UI.Page
         Label meno_lnk = new Label();
         meno_lnk.ID = "kojenci";
 
-        sb.AppendFormat("<ul>");
+        //sb.AppendFormat("<ul>");
 
         for (int i = 0; i < result.Count; i++)
         {
-            sb.AppendFormat("<li><a href='http://10.10.2.49:3333/studyList?search={0}' target='_blank'>{0}</a><br>{1}</li>", result[i]["name"].ToString(), result[i]["poznamka"].ToString());
+            sb.AppendFormat("<p><a class='blue button' href='http://10.10.2.49:3333/studyList?search={0}' target='_blank'>{0}</a>{1}</p>", result[i]["name"].ToString(), result[i]["poznamka"].ToString());
 
         }
-        sb.AppendFormat("</ul>");
+       // sb.AppendFormat("</ul>");
         meno_lnk.Text = sb.ToString();
         this.kojenci_pl.Controls.Add(meno_lnk);
     }
@@ -126,14 +130,14 @@ public partial class ransed : System.Web.UI.Page
         Label meno_lnk = new Label();
         meno_lnk.ID = "dievacata";
 
-        sb.AppendFormat("<ul>");
+        //sb.AppendFormat("<ul>");
 
         for (int i = 0; i < result.Count; i++)
         {
-            sb.AppendFormat("<li><a href='http://10.10.2.49:3333/studyList?search={0}' target='_blank'>{0}</a><br>{1}</li>", result[i]["name"].ToString(), result[i]["poznamka"].ToString());
+            sb.AppendFormat("<p><a class='blue button' href='http://10.10.2.49:3333/studyList?search={0}' target='_blank'>{0}</a>{1}</p>", result[i]["name"].ToString(), result[i]["poznamka"].ToString());
 
         }
-        sb.AppendFormat("</ul>");
+       // sb.AppendFormat("</ul>");
         meno_lnk.Text = sb.ToString();
         this.dievcata_pl.Controls.Add(meno_lnk);
     }
@@ -151,14 +155,14 @@ public partial class ransed : System.Web.UI.Page
         Label meno_lnk = new Label();
         meno_lnk.ID = "chlapci";
 
-        sb.AppendFormat("<ul>");
+        //sb.AppendFormat("<ul>");
 
         for (int i = 0; i < result.Count; i++)
         {
-            sb.AppendFormat("<li><a href='http://10.10.2.49:3333/studyList?search={0}' target='_blank'>{0}</a><br>{1}</li>", result[i]["name"].ToString(), result[i]["poznamka"].ToString());
+            sb.AppendFormat("<p><a class='blue button' href='http://10.10.2.49:3333/studyList?search={0}' target='_blank'>{0}</a>{1}</p>", result[i]["name"].ToString(), result[i]["poznamka"].ToString());
 
         }
-        sb.AppendFormat("</ul>");
+       // sb.AppendFormat("</ul>");
         meno_lnk.Text = sb.ToString();
         this.chlapci_pl.Controls.Add(meno_lnk);
     }

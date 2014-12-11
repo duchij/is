@@ -14,11 +14,11 @@ public partial class poziadavky : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
 
-
         if (Session["tuisegumdrum"] == null)
         {
             Response.Redirect("error.html");
         }
+    
 
         SortedList data = x_db.getNextPozDatum(DateTime.Today);
 

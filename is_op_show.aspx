@@ -11,6 +11,6 @@
                 <%-- Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="Label" ForeColor="#990000"></asp:Label></strong><br />--%>
                 <hr />
                 
-                <asp:Label ID="cela_sprava" runat="server" Text="" style="font-size:12px;font-family:Verdana;"></asp:Label></h2>
+                <asp:Label ID="cela_sprava" CssClass="unstyled" runat="server" Text="" style="font-size:12px;font-family:Verdana;"></asp:Label></h2>
 </asp:Content>
 

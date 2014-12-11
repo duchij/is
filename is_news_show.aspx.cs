@@ -17,7 +17,7 @@ public partial class is_news_show : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
 
-        if (Request.Cookies["tuisegumdrum"] == null)
+        if (Session["tuisegumdrum"] == null)
         {
             Response.Redirect("error.html");
         }
