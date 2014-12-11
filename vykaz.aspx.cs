@@ -739,11 +739,11 @@ public partial class vykaz : System.Web.UI.Page
         double[] koor = new double[12];
         koor[0] = 0;
         koor[1] = 79.05;
-        koor[2] = 101.25;
+        koor[2] = 95.25;
         koor[3] = 119.36;
         koor[4] = 190.3;
         koor[5] = 206.7;
-        koor[6] = 220.9;
+        koor[6] = 230;
         koor[7] = 275.47;
         koor[8] = 303.11;
         koor[9] = 326.9;
