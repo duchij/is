@@ -48,3 +48,15 @@ end if;
 
 
 end
+
+
+SELECT SQL_NO_CACHE t_sluzb.datum, 
+GROUP_CONCAT(typ order by ordering ASC SEPARATOR ';') AS pokus,
+GROUP_CONCAT(user_id order by ordering ASC SEPARATOR ';') AS users_ids,
+GROUP_CONCAT(IF(user_id=0,'-',t_users.full_name) order by ordering ASC SEPARATOR ';') AS users_names,
+t_sluzb.date_group AS dategroup
+FROM is_sluzby_2 AS t_sluzb
+LEFT JOIN is_users AS t_users ON t_users.id = t_sluzb.user_id
+WHERE t_sluzb.date_group = '201411'
+GROUP BY t_sluzb.datum
+ORDER BY t_sluzb.datum

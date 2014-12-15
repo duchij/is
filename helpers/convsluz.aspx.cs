@@ -59,6 +59,7 @@ public partial class helpers_convsluz : System.Web.UI.Page
             string typ = "";
             string userId = "";
             string comment = "";
+            int ordering=0;
             for (int one = 0; one < cols; one++)
             {
                 if (one == 1)
@@ -67,6 +68,7 @@ public partial class helpers_convsluz : System.Web.UI.Page
                     string[] tmp = data[den][one].Split('|');
                     userId = tmp[0].ToString();
                     comment = tmp[1].ToString();
+                    ordering = 1;
 
                 }
 
@@ -75,6 +77,7 @@ public partial class helpers_convsluz : System.Web.UI.Page
                     typ = "OddA";
                     userId = data[den][one];
                     comment = "";
+                    ordering = 2;
                 }
 
                 if (one == 3)
@@ -82,6 +85,7 @@ public partial class helpers_convsluz : System.Web.UI.Page
                     typ = "OddB";
                     userId = data[den][one];
                     comment = "";
+                    ordering = 3;
                 }
 
                 if (one == 4)
@@ -89,6 +93,7 @@ public partial class helpers_convsluz : System.Web.UI.Page
                     typ = "OP";
                     userId = data[den][one];
                     comment = "";
+                    ordering = 4;
                 }
 
                 if (one == 5)
@@ -96,10 +101,11 @@ public partial class helpers_convsluz : System.Web.UI.Page
                     typ = "Prijm";
                     userId = data[den][one];
                     comment = "";
+                    ordering = 5;
                 }
                 if (one > 0)
                 {
-                    sb.AppendFormat("('{0}','{1}','{2}','{3}','0')", sbDatum.ToString(), typ, userId, comment);
+                    sb.AppendFormat("('{0}','{1}','{2}','{3}','0','{4}')", sbDatum.ToString(), typ, userId, comment,ordering);
 
                     tmpVal[x] = sb.ToString();
 
@@ -112,8 +118,8 @@ public partial class helpers_convsluz : System.Web.UI.Page
         string tmpRes = String.Join(",", tmpVal);
 
         StringBuilder query = new StringBuilder();
-        query.AppendFormat("INSERT INTO [is_sluzby_2] ([datum],[typ],[user_id],[comment],[date_group]) VALUES {0} ON DUPLICATE KEY UPDATE", tmpRes);
-        query.Append(" [datum]=values([datum]), [typ]=values([typ]), [user_id]=values([user_id]), [comment]=values([comment]),[date_group]=values([date_group])");
+        query.AppendFormat("INSERT INTO [is_sluzby_2] ([datum],[typ],[user_id],[comment],[date_group],[ordering]) VALUES {0} ON DUPLICATE KEY UPDATE", tmpRes);
+        query.Append(" [datum]=values([datum]), [typ]=values([typ]), [user_id]=values([user_id]), [comment]=values([comment]),[date_group]=values([date_group]),[ordering]=values([ordering])");
 
         SortedList res = x2MySql.execute(query.ToString());
 
