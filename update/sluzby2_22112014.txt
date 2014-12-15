@@ -11,3 +11,40 @@ ADD FOREIGN KEY (`user_id`) REFERENCES `is_users` (`id`)
 
 ALTER TABLE `is_sluzby_2`
 ADD UNIQUE `datum_typ` (`datum`, `typ`);
+
+napr. select
+
+select t_sluzb.datum, t_sluzb.user_id, t_sluzb.typ
+,group_concat(`typ` SEPARATOR ';') as `type_1`, 
+group_concat(`user_id` separator ';') as `user_1`,
+group_concat(t_users.full_name separator ';') as meno
+FROM `is_sluzby_2` AS `t_sluzb`
+left join `is_users` AS `t_users` ON `t_users`.`id` = `t_sluzb`.`user_id`
+group by `datum`
+order by t_sluzb.datum
+limit 30
+
+CREATE TABLE `is_sluzby_2` ( `item_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT, `datum` date NOT NULL, `typ` enum('OUP','OddA','OddB','OP','Prijm') CHARACTER SET ascii NOT NULL, `user_id` bigint(20) NOT NULL DEFAULT '-1', `date_group` int(6) unsigned zerofill NOT NULL, `comment` text COLLATE utf8_slovak_ci, PRIMARY KEY (`item_id`), UNIQUE KEY `datum_typ` (`datum`,`typ`), KEY `user_id` (`user_id`) ) ENGINE=InnoDB AUTO_INCREMENT=306 DEFAULT CHARSET=utf8 COLLATE=utf8_slovak_ci
+
+begin
+
+if length(NEW.comment) = 0 THEN
+ set NEW.comment = NULL;
+end if;
+
+set @mesiac = MONTH(NEW.datum);
+set @rok=YEAR(NEW.datum);
+
+if (@mesiac >=1 AND @mesiac <=9) THEN
+    set @dateGroup = concat(@rok,'0',@mesiac);
+    set NEW.date_group = @dateGroup;
+END IF;
+
+if (@mesiac >=10) THEN
+    set @dateGroup = concat(@rok,@mesiac);
+    set NEW.date_group = @dateGroup;
+end if;
+
+
+
+end

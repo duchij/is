@@ -21,9 +21,21 @@ public partial class helpers_convsluz : System.Web.UI.Page
     protected void runConversion_fnc(object sender, EventArgs e)
     {
         this.result.Text = "";
+
+
         int rok = Convert.ToInt32(this.rok_txt.Text.ToString());
+
+        string mesiacStr = this.mesiac_txt.Text.ToString();
+
+        if (mesiacStr.Length == 1)
+        {
+            mesiacStr = "0" + mesiacStr;
+        }
+        string dateGroup = this.rok_txt.Text.ToString() + mesiacStr;
+
         int mesiac = Convert.ToInt32(this.mesiac_txt.Text.ToString());
 
+        
 
         SortedList data_info = x_db.loadSluzbaMonthYear("is_sluzby", this.mesiac_txt.Text.ToString(), this.rok_txt.Text.ToString());
 
@@ -87,7 +99,7 @@ public partial class helpers_convsluz : System.Web.UI.Page
                 }
                 if (one > 0)
                 {
-                    sb.AppendFormat("('{0}','{1}','{2}','{3}')", sbDatum.ToString(), typ, userId, comment);
+                    sb.AppendFormat("('{0}','{1}','{2}','{3}','0')", sbDatum.ToString(), typ, userId, comment);
 
                     tmpVal[x] = sb.ToString();
 
@@ -100,8 +112,8 @@ public partial class helpers_convsluz : System.Web.UI.Page
         string tmpRes = String.Join(",", tmpVal);
 
         StringBuilder query = new StringBuilder();
-        query.AppendFormat("INSERT INTO [is_sluzby_2] ([datum],[typ],[user_id],[comment]) VALUES {0} ON DUPLICATE KEY UPDATE", tmpRes);
-        query.Append(" [datum]=values([datum]), [typ]=values([typ]), [user_id]=values([user_id]), [comment]=values([comment])");
+        query.AppendFormat("INSERT INTO [is_sluzby_2] ([datum],[typ],[user_id],[comment],[date_group]) VALUES {0} ON DUPLICATE KEY UPDATE", tmpRes);
+        query.Append(" [datum]=values([datum]), [typ]=values([typ]), [user_id]=values([user_id]), [comment]=values([comment]),[date_group]=values([date_group])");
 
         SortedList res = x2MySql.execute(query.ToString());
 
