@@ -18,8 +18,12 @@ public partial class sluzby2 : System.Web.UI.Page
     public x2_var x2 = new x2_var();
     public sluzbyclass x2Sluzby = new sluzbyclass();
 
+    public string  rights = "";
+
     protected void Page_Load(object sender, EventArgs e)
     {
+
+        this.rights = Session["rights"].ToString();
 
         if (IsPostBack == false)
         {
@@ -63,7 +67,7 @@ public partial class sluzby2 : System.Web.UI.Page
         sb.Append("SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],");
         sb.Append("GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_id],");
         sb.Append("GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[full_name]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],");
-        sb.Append("GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [comment],");
+        sb.Append("GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [comment],");
         sb.Append("[t_sluzb].[date_group] AS [dategroup]");
         sb.Append("FROM [is_sluzby_2] AS [t_sluzb]");
         sb.Append("LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]");
@@ -106,7 +110,7 @@ public partial class sluzby2 : System.Web.UI.Page
 
                 string[] names = table[row]["users_names"].ToString().Split(';');
                 string[] userId = table[row]["users_id"].ToString().Split(';');
-                string[] comments = table[row]["comment"].ToString().Split(';');
+                string[] comments = table[row]["comment"].ToString().Split('|');
 
                 DateTime myDate = new DateTime(Convert.ToInt32(rok), Convert.ToInt32(mesiac), row + 1);
                 int dnesJe = (int)myDate.DayOfWeek;
@@ -133,13 +137,24 @@ public partial class sluzby2 : System.Web.UI.Page
                 {
                     TableCell dataCell = new TableCell();
                     dataCell.ID = "dataCell_" + row.ToString() + cols.ToString();
-                    names[cols] = names[cols].Replace(" ","<br>");
-                    dataCell.Text = names[cols];
+                    if (this.rights == "admin" || this.rights == "poweruser")
+                    {
+
+                    }
+                    else
+                    {
+                        Label name = new Label();
+                        name.ID = "name_" + row.ToString() + cols.ToString();
+                        //  names[cols] = names[cols].Replace(" ","<br>");
+
+                        name.Text = "<p>" + names[cols] + "</p>";
+                        dataCell.Controls.Add(name);
+                    }
 
                     Label comment = new Label();
                     comment.ID = "label_" + row.ToString() + cols.ToString();
                     comment.Text = comments[cols];
-
+                    dataCell.Controls.Add(comment);
                     
 
                     if (dnesJe == 0 || dnesJe == 6)
@@ -159,6 +174,8 @@ public partial class sluzby2 : System.Web.UI.Page
 
 
     }
+
+    
 
 
 }
