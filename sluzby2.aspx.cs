@@ -15,6 +15,8 @@ using System.Web.UI.WebControls.WebParts;
 public partial class sluzby2 : System.Web.UI.Page
 {
     public mysql_db x2Mysql = new mysql_db();
+    public x2_var x2 = new x2_var();
+    public sluzbyclass x2Sluzby = new sluzbyclass();
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -28,10 +30,10 @@ public partial class sluzby2 : System.Web.UI.Page
     protected void loadSluzby()
     {
         StringBuilder sb = new StringBuilder();
-        sb.Append("SELECT [t_sluzb].[datum], GROUP_CONCAT([typ] SEPARATOR ';') AS [type1],"); 
-        sb.Append("GROUP_CONCAT([user_id] SEPARATOR ';') AS [users_ids],");
-        sb.Append("GROUP_CONCAT(IF([user_id]=0,'-',[t_users].[full_name]) SEPARATOR ';') AS [users_names],");
-        sb.Append("[t_sluzb].[date_group] AS [date-group]");
+        sb.Append("SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY ordering SEPARATOR ';') AS [type1],");
+        sb.Append("GROUP_CONCAT([user_id] ORDER BY ordering SEPARATOR ';') AS [users_id],");
+        sb.Append("GROUP_CONCAT(IF([user_id]=0,'-',[t_users].[full_name]) ORDER BY ordering SEPARATOR ';') AS [users_names],");
+        sb.Append("[t_sluzb].[date_group] AS [dategroup]");
         sb.Append("FROM [is_sluzby_2] AS [t_sluzb]");
         sb.Append("LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]");
         sb.AppendFormat("WHERE [t_sluzb].[date_group] = '{0}'","201411");
@@ -77,6 +79,20 @@ public partial class sluzby2 : System.Web.UI.Page
                 TableCell dataCell = new TableCell();
                 dataCell.ID = "dataCell_" + row.ToString() + cols.ToString();
                 dataCell.Text = names[cols];
+
+                DateTime myDate = new DateTime(2014,11,row+1);
+                int dnesJe = (int)myDate.DayOfWeek;
+
+                if (dnesJe == 0 || dnesJe == 6)
+                {
+                    dataCell.CssClass = "box red";
+                }
+
+                string[] freeDays = x2Sluzby.getFreeDays();
+
+
+
+
                 
                 tblRow.Controls.Add(dataCell);
             }
