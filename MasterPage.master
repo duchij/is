@@ -2,7 +2,7 @@
 <%@ Register TagPrefix="menu" TagName="left_menu" Src="left_menu.ascx" %>
 <%@ Register TagPrefix="info" TagName="info_bar" Src="news.ascx" %>
 
-<%@ Master Language="C#" AutoEventWireup="true" CodeFile="MasterPage.master.cs" Inherits="MasterPage"  %>
+<%@ Master Language="C#" AutoEventWireup="true"  CodeFile="MasterPage.master.cs" Inherits="MasterPage" EnableViewState="true"  %>
 
 
 

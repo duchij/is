@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="sluzby2.aspx.cs" Inherits="sluzby2" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" EnableViewState="true"  CodeFile="sluzby2.aspx.cs" Inherits="sluzby2" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
 </asp:Content>
@@ -40,8 +40,9 @@
  Počet dní v mesiaci: <asp:Label ID="days_lbl" runat="server" Text="Label"></asp:Label><hr />
                 <asp:Label ID="Label1" runat="server" Text="Víkend" CssClass="red box" Width="130"></asp:Label>
                 <asp:Label ID="Label2" runat="server" Text="Štátny sviatok" CssClass="yellow box" Width="130"></asp:Label>
-                <asp:Table ID="shiftTable" runat="server" CssClass="responsive" data-max="13">
-
+                <asp:Table ID="shiftTable" runat="server">
+                    
                 </asp:Table>
+    <asp:Button ID="Button1" runat="server" Text="ides" OnClick="saveShiftRow" />
 </asp:Content>
 
