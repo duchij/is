@@ -143,6 +143,110 @@ public class mysql_db
 
         return result;
     }
+    public int runStoredProc()
+    {
+        /*OdbcConnection connection = new OdbcConnection(ConfigurationManager.ConnectionStrings["cinlopesConnection"].ConnectionString);
+
+        OdbcCommand command = new OdbcCommand();
+        command.Connection = connection;
+        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "{CALL testProc(?,@werwer)}";
+
+        OdbcParameter inParameter = new OdbcParameter();
+        inParameter.ParameterName = "customName";
+        inParameter.Direction = ParameterDirection.Input;
+        inParameter.OdbcType = OdbcType.VarChar;
+        inParameter.Size = 50;
+        inParameter.Value = "wrapperFromNET2";
+        command.Parameters.Add(inParameter);
+
+        OdbcParameter outputParam = new OdbcParameter();
+        outputParam.ParameterName = "customId";
+        outputParam.Direction = ParameterDirection.Output;
+        outputParam.OdbcType = OdbcType.Int;
+        command.Parameters.Add(outputParam);
+
+        connection.Open();
+        int result = (int)command.ExecuteNonQuery();
+        */
+        int result = 0;
+        //OdbcTransaction trans1 = null;
+        //my_con.Open();
+        //trans1 = my_con.BeginTransaction();
+
+        OdbcCommand cmd = new OdbcCommand();
+        cmd.Connection = my_con;
+        cmd.CommandType = CommandType.StoredProcedure;
+        cmd.CommandText = "{CALL FILL_DOC_SHIFTS(?,?,?,?,@res)}";
+
+        OdbcParameter vstup = new OdbcParameter();
+        vstup.ParameterName = "dateGroup";
+        vstup.Direction = ParameterDirection.Input;
+        vstup.OdbcType = OdbcType.Int;
+        vstup.Value = 201501;
+        cmd.Parameters.Add(vstup);
+
+        OdbcParameter vstup1 = new OdbcParameter();
+        vstup1.ParameterName = "days";
+        vstup1.Direction = ParameterDirection.Input;
+        vstup1.OdbcType = OdbcType.Int;
+        vstup1.Value = 30;
+        cmd.Parameters.Add(vstup1);
+
+        OdbcParameter vstup2 = new OdbcParameter();
+        vstup2.ParameterName = "mesiac";
+        vstup2.Direction = ParameterDirection.Input;
+        vstup2.OdbcType = OdbcType.Int;
+        vstup2.Value = 1;
+        cmd.Parameters.Add(vstup2);
+
+        OdbcParameter vstup3 = new OdbcParameter();
+        vstup3.ParameterName = "rok";
+        vstup3.Direction = ParameterDirection.Input;
+        vstup3.OdbcType = OdbcType.Int;
+        vstup3.Value = 2015;
+        cmd.Parameters.Add(vstup3);
+
+        OdbcParameter vstup4 = new OdbcParameter();
+        vstup4.ParameterName = "res";
+        vstup4.Direction = ParameterDirection.Output;
+        vstup4.OdbcType = OdbcType.Int;
+        //vstup3.Value = 2015;
+        cmd.Parameters.Add(vstup4);
+        my_con.Open();
+        result = (int)cmd.ExecuteNonQuery();
+        my_con.Close();
+
+        return result;
+
+
+       /* cmd.Connection = my_con;
+        cmdtrans.Transaction = trans1;
+
+        string[] queries = query.Split(';');
+
+        try
+        {
+            cmdtrans.CommandText = queries[0];
+            cmdtrans.ExecuteNonQuery();
+
+            cmdtrans.CommandText = queries[1];
+            int res = Convert.ToInt32(cmdtrans.ExecuteScalar());
+            trans1.Commit();
+            result.Add("status", true);
+            result.Add("res", res);
+        }
+        catch (Exception e)
+        {
+            result.Add("status", false);
+            result.Add("msg", e.ToString());
+            result.Add("res", 0);
+            trans1.Rollback();
+        }
+
+        my_con.Close();*/
+       // return result;
+    }
 
 
     public SortedList mysql_insert(string table, SortedList data)
@@ -259,7 +363,7 @@ public class mysql_db
             {
                 for (int i = 0; i < reader.FieldCount; i++)
                 {
-                    result.Add(reader.GetName(i).ToString(), reader.GetValue(i).ToString());
+                    result.Add(reader.GetName(i).ToString(), reader.GetString(i));
                 }
               
             }
@@ -271,10 +375,10 @@ public class mysql_db
     }
 
 
-    public Dictionary<int, SortedList> getTable(string query)
+    public Dictionary<int, Hashtable> getTable(string query)
     {
 
-        Dictionary<int, SortedList> result = new Dictionary<int, SortedList>();
+        Dictionary<int, Hashtable> result = new Dictionary<int, Hashtable>();
 
         my_con.Open();
 
@@ -287,10 +391,16 @@ public class mysql_db
         {
             while (reader.Read())
             {
-                SortedList tmp = new SortedList();
+                Hashtable tmp = new Hashtable();
                 for (int i = 0; i < reader.FieldCount; i++)
                 {
-                    tmp.Add(reader.GetName(i).ToString(), reader.GetValue(i).ToString());
+                    
+
+                    //string inData = reader.GetValue(i).ToString();
+                   // byte[] buffer = Encoding.UTF8.GetBytes(inData);
+                    //string outData = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
+
+                    tmp.Add(reader.GetName(i).ToString(), reader.GetString(i));
                 }
                 result.Add(row, tmp);
                 row++;

@@ -98,7 +98,7 @@ public partial class tabletview : System.Web.UI.Page
 
         sb.AppendFormat("SELECT * FROM [is_osirix] WHERE [date] = '{0}' AND [odd] = '{1}'", my_x2.unixDate(datum), "KOJ");
 
-        Dictionary<int, SortedList> result = x2db.getTable(sb.ToString());
+        Dictionary<int, SortedList<string,string>> result = x2db.getTable(sb.ToString());
 
         int rows = result.Count;
 
@@ -229,7 +229,7 @@ public partial class tabletview : System.Web.UI.Page
         }
     }
 
-    protected void makeDynamicTable(SortedList data,string prefix, string _tabulka)
+    protected void makeDynamicTable(SortedList<string,string> data,string prefix, string _tabulka)
     {
         ContentPlaceHolder ctpl = new ContentPlaceHolder();
         Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");

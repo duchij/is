@@ -80,3 +80,28 @@ LEFT JOIN is_users AS t_users ON t_users.id = t_sluzb.user_id
 WHERE t_sluzb.date_group = '201411'
 GROUP BY t_sluzb.datum
 ORDER BY t_sluzb.datum
+
+----
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `FILL_DOC_SHIFTS`(IN `dategroup` int, IN `days` int, IN `mesiac` int, IN `rok` int, OUT `res` int)
+BEGIN
+	SET res = 0;
+	mojLoop:LOOP
+		SET res = res + 1;
+		IF res <= days THEN
+
+			INSERT INTO is_sluzby_2 (datum, typ,user_id,date_group,ordering,comment,state) VALUES 
+			(concat(rok,'-',mesiac,'-',res),'OUP','0',dategroup,'1','-','draft'),
+			(concat(rok,'-',mesiac,'-',res),'OddA','0',dategroup,'2','-','draft'),
+			(concat(rok,'-',mesiac,'-',res),'OddB','0',dategroup,'3','-','draft'),
+			(concat(rok,'-',mesiac,'-',res),'OP','0',dategroup,'4','-','draft'),
+			(concat(rok,'-',mesiac,'-',res),'Prijm','0',dategroup,'5','-','draft');
+
+			ITERATE mojLoop;
+		END IF;
+	LEAVE mojLoop;
+	END LOOP mojLoop;
+    
+END
+
+//
