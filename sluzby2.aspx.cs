@@ -102,7 +102,7 @@ public partial class sluzby2 : System.Web.UI.Page
 
         string[] shifts = res["data"].ToString().Split(',');
 
-
+        
         StringBuilder sb = new StringBuilder();
 
         if (this.rights == "admin" || this.rights == "poweruser")
@@ -314,7 +314,8 @@ public partial class sluzby2 : System.Web.UI.Page
         {
             if (table.Count == 0)
             {
-                int daysTmp = x2Mysql.runStoredProc();
+
+                int daysTmp = x2Mysql.fillDocShifts(Convert.ToInt32(dateGroup), Convert.ToInt32(daysMonth), Convert.ToInt32(mesiac), Convert.ToInt32(rok));
 
                 this.msg_lbl.Text = daysTmp.ToString();
 
