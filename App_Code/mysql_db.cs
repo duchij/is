@@ -192,6 +192,7 @@ public class mysql_db
         cmd.Parameters.Add(vstup4);
         my_con.Open();
         result = (int)cmd.ExecuteNonQuery();
+
         my_con.Close();
 
         return result;

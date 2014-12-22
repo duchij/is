@@ -85,10 +85,31 @@ ORDER BY t_sluzb.datum
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `FILL_DOC_SHIFTS`(IN `dategroup` int, IN `days` int, IN `mesiac` int, IN `rok` int, OUT `res` int)
 BEGIN
+
+declare flag int default 1;
+
+	DECLARE exit handler for sqlexception
+	BEGIN
+		set flag = 0;
+        set res = -1;
+		ROLLBACK;
+		-- exit procedure;
+	END;
+
+	DECLARE exit handler for sqlwarning
+	BEGIN
+		set flag = 0;
+        set res = -1;
+		ROLLBACK;
+		-- exit procedure;
+	END;
+
+	
 	SET res = 0;
+    START TRANSACTION;
 	mojLoop:LOOP
 		SET res = res + 1;
-		IF res <= days THEN
+		IF (res <= days AND flag=1) THEN
 
 			INSERT INTO is_sluzby_2 (datum, typ,user_id,date_group,ordering,comment,state) VALUES 
 			(concat(rok,'-',mesiac,'-',res),'OUP','0',dategroup,'1','-','draft'),
@@ -101,7 +122,31 @@ BEGIN
 		END IF;
 	LEAVE mojLoop;
 	END LOOP mojLoop;
-    
+    COMMIT;
 END
 
-//
+
+-------
+
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SPLIT_FULLNAME`()
+BEGIN
+declare fname text;
+declare tId int;
+declare done int default 0;
+
+DECLARE cur1 CURSOR FOR SELECT id, full_name FROM is_users;
+
+DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+open cur1;
+
+WHILE done=0 DO
+	fetch cur1 into tId,fname;
+	set @pos = locate(" ",fname,1);
+-- set @name1 = mid(fname,0,@pos);
+	set @surname = mid(fname,@pos,length(fname));
+-- SELECT @surname;
+	UPDATE is_users  SET name3 = @surname WHERE id = tId;
+END WHILE;
+close cur1;
+end

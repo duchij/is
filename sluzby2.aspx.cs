@@ -46,6 +46,8 @@ public partial class sluzby2 : System.Web.UI.Page
            // string argument = Request["__EVENTARGUMENT"].ToString();
 
            // this.msg_lbl.Text ="he"+ argument;
+            this.shiftTable.Controls.Clear();
+            //this.shiftTable.Controls.d
             this.loadSluzby();
 
             /*ContentPlaceHolder ctpl = new ContentPlaceHolder();
@@ -81,8 +83,8 @@ public partial class sluzby2 : System.Web.UI.Page
 
     protected void loadSluzby()
     {
-        this.shiftTable.Controls.Clear();
 
+        this.shiftTable.Controls.Clear();
         string mesiac = this.mesiac_cb.SelectedValue.ToString();
         string rok = this.rok_cb.SelectedValue.ToString();
 
@@ -94,14 +96,14 @@ public partial class sluzby2 : System.Web.UI.Page
         }
 
         string dateGroup = rok+mesiac;
-
+        Session.Add("aktDateGroup", dateGroup);
 
         SortedList res = x2Mysql.getRow("SELECT * FROM [is_settings] WHERE [name] = 'shift_doctors'");
 
         // Boolean status = Convert.ToBoolean(res["status"].ToString());
 
         string[] shifts = res["data"].ToString().Split(',');
-
+        this.shiftType = shifts;
         
         StringBuilder sb = new StringBuilder();
 
@@ -111,7 +113,7 @@ public partial class sluzby2 : System.Web.UI.Page
             sb.Append("SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],");
             sb.Append("[t_sluzb].[state] AS [state],");
             sb.Append("GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [users_ids],");
-            sb.Append("GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[full_name]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],");
+            sb.Append("GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],");
             sb.Append("GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [comment],");
             sb.Append("[t_sluzb].[date_group] AS [dategroup]");
             sb.Append("FROM [is_sluzby_2] AS [t_sluzb]");
@@ -125,7 +127,7 @@ public partial class sluzby2 : System.Web.UI.Page
             sb.Append("SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],");
             sb.Append("[t_sluzb].[state] AS [state],");
             sb.Append("GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [users_ids],");
-            sb.Append("GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[full_name]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],");
+            sb.Append("GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],");
             sb.Append("GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [comment],");
             sb.Append("[t_sluzb].[date_group] AS [dategroup]");
             sb.Append("FROM [is_sluzby_2] AS [t_sluzb]");
@@ -190,6 +192,9 @@ public partial class sluzby2 : System.Web.UI.Page
             string[] freeDays = x2Sluzby.getFreeDays();
             ArrayList doctorList = this.loadDoctors();
 
+            int aktDenMesiac = DateTime.Today.Day;
+
+
             for (int row = 0; row < days; row++)
             {
                 TableRow tblRow = new TableRow();
@@ -204,6 +209,7 @@ public partial class sluzby2 : System.Web.UI.Page
                 string nazov = CultureInfo.CurrentCulture.DateTimeFormat.DayNames[dnesJe];
                 string sviatok = (row + 1).ToString() + "." + mesiac;
                 int jeSviatok = Array.IndexOf(freeDays, sviatok);
+
 
 
                 TableCell cellDate = new TableCell();
@@ -289,6 +295,10 @@ public partial class sluzby2 : System.Web.UI.Page
                     {
                         dataCell.CssClass = "box yellow";
                     }
+                    if (aktDenMesiac == (row + 1))
+                    {
+                        dataCell.Font.Underline = true;
+                    }
 
 
                     /* }
@@ -314,35 +324,22 @@ public partial class sluzby2 : System.Web.UI.Page
         {
             if (table.Count == 0)
             {
-
-                int daysTmp = x2Mysql.fillDocShifts(Convert.ToInt32(dateGroup), Convert.ToInt32(daysMonth), Convert.ToInt32(mesiac), Convert.ToInt32(rok));
-
-                this.msg_lbl.Text = daysTmp.ToString();
-
-               /* StringBuilder quer = new StringBuilder();
-                sb.AppendFormat("CALL FILL_DOC_SHIFTS({0},{1},{2},{3},@res);SELECT @res;", dateGroup, daysMonth, mesiac, rok);
-                SortedList tmp = x2Mysql.runStoredProc(quer.ToString());
-
-                Boolean status = Convert.ToBoolean(tmp["status"].ToString());
-
-                if (!status)
-                {
-                    this.msg_lbl.Text = tmp["msg"].ToString();
-
-                }*/
-
-            }
-            else
-            {
                 if (this.rights != "admin" || this.rights != "poweruser")
                 {
                     this.msg_lbl.Text = Resources.Resource.shifts_not_done;
                     this.publish_cb.Visible = false;
                 }
+                if (this.rights == "admin" || this.rights == "poweruser")
+                {
+                    int daysTmp = x2Mysql.fillDocShifts(Convert.ToInt32(dateGroup), Convert.ToInt32(daysMonth), Convert.ToInt32(mesiac), Convert.ToInt32(rok));
+                    this.shiftTable.Controls.Clear();
+                    this.publish_cb.Visible = true;
+                    //this.msg_lbl.Text = daysTmp.ToString();
+                    //ViewState.Clear();
+                    this.loadSluzby();
+                }
             }
-
         }
-       
     }
 
     protected void selectDoctors(Dictionary<int, Hashtable>table, int days, int colsNum)
@@ -395,18 +392,18 @@ public partial class sluzby2 : System.Web.UI.Page
     protected ArrayList loadDoctors()
     {
         StringBuilder sb = new StringBuilder();
-        sb.Append("SELECT [id],[full_name] FROM [is_users] WHERE ([group] = 'users' OR [group] = 'poweruser') AND [active] = 1  ORDER BY [name2]");
+        sb.Append("SELECT [id],[name3] FROM [is_users] WHERE ([group] = 'users' OR [group] = 'poweruser') AND [active] = 1  ORDER BY [name2]");
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
 
         int dataLn = table.Count;
 
         ArrayList result = new ArrayList();
-       // result.Add("-", "-");
-       // result.Add("-|-");
-        for (int i=0; i < dataLn; i++)
+        //result.Add("-", "-");
+        result.Add("0|-");
+        for (int i=1; i <= dataLn; i++)
         {
-            result.Add(table[i]["id"].ToString()+"|"+table[i]["full_name"].ToString());
+            result.Add(table[i-1]["id"].ToString()+"|"+table[i-1]["name3"].ToString());
         }
 
         return result;
@@ -554,6 +551,30 @@ public partial class sluzby2 : System.Web.UI.Page
             this.msg_lbl.Text = res["msg"].ToString();
         }
 
+    }
+
+    protected void publishSluzby(object sender, EventArgs e)
+    {
+        Button btn = (Button)sender;
+        string ID = btn.ID.ToString();
+
+        int dnesJe = DateTime.Today.Day;
+
+        Session.Add("aktSluzMesiac", this.mesiac_cb.SelectedValue.ToString());
+        Session.Add("aktSluzRok", this.rok_cb.SelectedValue.ToString());
+       // Session.Add)"aktSluzMesLbl", DateTime.Today.m
+
+        if (ID == "toWord_btn")
+        {
+            Session.Add("toWord", 1);
+            Response.Redirect("sltoword.aspx");
+        }
+        if (ID == "print_btn")
+        {
+            Session.Add("toWord", 0);
+            Response.Redirect("sltoword.aspx");
+        }
+        
     }
     
     

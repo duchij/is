@@ -40,12 +40,15 @@
  Počet dní v mesiaci: <asp:Label ID="days_lbl" runat="server" Text="Label"></asp:Label><hr />
                 <asp:Label ID="Label1" runat="server" Text="Víkend" CssClass="red box" Width="130"></asp:Label>
                 <asp:Label ID="Label2" runat="server" Text="Štátny sviatok" CssClass="yellow box" Width="130"></asp:Label>
-                <asp:Table ID="shiftTable" runat="server" EnableViewState="true" CssClass="responsive" data-max="13">                 
+                <asp:Table ID="shiftTable" runat="server" EnableViewState="true" CssClass="responsive" data-max="14">                 
                 </asp:Table>
                 <div class="row">
                     <div class="one whole padded">
                     <asp:CheckBox ID="publish_cb" runat="server" Text="Uverejnit" OnCheckedChanged="changePublishStatus" AutoPostBack="true"  />
                         </div>
+                    <asp:Button ID="toWord_btn" runat="server" Text="do Wordu" OnClick="publishSluzby"/>
+                
+                    <asp:Button ID="print_btn" runat="server"  Text="Tlačiť" OnClick="publishSluzby" />
                 </div>
 </asp:Content>
 
