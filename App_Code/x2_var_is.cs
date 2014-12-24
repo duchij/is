@@ -40,7 +40,22 @@ public class x2_var
 
 
 
+    public int makeDateGroup(int rok, int mesiac)
+    {
+        int result = 0;
 
+        string mesStr = mesiac.ToString();
+        string rokStr = rok.ToString();
+
+        if (mesStr.Length == 1)
+        {
+            mesStr = "0" + mesStr;
+        }
+
+        result = Convert.ToInt32(rokStr + mesStr);
+
+        return result;
+    }
 
 
     public static string UTFtoASCII(string value)

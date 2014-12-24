@@ -41,25 +41,15 @@ public partial class sltoword : System.Web.UI.Page
         {
             Response.Clear();
             Response.Buffer = true;
-
             Response.ContentType = "application/msword; charset=Windows-1250";
-
-           
             Response.AddHeader("content-disposition", "attachment;filename=" + mes + ".doc");
-
             Response.ContentEncoding = System.Text.Encoding.GetEncoding("Windows-1250");
            	Response.Charset = "Windows-1250";
-
             StringWriter stringWriter = new StringWriter(); //System.IO namespace should be used
 
             HtmlTextWriter htmlTextWriter = new HtmlTextWriter(stringWriter);
-
             this.RenderControl(htmlTextWriter);
-
-
             Response.Write(stringWriter.ToString());
-
-
             Response.End();
         }
         else
