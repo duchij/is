@@ -101,7 +101,7 @@ public partial class ransed : System.Web.UI.Page
         StringBuilder sb = new StringBuilder();
         sb.AppendFormat("SELECT * FROM [is_osirix] WHERE [date] = '{0}' AND [odd] = '{1}'", my_x2.unixDate(datum), "KOJ");
 
-        Dictionary<int, SortedList> result = x2db.getTable(sb.ToString());
+        Dictionary<int, Hashtable> result = x2db.getTable(sb.ToString());
         sb.Length = 0;
         Label meno_lnk = new Label();
         meno_lnk.ID = "kojenci";
@@ -125,7 +125,7 @@ public partial class ransed : System.Web.UI.Page
         StringBuilder sb = new StringBuilder();
         sb.AppendFormat("SELECT * FROM [is_osirix] WHERE [date] = '{0}' AND [odd] = '{1}'", my_x2.unixDate(datum), "MSV");
 
-        Dictionary<int, SortedList> result = x2db.getTable(sb.ToString());
+        Dictionary<int, Hashtable> result = x2db.getTable(sb.ToString());
         sb.Length = 0;
         Label meno_lnk = new Label();
         meno_lnk.ID = "dievacata";
@@ -150,7 +150,7 @@ public partial class ransed : System.Web.UI.Page
         StringBuilder sb = new StringBuilder();
         sb.AppendFormat("SELECT * FROM [is_osirix] WHERE [date] = '{0}' AND [odd] = '{1}'", my_x2.unixDate(datum), "VD");
 
-        Dictionary<int, SortedList> result = x2db.getTable(sb.ToString());
+        Dictionary<int, Hashtable> result = x2db.getTable(sb.ToString());
         sb.Length = 0;
         Label meno_lnk = new Label();
         meno_lnk.ID = "chlapci";

@@ -150,3 +150,37 @@ WHILE done=0 DO
 END WHILE;
 close cur1;
 end
+
+...... 25.12.2014
+
+
+
+CREATE DEFINER=`root`@`localhost` TRIGGER `is_sluzby_2_au` AFTER UPDATE ON `is_sluzby_2` FOR EACH ROW
+begin
+	set @old_userId = OLD.user_id;
+	set @new_userId = NEW.user_id;
+	set @mesiac = month(OLD.datum);
+	set @rok = year(OLD.datum);
+	
+   
+	DELETE FROM is_vykaz WHERE rok = @rok AND mesiac = @mesiac AND user_id = @old_userId;
+	DELETE FROM is_vykaz WHERE rok = @rok AND mesiac = @mesiac AND user_id = @new_userId;
+END
+
+
+ALTER TABLE `is_vykaz`
+CHANGE `vykaz` `vykaz` longtext COLLATE 'ascii_general_ci' NOT NULL AFTER `rok`,
+CHANGE `prenos` `prenos` text COLLATE 'ascii_general_ci' NULL AFTER `vykaz`,
+COMMENT='';
+
+ALTER TABLE `is_vykaz`
+COMMENT='' ENGINE='InnoDB' COLLATE 'utf8_slovak_ci';
+
+ALTER TABLE `is_vykaz`
+ADD INDEX `mesiac` (`mesiac`),
+ADD INDEX `rok` (`rok`),
+ADD INDEX `user_id` (`user_id`),
+ADD UNIQUE `user_id_mesiac_rok` (`user_id`, `mesiac`, `rok`);
+
+ALTER TABLE `is_vykaz`
+ADD FOREIGN KEY (`user_id`) REFERENCES `is_users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
