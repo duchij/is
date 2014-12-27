@@ -78,14 +78,9 @@ public partial class header : System.Web.UI.UserControl
         }
         else
         {
-            DateTime dateTmp = DateTime.Today;
-            int mesiac = dateTmp.Month;
-            int rok = dateTmp.Year;
-            int dni = DateTime.DaysInMonth(rok, mesiac);
-                       
-
-            x2Mysql.fillDocShifts(my_x2.makeDateGroup(rok, mesiac), dni, mesiac, rok);
-            this.makeHeader();
+            this.msg_lbl.Text = Resources.Resource.shifts_not_done;           
+            //int res =  x2Mysql.fillDocShifts(my_x2.makeDateGroup(rok, mesiac), dni, mesiac, rok);
+            //this.makeHeader();
         }
 
     }

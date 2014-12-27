@@ -297,7 +297,8 @@ public partial class sluzby2 : System.Web.UI.Page
                     }
                     if (aktDenMesiac == (row + 1))
                     {
-                        dataCell.Font.Underline = true;
+                        dataCell.BorderColor = System.Drawing.Color.Red;
+                        dataCell.BorderWidth = Unit.Point(5);
                     }
 
 

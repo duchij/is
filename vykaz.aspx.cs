@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Configuration;
 using System.Text;
@@ -18,6 +19,8 @@ public partial class vykaz : System.Web.UI.Page
 {
     x2_var my_x2 = new x2_var();
     vykazdb x_db = new vykazdb();
+
+    mysql_db x2Mysql = new mysql_db();
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -68,9 +71,11 @@ public partial class vykaz : System.Web.UI.Page
     protected void runGenerate(int mesiac,int rok)
     {
         SortedList curVykaz = x_db.getCurrentVykaz(Convert.ToInt32(Session["user_id"].ToString()), mesiac, rok);
+
         string prenos = x_db.getPrevMonthPrenos(Convert.ToInt32(Session["user_id"].ToString()), mesiac, rok);
 
         string tmp = this.predMes_txt.Text.ToString();
+
         tmp = tmp.Trim();
         if (tmp.Length == 0)
         {
@@ -145,13 +150,8 @@ public partial class vykaz : System.Web.UI.Page
                         my_text_box1.Text = "D";
                     }
                 }
-
             }
-
-
-
         }
-
     }
 
 
@@ -189,12 +189,9 @@ public partial class vykaz : System.Web.UI.Page
 
     protected void createVykazFromData(SortedList data, int rok, int mesiac)
     {
-        int days = DateTime.DaysInMonth(Convert.ToInt32(rok), Convert.ToInt32(mesiac));
+        int days = DateTime.DaysInMonth(rok, mesiac);
         string vykazStr = data["vykaz"].ToString();
-
-        char[] delimiter = {'|'};
-
-        string[] rows = vykazStr.Split(delimiter);
+        string[] rows = vykazStr.Split('|');
 
         int rowLen = rows.Length;
 
@@ -202,12 +199,9 @@ public partial class vykaz : System.Web.UI.Page
 
         for (int i = 0; i < days; i++)
         {
-            char[] del1 = { '~' };
 
-            string[] cols = rows[i].Split(del1);
-
+            string[] cols = rows[i].Split('~');
             int colsLen = cols.Length;
-
             for (int j = 0; j < colsLen; j++)
             {
                 ContentPlaceHolder ctp = new ContentPlaceHolder();
@@ -233,7 +227,21 @@ public partial class vykaz : System.Web.UI.Page
     {
         int days = DateTime.DaysInMonth(Convert.ToInt32(rok), Convert.ToInt32(mesiac));
 
+        
         this.vykaz_tbl.Controls.Clear();
+
+      /*  TableHeaderRow headerRow = new TableHeaderRow();
+     
+        for (int row1 = 0; row1 < 12; row1++)
+        {
+            TableHeaderCell headCell = new TableHeaderCell();
+            headCell.ID = "headCell_" + row1.ToString();
+            
+            Label cellLabel = new Label();
+            cellLabel.ID = "headLabel_" + row1.ToString();
+            cellLabel.Text = "
+        }*/
+
 
         for (int i = 0; i < days; i++)
         {
@@ -300,6 +308,45 @@ public partial class vykaz : System.Web.UI.Page
         }
     }
 
+    protected Boolean[] getShiftStateByID(int mesiac, int rok)
+    {
+       int dateGroup = my_x2.makeDateGroup(rok, mesiac);
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("SELECT [datum] FROM [is_sluzby_2] WHERE [user_id] = {0} AND [date_group]={1} AND [typ]<>'Prijm' ORDER BY [datum] ASC", Session["user_id"].ToString(),dateGroup);
+
+        Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
+
+        ArrayList tmpData = new ArrayList();
+
+        int tmpLen = table.Count;
+       
+        for (int j = 0; j < tmpLen; j++)
+        {
+            tmpData.Add(table[j]["datum"]);
+        }
+
+        int dni = DateTime.DaysInMonth(rok, mesiac);
+        Boolean[] result = new bool[dni];
+
+        StringBuilder dat = new StringBuilder();
+        for (int den = 0; den < dni; den++)
+        {
+            dat.AppendFormat("{0}-{1}-{2}", rok, mesiac, den+1);
+            if (tmpData.IndexOf(dat.ToString()) != -1)
+            {
+                result[den] = true;
+            }
+            else
+            {
+                result[den] = false;
+            }
+            dat.Length = 0;
+        }
+        return result;
+    }
+
+
+
     protected void enterVykazData(string mesiac, string rok)
     {
 
@@ -310,17 +357,18 @@ public partial class vykaz : System.Web.UI.Page
 
         Boolean[] mySluzby = new Boolean[days];
 
-        DateTime pDate = Convert.ToDateTime("01.07.2012");
-        DateTime oDate = Convert.ToDateTime("01." + mesiac+ "." + rok);
+        //DateTime pDate = Convert.ToDateTime("01.07.2012");
+       // DateTime oDate = Convert.ToDateTime("01." + mesiac+ "." + rok);
 
-        if (oDate >= pDate)
-        {
-            mySluzby = x_db.getSluzbyOfUserByID(Session["user_id"].ToString(), mesiac, rok);
-        }
-        else
-        {
-            mySluzby = x_db.getSluzbyOfUser(my_x2.getVykazName(Session["fullname"].ToString()), mesiac, rok);
-        }
+       // if (oDate >= pDate)
+       // {
+           // mySluzby = x_db.getSluzbyOfUserByID(Session["user_id"].ToString(), mesiac, rok);
+       mySluzby = this.getShiftStateByID(mesTmp,rokTmp);
+       // }
+       // else
+        //{
+        //    mySluzby = x_db.getSluzbyOfUser(my_x2.getVykazName(Session["fullname"].ToString()), mesiac, rok);
+        //}
 
         
       //  int prevDay = 0;
@@ -339,31 +387,10 @@ public partial class vykaz : System.Web.UI.Page
         //    int pos = 0;
             string[] rozpis = new string[11];
 
-           
-
             if (mySluzby[i])
             {
-
                 string dentmp = den.ToString() + "." + mesiac;
-
                 int res = Array.IndexOf(sviatky, dentmp);
-                /*if (dnesJe == 0 || dnesJe == 6)
-                {
-                    rozpis = this.denCisla(vykazVypis["velkaSluzba"].ToString());
-
-                    for (int j = 0; j < 12; j++)
-                    {
-                        if (j > 0)
-                        {
-                            Control tbox = FindControl("textBox_" + i.ToString() + "_" + j.ToString());
-                            TextBox my_text_box = (TextBox)tbox;
-
-                            my_text_box.Text = rozpis[j-1].ToString();
-                        }
-
-
-                    }*/
-
                     if (dnesJe == 0)
                     {
                         if (res == -1)
@@ -457,8 +484,6 @@ public partial class vykaz : System.Web.UI.Page
                    my_text_box.Text = rozpis[j - 1].ToString();
                 }
             }
-
-
         }
     }
 
