@@ -56,7 +56,7 @@ public partial class header : System.Web.UI.UserControl
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
 
-        if (table.Count >0)
+        if (table.Count > 0)
         {
 
             string[] docBefore = table[0]["users_names"].ToString().Split(';');
