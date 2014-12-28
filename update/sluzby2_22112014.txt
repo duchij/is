@@ -184,3 +184,7 @@ ADD UNIQUE `user_id_mesiac_rok` (`user_id`, `mesiac`, `rok`);
 
 ALTER TABLE `is_vykaz`
 ADD FOREIGN KEY (`user_id`) REFERENCES `is_users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+
+-----28.12.2014
+
+CREATE TABLE `is_hlasko_epc` ( `id` bigint(20) unsigned NOT NULL, `user_id` bigint(20) unsigned NOT NULL, `hlasko_id` bigint(20) NOT NULL, `work_start` date NOT NULL, `work_time` int(11) NOT NULL, `work_type` enum('prijem','operac','sledov','konzil') CHARACTER SET ascii NOT NULL, `patient_name` text COLLATE utf8_slovak_ci NOT NULL, `work_text` longtext COLLATE utf8_slovak_ci NOT NULL ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_slovak_ci

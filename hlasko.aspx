@@ -57,6 +57,25 @@ Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="
                     </div>
                    
                     <h1>Hlásenie služby:</h1>
+    Datum:
+    <asp:DropDownList ID="hl_datum_cb" runat="server"></asp:DropDownList>
+    Zaciatok (format hh:mm)   <asp:TextBox ID="workstart_txt" runat="server" ></asp:TextBox> 
+   Cas trvanie (minuty) <asp:TextBox ID="worktime_txt" runat="server" Text="15"></asp:TextBox>
+    Typ:<asp:DropDownList ID="worktype_cb" runat="server">
+            <asp:ListItem Value="prijem">Prijem</asp:ListItem>
+         <asp:ListItem Value="operac">Operacia</asp:ListItem>
+         <asp:ListItem Value="sledov">Slodovani</asp:ListItem>
+         <asp:ListItem Value="konzil">Konziulum</asp:ListItem>
+        </asp:DropDownList>
+    Meno pacienta:
+    <asp:TextBox ID="patientname_txt" runat="server"></asp:TextBox>
+    Popis aktivity:<asp:TextBox ID="activity_txt" runat="server" TextMode="MultiLine"></asp:TextBox>
+    <asp:Button ID="activitysave_btn" runat="server" Text="Pridaj" OnClick="saveActivity_fnc" />
+    <asp:Button ID="generate_btn" runat="server" Text="Generuj hlasko" />
+    <asp:PlaceHolder ID="ativitylist_pl" runat="server">
+
+    </asp:PlaceHolder>
+    <asp:PlaceHolder ID="hlasko_pl" runat="server">
                     
                     <asp:TextBox ID="hlasenie" CssClass="dtextbox" runat="server"  Width="90%" Rows="30" Height="500" TextMode="MultiLine"> </asp:TextBox>
                     <%--<FTB:FreeTextBox ID="hlasenie" runat="server" Width="100%" Height="500"  toolbarlayout="Bold, Italic, Underline,RemoveFormat|FontFacesMenu,FontSizesMenu|JustifyLeft,JustifyRight,JustifyCenter,JustifyFull; Redo,Undo ,BulletedList,NumberedList,Indent,Outdent|WordClean,NetSpell"></FTB:FreeTextBox>--%>
@@ -79,5 +98,6 @@ Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="
                     
                 <asp:Button ID="addInfo_btn" runat="server" Text="Ulož dodatok" Enabled="False" 
                     onclick="addInfo_btn_Click" CssClass="button asphalt" />
+        </asp:PlaceHolder>
 </asp:Content>
 

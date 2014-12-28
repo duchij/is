@@ -23,13 +23,14 @@ public partial class hlasko : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
+       
         if (Session["tuisegumdrum"] == null)
         {
             Response.Redirect("error.html");
         }
 
         this.msg_lbl.Text = "";
-                
+        this.hlasko_pl.Visible = false;        
 
         Response.AppendHeader("Refresh", 6000 + "; URL=hlasko.aspx");
 
@@ -38,6 +39,7 @@ public partial class hlasko : System.Web.UI.Page
         {
             // Calendar1.SelectedDate = DateTime.Today;
             this.setMyDate();
+            this.setEPC_init();
             this.loadHlasko();
 
         }
@@ -55,6 +57,28 @@ public partial class hlasko : System.Web.UI.Page
 
     }
 
+    protected void setEPC_init()
+    {
+        ListItem[] datum = new ListItem[2];
+        DateTime now = DateTime.Now;
+        int hour = now.Hour;
+        int mint =now.Minute;
+       
+        datum[1] = new ListItem(DateTime.Today.AddDays(-1).ToShortDateString(), DateTime.Today.AddDays(-1).ToShortDateString());
+        datum[0] = new ListItem(DateTime.Today.ToShortDateString(),DateTime.Today.ToShortDateString());
+        this.hl_datum_cb.Items.AddRange(datum);
+
+        this.workstart_txt.Text = DateTime.Now.ToString("HH:mm");
+           
+
+       
+
+    
+    }
+
+    protected void saveActivity_fnc(object sender, EventArgs e)
+    {
+    }
 
     protected void setMyDate()
     {
