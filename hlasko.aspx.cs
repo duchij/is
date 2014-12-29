@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Text;
 using System.Collections.Generic;
 //using System.Linq;
 using System.Web;
@@ -78,6 +79,37 @@ public partial class hlasko : System.Web.UI.Page
 
     protected void saveActivity_fnc(object sender, EventArgs e)
     {
+        SortedList data = new SortedList();
+        data.Add("user_id", Session["user_id"].ToString());
+        data.Add("hlasko_id", Session["akt_hlasenie"].ToString());
+
+        DateTime dateTmp = Convert.ToDateTime(this.hl_datum_cb.SelectedValue.ToString());
+
+        data.Add("work_start",my_x2.unixDate(dateTmp)+" "+this.workstart_txt.Text.ToString());
+        data.Add("work_time", this.worktime_txt.Text.ToString());
+        data.Add("work_type", this.worktype_cb.SelectedValue.ToString());
+        data.Add("patient_name", this.patientname_txt.Text.ToString());
+        data.Add("work_text", this.activity_txt.Text.ToString());
+
+        SortedList res = x2MySQL.mysql_insert("is_hlasko_epc", data);
+
+        Boolean status = Convert.ToBoolean(res["status"].ToString());
+
+        if (!status)
+        {
+            this.msg_lbl.Text = res["msg"].ToString() + "<br>" + res["sql"].ToString();
+        }
+        else
+        {
+
+        }
+
+    }
+
+    protected void loadEPCData()
+    {
+        StringBuilder sb = new StringBuilder();
+        
     }
 
     protected void setMyDate()

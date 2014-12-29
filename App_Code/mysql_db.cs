@@ -258,6 +258,7 @@ public class mysql_db
             result.Add("status",false);
             result.Add("msg",e.ToString());
             result.Add("last_id", 0);
+            result.Add("sql", query);
             trans1.Rollback();
           
         } 
