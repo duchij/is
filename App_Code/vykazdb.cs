@@ -170,7 +170,7 @@ public class vykazdb : my_db
             mesiac--;
         }
 
-        string query = "SELECT `prenos` FROM `is_vykaz` WHERE `user_id` = {0} AND `mesiac` = {1} AND `rok` = {2}";
+        string query = "SELECT [prenos] FROM [is_vykaz] WHERE [user_id] = {0} AND [mesiac] = {1} AND [rok] = {2}";
         StringBuilder sb = new StringBuilder();
 
         sb.AppendFormat(query, user_id, mesiac, rok);

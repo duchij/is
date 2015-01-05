@@ -207,7 +207,7 @@ public partial class sluzby2 : System.Web.UI.Page
                 DateTime myDate = new DateTime(Convert.ToInt32(rok), Convert.ToInt32(mesiac), row + 1);
                 int dnesJe = (int)myDate.DayOfWeek;
                 string nazov = CultureInfo.CurrentCulture.DateTimeFormat.DayNames[dnesJe];
-                string sviatok = (row + 1).ToString() + "." + mesiac;
+                string sviatok = (row + 1).ToString() + "." + myDate.Month.ToString();
                 int jeSviatok = Array.IndexOf(freeDays, sviatok);
 
 

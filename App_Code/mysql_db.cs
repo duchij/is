@@ -139,8 +139,8 @@ public class mysql_db
             result.Add("last_id", 0);
             trans1.Rollback();
 
-        } 
-
+        }
+        my_con.Close();
         return result;
     }
     public int fillDocShifts(int dategroup, int days, int mesiac, int rok)
@@ -314,7 +314,14 @@ public class mysql_db
             {
                 for (int i = 0; i < reader.FieldCount; i++)
                 {
-                    result.Add(reader.GetName(i).ToString(), reader.GetString(i));
+                    if (reader.GetValue(i) == null)
+                    {
+                        result.Add(reader.GetName(i).ToString(), "0");
+                    }
+                    else
+                    {
+                        result.Add(reader.GetName(i).ToString(), reader.GetValue(i).ToString());
+                    }
                 }
               
             }

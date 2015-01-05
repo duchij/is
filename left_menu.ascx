@@ -24,7 +24,7 @@
                     </div>
                       <ul>               
                         <li><a href="hlasko.aspx" target="_self">Hlásenie služieb</a></li>
-                        <li><a href="vykaz.aspx" target="_self">Mesačný výkaz</a></li>
+                        <li><a href="vykaz2.aspx" target="_self">Mesačný výkaz</a></li>
                         <li><a href="dovolenky.aspx" target="_self">Dovolenky</a></li> 
                         <li><a href="poziadavky.aspx" target="_self"><asp:label ID="poziadavky_lbl" runat="server" Text="<%$ Resources:Resource,odd_poziadavky %>"></asp:label></a></li>
                      </ul>                    

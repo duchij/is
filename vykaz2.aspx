@@ -5,11 +5,11 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
     <asp:Label ID="msg_lbl" runat="server" Text=""></asp:Label>
   
- <h1> Mesacny vykaz</h1>
+ <h1> Mesačný výkaz</h1>
     <div class="row">
-        <div class="one half">
+        <div class="one third">
                 <asp:Label ID="zaMesiac_lbl" runat="server"></asp:Label>
-                 Mesiac:<asp:DropDownList ID="mesiac_cb" runat="server" 
+                 Mesiac:<asp:DropDownList ID="mesiac_cb" runat="server" Width="100"  CssClass="mojInline" 
                         AutoPostBack="True" OnSelectedIndexChanged = "onMonthChangedFnc">
                         <asp:ListItem Value="1">Január</asp:ListItem>
                         <asp:ListItem Value="2">Február</asp:ListItem>
@@ -25,9 +25,10 @@
                         <asp:ListItem Value="12">December</asp:ListItem>
                     </asp:DropDownList>  
         </div>
-        <div class="one half">  
+        <div class="one third"> 
+            
                     Rok: 
-                <asp:DropDownList ID="rok_cb" runat="server" AutoPostBack="True" OnSelectedIndexChanged = "onYearChangedFnc">
+                <asp:DropDownList ID="rok_cb" runat="server" AutoPostBack="True" OnSelectedIndexChanged = "onYearChangedFnc" CssClass="mojInline" Width="100">
                     <asp:ListItem Value="2010">Rok 2010</asp:ListItem>
                     <asp:ListItem Value="2011">Rok 2011</asp:ListItem>
                     <asp:ListItem Value="2012">Rok 2012</asp:ListItem>
@@ -36,23 +37,30 @@
                      <asp:ListItem Value="2015">Rok 2015</asp:ListItem>
                       <asp:ListItem Value="2016">Rok 2016</asp:ListItem>
                 </asp:DropDownList>
+                
+            </div>
+        <div class="one third">
+            <asp:Button ID="generateEPC_btn" runat="server" CssClass="button blue"  Text="<%$ Resources:Resource,generate_epc %>" OnClick="generateEpc_fnc" />
         </div>
+       
 
          <div class="row">
             <div class="one">
                     <hr />
-                        <asp:Label ID="predchMes_lbl" runat="server" Text="Prenos z predchadzajuceho mesiaca:"></asp:Label><asp:TextBox ID="predMes_txt" runat="server" Width="50" ></asp:TextBox>
-                        <asp:Button ID="calcData_btn" runat="server" onclick="calcData_Click" Text="Vypocitaj" />
-                        <asp:Button ID="createPdf_btn" runat="server" Text="Tlac" OnClick="createPdf_btn_fnc" Enabled="False" />
+                        <asp:Label ID="predchMes_lbl" runat="server" Text="Prenos z predchadzajuceho mesiaca:" ></asp:Label><asp:TextBox ID="predMes_txt" runat="server" Width="50" CssClass="mojInline"></asp:TextBox>
+                        <asp:Button ID="calcData_btn" runat="server" onclick="calcData_Click" Text="Vypocitaj" CssClass="mojInline" />
+                        <asp:Button ID="createPdf_btn" runat="server" Text="Tlac" OnClick="createPdf_btn_fnc" Enabled="false" CssClass="mojInline" />
                     <hr />
             </div>
         </div>
 
         <div class="row">
             <div class="one">
-                        Pocet hodin podla dni:<asp:TextBox ID="pocetHod_txt" runat="server" Width="50"></asp:TextBox>
+                        Pocet hodin podla dni:<asp:TextBox ID="pocetHod_txt" runat="server" Width="50" CssClass="mojInline"></asp:TextBox>
                         <%--<asp:Label ID="pocetHod_lbl" runat="server"></asp:Label> --%>
-                        Rozdiel medzi: <strong><asp:Label ID="rozdiel_lbl" runat="server"></asp:Label></strong><hr />
+                        Rozdiel medzi: <strong><asp:Label ID="rozdiel_lbl" runat="server" CssClass="mojInline"></asp:Label></strong>
+                
+                <hr />
             </div>
         </div>
 

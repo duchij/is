@@ -134,5 +134,11 @@
                 
                 <asp:Button ID="send_btn" runat="server" Text="Vlož" onclick="send_btn_Click"/>
                 <asp:Button ID="uprav_btn" runat="server" Text="Uprav" onclick="uprav_btn_Click"/>
+    <asp:PlaceHolder ID="vykaz_pl" runat="server">
+    <h1>Nastavenia pre výkaz</h1>
+        <asp:Table ID="vykazSetup_tbl" runat="server" CssClass="responsive" data-max="13"></asp:Table>
+        <asp:Button ID="saveVykaz_btn" runat="server" Text="Ulož nastavenie" OnClick="saveVykaz_fnc" CssClass="button green"  />
+        <asp:Button ID="resetVykaz_btn" runat="server" Text="Reset nastavenia" OnClick="resetVykaz_fnc" CssClass="button red"  />
+        </asp:PlaceHolder>
 </asp:Content>
 

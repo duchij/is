@@ -187,4 +187,16 @@ ADD FOREIGN KEY (`user_id`) REFERENCES `is_users` (`id`) ON DELETE CASCADE ON UP
 
 -----28.12.2014
 
-CREATE TABLE `is_hlasko_epc` ( `id` bigint(20) unsigned NOT NULL, `user_id` bigint(20) unsigned NOT NULL, `hlasko_id` bigint(20) NOT NULL, `work_start` date NOT NULL, `work_time` int(11) NOT NULL, `work_type` enum('prijem','operac','sledov','konzil') CHARACTER SET ascii NOT NULL, `patient_name` text COLLATE utf8_slovak_ci NOT NULL, `work_text` longtext COLLATE utf8_slovak_ci NOT NULL ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_slovak_ci
+CREATE TABLE `is_hlasko_epc` ( `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT, `user_id` bigint(20) unsigned NOT NULL, `hlasko_id` bigint(20) NOT NULL, `work_start` datetime NOT NULL, `work_time` int(11) NOT NULL, `work_type` enum('prijem','operac','sledov','konzil') CHARACTER SET ascii NOT NULL, `patient_name` text COLLATE utf8_slovak_ci NOT NULL, `work_text` longtext COLLATE utf8_slovak_ci NOT NULL, `osirix` enum('true','false') CHARACTER SET ascii NOT NULL DEFAULT 'false', PRIMARY KEY (`id`), KEY `work_start` (`work_start`), KEY `hlasko_id` (`hlasko_id`), KEY `user_id` (`user_id`) ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_slovak_ci
+
+-------2.1.2015
+spravit v is_hlasko, pole 
+status a enum na normal, generated (default je normal)
+
+spravit v is_hlasko, pole
+encrypt a enum na yes, no (normal je na no)
+
+-------4.1.2015
+nastavist is_settings na innodb
+dat na name varchar o 100, a zmenit data na asci
+unique na name...

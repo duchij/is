@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections;
+using System.Text;
 using System.Configuration;
 using System.Data;
 using System.Web;
@@ -13,6 +15,7 @@ public partial class MasterPage : System.Web.UI.MasterPage
 {
     public x2_var X2 = new x2_var();
     public my_db oldDb = new my_db();
+    public mysql_db x2Mysql = new mysql_db();
     public string rights;
    /* public string PageName
     {
@@ -50,7 +53,7 @@ public partial class MasterPage : System.Web.UI.MasterPage
             this.hlas_lekar_plh.Visible = true;
             this.hlas_sestier_plh.Visible = true;
         }
-
+        this.shiftsOfCurrentUser();
 
 
     }
@@ -82,5 +85,27 @@ public partial class MasterPage : System.Web.UI.MasterPage
 
 
         }
+    }
+
+
+    protected void shiftsOfCurrentUser()
+    {
+        int dateGroup = X2.makeDateGroup(DateTime.Today.Year, DateTime.Today.Month);
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("SELECT [datum] FROM [is_sluzby_2] WHERE [date_group] ='{0}' AND [user_id] = '{1}' AND [typ]<>'prijm' ORDER BY [datum]", dateGroup, Session["user_id"]);
+
+        Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
+        string[] shifts = new string[table.Count];
+        if (table.Count > 0)
+        {
+            int tblLen = table.Count;
+            for (int i = 0; i < tblLen; i++)
+            {
+                shifts[i] = X2.UnixToMsDateTime(table[i]["datum"].ToString()).ToString("d");
+            }
+            this.currentShifts_lbl.Text = String.Join(", ",shifts);
+
+        }
+
     }
 }

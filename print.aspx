@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="print.aspx.cs" Inherits="hlasenia_print"%>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="print.aspx.cs" Inherits="hlasenia_print" Culture="sk-SK"%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -48,7 +48,7 @@ function varitext(text)
     </table>
      <div class="nonprint">
     <asp:Label ID="msg_lbl" runat="server" Text=""></asp:Label>
-   <a href="" onclick="window.print();" style="font-weight:bolder;font-size:x-large;" /><asp:Label ID="print_lbl" runat="server" Text="<%$ Resources:Resource, print %>"></asp:Label> </a> &nbsp
+   <a href="javascript:window.print();" style="font-weight:bolder;font-size:x-large;" /><asp:Label ID="print_lbl" runat="server" Text="<%$ Resources:Resource, print %>"></asp:Label> </a> &nbsp;
     <asp:HyperLink ID="HyperLink1" runat="server" 
         NavigateUrl="hlasko.aspx" Font-Bold="true" Font-Size="X-Large" Text="<%$ Resources:Resource, back %>"></asp:HyperLink></div> 
     </form>
