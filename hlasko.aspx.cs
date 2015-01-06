@@ -109,7 +109,8 @@ public partial class hlasko : System.Web.UI.Page
     protected void loadEPCData()
     {
         StringBuilder sb = new StringBuilder();
-        
+        sb.AppendFormat("SELECT * FROM [is_hlasko_epc] WHERE [hlasko_id] = {1} ORDER BY [work_start] ASC", Session["akt_hlas"].ToString());
+        x
     }
 
     protected void setMyDate()
