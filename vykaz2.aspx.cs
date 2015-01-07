@@ -771,6 +771,9 @@ public partial class vykaz2 : System.Web.UI.Page
     }
     protected void generateEpc_fnc(object sender, EventArgs e)
     {
+        int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue);
+        int rok = Convert.ToInt32(this.rok_cb.SelectedValue);
+        Session["date_group"] = my_x2.makeDateGroup(rok, mesiac);
         Response.Redirect("is_epc.aspx");
     }
 

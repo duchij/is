@@ -79,16 +79,20 @@ Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="
             </div> 
         </div>
     <div class="row">
-    <asp:CheckBox ID="check_osirix" runat="server" Text="Pridaj do Osirixu" CssClass="mojInline"  />
+    <asp:CheckBox ID="check_osirix" runat="server" Text=""/>  <asp:Label ID="Label2" runat="server" Text="   Zobraz v OSIRIXe" CssClass="mojInline"></asp:Label>
+       
         </div>
-   
-    <asp:Button ID="activitysave_btn" runat="server" Text="Pridaj" OnClick="saveActivity_fnc" CssClass="button asphalt"  />
+   <div class="row">
+       <div class="align-right">
+   <asp:Button ID="activitysave_btn" runat="server" Text="Pridaj do EPC" OnClick="saveActivity_fnc" CssClass="button asphalt"  />
+           </div>
+       </div>
              </div>
         </asp:PlaceHolder>
    
         
     <asp:PlaceHolder ID="ativitylist_pl" runat="server">
-        <div class="success box"  >
+        <div class="success box">
         <asp:Table ID="activity_tbl" runat="server"></asp:Table>
         <asp:Button ID="generate_btn" runat="server" Text="Generuj hlasko" CssClass="button green"  OnClick="generateHlasko_fnc" /> 
             </div>

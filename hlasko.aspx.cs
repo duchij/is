@@ -65,14 +65,16 @@ public partial class hlasko : System.Web.UI.Page
     {
         this.hl_datum_cb.Items.Clear();
 
-        ListItem[] datum = new ListItem[2];
+        ListItem[] datum = new ListItem[3];
 
-        DateTime now = DateTime.Now;
+        DateTime now = Convert.ToDateTime(this.Calendar1.SelectedDate);
         int hour = now.Hour;
         int mint =now.Minute;
        
-        datum[1] = new ListItem(DateTime.Today.AddDays(-1).ToShortDateString(), DateTime.Today.AddDays(-1).ToShortDateString());
-        datum[0] = new ListItem(DateTime.Today.ToShortDateString(),DateTime.Today.ToShortDateString());
+        
+        datum[0] = new ListItem(now.ToShortDateString(),now.ToShortDateString());
+        datum[1] = new ListItem(now.AddDays(-1).ToShortDateString(), now.AddDays(-1).ToShortDateString());
+        datum[2] = new ListItem(now.AddDays(1).ToShortDateString(), now.AddDays(1).ToShortDateString());
         this.hl_datum_cb.Items.AddRange(datum);
 
         this.workstart_txt.Text = DateTime.Now.ToString("HH:mm");
@@ -295,7 +297,7 @@ public partial class hlasko : System.Web.UI.Page
                 }
                 else
                 {
-                    this.hlasko_pl.Visible = false;
+                    this.hlasko_pl.Visible = true;
                 }
             }
         }

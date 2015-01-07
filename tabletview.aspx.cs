@@ -98,7 +98,7 @@ public partial class tabletview : System.Web.UI.Page
 
         sb.AppendFormat("SELECT * FROM [is_osirix] WHERE [date] = '{0}' AND [odd] = '{1}'", my_x2.unixDate(datum), "KOJ");
 
-        Dictionary<int, Hashtable> result = x2db.getTable(sb.ToString());
+        Dictionary<int, SortedList> result = x2db.getTableSL(sb.ToString());
 
         int rows = result.Count;
 
@@ -121,7 +121,7 @@ public partial class tabletview : System.Web.UI.Page
 
         sb.AppendFormat("SELECT * FROM [is_osirix] WHERE [date] = '{0}' AND [odd] = '{1}'", my_x2.unixDate(datum), "VD");
 
-        Dictionary<int, SortedList> result = x2db.getTable(sb.ToString());
+        Dictionary<int, SortedList> result = x2db.getTableSL(sb.ToString());
 
         int rows = result.Count;
 
@@ -144,7 +144,7 @@ public partial class tabletview : System.Web.UI.Page
 
         sb.AppendFormat("SELECT * FROM [is_osirix] WHERE [date] = '{0}' AND [odd] = '{1}'", my_x2.unixDate(datum), "MSV");
 
-        Dictionary<int, SortedList> result = x2db.getTable(sb.ToString());
+        Dictionary<int, SortedList> result = x2db.getTableSL(sb.ToString());
 
         int rows = result.Count;
 
@@ -356,6 +356,7 @@ public partial class tabletview : System.Web.UI.Page
             data.Add("odd", "KOJ");
 
             SortedList result = x2db.mysql_insert("is_osirix", data);
+           
             bool res = Convert.ToBoolean(result["status"]);
             int id = Convert.ToInt32(result["last_id"]);
             if (res)

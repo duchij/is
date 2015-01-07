@@ -398,4 +398,43 @@ public class mysql_db
 
     }
 
+    public Dictionary<int, SortedList> getTableSL(string query)
+    {
+
+        Dictionary<int, SortedList> result = new Dictionary<int, SortedList>();
+
+        my_con.Open();
+
+        OdbcCommand my_com = new OdbcCommand(this.parseQuery(query.ToString()), my_con);
+
+        OdbcDataReader reader = my_com.ExecuteReader();
+        int row = 0;
+
+        if (reader.HasRows)
+        {
+            while (reader.Read())
+            {
+                SortedList tmp = new SortedList();
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+
+
+                    //string inData = reader.GetValue(i).ToString();
+                    // byte[] buffer = Encoding.UTF8.GetBytes(inData);
+                    //string outData = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
+
+                    tmp.Add(reader.GetName(i).ToString(), reader.GetString(i));
+                }
+                result.Add(row, tmp);
+                row++;
+            }
+        }
+        my_con.Close();
+
+
+        return result;
+
+    }
+
+
 }

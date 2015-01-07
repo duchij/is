@@ -22,8 +22,12 @@
                 <td><asp:Label ID="osobcislo_lbl" runat="server" Text="Label"></asp:Label></td>
             </tr>
         </table>
-        <hr />
 
+        
+
+
+        <hr />
+        <asp:Table ID="epc_tbl" runat="server" BorderColor="Black"></asp:Table>
     </div>
     </form>
 </body>
