@@ -139,10 +139,37 @@ public class mysql_db
             result.Add("last_id", 0);
             trans1.Rollback();
 
-        } 
+        }
+        my_con.Close();
+        return result;
+    }
+
+    public SortedList callStoredProcWithoutParam(string stored_proc)
+    {
+        SortedList result = new SortedList();
+
+        OdbcCommand cmd = new OdbcCommand();
+        cmd.Connection = my_con;
+        cmd.CommandType = CommandType.StoredProcedure;
+        cmd.CommandText = "{CALL "+stored_proc+"()}";
+
+        my_con.Open();
+        try
+        {
+            cmd.ExecuteNonQuery();
+            result.Add("status", true);
+        }
+        catch (Exception e)
+        {
+            result.Add("status", false);
+            result.Add("msg", e.ToString());
+        }
+
+        my_con.Close();
 
         return result;
     }
+
     public int fillDocShifts(int dategroup, int days, int mesiac, int rok)
     {
        
@@ -314,7 +341,14 @@ public class mysql_db
             {
                 for (int i = 0; i < reader.FieldCount; i++)
                 {
-                    result.Add(reader.GetName(i).ToString(), reader.GetString(i));
+                    if (reader.GetValue(i) == null)
+                    {
+                        result.Add(reader.GetName(i).ToString(), "0");
+                    }
+                    else
+                    {
+                        result.Add(reader.GetName(i).ToString(), reader.GetValue(i).ToString());
+                    }
                 }
               
             }

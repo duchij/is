@@ -42,7 +42,7 @@ public partial class sltoword : System.Web.UI.Page
             Response.Clear();
             Response.Buffer = true;
             Response.ContentType = "application/msword; charset=Windows-1250";
-            Response.AddHeader("content-disposition", "attachment;filename=" + mes + ".doc");
+            Response.AddHeader("content-disposition", "attachment;filename=" + x2_var.UTFtoASCII(mes) + ".doc");
             Response.ContentEncoding = System.Text.Encoding.GetEncoding("Windows-1250");
            	Response.Charset = "Windows-1250";
             StringWriter stringWriter = new StringWriter(); //System.IO namespace should be used
@@ -57,7 +57,7 @@ public partial class sltoword : System.Web.UI.Page
             print_lbl.Visible = true;
             print_lbl.Text ="<a href='' onClick='window.print(); '>Tlacit</a>";
             back_lbl.Visible = true;
-            back_lbl.Text = "<a href='sluzby.aspx' target='_self'>Naspat</a>";
+            back_lbl.Text = "<a href='sluzby2.aspx' target='_self'>Naspat</a>";
 
         }
 

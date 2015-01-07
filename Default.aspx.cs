@@ -122,6 +122,8 @@ public partial class _Default : System.Web.UI.Page
 
                     Session.Add("zaradenie", data["zaradenie"].ToString());
 
+                    SortedList passPhrase = db_obj.getPassPhrase();
+                    Session.Add("passphrase", passPhrase["data"].ToString());
 
 
                     Response.Cookies["tuisegumdrum"].Value = " activado";

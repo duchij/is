@@ -157,6 +157,34 @@ public class x2_var
         return rok + "-" + mesiac + "-" + den;
     }
 
+    public DateTime UnixToMsDateTime(string datetime)
+    {
+        DateTime result;
+
+        if (datetime.IndexOf("-") != -1)
+        {
+
+            string[] tmp1 = datetime.Split(' ');
+            string[] tmp2 = tmp1[0].Split('-');
+
+            string _res = tmp2[2] + ". " + tmp2[1] + ". " + tmp2[0];
+            if (tmp1.Length > 1)
+            {
+                result = Convert.ToDateTime(_res + " " + tmp1[1]);
+            }
+            else
+            {
+                result = Convert.ToDateTime(_res);
+            }
+        }
+        else
+        {
+            result = Convert.ToDateTime(datetime);
+        }
+
+        return result;
+    }
+
     public string MSDate(string datum)
     {
         string[] _tmp = datum.Split(new char[] { ' ' });

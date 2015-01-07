@@ -4,7 +4,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
-    <asp:Label ID="msg_lbl" runat="server" Text="Label"></asp:Label>
+    <asp:Label ID="msg_lbl" runat="server" Text=""></asp:Label>
  <h2>
                     <asp:Label ID="title_lbl" runat="server" Text="<%$ Resources:Resource, is_opprogram_title %>"></asp:Label></h2>
                 <hr />
@@ -12,6 +12,7 @@
                     <asp:Label ID="user" runat="server" Text="Label" ForeColor="#990000"></asp:Label></strong><br />
                 <%-- Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="Label" ForeColor="#990000"></asp:Label></strong><br />
                 <hr />--%>
+
                 <asp:GridView ID="news_gv" runat="server" AutoGenerateColumns="false" 
                     AllowPaging="True" BackColor="LightGoldenrodYellow" BorderColor="Tan" 
                     BorderWidth="1px" CellPadding="2" ForeColor="Black" GridLines="None" 
@@ -43,7 +44,7 @@
                 <asp:TextBox ID="small_text" runat="server" Width="99%" Height="50px" TextMode="MultiLine" MaxLength="250"></asp:TextBox><br />
                 <h2><asp:Label ID="label2" runat="server" Text="<%$ Resources:Resource, is_news_full %>"></asp:Label></h2><br />
                 
-                  <div class="unstyled"><FTB:FreeTextBox ID="full_text"  runat="server" Width="100%" Height="400"  toolbarlayout="Bold, Italic, Underline,RemoveFormat|FontFacesMenu,FontSizesMenu,FontForeColorsMenu|JustifyLeft,JustifyRight,JustifyCenter,JustifyFull| Redo,Undo ,BulletedList,NumberedList,Indent,Outdent|WordClean,NetSpell|InsertImage,InsertImageFromGallery"></FTB:FreeTextBox></div>
+                  <FTB:FreeTextBox ID="full_text" runat="server" Width="100%" Height="400"  toolbarlayout="Bold, Italic, Underline,RemoveFormat|FontFacesMenu,FontSizesMenu,FontForeColorsMenu|JustifyLeft,JustifyRight,JustifyCenter,JustifyFull| Redo,Undo ,BulletedList,NumberedList,Indent,Outdent|WordClean,NetSpell|InsertImage,InsertImageFromGallery"></FTB:FreeTextBox>
                 <asp:Button ID="save_btn" runat="server" Text="<%$ Resources:Resource, is_news_button_save %>" OnClick="saveMessage_Click" />
 </asp:Content>
 

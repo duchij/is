@@ -17,6 +17,15 @@ public partial class left_menu : System.Web.UI.UserControl
 
         string rights = Request.Cookies["rights"].Value.ToString();
 
+        if (rights == "admin")
+        {
+            this.dev_pl.Visible = true;
+        }
+        else
+        {
+            this.dev_pl.Visible = false;
+        }
+
         if (rights.IndexOf("admin") != -1 || rights.IndexOf("users_op") != -1)
         {
             this.operacky.Visible = true;

@@ -33,20 +33,23 @@ public partial class hlasko : System.Web.UI.Page
         this.msg_lbl.Text = "";
         this.hlasko_pl.Visible = false;        
 
-        Response.AppendHeader("Refresh", 6000 + "; URL=hlasko.aspx");
+       // Response.AppendHeader("Refresh", 6000 + "; URL=hlasko.aspx");
 
 
         if (IsPostBack == false)
         {
             // Calendar1.SelectedDate = DateTime.Today;
             this.setMyDate();
-            this.setEPC_init();
+            
             this.loadHlasko();
+            this.setEPC_init();
 
         }
         else
         {
             //this.setMyDate();
+            // this.setEPC_init();
+            this.loadEPCData();
         }
 
         /*if (IsCallback)
@@ -60,7 +63,10 @@ public partial class hlasko : System.Web.UI.Page
 
     protected void setEPC_init()
     {
+        this.hl_datum_cb.Items.Clear();
+
         ListItem[] datum = new ListItem[2];
+
         DateTime now = DateTime.Now;
         int hour = now.Hour;
         int mint =now.Minute;
@@ -70,47 +76,284 @@ public partial class hlasko : System.Web.UI.Page
         this.hl_datum_cb.Items.AddRange(datum);
 
         this.workstart_txt.Text = DateTime.Now.ToString("HH:mm");
-           
 
+        this.loadEPCData();
        
 
     
     }
 
+    protected void checkCorrectTime_fnc(object sender, EventArgs e)
+    {
+        //this.msg_lbl.Text = this.workstart_txt.Text;
+
+        string timeStr = this.workstart_txt.Text;
+        DateTime time;
+
+        if (!DateTime.TryParse(timeStr, out time))
+        {
+            this.time_valid_msg.Visible = true;
+            this.activitysave_btn.Enabled = false;
+        }
+        else
+        {
+            this.time_valid_msg.Visible = false;
+            this.activitysave_btn.Enabled = true;
+            this.loadEPCData();
+        }
+
+
+    }
+
+    protected void checkCorrectMinutes_fnc(object sender, EventArgs e)
+    {
+        string minuteStr = this.worktime_txt.Text;
+        int minutes;
+
+        if (!Int32.TryParse(minuteStr, out minutes))
+        {
+            this.minute_valid_msg.Visible = true;
+            this.activitysave_btn.Enabled = false;
+        }
+        else
+        {
+            this.minute_valid_msg.Visible = false;
+            this.activitysave_btn.Enabled = true;
+            this.loadEPCData();
+        }
+    }
+
     protected void saveActivity_fnc(object sender, EventArgs e)
     {
+
         SortedList data = new SortedList();
         data.Add("user_id", Session["user_id"].ToString());
         data.Add("hlasko_id", Session["akt_hlasenie"].ToString());
 
         DateTime dateTmp = Convert.ToDateTime(this.hl_datum_cb.SelectedValue.ToString());
 
-        data.Add("work_start",my_x2.unixDate(dateTmp)+" "+this.workstart_txt.Text.ToString());
+        data.Add("work_start", my_x2.unixDate(dateTmp) + " " + this.workstart_txt.Text.ToString());
         data.Add("work_time", this.worktime_txt.Text.ToString());
         data.Add("work_type", this.worktype_cb.SelectedValue.ToString());
         data.Add("patient_name", this.patientname_txt.Text.ToString());
-        data.Add("work_text", this.activity_txt.Text.ToString());
+        data.Add("work_text", my_x2.EncryptString(this.activity_txt.Text.ToString(),Session["passphrase"].ToString()));
+        data.Add("osirix", this.check_osirix.Checked);
 
-        SortedList res = x2MySQL.mysql_insert("is_hlasko_epc", data);
-
-        Boolean status = Convert.ToBoolean(res["status"].ToString());
-
-        if (!status)
+        if (Session["epc_id"] == null)
         {
-            this.msg_lbl.Text = res["msg"].ToString() + "<br>" + res["sql"].ToString();
+
+            SortedList res = x2MySQL.mysql_insert("is_hlasko_epc", data);
+
+            Boolean status = Convert.ToBoolean(res["status"].ToString());
+
+            if (!status)
+            {
+                this.msg_lbl.Text = res["msg"].ToString() + "<br>" + res["sql"].ToString();
+            }
+            else
+            {
+                this.loadEPCData();
+                this.clearEpcData();
+                this._generateHlasko();
+            }
         }
         else
         {
+            SortedList resUp = x2MySQL.mysql_update("is_hlasko_epc", data, Session["epc_id"].ToString());
 
+            if (Convert.ToBoolean(resUp["status"]) == true)
+            {
+                Session.Remove("epc_id");
+                this.loadEPCData();
+                this.clearEpcData();
+                this._generateHlasko();
+                
+            }
+            else
+            {
+                this.msg_lbl.Text = resUp["msg"].ToString();
+            }
         }
+    }
 
+    protected void clearEpcData()
+    {
+        this.workstart_txt.Text = DateTime.Now.ToString("HH:mm");
+        this.worktime_txt.Text = "15";
+        this.patientname_txt.Text = "";
+        this.activity_txt.Text = "";
+        this.activitysave_btn.Text = Resources.Resource.add;
+        
     }
 
     protected void loadEPCData()
     {
+      
+
+        this.activity_tbl.Controls.Clear();
+        this.activity_tbl.Visible = true;
         StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("SELECT * FROM [is_hlasko_epc] WHERE [hlasko_id] = {1} ORDER BY [work_start] ASC", Session["akt_hlas"].ToString());
-        x
+        sb.AppendFormat("SELECT * FROM [is_hlasko_epc] WHERE [hlasko_id] ='{0}' ORDER BY [work_start] ASC", Session["akt_hlasenie"]);
+        Dictionary<int, Hashtable> table = x2MySQL.getTable(sb.ToString());
+
+
+
+        int tableLn = table.Count;
+        //this.msg_lbl.Text = Session["akt_hlasenie"].ToString();
+
+        TableHeaderRow headRow = new TableHeaderRow();
+        TableHeaderCell headCell1 = new TableHeaderCell();
+        headCell1.Text = "Akcia";
+        headRow.Controls.Add(headCell1);
+
+        TableHeaderCell headCell2 = new TableHeaderCell();
+        headCell2.Text = "Typ prace";
+        headRow.Controls.Add(headCell2);
+
+        TableHeaderCell headCell3 = new TableHeaderCell();
+        headCell3.Text = "Zaciatok prace";
+        headRow.Controls.Add(headCell3);
+
+        TableHeaderCell headCell4 = new TableHeaderCell();
+        headCell4.Text = "Trvanie prace";
+        headRow.Controls.Add(headCell4);
+
+        TableHeaderCell headCell5 = new TableHeaderCell();
+        headCell5.Text = "Priezvisko pacienta";
+        headRow.Controls.Add(headCell5);
+
+        TableHeaderCell headCell6 = new TableHeaderCell();
+        headCell6.Text = "Popis prace";
+        headRow.Controls.Add(headCell6);
+
+        TableHeaderCell headCell7 = new TableHeaderCell();
+        headCell7.Text = "OSIRIX";
+        headRow.Controls.Add(headCell7);
+
+        this.activity_tbl.Controls.Add(headRow);
+
+
+        for (int i = 0; i < tableLn; i++)
+        {
+            TableRow riadok = new TableRow();
+           
+
+            TableCell celaAction = new TableCell();
+            celaAction.ID = "celaAction_" + table[i]["id"].ToString();
+            //celaTyp.Text = table[i]["work_type"].ToString();
+            Button editBtn = new Button();
+            editBtn.ID = "editBtn_" + table[i]["id"].ToString();
+            editBtn.Click += new EventHandler(clickEPC_fnc);
+            editBtn.CssClass = "button green";
+            editBtn.Text = "Edituj";
+            celaAction.Controls.Add(editBtn);
+
+            Button delBtn = new Button();
+            delBtn.ID = "delBtn_" + table[i]["id"].ToString();
+            delBtn.Click += new EventHandler(clickEPC_fnc);
+            delBtn.CssClass = "button red";
+            delBtn.Text = "Zmaz";
+            celaAction.Controls.Add(delBtn);
+
+            riadok.Controls.Add(celaAction);
+
+            TableCell celaTyp = new TableCell();
+            celaTyp.Text = table[i]["work_type"].ToString();
+            riadok.Controls.Add(celaTyp);
+
+            TableCell celaCas = new TableCell();
+            celaCas.Text = my_x2.UnixToMsDateTime(table[i]["work_start"].ToString()).ToString();
+            riadok.Controls.Add(celaCas);
+
+            TableCell celaCas2 = new TableCell();
+            celaCas2.Text = table[i]["work_time"].ToString();
+            riadok.Controls.Add(celaCas2);
+
+            TableCell celaMeno = new TableCell();
+            celaMeno.Text = table[i]["patient_name"].ToString();
+            riadok.Controls.Add(celaMeno);
+
+            TableCell celaPopis = new TableCell();
+            celaPopis.Text = my_x2.DecryptString(table[i]["work_text"].ToString(), Session["passphrase"].ToString());
+            riadok.Controls.Add(celaPopis);
+
+            TableCell osirixCell = new TableCell();
+            CheckBox ch_osirix = new CheckBox();
+            ch_osirix.Checked = Convert.ToBoolean(table[i]["osirix"]);
+            ch_osirix.Enabled = false;
+            osirixCell.Controls.Add(ch_osirix);
+
+            riadok.Controls.Add(osirixCell);
+
+            this.activity_tbl.Controls.Add(riadok);
+
+            if (Session["hlasko_status"] != null)
+            {
+                if (Session["hlasko_status"].ToString() == "generated")
+                {
+                    this.hlasko_pl.Visible = true;
+                }
+                else
+                {
+                    this.hlasko_pl.Visible = false;
+                }
+            }
+        }
+
+       // this.clearEpcData();
+    }
+
+    protected void clickEPC_fnc(object sender, EventArgs e)
+    {
+        Button epcBtn = (Button)sender;
+       // string id = epcBtn.ID.ToString();
+       // Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+
+        //ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
+        
+
+        string[] objId = epcBtn.ID.ToString().Split('_');
+        //Control controlList = ctpl.FindControl("ddl_" + tmp[1] + "_" + tmp[2]);
+        this.msg_lbl.Text = epcBtn.ID.ToString();
+
+        StringBuilder sb = new StringBuilder();
+       // this.msg_lbl.Text ="...."+ objId[0];
+
+        if (objId[0] == "editBtn")
+        {
+            sb.Length = 0;
+            sb.AppendFormat("SELECT * FROM [is_hlasko_epc] WHERE [id] = '{0}'",objId[1]);
+            SortedList row = x2MySQL.getRow(sb.ToString());
+
+            //this.msg_lbl.Text = my_x2.UnixToMsDateTime(row["work_start"].ToString()).ToString("d.M.yyyy");
+            this.hl_datum_cb.SelectedValue = my_x2.UnixToMsDateTime(row["work_start"].ToString()).ToString("d. M. yyyy");
+            this.workstart_txt.Text = my_x2.UnixToMsDateTime(row["work_start"].ToString()).ToString("HH:mm");
+            this.worktime_txt.Text = row["work_time"].ToString();
+            this.worktype_cb.SelectedValue = row["work_type"].ToString();
+            this.patientname_txt.Text = row["patient_name"].ToString();
+            this.activity_txt.Text = my_x2.DecryptString(row["work_text"].ToString(),Session["passphrase"].ToString());
+            this.check_osirix.Checked = Convert.ToBoolean(row["osirix"].ToString());
+
+            this.activitysave_btn.Text = Resources.Resource.save;
+
+            Session.Add("epc_id", row["id"].ToString());
+           
+            this.loadEPCData();
+            //this._generateHlasko();
+           
+            
+        }
+        if (objId[0] == "delBtn")
+        {
+            sb.Length = 0;
+            sb.AppendFormat("DELETE FROM [is_hlasko_epc] WHERE [id] = '{0}'", objId[1]);
+            x2MySQL.execute(sb.ToString());
+
+            this.loadEPCData();
+            //this._generateHlasko();
+        }
+
+
     }
 
     protected void setMyDate()
@@ -134,6 +377,64 @@ public partial class hlasko : System.Web.UI.Page
 
     }
 
+    protected void generateHlasko_fnc(object sender, EventArgs e)
+    {
+        this._generateHlasko(); 
+    }
+
+    protected void _generateHlasko()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("SELECT * FROM [is_hlasko_epc] WHERE [hlasko_id]='{0}' ORDER BY [work_type] ASC", Session["akt_hlasenie"]);
+
+        Dictionary<int, Hashtable> table = x2MySQL.getTable(sb.ToString());
+
+        //Dictionary<SortedList, ArrayList> report;
+
+        int tableLn = table.Count;
+        string prijem = "<p><strong>Prijem</strong><ul>";
+        string operacie = "<p><strong>Operovani</strong><ul>";
+        string konzilia = "<p><strong>Konzilia</strong><ul>";
+        string sledovanie = "<p><strong>Sledovani</strong><ul>";
+        string osirix = "";
+
+        for (int i = 0; i < tableLn; i++)
+        {
+            string acText = my_x2.DecryptString(table[i]["work_text"].ToString(), Session["passphrase"].ToString());
+            if (table[i]["work_type"].ToString() == "prijem")
+            {
+                prijem += "<li><strong>" + table[i]["patient_name"].ToString() + "</strong>," + acText + "</li>";
+            }
+            if (table[i]["work_type"].ToString() == "operac")
+            {
+                operacie += "<li><strong>" + table[i]["patient_name"].ToString() + "</strong>," + acText + "</li>";
+            }
+            if (table[i]["work_type"].ToString() == "konzil")
+            {
+                konzilia += "<li><strong>" + table[i]["patient_name"].ToString() + "</strong>," + acText + "</li>";
+            }
+            if (table[i]["work_type"].ToString() == "sledov")
+            {
+                sledovanie += "<li><strong>" + table[i]["patient_name"].ToString() + "</strong>," + acText + "</li>";
+            }
+
+            if (Convert.ToBoolean(table[i]["osirix"]))
+            {
+                osirix += table[i]["patient_name"].ToString() + "\r\n";
+            }
+        }
+        prijem += "</ul></p>";
+        operacie += "</ul></p>";
+        konzilia += "</ul></p>";
+        sledovanie += "</ul></p>";
+
+        this.hlasko_pl.Visible = true;
+        this.hlasenie.Text = prijem + operacie + konzilia + sledovanie;
+        this.osirix_txt.Text = osirix;
+
+        this.saveGenerated();
+        this.clearEpcData();
+    }
 
 
     protected void Calendar1_SelectionChanged(object sender, EventArgs e)
@@ -142,6 +443,7 @@ public partial class hlasko : System.Web.UI.Page
         //last_user.Text = Request.Cookies["user_id"].Value.ToString();
         //this.Calendar1.SelectedDate = this.Calendar1.SelectedDate;
         this.loadHlasko();
+        this.setEPC_init();
 
     }
 
@@ -151,8 +453,19 @@ public partial class hlasko : System.Web.UI.Page
 
         SortedList data = x_db.getHlasko(this.Calendar1.SelectedDate, this.hlas_type.SelectedValue.ToString(), Session["user_id"].ToString());
 
+
+
         if (Convert.ToInt32(data["id"]) != 0)
         {
+            if (data["status"].ToString() == "normal")
+            {
+
+                this.hlasko_pl.Visible = true;
+            }
+            else
+            {
+                this.hlasko_pl.Visible = true;
+            }
             this.osirix_txt.Text = data["osirix"].ToString();
 
             if (data["uzavri"].ToString() == "1")
@@ -165,7 +478,15 @@ public partial class hlasko : System.Web.UI.Page
                 this.addInfo_btn.Enabled = true;
                 this.view_hlasko.Visible = true;
                 this.hlasko_lbl.Visible = true;
-                this.view_hlasko.Text = data["text"].ToString();
+                if (data["encrypt"].ToString() == "yes")
+                {
+                    this.view_hlasko.Text = my_x2.DecryptString(data["text"].ToString(), Session["passphrase"].ToString());
+                }
+                else
+                {
+                    this.view_hlasko.Text = data["text"].ToString();
+                }
+
                 // osirix_txt = data["osirix"].ToString();
                 this.send.Enabled = false;
             }
@@ -180,29 +501,46 @@ public partial class hlasko : System.Web.UI.Page
                 this.addInfo_btn.Enabled = false;
                 this.send.Enabled = true;
                 this.hlasko_lbl.Visible = false;
-                this.view_hlasko.Text = data["text"].ToString();
+                if (data["encrypt"].ToString() == "yes")
+                {
+                    this.view_hlasko.Text = my_x2.DecryptString(data["text"].ToString(), Session["passphrase"].ToString());
+                }
+                else
+                {
+                    this.view_hlasko.Text = data["text"].ToString();
+                }
             }
             //SortedList akt_user_info = x_db.getUserInfoByID("is_users", Session["user_id"].ToString();
             this.user.Text = Session["fullname"].ToString();
 
+           
+
+            if (data["encrypt"].ToString() == "no")
+            {
+                this.hlasenie.Text = data["text"].ToString();
+            }
+            else
+            {
+                this.hlasenie.Text = my_x2.DecryptString(data["text"].ToString(), Session["passphrase"].ToString());
+            }
             SortedList my_last_user = new SortedList();
-            hlasenie.Text = data["text"].ToString();
             my_last_user = x_db.getUserInfoByID("is_users", data["last_user"].ToString());
-            last_user.Text = my_last_user["full_name"].ToString();
+            this.last_user.Text = my_last_user["full_name"].ToString();
             Session.Add("akt_hlasenie", data["id"].ToString());
 
             Session.Add("akt_hlasenie_creat_user", data["creat_user"].ToString());
             Session.Add("akt_hlasenie_last_user", data["last_user"].ToString());
+            Session.Add("hlasko_status",data["status"].ToString());
         }
         else
         {
             SortedList newData = new SortedList();
             newData.Add("type", this.hlas_type.SelectedValue.ToString());
             newData.Add("dat_hlas", my_x2.unixDate(this.Calendar1.SelectedDate));
-            newData.Add("text", Resources.Resource.odd_hlasko_html.ToString());
+            newData.Add("text", my_x2.EncryptString(Resources.Resource.odd_hlasko_html.ToString(),Session["passphrase"].ToString()));
             newData.Add("creat_user", Session["user_id"].ToString());
             newData.Add("last_user", Session["user_id"].ToString());
-
+            newData.Add("encrypt","yes");
             SortedList res = x2MySQL.mysql_insert("is_hlasko", newData);
 
             Boolean status = Convert.ToBoolean(res["status"]);
@@ -210,9 +548,10 @@ public partial class hlasko : System.Web.UI.Page
             if (status == true)
             {
                 Session.Add("akt_hlasenie", res["last_id"].ToString());
-                this.hlasenie.Text = newData["text"].ToString();
+                this.hlasenie.Text = my_x2.DecryptString(newData["text"].ToString(),Session["passphrase"].ToString());
                 this.user.Text = Session["fullname"].ToString();
                 this.last_user.Text = Session["fullname"].ToString();
+                Session.Add("hlasko_status", "normal");
             }
             else
             {
@@ -233,11 +572,11 @@ public partial class hlasko : System.Web.UI.Page
     {
         SortedList data = new SortedList();
         data.Add("dat_hlas", my_x2.unixDate(this.Calendar1.SelectedDate));
-        data.Add("text", hlasenie.Text.ToString());
+        data.Add("text", my_x2.EncryptString(hlasenie.Text.ToString(),Session["passphrase"].ToString()));
         data.Add("last_user", Session["user_id"].ToString());
         data.Add("creat_user", 0);
         data.Add("type", this.hlas_type.SelectedValue.ToString());
-
+        data.Add("encrypt","yes");
         if (uzavri == true)
         {
             data.Add("uzavri", "1");
@@ -264,11 +603,48 @@ public partial class hlasko : System.Web.UI.Page
         }
     }
 
+    protected void saveGenerated()
+    {
+        SortedList data = new SortedList();
+        data.Add("dat_hlas", my_x2.unixDate(this.Calendar1.SelectedDate));
+        data.Add("text", my_x2.EncryptString(hlasenie.Text.ToString(),Session["passphrase"].ToString()));
+        data.Add("last_user", Session["user_id"].ToString());
+        data.Add("creat_user", 0);
+        data.Add("type", this.hlas_type.SelectedValue.ToString());
+        data.Add("status", "generated");
+        data.Add("encrypt","yes");
+        //if (uzavri == true)
+        //{
+        //    data.Add("uzavri", "1");
+        //}
+
+        //string res = x_db.update_row("is_hlasko", data, Session["akt_hlasenie"].ToString());
+
+        SortedList res = x2MySQL.mysql_insert("is_hlasko", data);
+
+        SortedList my_last_user = new SortedList();
+        my_last_user = x_db.getUserInfoByID("is_users", Session["user_id"].ToString());
+
+        Boolean status = Convert.ToBoolean(res["status"]);
+
+        if (status == true)
+        {
+            //msg_lbl.Text = res;
+            last_user.Text = my_last_user["full_name"].ToString();
+            this.generateOsirix();
+            
+        }
+        else
+        {
+            msg_lbl.Text = res["msg"].ToString();
+        }
+    }
+
     protected void saveDodatok(string my_dodatok)
     {
         SortedList data = new SortedList();
         SortedList my_last_user = new SortedList();
-        data.Add("text", my_dodatok);
+        data.Add("text", my_x2.EncryptString(my_dodatok,Session["passphrase"].ToString()));
         data.Add("last_user", 0);
         data.Add("dat_hlas", my_x2.unixDate(this.Calendar1.SelectedDate));
         data.Add("creat_user", 0);
@@ -300,7 +676,7 @@ public partial class hlasko : System.Web.UI.Page
 
     }
 
-    protected SortedList getSluzbyByDen(int den)
+    /*protected SortedList getSluzbyByDen(int den)
     {
         SortedList result = new SortedList();
         DateTime dnesJe = DateTime.Today;
@@ -319,7 +695,7 @@ public partial class hlasko : System.Web.UI.Page
 
         return result;
 
-    }
+    }*/
 
 
     protected void hlas_type_SelectedIndexChanged(object sender, EventArgs e)
@@ -330,19 +706,23 @@ public partial class hlasko : System.Web.UI.Page
     protected void Button1_Click(object sender, EventArgs e)
     {
         this.send_Click(sender, e);
-        Response.Redirect("print.aspx?den=" + Calendar1.SelectedDate.Day.ToString() + "&datum=" + Calendar1.SelectedDate.ToLongDateString() + "&m=" + Calendar1.SelectedDate.Month.ToString());
+        Session.Add("hlasko_date", this.Calendar1.SelectedDate);
+        Session.Add("hlasko_toWord", false);
+        Response.Redirect("print.aspx");
     }
 
     protected void toWord_Click(object sender, EventArgs e)
     {
         this.send_Click(sender, e);
-        Response.Redirect("print.aspx?den=" + Calendar1.SelectedDate.Day.ToString() + "&datum=" + Calendar1.SelectedDate.ToLongDateString() + "&m=" + Calendar1.SelectedDate.Month.ToString() + "&w=1");
+        Session.Add("hlasko_date", this.Calendar1.SelectedDate);
+        Session.Add("hlasko_toWord", true);
+        Response.Redirect("print.aspx");
     }
 
     protected void pdfCretae_btn_Click(object sender, EventArgs e)
     {
-        Session.Add("pdf", "print");
-        Response.Redirect("print.aspx?den=" + Calendar1.SelectedDate.Day.ToString() + "&datum=" + Calendar1.SelectedDate.ToLongDateString() + "&m=" + Calendar1.SelectedDate.Month.ToString());
+       // Session.Add("pdf", "print");
+       // Response.Redirect("print.aspx?den=" + Calendar1.SelectedDate.Day.ToString() + "&datum=" + Calendar1.SelectedDate.ToLongDateString() + "&m=" + Calendar1.SelectedDate.Month.ToString());
     }
 
     protected void def_lock_btn_Click(object sender, EventArgs e)
@@ -352,7 +732,9 @@ public partial class hlasko : System.Web.UI.Page
         if (hlasenie.Visible == true)
         {
             this.saveData(true, false);
-            Response.Redirect("print.aspx?den=" + Calendar1.SelectedDate.Day.ToString() + "&datum=" + Calendar1.SelectedDate.ToLongDateString() + "&m=" + Calendar1.SelectedDate.Month.ToString());
+            Session.Add("hlasko_date", this.Calendar1.SelectedDate);
+            Session.Add("hlasko_toWord", false);
+            Response.Redirect("print.aspx");
         }
         else
         {
@@ -360,7 +742,11 @@ public partial class hlasko : System.Web.UI.Page
             tmp_hlasko += "***********Dodatok*******" + DateTime.Now.ToLongDateString() + "...." + akt_user_info["full_name"].ToString();
             tmp_hlasko += "<br>" + dodatok.Text;
             this.saveDodatok(tmp_hlasko);
-            Response.Redirect("print.aspx?den=" + Calendar1.SelectedDate.Day.ToString() + "&datum=" + Calendar1.SelectedDate.ToLongDateString() + "&m=" + Calendar1.SelectedDate.Month.ToString());
+
+            Session.Add("hlasko_date", this.Calendar1.SelectedDate);
+            Session.Add("hlasko_toWord", false);
+
+            Response.Redirect("print.aspx");
         }
 
     }
@@ -372,7 +758,10 @@ public partial class hlasko : System.Web.UI.Page
         if (hlasenie.Visible == true)
         {
             this.saveData(true, false);
-            Response.Redirect("print.aspx?den=" + Calendar1.SelectedDate.Day.ToString() + "&datum=" + Calendar1.SelectedDate.ToLongDateString() + "&m=" + Calendar1.SelectedDate.Month.ToString() + "&w=1");
+            Session.Add("hlasko_date", this.Calendar1.SelectedDate);
+            Session.Add("hlasko_toWord", true);
+
+            Response.Redirect("print.aspx");
         }
         else
         {
@@ -380,10 +769,14 @@ public partial class hlasko : System.Web.UI.Page
             tmp_hlasko += "***********Dodatok*******" + DateTime.Now.ToLongDateString() + "...." + akt_user_info["full_name"].ToString();
             tmp_hlasko += "<br>" + dodatok.Text;
             this.saveDodatok(tmp_hlasko);
-            Response.Redirect("print.aspx?den=" + Calendar1.SelectedDate.Day.ToString() + "&datum=" + Calendar1.SelectedDate.ToLongDateString() + "&m=" + Calendar1.SelectedDate.Month.ToString() + "&w=1");
+            Session.Add("hlasko_date", this.Calendar1.SelectedDate);
+            Session.Add("hlasko_toWord", true);
+            Response.Redirect("print.aspx");
         }
 
     }
+
+    
 
     protected void addInfo_btn_Click(object sender, EventArgs e)
     {

@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="hlasko.aspx.cs" Inherits="hlasko"  %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="hlasko.aspx.cs" Inherits="hlasko" MaintainScrollPositionOnPostback="true"  %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
 </asp:Content>
@@ -40,7 +40,65 @@ Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="
                     </div>
                     </div>
                     
-                    <div class="row">
+                   
+                   
+                    <h1>Hlásenie služby:</h1>
+    <asp:PlaceHolder ID="epc_pl" runat="server" EnableTheming="true" Visible="true">
+        <div class="info box">
+      <asp:Label ID="epc_titel" runat="server" Text="<%$ Resources:Resource,epc_titel %>" CssClass="green"></asp:Label>
+    <div class="row">
+      
+        <div class="one fourth">
+    Dátum:
+    <asp:DropDownList ID="hl_datum_cb" runat="server"></asp:DropDownList>
+            </div>
+        <div class="one fourth">
+            <asp:Label ID="time_valid_msg" runat="server" Text="<%$ Resources:Resource,no_valid_time %>" Visible="false" CssClass="red"></asp:Label>
+    Začiatok (formát hh:mm)   <asp:TextBox ID="workstart_txt" runat="server" OnTextChanged="checkCorrectTime_fnc" AutoPostBack="true"  ></asp:TextBox> 
+  </div>
+        <div class="one fourth">
+             Čas trvania (minuty) <asp:TextBox ID="worktime_txt" runat="server" Text="15" OnTextChanged="checkCorrectMinutes_fnc" AutoPostBack="true" ></asp:TextBox>
+              <asp:Label ID="minute_valid_msg" runat="server" Text="<%$ Resources:Resource,no_valid_int %>" Visible="false" CssClass="red"></asp:Label>
+            </div>
+        <div class="one fourth">
+    Typ:<asp:DropDownList ID="worktype_cb" runat="server">
+            <asp:ListItem Value="prijem">Príjem</asp:ListItem>
+         <asp:ListItem Value="operac">Operácia/Asistencia/Výkon</asp:ListItem>
+         <asp:ListItem Value="sledov">Sledovanie</asp:ListItem>
+         <asp:ListItem Value="konzil">Konzílium</asp:ListItem>
+        </asp:DropDownList>
+            </div> 
+    </div>
+    <div class="row">
+        <div class="one half">
+            
+    Priezvisko pacienta (len priezvisko!!!!):
+    <asp:TextBox ID="patientname_txt" runat="server"></asp:TextBox></div>
+        <div class="one half">
+    Popis aktivity:<asp:TextBox ID="activity_txt" runat="server" TextMode="MultiLine"></asp:TextBox>
+            </div> 
+        </div>
+    <div class="row">
+    <asp:CheckBox ID="check_osirix" runat="server" Text="Pridaj do Osirixu" CssClass="mojInline"  />
+        </div>
+   
+    <asp:Button ID="activitysave_btn" runat="server" Text="Pridaj" OnClick="saveActivity_fnc" CssClass="button asphalt"  />
+             </div>
+        </asp:PlaceHolder>
+   
+        
+    <asp:PlaceHolder ID="ativitylist_pl" runat="server">
+        <div class="success box"  >
+        <asp:Table ID="activity_tbl" runat="server"></asp:Table>
+        <asp:Button ID="generate_btn" runat="server" Text="Generuj hlasko" CssClass="button green"  OnClick="generateHlasko_fnc" /> 
+            </div>
+            </asp:PlaceHolder>
+   
+    <%--<asp:Button ID="generateEPC_btn" runat="server" CssClass="button blue"  Text="<%$ Resources:Resource,generate_epc %>" OnClick="generateEpc_fnc" />--%>
+    <hr />
+    <asp:PlaceHolder ID="hlasko_pl" runat="server">
+
+         <div class="row">
                         <div class="one half">
                         <h3>
                         <asp:Label ID="osirix_info" runat="server" Text="<%$ Resources:Resource, osirix_info %>"></asp:Label>
@@ -55,28 +113,8 @@ Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="
                             <asp:Label ID="osirix_url" runat="server" Text="Label"></asp:Label>
                         </div>
                     </div>
-                   
-                    <h1>Hlásenie služby:</h1>
-    Datum:
-    <asp:DropDownList ID="hl_datum_cb" runat="server"></asp:DropDownList>
-    Zaciatok (format hh:mm)   <asp:TextBox ID="workstart_txt" runat="server" ></asp:TextBox> 
-   Cas trvanie (minuty) <asp:TextBox ID="worktime_txt" runat="server" Text="15"></asp:TextBox>
-    Typ:<asp:DropDownList ID="worktype_cb" runat="server">
-            <asp:ListItem Value="prijem">Prijem</asp:ListItem>
-         <asp:ListItem Value="operac">Operacia</asp:ListItem>
-         <asp:ListItem Value="sledov">Slodovani</asp:ListItem>
-         <asp:ListItem Value="konzil">Konziulum</asp:ListItem>
-        </asp:DropDownList>
-    Meno pacienta:
-    <asp:TextBox ID="patientname_txt" runat="server"></asp:TextBox>
-    Popis aktivity:<asp:TextBox ID="activity_txt" runat="server" TextMode="MultiLine"></asp:TextBox>
-    <asp:Button ID="activitysave_btn" runat="server" Text="Pridaj" OnClick="saveActivity_fnc" />
-    <asp:Button ID="generate_btn" runat="server" Text="Generuj hlasko" />
-    <asp:PlaceHolder ID="ativitylist_pl" runat="server">
-
-    </asp:PlaceHolder>
-    <asp:PlaceHolder ID="hlasko_pl" runat="server">
-                    
+                    <h3><asp:Label ID="Label1" runat="server" CssClass="red" Text="<%$ Resources:Resource, hlasko_info %>"></asp:Label></h3>
+        
                     <asp:TextBox ID="hlasenie" CssClass="dtextbox" runat="server"  Width="90%" Rows="30" Height="500" TextMode="MultiLine"> </asp:TextBox>
                     <%--<FTB:FreeTextBox ID="hlasenie" runat="server" Width="100%" Height="500"  toolbarlayout="Bold, Italic, Underline,RemoveFormat|FontFacesMenu,FontSizesMenu|JustifyLeft,JustifyRight,JustifyCenter,JustifyFull; Redo,Undo ,BulletedList,NumberedList,Indent,Outdent|WordClean,NetSpell"></FTB:FreeTextBox>--%>
                     <hr />

@@ -333,4 +333,19 @@
   <data name="shifts_not_done" xml:space="preserve">
     <value>&lt;h3 class="red"&gt;Služby, ešte nie sú dokončené!&lt;/h3&gt;</value>
   </data>
+  <data name="epc_titel" xml:space="preserve">
+    <value>Formulár Evidencie Pracovného Času (EPC)</value>
+  </data>
+  <data name="hlasko_info" xml:space="preserve">
+    <value>Pozor!!! Ak nebudete zadávať pacientov cez EPC formulár, tak nebudete mať korektný EPC výpis, a potom Vám nebude sedieť ani výkaz a budete si ho musieť manuálne doupravovať.... Hlásenie sa vytlačí, ale v poriadku....</value>
+  </data>
+  <data name="no_valid_int" xml:space="preserve">
+    <value>Toto nie je valídne celé číslo, t.j. ani minúty !!!!</value>
+  </data>
+  <data name="no_valid_time" xml:space="preserve">
+    <value>Toto nie je valídny, alebo reálny  formát času hh:mm!!!</value>
+  </data>
+  <data name="generate_epc" xml:space="preserve">
+    <value>Generuj EPČ</value>
+  </data>
 </root>

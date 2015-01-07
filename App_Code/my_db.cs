@@ -391,7 +391,7 @@ public class my_db
     public SortedList getDataByID(string table, string id)
     {
         SortedList result = new SortedList();
-        string query = "SELECT * FROM " + table + " WHERE id=" + id;
+        string query = "SELECT * FROM `" + table + "` WHERE `id`=" + id;
         my_con.Open();
         OdbcCommand my_com = new OdbcCommand(query, my_con);
 
@@ -614,7 +614,7 @@ public class my_db
 
     public string[] getFreeDays()
     {
-        string query = "SELECT * FROM is_settings WHERE name='free_days'";
+        string query = "SELECT * FROM `is_settings` WHERE `name`='free_days'";
 
         my_con.Open();
         //my_con.Open();
@@ -632,7 +632,7 @@ public class my_db
         }
         my_con.Close();
 
-        string[] result = tmp.Split(new char[] { ',' });
+        string[] result = tmp.Split(',');
 
         return result;
 
@@ -778,17 +778,29 @@ public class my_db
         return result;
     }
 
+    private string parseQuery(string query)
+    {
+        query = query.Replace('[', '`');
+        query = query.Replace(']', '`');
+
+        return query;
+    }
+
     public ArrayList getDovolenkyByID(int month, int year, int id)
     {
         ArrayList result = new ArrayList();
 
         StringBuilder query = new StringBuilder();
-        query.AppendFormat("SELECT is_users.id,is_users.full_name,is_dovolenky.id AS dov_id,is_dovolenky.user_id,is_dovolenky.od,is_dovolenky.do FROM is_users INNER JOIN is_dovolenky on is_users.id = is_dovolenky.user_id WHERE (MONTH(is_dovolenky.od) = '{0}' OR MONTH(is_dovolenky.do) = '{0}') AND (YEAR(is_dovolenky.od) = '{1}' OR YEAR(is_dovolenky.do) = '{1}') AND is_users.id = {2}", month, year, id);
+        query.AppendLine("SELECT [is_users].[id],[is_users].[full_name],");
+        query.AppendLine("[is_dovolenky].[id] AS [dov_id], [is_dovolenky].[user_id],[is_dovolenky].[od],[is_dovolenky].[do]");
+        query.AppendLine("FROM [is_users] INNER JOIN [is_dovolenky] ON [is_users].[id] = [is_dovolenky].[user_id]");
+        query.AppendFormat("WHERE (MONTH([is_dovolenky].[od]) = '{0}' OR MONTH([is_dovolenky].[do]) = '{0}')",month);
+        query.AppendFormat("AND (YEAR([is_dovolenky].[od]) = '{0}' OR YEAR([is_dovolenky].[do]) = '{0}') AND [is_users].[id] = {1}", year, id);
 
         //string query = "SELECT is_users.id,is_users.full_name,is_dovolenky.id AS dov_id,is_dovolenky.user_id,is_dovolenky.od,is_dovolenky.do FROM is_users INNER JOIN is_dovolenky on is_users.id = is_dovolenky.user_id WHERE is_dovolenky.od >= '" + od_datum + "' AND is_dovolenky.do <= '" + do_datum+"'";
 
         my_con.Open();
-        OdbcCommand my_com = new OdbcCommand(query.ToString(), my_con);
+        OdbcCommand my_com = new OdbcCommand(this.parseQuery(query.ToString()), my_con);
 
         OdbcDataReader reader = my_com.ExecuteReader();
 

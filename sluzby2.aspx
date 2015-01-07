@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true"  CodeFile="sluzby2.aspx.cs" Inherits="sluzby2" MaintainScrollPositionOnPostback="true" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true"  CodeFile="sluzby2.aspx.cs" Inherits="sluzby2" MaintainScrollPositionOnPostback="true" Culture="sk-SK" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
 </asp:Content>
@@ -44,7 +44,7 @@
                 </asp:Table>
                 <div class="row">
                     <div class="one whole padded">
-                    <asp:CheckBox ID="publish_cb" runat="server" Text="Uverejnit" OnCheckedChanged="changePublishStatus" AutoPostBack="true"  />
+                    <asp:CheckBox ID="publish_cb" runat="server" Text="Uverejnit" OnCheckedChanged="changePublishStatus" AutoPostBack="true" CssClass="mojInline"  />
                         </div>
                     <asp:Button ID="toWord_btn" runat="server" Text="do Wordu" OnClick="publishSluzby"/>
                 

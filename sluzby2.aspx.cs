@@ -34,7 +34,14 @@ public partial class sluzby2 : System.Web.UI.Page
         }
 
         this.rights = Session["rights"].ToString();
-        this.publish_cb.Visible = true;
+        if (this.rights == "admin" || this.rights == "poweruser")
+        {
+            this.publish_cb.Visible = true;
+        }
+        else
+        {
+            this.publish_cb.Visible = false;
+        }
         if (IsPostBack == false)
         {
             this.setMonthYear();
@@ -207,7 +214,7 @@ public partial class sluzby2 : System.Web.UI.Page
                 DateTime myDate = new DateTime(Convert.ToInt32(rok), Convert.ToInt32(mesiac), row + 1);
                 int dnesJe = (int)myDate.DayOfWeek;
                 string nazov = CultureInfo.CurrentCulture.DateTimeFormat.DayNames[dnesJe];
-                string sviatok = (row + 1).ToString() + "." + mesiac;
+                string sviatok = (row + 1).ToString() + "." + myDate.Month.ToString();
                 int jeSviatok = Array.IndexOf(freeDays, sviatok);
 
 
@@ -279,11 +286,12 @@ public partial class sluzby2 : System.Web.UI.Page
                         Label name = new Label();
                         dataCell.Controls.Add(name);
                         name.ID = "name_" + row.ToString() + "_" + cols.ToString();
-                        name.Text = "<p>" + names[cols] + "</p>";
+                        name.Text = names[cols] + "<br>";
 
                         Label comment = new Label();
                         dataCell.Controls.Add(comment);
                         comment.ID = "label_" + row.ToString() + "_" + cols.ToString();
+                        comment.Font.Italic = true;
                         comment.Text = comments[cols];
 
                     }
@@ -520,7 +528,7 @@ public partial class sluzby2 : System.Web.UI.Page
 
        // CheckBox publ = new CheckBox();
 
-        CheckBox publ = (CheckBox)sender;
+        //CheckBox publ = (CheckBox)sender;
 
 
         string rok = this.rok_cb.SelectedValue.ToString();
@@ -531,18 +539,20 @@ public partial class sluzby2 : System.Web.UI.Page
             mesiac = "0" + mesiac;
         }
 
-        if (publ.Checked == true)
+
+
+        if (this.publish_cb.Checked == true)
         {
             sb.AppendFormat("UPDATE [is_sluzby_2] SET [state]='active' WHERE [date_group]='{0}{1}'", rok, mesiac);
-            this.publish_cb.Checked = false;
+            //this.publish_cb.Checked = false;
         }
         else
         {
             sb.AppendFormat("UPDATE [is_sluzby_2] SET [state]='draft' WHERE [date_group]='{0}{1}'", rok, mesiac);
-            this.publish_cb.Checked = true;
+            //this.publish_cb.Checked = true;
         }
 
-        this.msg_lbl.Text = sb.ToString();
+       // this.msg_lbl.Text = sb.ToString();
         SortedList res =  x2Mysql.execute(sb.ToString());
 
         Boolean result = Convert.ToBoolean(res["status"].ToString());

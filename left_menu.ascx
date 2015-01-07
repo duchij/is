@@ -1,13 +1,22 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="left_menu.ascx.cs" Inherits="left_menu" %>
 
+ <asp:PlaceHolder ID="dev_pl" runat="server">
+Vyvojar
+<ul>
+    <li>
+    <asp:HyperLink ID="call_sp" runat="server" NavigateUrl="~/helpers/callsp.aspx">Call Stored Procedure</asp:HyperLink></li>
+      <li><asp:HyperLink ID="call_consluz" runat="server" NavigateUrl="~/helpers/convsluz.aspx ">Konvertor sluzieb</asp:HyperLink></li> 
+        
+    </ul>
+  </asp:PlaceHolder>
+
  <asp:PlaceHolder ID="operacky" runat="server">
         <div class="box red half-padded"><h3>Operacky</h3></div>
         <ul>
             <li class="box orange"><a href="opprogram.aspx" target="_self">Operacny program</a></li>
         </ul>
-       
-        
-        </asp:PlaceHolder>
+  </asp:PlaceHolder>     
+    
 <div class="box info half-padded">
     <h3><asp:label ID="Label2" runat="server" Text="<%$ Resources:Resource,lmenu_rozpis %>"></asp:label></h3></div>
         <ul>
@@ -24,7 +33,7 @@
                     </div>
                       <ul>               
                         <li><a href="hlasko.aspx" target="_self">Hlásenie služieb</a></li>
-                        <li><a href="vykaz.aspx" target="_self">Mesačný výkaz</a></li>
+                        <li><a href="vykaz2.aspx" target="_self">Mesačný výkaz</a></li>
                         <li><a href="dovolenky.aspx" target="_self">Dovolenky</a></li> 
                         <li><a href="poziadavky.aspx" target="_self"><asp:label ID="poziadavky_lbl" runat="server" Text="<%$ Resources:Resource,odd_poziadavky %>"></asp:label></a></li>
                      </ul>                    
