@@ -66,6 +66,8 @@ Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="
          <asp:ListItem Value="operac">Operácia/Asistencia/Výkon</asp:ListItem>
          <asp:ListItem Value="sledov">Sledovanie</asp:ListItem>
          <asp:ListItem Value="konzil">Konzílium</asp:ListItem>
+        <asp:ListItem Value="vizita">Vizita</asp:ListItem>
+        <asp:ListItem Value="dekurz">Dekurzovanie</asp:ListItem>
         </asp:DropDownList>
             </div> 
     </div>

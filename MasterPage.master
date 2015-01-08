@@ -94,7 +94,7 @@
 				<asp:PlaceHolder ID="hlas_lekar_plh" runat="server">
                     <li><button>Lekar</button>
                         <ul>
-                         <li><a role="medium button" href="hlasko2.aspx" target="_self">Hlasenie lekarov</a></li> 
+                         <li><a role="medium button" href="hlasko.aspx" target="_self">Hlasenie lekarov</a></li> 
                          <li><a role="medium button" href="poziadavky.aspx" target="_self">Poziadavky na sluzby</a></li>
                         </ul>
                     </li>

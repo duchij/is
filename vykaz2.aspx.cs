@@ -773,7 +773,10 @@ public partial class vykaz2 : System.Web.UI.Page
     {
         int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue);
         int rok = Convert.ToInt32(this.rok_cb.SelectedValue);
-        Session["date_group"] = my_x2.makeDateGroup(rok, mesiac);
+        Session["epc_date_group"] = my_x2.makeDateGroup(rok, mesiac);
+        Session["epc_mesiac"] = mesiac;
+        Session["epc_rok"] = rok;
+
         Response.Redirect("is_epc.aspx");
     }
 

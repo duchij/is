@@ -147,10 +147,6 @@ public partial class sluzby2 : System.Web.UI.Page
       //  this.msg_lbl.Text = sb.ToString();
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
-
-
-
-
         if (table.Count == daysMonth)
         {
             if (!IsPostBack)

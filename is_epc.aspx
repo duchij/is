@@ -14,20 +14,20 @@
         <hr />
         <h1> EVIDENCIA PRACOVNÉHO ČASU V ÚPS</h1>
         <hr />
-        <table style="width:100%">
+        <%--<table style="width:100%">
             <tr>
                 <td><asp:Label ID="username_lbl" runat="server" Text="Label"></asp:Label></td>
                 <td>KDCH</td>
                 <td><asp:Label ID="zaradenie_lbl" runat="server" Text="Label"></asp:Label></td>
                 <td><asp:Label ID="osobcislo_lbl" runat="server" Text="Label"></asp:Label></td>
             </tr>
-        </table>
+        </table>--%>
 
         
 
 
         <hr />
-        <asp:Table ID="epc_tbl" runat="server" BorderColor="Black"></asp:Table>
+        <asp:Table ID="epc_tbl" runat="server" BorderColor="Black" Width="70%"></asp:Table>
     </div>
     </form>
 </body>

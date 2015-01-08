@@ -1,0 +1,5 @@
+﻿//doplnenie pracovnych cinnosti 08012015
+
+ALTER TABLE `is_hlasko_epc`
+CHANGE `work_type` `work_type` enum('prijem','operac','sledov','konzil','vizita','dekurz') COLLATE 'ascii_general_ci' NOT NULL AFTER `work_time`,
+COMMENT='';
