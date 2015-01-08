@@ -188,6 +188,16 @@ public partial class hlasko : System.Web.UI.Page
         
     }
 
+    protected int allWorkTime()
+    {
+        int result = 0;
+        SortedList res = x2MySQL.getRow("SELECT SUM([work_time]) AS [workminutes] FROM [is_hlasko_epc] WHERE [hlasko_id]='" + Session["akt_hlasenie"].ToString() + "'");
+
+        result = Convert.ToInt32(res["workminutes"]);
+        
+        return result;
+    }
+
     protected void loadEPCData()
     {
       
@@ -300,6 +310,13 @@ public partial class hlasko : System.Web.UI.Page
                     this.hlasko_pl.Visible = true;
                 }
             }
+
+            int workmin = this.allWorkTime();
+            if (workmin > -1)
+            {
+                this.kompl_work_time.Text = "Cas prace v minutach: " + workmin.ToString() + "(min), v hodinach: " + (workmin / 60).ToString()+"(hod)";
+            }
+
         }
 
        // this.clearEpcData();
@@ -342,7 +359,7 @@ public partial class hlasko : System.Web.UI.Page
            
             this.loadEPCData();
             //this._generateHlasko();
-           
+            
             
         }
         if (objId[0] == "delBtn")
@@ -398,6 +415,8 @@ public partial class hlasko : System.Web.UI.Page
         string operacie = "<p><strong>Operovani</strong><ul>";
         string konzilia = "<p><strong>Konzilia</strong><ul>";
         string sledovanie = "<p><strong>Sledovani</strong><ul>";
+        string dekurz = "<p><strong>Dekurzovanie</strong><ul>";
+        string vizita = "<p><strong>Vizita</strong><ul>";
         string osirix = "";
 
         for (int i = 0; i < tableLn; i++)
@@ -419,6 +438,14 @@ public partial class hlasko : System.Web.UI.Page
             {
                 sledovanie += "<li><strong>" + table[i]["patient_name"].ToString() + "</strong>," + acText + "</li>";
             }
+            if (table[i]["work_type"].ToString() == "dekurz")
+            {
+                dekurz += "<li><strong>" + table[i]["patient_name"].ToString() + "</strong>," + acText + "</li>";
+            }
+            if (table[i]["work_type"].ToString() == "vizita")
+            {
+                vizita += "<li><strong>" + table[i]["patient_name"].ToString() + "</strong>," + acText + "</li>";
+            }
 
             if (Convert.ToBoolean(table[i]["osirix"]))
             {
@@ -429,9 +456,11 @@ public partial class hlasko : System.Web.UI.Page
         operacie += "</ul></p>";
         konzilia += "</ul></p>";
         sledovanie += "</ul></p>";
+        dekurz += "</ul></p>";
+        vizita += "</ul></p>";
 
         this.hlasko_pl.Visible = true;
-        this.hlasenie.Text = prijem + operacie + konzilia + sledovanie;
+        this.hlasenie.Text = prijem + operacie + konzilia + sledovanie+dekurz+vizita;
         this.osirix_txt.Text = osirix;
 
         this.saveGenerated();

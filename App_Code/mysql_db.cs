@@ -331,28 +331,36 @@ public class mysql_db
         my_con.Open();
 
         OdbcCommand my_com = new OdbcCommand(this.parseQuery(query.ToString()), my_con);
+        //try
+        //{
+            OdbcDataReader reader = my_com.ExecuteReader();
 
-        OdbcDataReader reader = my_com.ExecuteReader();
-        int row = 0;
 
-        if (reader.HasRows)
-        {
-            while (reader.Read())
+            if (reader.HasRows)
             {
-                for (int i = 0; i < reader.FieldCount; i++)
+                while (reader.Read())
                 {
-                    if (reader.GetValue(i) == null)
+                    for (int i = 0; i < reader.FieldCount; i++)
                     {
-                        result.Add(reader.GetName(i).ToString(), "0");
+                        if (reader.GetValue(i) == null)
+                        {
+                            result.Add(reader.GetName(i).ToString(), "0");
+                        }
+                        else
+                        {
+                            result.Add(reader.GetName(i).ToString(), reader.GetValue(i).ToString());
+                        }
                     }
-                    else
-                    {
-                        result.Add(reader.GetName(i).ToString(), reader.GetValue(i).ToString());
-                    }
+
                 }
-              
             }
-        }
+           
+        //}
+        //catch (Exception e)
+        //{
+        //    result.Add("status", false);
+        //    result.Add("msg", e.ToString());
+        //}
         my_con.Close();
 
 

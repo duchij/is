@@ -13,6 +13,11 @@ public partial class is_epc : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        if (Session["tuisegumdrum"] == null)
+        {
+            Response.Redirect("error.html");
+        }
+
         this.loadData();
     }
 
@@ -47,28 +52,34 @@ public partial class is_epc : System.Web.UI.Page
         this.epc_tbl.Controls.Add(headerRow);
 
         TableHeaderCell headcell1 = new TableHeaderCell();
-        headcell1.Text = "Zaciatok prace";
+        headcell1.Text = Resources.Resource.epc_work_start;
         headcell1.HorizontalAlign = HorizontalAlign.Left;
         headcell1.Width = Unit.Pixel(120);
         headerRow.Controls.Add(headcell1);
 
         TableHeaderCell headcell2 = new TableHeaderCell();
-        headcell2.Text = "Koniec prace";
+        headcell2.Text = Resources.Resource.epc_work_end;
         headcell2.HorizontalAlign = HorizontalAlign.Left;
         headcell2.Width = Unit.Pixel(120);
         headerRow.Controls.Add(headcell2);
 
         TableHeaderCell headcell3 = new TableHeaderCell();
-        headcell3.Text = "Meno pacienta";
+        headcell3.Text = Resources.Resource.epc_patient_name;
         headcell3.HorizontalAlign = HorizontalAlign.Left;
         headcell3.Width = Unit.Pixel(120);
         headerRow.Controls.Add(headcell3);
 
         TableHeaderCell headcell4 = new TableHeaderCell();
-        headcell4.Text = "Popis prace";
-        headcell4.Width = Unit.Pixel(300);
+        headcell4.Text = Resources.Resource.epc_work_time;
+        headcell4.Width = Unit.Pixel(50);
         headcell4.HorizontalAlign = HorizontalAlign.Left;
         headerRow.Controls.Add(headcell4);
+
+        TableHeaderCell headcell5 = new TableHeaderCell();
+        headcell5.Text = Resources.Resource.epc_work_text;
+        headcell5.Width = Unit.Pixel(300);
+        headcell5.HorizontalAlign = HorizontalAlign.Left;
+        headerRow.Controls.Add(headcell5);
 
         if (tableLn > 0)
         {
@@ -98,16 +109,23 @@ public partial class is_epc : System.Web.UI.Page
     protected void newRowData(int row, Dictionary<int, SortedList> table)
     {
         TableRow riadok = new TableRow();
-        riadok.BorderWidth = Unit.Point(2);
+        this.epc_tbl.Controls.Add(riadok);
+        riadok.BorderWidth = Unit.Pixel(2);
         riadok.BorderStyle = BorderStyle.Solid;
         riadok.BorderColor = System.Drawing.Color.Black;
-        this.epc_tbl.Controls.Add(riadok);
+        
 
         TableCell kompl = new TableCell();
        
+        
+        kompl.BorderWidth = Unit.Point(1);
+        kompl.BorderStyle = BorderStyle.Solid;
+        kompl.BorderColor = System.Drawing.Color.Black;
+       
         kompl.ColumnSpan = 4;
+        kompl.Style.Add("padding", "5px");
         kompl.Font.Bold = true;
-        kompl.Text = "Sluzba: " + table[row]["typ_sluzby"].ToString() + " Dna:" + table[row]["datum_hlasenia"].ToString();
+        kompl.Text = "Služba: " + table[row]["typ_sluzby"].ToString() + " Dňa: " + table[row]["datum_hlasenia"].ToString();
         riadok.Controls.Add(kompl);
 
 
@@ -116,24 +134,50 @@ public partial class is_epc : System.Web.UI.Page
         riadok2.BorderStyle = BorderStyle.Solid;
         riadok2.BorderColor = System.Drawing.Color.Black;
         this.epc_tbl.Controls.Add(riadok2);
+
         TableCell celldata1 = new TableCell();
+        celldata1.Style.Add("padding", "3px");
+        celldata1.BorderWidth = Unit.Point(1);
+        celldata1.BorderStyle = BorderStyle.Solid;
+        celldata1.BorderColor = System.Drawing.Color.Black;
         DateTime dt = Convert.ToDateTime(x2.UnixToMsDateTime(table[row]["work_start"].ToString()));
         celldata1.Text = dt.ToString();
         riadok2.Controls.Add(celldata1);
 
         TableCell celldata2 = new TableCell();
+        celldata2.Style.Add("padding", "3px");
+        celldata2.BorderWidth = Unit.Point(1);
+        celldata2.BorderStyle = BorderStyle.Solid;
+        celldata2.BorderColor = System.Drawing.Color.Black;
         DateTime dt2 = dt.AddMinutes(Convert.ToInt32(table[row]["work_time"]));
         celldata2.Text = dt2.ToString();
         riadok2.Controls.Add(celldata2);
 
         TableCell celldata3 = new TableCell();
+        celldata3.Style.Add("padding", "3px");
+        celldata3.BorderWidth = Unit.Point(1);
+        celldata3.BorderStyle = BorderStyle.Solid;
+        celldata3.BorderColor = System.Drawing.Color.Black;
         celldata3.Text = table[row]["patient_name"].ToString();
         riadok2.Controls.Add(celldata3);
 
         TableCell celldata4 = new TableCell();
-        celldata4.Text = x2.DecryptString(table[row]["work_text"].ToString(), Session["passphrase"].ToString());
+        celldata4.Style.Add("padding", "3px");
+        celldata4.BorderWidth = Unit.Point(1);
+        celldata4.BorderStyle = BorderStyle.Solid;
+        celldata4.BorderColor = System.Drawing.Color.Black;
+        celldata4.Text = table[row]["work_time"].ToString();
         celldata4.Font.Size = FontUnit.Point(8);
         riadok2.Controls.Add(celldata4);
+
+        TableCell celldata5 = new TableCell();
+        celldata5.Style.Add("padding", "3px");
+        celldata5.BorderWidth = Unit.Point(1);
+        celldata5.BorderStyle = BorderStyle.Solid;
+        celldata5.BorderColor = System.Drawing.Color.Black;
+        celldata5.Text = x2.DecryptString(table[row]["work_text"].ToString(), Session["passphrase"].ToString());
+        celldata5.Font.Size = FontUnit.Point(8);
+        riadok2.Controls.Add(celldata5);
     }
 
     protected void newData(int row, Dictionary<int, SortedList> table)
@@ -142,23 +186,54 @@ public partial class is_epc : System.Web.UI.Page
         this.epc_tbl.Controls.Add(riadok);
 
         TableCell celldata1 = new TableCell();
+        celldata1.Style.Add("padding", "3px");
+        celldata1.BorderWidth = Unit.Point(1);
+        celldata1.BorderStyle = BorderStyle.Solid;
+        celldata1.BorderColor = System.Drawing.Color.Black;
+
+
         DateTime dt = Convert.ToDateTime(x2.UnixToMsDateTime(table[row]["work_start"].ToString()));
         celldata1.Text = dt.ToString();
         riadok.Controls.Add(celldata1);
 
         TableCell celldata2 = new TableCell();
+        celldata2.Style.Add("padding", "3px");
+        celldata2.BorderWidth = Unit.Point(1);
+        celldata2.BorderStyle = BorderStyle.Solid;
+        celldata2.BorderColor = System.Drawing.Color.Black;
+
         DateTime dt2 = dt.AddMinutes(Convert.ToInt32(table[row]["work_time"]));
         celldata2.Text =dt2.ToString();
         riadok.Controls.Add(celldata2);
 
         TableCell celldata3 = new TableCell();
+        celldata3.Style.Add("padding", "3px");
+        celldata3.BorderWidth = Unit.Point(1);
+        celldata3.BorderStyle = BorderStyle.Solid;
+        celldata3.BorderColor = System.Drawing.Color.Black;
+
         celldata3.Text = table[row]["patient_name"].ToString();
         riadok.Controls.Add(celldata3);
 
         TableCell celldata4 = new TableCell();
-        celldata4.Text = x2.DecryptString(table[row]["work_text"].ToString(), Session["passphrase"].ToString());
+        celldata4.Style.Add("padding", "3px");
+        celldata4.BorderWidth = Unit.Point(1);
+        celldata4.BorderStyle = BorderStyle.Solid;
+        celldata4.BorderColor = System.Drawing.Color.Black;
+        celldata4.Text = table[row]["work_time"].ToString();
         celldata4.Font.Size = FontUnit.Point(8);
         riadok.Controls.Add(celldata4);
+
+
+        TableCell celldata5 = new TableCell();
+        celldata5.Style.Add("padding", "3px");
+        celldata5.BorderWidth = Unit.Point(1);
+        celldata5.BorderStyle = BorderStyle.Solid;
+        celldata5.BorderColor = System.Drawing.Color.Black;
+        celldata5.Text = x2.DecryptString(table[row]["work_text"].ToString(), Session["passphrase"].ToString());
+        celldata5.Font.Size = FontUnit.Point(8);
+        riadok.Controls.Add(celldata5);
+
     }
 
 }

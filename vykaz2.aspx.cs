@@ -73,9 +73,10 @@ public partial class vykaz2 : System.Web.UI.Page
         {
             mesiac--;
         }
+
         StringBuilder sb = new StringBuilder();
 
-        sb.AppendFormat("SELECT [prenos] FROM [is_vykaz] WHERE [user_id] = {0} AND [mesiac] = {1} AND [rok] = {2}", Session["user_id"], mesiac, rok);
+        sb.AppendFormat("SELECT [prenos] FROM [is_vykaz] WHERE [user_id] ='{0}' AND [mesiac] = '{1}' AND [rok] = '{2}'", Session["user_id"], mesiac, rok);
 
         SortedList row = x2Mysql.getRow(sb.ToString());
 

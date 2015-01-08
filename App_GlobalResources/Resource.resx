@@ -348,4 +348,19 @@
   <data name="generate_epc" xml:space="preserve">
     <value>Generuj EPČ</value>
   </data>
+  <data name="epc_patient_name" xml:space="preserve">
+    <value>Meno pacienta</value>
+  </data>
+  <data name="epc_work_end" xml:space="preserve">
+    <value>Koniec práce</value>
+  </data>
+  <data name="epc_work_start" xml:space="preserve">
+    <value>Začiatok práce</value>
+  </data>
+  <data name="epc_work_text" xml:space="preserve">
+    <value>Popis práce</value>
+  </data>
+  <data name="epc_work_time" xml:space="preserve">
+    <value>Dĺžka práce (min)</value>
+  </data>
 </root>

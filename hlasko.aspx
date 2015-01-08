@@ -96,6 +96,7 @@ Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="
     <asp:PlaceHolder ID="ativitylist_pl" runat="server">
         <div class="success box">
         <asp:Table ID="activity_tbl" runat="server"></asp:Table>
+            <asp:Label ID="kompl_work_time" runat="server" Text=""></asp:Label><br />
         <asp:Button ID="generate_btn" runat="server" Text="Generuj hlasko" CssClass="button green"  OnClick="generateHlasko_fnc" /> 
             </div>
             </asp:PlaceHolder>
