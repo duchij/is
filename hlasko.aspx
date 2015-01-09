@@ -7,6 +7,7 @@
 <asp:Label ID="msg_lbl" runat="server" Text=""></asp:Label>
 
 <h2>Hlásenie službieb KDCH, DOrK a KPU</h2>
+    <asp:Button ID="test_btn" runat="server" Text="Button"  />
 <hr />
 Prihlasený: <strong><asp:Label ID="user" runat="server" Text="Label" ForeColor="#990000"></asp:Label></strong><br />
 Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="Label" ForeColor="#990000"></asp:Label></strong><br />
