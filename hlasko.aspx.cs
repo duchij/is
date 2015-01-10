@@ -29,10 +29,11 @@ public partial class hlasko : System.Web.UI.Page
         {
             Response.Redirect("error.html");
         }
+        Page.Header.DataBind();
 
         this.msg_lbl.Text = "";
-        this.hlasko_pl.Visible = false;        
-
+        this.hlasko_pl.Visible = false;
+        this.kompl_work_time.Text = "";
        // Response.AppendHeader("Refresh", 6000 + "; URL=hlasko.aspx");
 
 
@@ -63,6 +64,7 @@ public partial class hlasko : System.Web.UI.Page
 
     protected void setEPC_init()
     {
+        
         this.hl_datum_cb.Items.Clear();
 
         ListItem[] datum = new ListItem[3];
@@ -77,39 +79,39 @@ public partial class hlasko : System.Web.UI.Page
         datum[2] = new ListItem(now.AddDays(1).ToShortDateString(), now.AddDays(1).ToShortDateString());
         this.hl_datum_cb.Items.AddRange(datum);
 
-        this.workstart_txt.Text = DateTime.Now.ToString("HH:mm");
+       this.jsWorkstarttxt.Text = DateTime.Now.ToString("HH:mm");
 
-        this.loadEPCData();
+       this.loadEPCData();
        
 
     
     }
 
-    protected void checkCorrectTime_fnc(object sender, EventArgs e)
-    {
-        //this.msg_lbl.Text = this.workstart_txt.Text;
+    //protected void checkCorrectTime_fnc(object sender, EventArgs e)
+    //{
+    //    //this.msg_lbl.Text = this.workstart_txt.Text;
 
-        string timeStr = this.workstart_txt.Text;
-        DateTime time;
+    //    string timeStr = this.workstart_txt.Text;
+    //    DateTime time;
 
-        if (!DateTime.TryParse(timeStr, out time))
-        {
-            this.time_valid_msg.Visible = true;
-            this.activitysave_btn.Enabled = false;
-        }
-        else
-        {
-            this.time_valid_msg.Visible = false;
-            this.activitysave_btn.Enabled = true;
-            this.loadEPCData();
-        }
+    //    if (!DateTime.TryParse(timeStr, out time))
+    //    {
+    //        this.time_valid_msg.Visible = true;
+    //        this.activitysave_btn.Enabled = false;
+    //    }
+    //    else
+    //    {
+    //        this.time_valid_msg.Visible = false;
+    //        this.activitysave_btn.Enabled = true;
+    //        this.loadEPCData();
+    //    }
 
 
-    }
+    //}
 
     protected void checkCorrectMinutes_fnc(object sender, EventArgs e)
     {
-        string minuteStr = this.worktime_txt.Text;
+        string minuteStr = this.jsWorktimetxt.Text;
         int minutes;
 
         if (!Int32.TryParse(minuteStr, out minutes))
@@ -134,8 +136,8 @@ public partial class hlasko : System.Web.UI.Page
 
         DateTime dateTmp = Convert.ToDateTime(this.hl_datum_cb.SelectedValue.ToString());
 
-        data.Add("work_start", my_x2.unixDate(dateTmp) + " " + this.workstart_txt.Text.ToString());
-        data.Add("work_time", this.worktime_txt.Text.ToString());
+        data.Add("work_start", my_x2.unixDate(dateTmp) + " " + this.jsWorkstarttxt.Text.ToString());
+        data.Add("work_time", this.jsWorktimetxt.Text.ToString());
         data.Add("work_type", this.worktype_cb.SelectedValue.ToString());
         data.Add("patient_name", this.patientname_txt.Text.ToString());
         data.Add("work_text", my_x2.EncryptString(this.activity_txt.Text.ToString(),Session["passphrase"].ToString()));
@@ -180,8 +182,8 @@ public partial class hlasko : System.Web.UI.Page
 
     protected void clearEpcData()
     {
-        this.workstart_txt.Text = DateTime.Now.ToString("HH:mm");
-        this.worktime_txt.Text = "15";
+        this.jsWorkstarttxt.Text = DateTime.Now.ToString("HH:mm");
+        this.jsWorktimetxt.Text = "15";
         this.patientname_txt.Text = "";
         this.activity_txt.Text = "";
         this.activitysave_btn.Text = Resources.Resource.add;
@@ -346,8 +348,8 @@ public partial class hlasko : System.Web.UI.Page
 
             //this.msg_lbl.Text = my_x2.UnixToMsDateTime(row["work_start"].ToString()).ToString("d.M.yyyy");
             this.hl_datum_cb.SelectedValue = my_x2.UnixToMsDateTime(row["work_start"].ToString()).ToString("d. M. yyyy");
-            this.workstart_txt.Text = my_x2.UnixToMsDateTime(row["work_start"].ToString()).ToString("HH:mm");
-            this.worktime_txt.Text = row["work_time"].ToString();
+            this.jsWorkstarttxt.Text = my_x2.UnixToMsDateTime(row["work_start"].ToString()).ToString("HH:mm");
+            this.jsWorktimetxt.Text = row["work_time"].ToString();
             this.worktype_cb.SelectedValue = row["work_type"].ToString();
             this.patientname_txt.Text = row["patient_name"].ToString();
             this.activity_txt.Text = my_x2.DecryptString(row["work_text"].ToString(),Session["passphrase"].ToString());

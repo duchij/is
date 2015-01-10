@@ -4,10 +4,14 @@
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
+   
 <asp:Label ID="msg_lbl" runat="server" Text=""></asp:Label>
 
 <h2>Hlásenie službieb KDCH, DOrK a KPU</h2>
-    <asp:Button ID="test_btn" runat="server" Text="Button"  />
+        
+   
+    
+    
 <hr />
 Prihlasený: <strong><asp:Label ID="user" runat="server" Text="Label" ForeColor="#990000"></asp:Label></strong><br />
 Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="Label" ForeColor="#990000"></asp:Label></strong><br />
@@ -44,21 +48,24 @@ Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="
                    
                    
                     <h1>Hlásenie služby:</h1>
-    <asp:PlaceHolder ID="epc_pl" runat="server" EnableTheming="true" Visible="true">
+    <asp:PlaceHolder ID="epc_pl" runat="server"  Visible="true">
         <div class="info box">
       <asp:Label ID="epc_titel" runat="server" Text="<%$ Resources:Resource,epc_titel %>" CssClass="green"></asp:Label>
     <div class="row">
       
         <div class="one fourth">
+         
+           
     Dátum:
     <asp:DropDownList ID="hl_datum_cb" runat="server"></asp:DropDownList>
             </div>
         <div class="one fourth">
+            
             <asp:Label ID="time_valid_msg" runat="server" Text="<%$ Resources:Resource,no_valid_time %>" Visible="false" CssClass="red"></asp:Label>
-    Začiatok (formát hh:mm)   <asp:TextBox ID="workstart_txt" runat="server" OnTextChanged="checkCorrectTime_fnc" AutoPostBack="true"  ></asp:TextBox> 
+    Začiatok (formát hh:mm)   <asp:TextBox ID="jsWorkstarttxt" runat="server" Text=""></asp:TextBox>
   </div>
         <div class="one fourth">
-             Čas trvania (minuty) <asp:TextBox ID="worktime_txt" runat="server" Text="15" OnTextChanged="checkCorrectMinutes_fnc" AutoPostBack="true" ></asp:TextBox>
+             Čas trvania (minuty) <asp:TextBox ID="jsWorktimetxt" runat="server" Text="15"></asp:TextBox>
               <asp:Label ID="minute_valid_msg" runat="server" Text="<%$ Resources:Resource,no_valid_int %>" Visible="false" CssClass="red"></asp:Label>
             </div>
         <div class="one fourth">
