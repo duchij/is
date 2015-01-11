@@ -18,6 +18,7 @@ using System.Text;
 public class vykazdb : my_db
 {
     x2_var myX2 = new x2_var();
+    //public mysql_db x2Mysql = new mysql_db();
 
 	public vykazdb()
 	{
@@ -25,6 +26,9 @@ public class vykazdb : my_db
 		// TODO: Add constructor logic here
 		//
 	}
+
+    
+
     public Boolean[] getSluzbyOfUserByID(string id, string mesiac, string rok)
     {
         my_db x_db = new my_db();

@@ -102,6 +102,7 @@
                     </li>
 
                     </li></asp:PlaceHolder>
+
                 <asp:PlaceHolder ID="hlas_sestier_plh" runat="server">
                 <li><button>Sestra</button>
                     <ul>
@@ -139,7 +140,9 @@
         <div class="row">
             <div class="one">
             <asp:PlaceHolder ID="info_plh" runat="server">
-                <div class="dismissible warning message"><asp:Label ID="info_message_lbl" runat="server"></asp:Label></div>  </asp:PlaceHolder>
+                <div class="dismissible warning message"><asp:Label ID="info_message_lbl" runat="server"></asp:Label></div>  
+
+            </asp:PlaceHolder>
             </div>
          
         </div>

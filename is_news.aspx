@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="is_news.aspx.cs" Inherits="is_news" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="is_news.aspx.cs" Inherits="is_news" MaintainScrollPositionOnPostback="true" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
 </asp:Content>
@@ -12,6 +12,11 @@
                     <asp:Label ID="user" runat="server" Text="Label" ForeColor="#990000"></asp:Label></strong><br />
                 <%-- Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="Label" ForeColor="#990000"></asp:Label></strong><br />
                 <hr />--%>
+    <asp:DropDownList ID="targetGroup_dl" runat="server">
+        <asp:ListItem Value="doctors" Text="Pre doktorov"></asp:ListItem>
+        <asp:ListItem Value="nurses" Text="Pre sestry"></asp:ListItem>
+        <asp:ListItem Value="all" Text="Pre vsetkych"></asp:ListItem>
+    </asp:DropDownList>
                 <asp:GridView ID="news_gv" runat="server" AutoGenerateColumns="False" 
                     AllowPaging="True" BackColor="LightGoldenrodYellow" BorderColor="Tan" 
                     BorderWidth="1px" CellPadding="2" ForeColor="Black" GridLines="None" 

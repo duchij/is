@@ -363,4 +363,7 @@
   <data name="epc_work_time" xml:space="preserve">
     <value>Dĺžka práce (min)</value>
   </data>
+  <data name="pracovisko" xml:space="preserve">
+    <value>KDCH</value>
+  </data>
 </root>

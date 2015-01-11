@@ -13,6 +13,7 @@ public partial class is_news : System.Web.UI.Page
 {
 
     my_db x_db = new my_db();
+    mysql_db x2Mysql = new mysql_db();
     // x2_var my_x2 = new x2_var();
 
     protected void Page_Load(object sender, EventArgs e)
@@ -29,18 +30,8 @@ public partial class is_news : System.Web.UI.Page
 
         if (!IsPostBack)
         {
-            //SortedList akt_user_info = x_db.getUserInfoByID("is_users", Request.Cookies["user_id"].Value.ToString());
-            // user.Text = akt_user_info["full_name"].ToString();
-
-            //GridView1.Data
-
             news_gv.DataSource = x_db.getData_News();
-
-
             news_gv.DataBind();
-
-            //opkniha.DataSource = x_db.getData_operacie();
-            //opkniha.DataBind();
         }
         else
         {
@@ -53,42 +44,44 @@ public partial class is_news : System.Web.UI.Page
 
     protected void saveMessage_Click(object sender, EventArgs e)
     {
-        int id = 0;
-
-        if (news_gv.SelectedIndex != -1)
-        {
-            id = Convert.ToInt32(news_gv.Rows[news_gv.SelectedIndex].Cells[1].Text.ToString());
-        }
+        
 
         SortedList data = new SortedList();
-        if (id <= 0)
+        if (Session["news_edit_id"] == null)
         {
-
-
-
             data.Add("kratka_sprava", small_text.Text.ToString());
             data.Add("cela_sprava", full_text.Text.ToString());
             data.Add("datum_txt", DateTime.Today.ToShortDateString());
-            data.Add("user", Request.Cookies["user_id"].Value.ToString());
+            data.Add("user", Session["user_id"].ToString());
+            data.Add("cielova-skupina", this.targetGroup_dl.SelectedValue.ToString());
 
-            data = x_db.saveNews(data);
+            SortedList res = x2Mysql.mysql_insert("is_news", data);
 
-            if (data["status"].ToString() == "ok")
+            if (Convert.ToBoolean(res["status"]))
             {
                 Response.Redirect("is_news.aspx");
             }
             else
             {
-                msg_lbl.Text = data["message"].ToString();
+                this.msg_lbl.Text = res["msg"].ToString();
             }
         }
         else
         {
-            data.Add("kratka_sprava", small_text.Text.ToString());
-            data.Add("cela_sprava", full_text.Text.ToString());
+            data.Add("kratka_sprava", this.small_text.Text.ToString());
+            data.Add("cela_sprava", this.full_text.Text.ToString());
+            data.Add("cielova-skupina", this.targetGroup_dl.SelectedValue.ToString());
 
-            x_db.update_row("is_news", data, id.ToString());
-            Response.Redirect("is_news.aspx");
+            SortedList res = x2Mysql.mysql_update("is_news", data, Session["news_edit_id"].ToString());
+            if (Convert.ToBoolean(res["status"]))
+            {
+               Session.Remove("news_edit_id");
+               Response.Redirect("is_news.aspx");
+            }
+            else
+            {
+                this.msg_lbl.Text = res["msg"].ToString();
+            }
         }
 
 
@@ -123,6 +116,8 @@ public partial class is_news : System.Web.UI.Page
         {
             this.small_text.Text = data["kratka_sprava"].ToString();
             this.full_text.Text = data["cela_sprava"].ToString();
+            Session["news_edit_id"] = data["id"];
+
         }
 
     }

@@ -1252,30 +1252,20 @@ public class my_db
 
     public List<string> getLastNews()
     {
-        string query = "SELECT *, DATE(`datum`) as 'n_d' FROM `is_news` where DATE(NOW()) - DATE(`datum`) <= 7 ORDER BY `datum` DESC LIMIT 1";
+        string query = "SELECT [id] FROM [is_news] WHERE DATE(NOW()) - DATE([datum]) <= 7 ORDER BY [datum] DESC LIMIT 1";
 
         List<string> result = new List<string>();
-        //int i = 0;
-
         my_con.Open();
-
-        OdbcCommand my_com = new OdbcCommand(query, my_con);
-
+        OdbcCommand my_com = new OdbcCommand(this.parseQuery(query), my_con);
         OdbcDataReader reader = my_com.ExecuteReader();
-
         if (reader.HasRows)
         {
             while (reader.Read())
             {
                 result.Add(reader["id"].ToString());
             }
-            my_con.Close();
         }
-        else
-        {
-            my_con.Close();
-        }
-
+        my_con.Close();
         return result;
 
     }
@@ -1358,48 +1348,47 @@ public class my_db
         }
     }
 
-    public string getNewsByID(int id)
-    {
-        StringBuilder sb = new StringBuilder();
-        string result = "";
-        sb.AppendFormat("SELECT * FROM `is_news` WHERE `id`={0}", id);
-        my_con.Open();
+    //public SortedList getNewsByID(int id)
+    //{
+    //    StringBuilder sb = new StringBuilder();
+    //    SortedList result = new SortedList();
+    //    sb.AppendFormat("SELECT [cela_sprava],[cielova-skupina] FROM [is_news] WHERE [id]={0}", id);
+    //    my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(sb.ToString(), my_con);
+    //    OdbcCommand my_com = new OdbcCommand(this.parseQuery(sb.ToString()), my_con);
+    //    OdbcDataReader reader = my_com.ExecuteReader();
 
-        OdbcDataReader reader = my_com.ExecuteReader();
+    //    if (reader.HasRows)
+    //    {
+    //        while (reader.Read())
+    //        {
+    //            result.Add(reader.GetName[i].reader["cela_sprava"].ToString();
 
-        if (reader.HasRows)
-        {
-            while (reader.Read())
-            {
-                result = reader["cela_sprava"].ToString();
-
-            }
-            my_con.Close();
-        }
-        else
-        {
-            my_con.Close();
-
-
-            result = "empty";
+    //        }
+    //        my_con.Close();
+    //    }
+    //    else
+    //    {
+    //        my_con.Close();
 
 
-        }
+    //        result = "empty";
 
-        return result;
-    }
+
+    //    }
+
+    //    return result;
+    //}
 
     public SortedList getInfoNewsData (int id)
     {
         StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("SELECT * FROM `is_news` WHERE `id`={0}",id);
+        sb.AppendFormat("SELECT * FROM [is_news] WHERE [id]='{0}'",id);
 
         my_con.Open();
         SortedList result = new SortedList();
 
-        OdbcCommand my_com = new OdbcCommand(sb.ToString(), my_con);
+        OdbcCommand my_com = new OdbcCommand(this.parseQuery(sb.ToString()), my_con);
 
         OdbcDataReader reader = my_com.ExecuteReader();
 
@@ -1407,21 +1396,17 @@ public class my_db
         {
             while (reader.Read())
             {
-                 for (int i = 0; i < reader.FieldCount; i++)
-                 {
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
                     result.Add(reader.GetName(i).ToString(), reader.GetValue(i).ToString());
-                 }
-
+                }
             }
-            my_con.Close();
         }
         else
         {
-            my_con.Close();
             result.Add("status", "empty");
-
         }
-
+        my_con.Close();
         return result;
     }
 

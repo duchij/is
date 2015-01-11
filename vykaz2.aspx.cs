@@ -252,6 +252,7 @@ public partial class vykaz2 : System.Web.UI.Page
             if (shift)
             {
                 tBox.Font.Bold = true;
+                tBox.BackColor = System.Drawing.Color.LightGray;
             }
             else
             {
@@ -422,6 +423,7 @@ public partial class vykaz2 : System.Web.UI.Page
              }
         }
         this.fillInVacations(mesiac, rok, Session["user_id"].ToString());
+        this.fillEpcData(mesiac, rok, Session["user_id"].ToString());
     }
 
     protected SortedList getUserVykazData()
@@ -611,11 +613,129 @@ public partial class vykaz2 : System.Web.UI.Page
 
     }
 
+    protected void fillEpcData(int mesiac, int rok, string id)
+    {
+        ContentPlaceHolder ctpl = new ContentPlaceHolder();
+
+        Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+
+        ctpl = (ContentPlaceHolder)tmpControl;
+
+        string[] freeDays = x_db.getFreeDays();
+        string dateGroup = my_x2.makeDateGroup(rok, mesiac).ToString();
+        int dni = DateTime.DaysInMonth(rok, mesiac);
+
+        string mesStr = dateGroup.Substring(4, 2);
+
+        string zacDt = rok.ToString() + "-" + mesStr.ToString() + "-" + "01";
+        string koncDt = rok.ToString() + "-" + mesStr.ToString() + "-" + dni.ToString();
+
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine("SELECT [hlasko].[dat_hlas] AS [datum],[hlasko].[type] AS [sluzba_typ],[hlasko_epc].[user_id], SUM([work_time]) AS [worktime]");
+        sb.AppendLine("FROM [is_hlasko_epc] as [hlasko_epc]");
+        sb.AppendLine("LEFT JOIN [is_hlasko] AS [hlasko] ON [hlasko].[id]=[hlasko_epc].[hlasko_id]");
+        sb.AppendFormat("WHERE [hlasko_epc].[work_start] BETWEEN '{0}' AND '{1}'", zacDt, koncDt);
+        sb.AppendFormat("AND [user_id]='{0}'", id);
+        sb.AppendLine("GROUP BY [hlasko_epc].[hlasko_id]");
+
+        Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
+
+        int tableLn = table.Count;
+        DateTime[] epcDate = new DateTime[tableLn];
+
+        for (int i = 0; i < tableLn; i++)
+        {
+            epcDate[i] = Convert.ToDateTime(my_x2.MSDate(table[i]["datum"].ToString()));
+        }
+
+
+        for (int row = 0; row < dni; row++)
+        {
+            int den = row + 1;
+            int vikend = (int)new DateTime(rok, mesiac, den).DayOfWeek;
+            DateTime dtTmp = new DateTime(rok, mesiac, den);
+            string mesDen = den.ToString() + "." + mesiac.ToString();
+
+            int epc_tmp = Array.IndexOf(epcDate, dtTmp);
+
+            int rs_tmp = Array.IndexOf(freeDays, mesDen);
+
+            if (epc_tmp != -1)
+            {
+                int aktivna = Convert.ToInt32(table[epc_tmp]["worktime"]);
+                decimal hodiny = aktivna / 60;
+                decimal neaktivna = 12 - hodiny;
+
+                if (neaktivna < 0)
+                {
+                    hodiny = 12;
+                    neaktivna = 0;
+                }
+
+                if ((vikend == 0 || vikend == 6) && rs_tmp == -1)
+                {
+
+                    Control tbox1 = ctpl.FindControl("textBox_" + row.ToString() + "_9");
+                    TextBox mTBox1 = (TextBox)tbox1;
+                    Control tbox2 = ctpl.FindControl("textBox_" + row.ToString() + "_11");
+                    TextBox mTBox2 = (TextBox)tbox2;
+
+                    mTBox1.Text = hodiny.ToString();
+                    mTBox2.Text = neaktivna.ToString();
+                }
+
+                if ((vikend == 0 || vikend == 6) && rs_tmp != -1)
+                {
+
+                    Control tbox1 = ctpl.FindControl("textBox_" + row.ToString() + "_9");
+                    TextBox mTBox1 = (TextBox)tbox1;
+                    Control tbox2 = ctpl.FindControl("textBox_" + row.ToString() + "_11");
+                    TextBox mTBox2 = (TextBox)tbox2;
+
+                    mTBox1.Text = hodiny.ToString();
+                    mTBox2.Text = neaktivna.ToString();
+                }
+
+                if (vikend != 0 && vikend != 6 && rs_tmp != -1)
+                {
+                    Control tbox1 = ctpl.FindControl("textBox_" + row.ToString() + "_9");
+                    TextBox mTBox1 = (TextBox)tbox1;
+                    Control tbox2 = ctpl.FindControl("textBox_" + row.ToString() + "_11");
+                    TextBox mTBox2 = (TextBox)tbox2;
+
+                    mTBox1.Text = hodiny.ToString();
+                    mTBox2.Text = neaktivna.ToString();
+                }
+
+                if (vikend != 0 && vikend != 6 && rs_tmp == -1)
+                {
+                    Control tbox1 = ctpl.FindControl("textBox_" + row.ToString() + "_7");
+                    TextBox mTBox1 = (TextBox)tbox1;
+                    Control tbox2 = ctpl.FindControl("textBox_" + row.ToString() + "_9");
+                    TextBox mTBox2 = (TextBox)tbox2;
+
+                    mTBox1.Text = hodiny.ToString();
+                    mTBox2.Text = neaktivna.ToString();
+                }
+
+
+            }
+        }
+
+
+    }
+
 
     protected void fillInVacations(int mesiac, int rok, string id)
     {
         ArrayList dovolenky = x_db.getDovolenkyByID(mesiac, rok, Convert.ToInt32(id));
         int dovCnt = dovolenky.Count;
+
+        ContentPlaceHolder ctpl = new ContentPlaceHolder();
+
+        Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+
+        ctpl = (ContentPlaceHolder)tmpControl;
 
         for (int i = 0; i < dovCnt; i++)
         {
@@ -626,14 +746,13 @@ public partial class vykaz2 : System.Web.UI.Page
 
             DateTime odDov = Convert.ToDateTime(data[1].ToString());
             DateTime doDov = Convert.ToDateTime(data[2].ToString());
-
+            string[] freeDays = x_db.getFreeDays();
             for (DateTime ddStart = odDov; ddStart <= doDov; ddStart += TimeSpan.FromDays(1))
             {
                 if (ddStart.Month == mesiac && ddStart.Year == rok)
                 {
                     int vikend = (int)ddStart.DayOfWeek;
-
-                    string[] freeDays = x_db.getFreeDays();
+                                      
 
                     string mesDen = ddStart.Day.ToString() + "." + mesiac;
 
@@ -644,11 +763,7 @@ public partial class vykaz2 : System.Web.UI.Page
 
                         int ddTemp = ddStart.Day - 1;
 
-                        ContentPlaceHolder ctpl = new ContentPlaceHolder();
-
-                        Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
-
-                        ctpl = (ContentPlaceHolder)tmpControl;
+                       
 
 
                         Control tbox = ctpl.FindControl("textBox_" + ddTemp.ToString() + "_0");

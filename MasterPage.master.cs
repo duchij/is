@@ -16,7 +16,7 @@ public partial class MasterPage : System.Web.UI.MasterPage
     public x2_var X2 = new x2_var();
     public my_db oldDb = new my_db();
     public mysql_db x2Mysql = new mysql_db();
-    public string rights;
+    public string rights="";
    /* public string PageName
     {
        get
@@ -32,10 +32,10 @@ public partial class MasterPage : System.Web.UI.MasterPage
     {
 
            
-        this.showInfoMessage();
+        
         this.current_user_lbl.Text = Session["fullname"].ToString();
         this.rights = Session["rights"].ToString();
-
+        this.showInfoMessage();
         if (this.rights.IndexOf("sestra") != -1)
         {
             this.hlas_lekar_plh.Visible = false;
@@ -78,12 +78,31 @@ public partial class MasterPage : System.Web.UI.MasterPage
     {
         if (Session["newsToShow"] != null)
         {
-            this.info_plh.Visible = true; 
-            int id = Convert.ToInt32(Session["newsToShow"].ToString());
-            this.info_message_lbl.Text = oldDb.getNewsByID(id);
+            this.info_plh.Visible = true;
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("SELECT [cela_sprava],[cielova-skupina] FROM [is_news] WHERE [id]={0}", Convert.ToInt32(Session["newsToShow"]));
+
+            SortedList row = x2Mysql.getRow(sb.ToString());
+
+            if (row["cielova-skupina"].ToString() == "doctors" && (this.rights == "users" || this.rights == "poweruser"))
+            {
+                this.info_message_lbl.Text = row["cela_sprava"].ToString();
+            }
+            else if (row["cielova-skupina"].ToString() == "nurses" && this.rights.IndexOf("sestra") != -1 )
+            {
+                this.info_message_lbl.Text = row["cela_sprava"].ToString();
+            }
+            else if (row["cielova-skupina"].ToString() == "all")
+            {
+                this.info_message_lbl.Text = row["cela_sprava"].ToString();
+            }
+            else
+            {
+                this.info_plh.Visible = false;
+            }
+
             Session.Remove("newsToShow");
-
-
         }
     }
 

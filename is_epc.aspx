@@ -15,7 +15,23 @@
         <asp:Image ID="Image1" runat="server" ImageUrl="img/dfnsp.jpg" Width="80" Height="80" ImageAlign="Left" />
         Detská fakultná nemocnica s poliklinikou Bratislava, Limbová 1, 833 40  Bratislava
         <hr />
-        <h1> EVIDENCIA PRACOVNÉHO ČASU V ÚPS</h1>
+        <h1> EVIDENCIA PRACOVNÉHO ČASU V ÚPS</h1> <br />
+        <table style="width:100%;">
+            <tr>
+                <td><asp:Label ID="menoTitul_lbl" runat="server" Text="Label"></asp:Label></td>
+                <td><asp:Label ID="pracovisko_lbl" runat="server" Text="Label"></asp:Label></td>
+                <td><asp:Label ID="zaradenie_lbl" runat="server" Text="Label"></asp:Label></td>
+                <td><asp:Label ID="osobne_lbl" runat="server" Text="Label"></asp:Label></td>
+            </tr>
+            <tr>
+
+                <td><hr />meno, priezvisko, titul</td>
+                <td><hr />pracovisko</td>
+                <td><hr />zaradenie</td>
+                <td><hr />osobné číslo</td>
+            </tr>
+
+        </table>
         
         <hr />
         <div class="nonprint">
@@ -40,6 +56,17 @@
 
         <hr />
         <asp:Table ID="epc_tbl" runat="server" BorderColor="Black" Width="100%" CellPadding="0" CellSpacing="0" ></asp:Table>
+        <hr />
+        <asp:Label ID="finalStat_lbl" runat="server" Text=""></asp:Label>
+        <br />
+        <br />
+        <div style="text-align:right;">
+            ..............................................<br />
+            Podpis
+
+
+        </div>
+
     </div>
         
 

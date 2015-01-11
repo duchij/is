@@ -17,8 +17,16 @@ public partial class is_epc : System.Web.UI.Page
         {
             Response.Redirect("error.html");
         }
-
+        this.makeHeader();
         this.loadData();
+    }
+
+    protected void makeHeader()
+    {
+        this.menoTitul_lbl.Text = Session["titul_pred"].ToString() + Session["fullname"].ToString() + " " + Session["titul_za"].ToString();
+        this.pracovisko_lbl.Text = Resources.Resource.pracovisko;
+        this.zaradenie_lbl.Text = Session["zaradenie"].ToString();
+        this.osobne_lbl.Text = Session["osobcisl"].ToString();
     }
 
     protected void loadData()
@@ -104,6 +112,35 @@ public partial class is_epc : System.Web.UI.Page
                 }
             }
         }
+        this.finalStat(zacDt, koncDt);
+    }
+
+    protected void finalStat(string zacDt, string koncDt)
+    {
+
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine("SELECT [hlasko].[dat_hlas] AS [datum],[hlasko].[type] AS [sluzba_typ],[hlasko_epc].[user_id], SUM([work_time]) AS [worktime]"); 
+        sb.AppendLine("FROM [is_hlasko_epc] as [hlasko_epc]");
+        sb.AppendLine("LEFT JOIN [is_hlasko] AS [hlasko] ON [hlasko].[id]=[hlasko_epc].[hlasko_id]");
+        sb.AppendFormat("WHERE [hlasko_epc].[work_start] BETWEEN '{0}' AND '{1}'",zacDt,koncDt);
+        sb.AppendFormat("AND [user_id]='{0}'",Session["user_id"].ToString());
+        sb.AppendLine("GROUP BY [hlasko_epc].[hlasko_id]");
+
+        Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
+
+        string result = "";
+
+        int tableLn = table.Count;
+        for (int i = 0; i < tableLn; i++)
+        {
+            int min = Convert.ToInt32(table[i]["worktime"]);
+
+            decimal celkHod = min / 60;
+            result += "<p><strong>Dátum:</strong> " + x2.MSDate(table[i]["datum"].ToString()) + " <strong>Služba:</strong> " + table[i]["sluzba_typ"].ToString() + " <strong>Odpracované hodiny: </strong> " + celkHod.ToString()+"</p>";
+
+        }
+        this.finalStat_lbl.Text = result;
+
     }
 
     protected void newRowData(int row, Dictionary<int, SortedList> table)
@@ -125,7 +162,7 @@ public partial class is_epc : System.Web.UI.Page
         kompl.ColumnSpan = 4;
         kompl.Style.Add("padding", "5px");
         kompl.Font.Bold = true;
-        kompl.Text = "Služba: " + table[row]["typ_sluzby"].ToString() + " Dňa: " + table[row]["datum_hlasenia"].ToString();
+        kompl.Text = "Služba: " + table[row]["typ_sluzby"].ToString() + " Dňa: " + x2.MSDate(table[row]["datum_hlasenia"].ToString());
         riadok.Controls.Add(kompl);
 
 

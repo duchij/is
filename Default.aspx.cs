@@ -191,17 +191,13 @@ public partial class _Default : System.Web.UI.Page
                 else
                 {
                     e.Authenticated = false;
-                    //Response.Write("Zle");
                 }
             }
             else
             {
-
                 e.Authenticated = false;
             }
         }
-
-
     }
 
     protected void deleteFilesPerDays()
@@ -217,9 +213,7 @@ public partial class _Default : System.Web.UI.Page
                     File.Delete(@Server.MapPath("App_Data") + @"\" + filesToDelete[i]);
                 }
             }
-
             db_obj.deleteFilesInDb();
-
         }
     }
 
