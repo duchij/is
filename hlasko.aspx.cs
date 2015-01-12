@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections;
 using System.Text;
 using System.Collections.Generic;
@@ -85,6 +86,40 @@ public partial class hlasko : System.Web.UI.Page
        
 
     
+    }
+
+    protected void uploadData_fnc(object sender, EventArgs e)
+    {
+        if (this.loadFile_fup.HasFile)
+        {
+            try
+            {
+                string fileName = this.loadFile_fup.FileName;
+                Stream data = this.loadFile_fup.FileContent;
+                long fileSize = data.Length;
+                string fileEx = System.IO.Path.GetExtension(this.loadFile_fup.FileName);
+                this.msg_lbl.Text = fileName.ToString() + "Size:" + fileSize.ToString();
+
+                SortedList dataFile = new SortedList();
+                dataFile.Add("file-name", fileName);
+                dataFile.Add("file-size", fileSize);
+                dataFile.Add("file-type", fileEx);
+                dataFile.Add("file-content", data);
+
+                SortedList res = x2MySQL.mysql_insert("is_data", dataFile);
+
+                if (!Convert.ToBoolean(res["status"]))
+                {
+                    this.msg_lbl.Text = res["msg"].ToString();
+                    
+                }
+
+            }
+            catch (Exception ex)
+            {
+                this.msg_lbl.Text = ex.ToString();
+            }
+        }
     }
 
     //protected void checkCorrectTime_fnc(object sender, EventArgs e)

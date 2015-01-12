@@ -22,6 +22,7 @@ Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="
                     <asp:DropDownList ID="hlas_type" runat="server"  
                         AutoPostBack="True" OnSelectedIndexChanged="Calendar1_SelectionChanged" 
                         ontextchanged="hlas_type_SelectedIndexChanged">
+                        <asp:ListItem Value="OUP">OÚP</asp:ListItem>
                         <asp:ListItem Value="A">Oddelenie A</asp:ListItem>
                         <asp:ListItem Value="B">Oddelenie B</asp:ListItem>
                         <asp:ListItem Value="OP">Op.pohotovosť</asp:ListItem>
@@ -93,7 +94,18 @@ Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="
        
         </div>
    <div class="row">
+       <asp:PlaceHolder ID="fileupload_pl" runat="server" >
+           <div class="box blue align-left">
+           <asp:FileUpload ID="loadFile_fup" runat="server" Width="500" Height="30"  />
+               <asp:Button ID="upLoadFile_btn" runat="server" Text="Nahraj.." OnClick="uploadData_fnc" />
+               <asp:Label ID="upLoadedFile_lbl" runat="server" Text=""></asp:Label>
+            </div>
+        </asp:PlaceHolder>
+   </div>
+   <div class="row">
        <div class="align-right">
+           
+
    <asp:Button ID="activitysave_btn" runat="server" Text="Pridaj do EPC" OnClick="saveActivity_fnc" CssClass="button asphalt"  />
            </div>
        </div>

@@ -1,0 +1,13 @@
+﻿///pridanie OUP
+ALTER TABLE `is_hlasko`
+CHANGE `type` `type` enum('OUP','A','B','OP') COLLATE 'utf8_slovak_ci' NOT NULL AFTER `id`,
+COMMENT='';
+
+//nova tabulka
+CREATE TABLE `is_data` (
+  `id` bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `file-name` text COLLATE 'utf8_slovak_ci' NOT NULL,
+  `file-size` bigint NOT NULL,
+  `file-type` varchar(10) COLLATE 'ascii_general_ci' NOT NULL,
+  `file-content` longblob NULL
+) COMMENT='' ENGINE='InnoDB' COLLATE 'utf8_slovak_ci';
