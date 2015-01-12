@@ -19,9 +19,8 @@ public partial class lf : System.Web.UI.Page
 
     protected void downloadFile(int id)
     {
-        StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("SELECT * FROM [is_data] WHERE [id]='{0}'", id);
-        SortedList data = x2Mysql.getRow(sb.ToString());
+        SortedList lfData = x2Mysql.getLfData(id);
+        byte[] lfContent = x2Mysql.getLfContent(id);
 
         
 
@@ -29,11 +28,13 @@ public partial class lf : System.Web.UI.Page
         Response.Buffer = true;
         Response.Cache.SetCacheability(HttpCacheability.NoCache);
 
-        Response.ContentType = data["file-type"].ToString();
-        Response.AddHeader("content-disposition", "attachment;filename=" + data["file-name"].ToString());
+        Response.ContentType =lfData["file-type"].ToString();
+        
+        Response.AddHeader("content-disposition", "attachment;filename=" + lfData["file-name"].ToString());
+        
         //Stream dat = data["file-content"];
-        byte[] mData = Encoding.Default.GetBytes(data["file-content"].ToString());
-        Response.BinaryWrite(mData);
+        //byte[] mData = Encoding.Default.GetBytes(data["file-content"].ToString(),0,Convert.ToInt32(data["file-size"]));
+        Response.BinaryWrite(lfContent);
        // Response.ContentEncoding = System.Text.Encoding.GetEncoding("Windows-1250");
        // Response.Charset = "Windows-1250";
         //StringWriter stringWriter = new StringWriter(); //System.IO namespace should be used

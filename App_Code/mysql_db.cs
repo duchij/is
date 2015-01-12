@@ -144,6 +144,51 @@ public class mysql_db
         return result;
     }
 
+    public SortedList getLfData(int id)
+    {
+        SortedList result = new SortedList();
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("SELECT [file-name],[file-size],[file-type] FROM [is_data] WHERE [id]='{0}'", id);
+        my_con.Open();
+        OdbcCommand my_com = new OdbcCommand(this.parseQuery(sb.ToString()), my_con);
+        OdbcDataReader reader = my_com.ExecuteReader();
+
+        if (reader.HasRows)
+        {
+            while (reader.Read())
+            {
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                    if (reader.GetValue(i) == null)
+                    {
+                        result.Add(reader.GetName(i).ToString(), "0");
+                    }
+                    else
+                    {
+                        result.Add(reader.GetName(i).ToString(), reader.GetValue(i).ToString());
+                    }
+                }
+
+            }
+        }
+        my_con.Close();
+        return result;
+
+    }
+
+    public byte[] getLfContent(int id)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("SELECT [file-content] FROM [is_data] WHERE [id]='{0}'", id);
+        my_con.Open();
+        OdbcCommand my_com = new OdbcCommand(this.parseQuery(sb.ToString()), my_con);
+       
+        byte[] result = (byte[])my_com.ExecuteScalar();
+        my_con.Close();
+        return result;
+
+    }
+
     public SortedList callStoredProcWithoutParam(string stored_proc)
     {
         SortedList result = new SortedList();
