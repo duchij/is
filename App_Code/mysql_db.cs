@@ -148,7 +148,7 @@ public class mysql_db
     {
         SortedList result = new SortedList();
         StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("SELECT [file-name],[file-size],[file-type] FROM [is_data] WHERE [id]='{0}'", id);
+        sb.AppendFormat("SELECT [file-name],[file-size],[file-type],[file-content] FROM [is_data] WHERE [id]='{0}'", id);
         my_con.Open();
         OdbcCommand my_com = new OdbcCommand(this.parseQuery(sb.ToString()), my_con);
         OdbcDataReader reader = my_com.ExecuteReader();
@@ -293,7 +293,7 @@ public class mysql_db
         foreach (DictionaryEntry row in data)
         {
             
-            columns[i] = "["+row.Key.ToString()+"]";
+            columns[i] = "`"+row.Key.ToString()+"`";
             if (row.Value == null)
             {
                 values[i] = "NULL";
@@ -302,7 +302,7 @@ public class mysql_db
             {
                 values[i] = "'" + row.Value.ToString() + "'";
             }
-            col_val[i] = "[" + row.Key + "] =  values([" + row.Key + "])";
+            col_val[i] = "`" + row.Key + "` =  values(`" + row.Key + "`)";
             i++;
         }
 
@@ -310,9 +310,9 @@ public class mysql_db
         string t_values = string.Join(",", values);
         string col_val_str = string.Join(",", col_val);
 
-        sb.AppendFormat("INSERT INTO [{0}] ({1}) VALUES ({2}) ON DUPLICATE KEY UPDATE {3};", table, t_cols, t_values, col_val_str);
+        sb.AppendFormat("INSERT INTO `{0}` ({1}) VALUES ({2}) ON DUPLICATE KEY UPDATE {3};", table, t_cols, t_values, col_val_str);
 
-        string query = this.parseQuery(sb.ToString());
+        string query = sb.ToString();
         
         int id = 0;
         try

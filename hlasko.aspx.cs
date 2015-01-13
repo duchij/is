@@ -90,43 +90,45 @@ public partial class hlasko : System.Web.UI.Page
 
     protected void uploadData_fnc(object sender, EventArgs e)
     {
-        //if (this.loadFile_fup.HasFile)
-        //{
-        //    try
-        //    {
-        //        string fileName = this.loadFile_fup.FileName;
 
-        //        Stream data = this.loadFile_fup.PostedFile.InputStream;
+        if (this.loadFile_fup.HasFile)
+        {
+            try
+            {
+                SortedList dataFile = new SortedList();
+                string fileEx = System.IO.Path.GetExtension(this.loadFile_fup.FileName);
+                byte[] dataB =  new byte[this.loadFile_fup.PostedFile.InputStream.Length];
+                this.loadFile_fup.PostedFile.InputStream.Read(dataB,0,this.loadFile_fup.PostedFile.ContentLength);
+                dataFile.Add("file-name", this.loadFile_fup.FileName.ToString());
+                dataFile.Add("file-size", this.loadFile_fup.PostedFile.InputStream.Length);
+                dataFile.Add("file-type", fileEx);
+                dataFile.Add("file-content", Convert.ToBase64String(dataB));
+                
+                SortedList res = x2MySQL.mysql_insert("is_data", dataFile);
 
+                if (!Convert.ToBoolean(res["status"]))
+                {
+                    this.msg_lbl.Text = this.loadFile_fup.PostedFile.FileName + "<br><br>" + res["msg"].ToString();
+                }
+                else
+                {
 
-        //      //  byte[] dt = new byte[this.loadFile_fup.PostedFile.InputStream.Length+1];
+                    this.loadFile_fup.Visible = false;
+                    this.upLoadFile_btn.Visible = false;
 
-        //        //this.loadFile_fup.PostedFile.InputStream.Read(dt);
-        //        //dt = Encoding.Default.GetBytes(data, 0, data);
-        //      //  long fileSize = dt.Length;
-        //        string fileEx = System.IO.Path.GetExtension(this.loadFile_fup.FileName);
-        //        this.msg_lbl.Text = fileName.ToString() + "Size:" + fileSize.ToString();
+                    this.lfId_hidden.Value = res["last_id"].ToString();
+                    this.upLoadedFile_lbl.Text = "<a href='lf.aspx?id=" + res["last_id"].ToString() + "' target='_blank'>" + this.loadFile_fup.FileName.ToString() + "</a>";
+                }
+            }
+            catch (Exception ex)
+            {
+                
+                this.msg_lbl.Text = this.loadFile_fup.PostedFile.FileName + "<br><br>" + ex.ToString();
+            }
 
-        //        SortedList dataFile = new SortedList();
-        //        dataFile.Add("file-name", fileName);
-        //        dataFile.Add("file-size", fileSize);
-        //        dataFile.Add("file-type", fileEx);
-        //        dataFile.Add("file-content", dt);
+        }
 
-        //        SortedList res = x2MySQL.mysql_insert("is_data", dataFile);
-
-        //        if (!Convert.ToBoolean(res["status"]))
-        //        {
-        //            this.msg_lbl.Text = res["msg"].ToString();
-                    
-        //        }
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        this.msg_lbl.Text = ex.ToString();
-        //    }
-        //}
+        
     }
 
     //protected void checkCorrectTime_fnc(object sender, EventArgs e)
@@ -185,6 +187,11 @@ public partial class hlasko : System.Web.UI.Page
         data.Add("work_text", my_x2.EncryptString(this.activity_txt.Text.ToString(),Session["passphrase"].ToString()));
         data.Add("osirix", this.check_osirix.Checked);
 
+        if (lfId_hidden.Value.ToString() != "0")
+        {
+            data.Add("lf_id", this.lfId_hidden.Value.ToString());
+        }
+
         if (Session["epc_id"] == null)
         {
 
@@ -229,6 +236,7 @@ public partial class hlasko : System.Web.UI.Page
         this.patientname_txt.Text = "";
         this.activity_txt.Text = "";
         this.activitysave_btn.Text = Resources.Resource.add;
+        this.lfId_hidden.Value = "0";
         
     }
 
@@ -397,6 +405,15 @@ public partial class hlasko : System.Web.UI.Page
             this.activity_txt.Text = my_x2.DecryptString(row["work_text"].ToString(),Session["passphrase"].ToString());
             this.check_osirix.Checked = Convert.ToBoolean(row["osirix"].ToString());
 
+            if (row["lf_id"].ToString() != "0")
+            {
+                this.lfId_hidden.Value = row["lf_id"].ToString();
+            }
+            else
+            {
+                this.lfId_hidden.Value = "0";
+            }
+
             this.activitysave_btn.Text = Resources.Resource.save;
 
             Session.Add("epc_id", row["id"].ToString());
@@ -553,6 +570,7 @@ public partial class hlasko : System.Web.UI.Page
                 this.addInfo_btn.Enabled = true;
                 this.view_hlasko.Visible = true;
                 this.hlasko_lbl.Visible = true;
+                this.epc_pl.Visible = false;
                 if (data["encrypt"].ToString() == "yes")
                 {
                     this.view_hlasko.Text = my_x2.DecryptString(data["text"].ToString(), Session["passphrase"].ToString());
@@ -576,6 +594,7 @@ public partial class hlasko : System.Web.UI.Page
                 this.addInfo_btn.Enabled = false;
                 this.send.Enabled = true;
                 this.hlasko_lbl.Visible = false;
+                this.epc_pl.Visible = true;
                 if (data["encrypt"].ToString() == "yes")
                 {
                     this.view_hlasko.Text = my_x2.DecryptString(data["text"].ToString(), Session["passphrase"].ToString());

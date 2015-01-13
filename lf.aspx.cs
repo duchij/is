@@ -20,8 +20,8 @@ public partial class lf : System.Web.UI.Page
     protected void downloadFile(int id)
     {
         SortedList lfData = x2Mysql.getLfData(id);
-        byte[] lfContent = x2Mysql.getLfContent(id);
-
+       // byte[] lfContent = Convert.FromBase64String(x2Mysql.getLfContent(id).ToString());
+        byte[] lfContent = Convert.FromBase64String(lfData["file-content"].ToString());
         
 
         Response.Clear();
@@ -31,7 +31,7 @@ public partial class lf : System.Web.UI.Page
         Response.ContentType =lfData["file-type"].ToString();
         
         Response.AddHeader("content-disposition", "attachment;filename=" + lfData["file-name"].ToString());
-        
+        Response.AddHeader("content-length", lfData["file-size"].ToString());
         //Stream dat = data["file-content"];
         //byte[] mData = Encoding.Default.GetBytes(data["file-content"].ToString(),0,Convert.ToInt32(data["file-size"]));
         Response.BinaryWrite(lfContent);

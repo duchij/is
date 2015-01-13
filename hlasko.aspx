@@ -96,9 +96,11 @@ Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="
    <div class="row">
        <asp:PlaceHolder ID="fileupload_pl" runat="server" >
            <div class="box blue align-left">
-           <asp:FileUpload ID="loadFile_fup" runat="server" Width="500" Height="30"  />
-               <asp:Button ID="upLoadFile_btn" runat="server" Text="Nahraj.." OnClick="uploadData_fnc" />
-               <asp:Label ID="upLoadedFile_lbl" runat="server" Text=""></asp:Label>
+               Externý súbor....<br />
+           <asp:FileUpload ID="loadFile_fup" runat="server" Width="500" Height="36"  />
+               <asp:Button ID="upLoadFile_btn" runat="server" Text="Nahraj...Max.200MB" OnClick="uploadData_fnc" />
+               <asp:Label ID="upLoadedFile_lbl" runat="server" Text="" CssClass="red"></asp:Label>
+               <asp:HiddenField ID="lfId_hidden" runat="server" Value="0" />
             </div>
         </asp:PlaceHolder>
    </div>

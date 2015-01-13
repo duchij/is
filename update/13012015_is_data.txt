@@ -1,0 +1,9 @@
+﻿///zmena na logn text
+ALTER TABLE `is_data`
+CHANGE `file-content` `file-content` longtext COLLATE 'ascii_general_ci' NOT NULL AFTER `file-type`,
+COMMENT='';
+
+//zmena v is_hlasko_epc
+ALTER TABLE `is_hlasko_epc`
+ADD `lf_id` bigint NULL,
+COMMENT='';
