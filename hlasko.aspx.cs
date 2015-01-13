@@ -112,11 +112,11 @@ public partial class hlasko : System.Web.UI.Page
                 }
                 else
                 {
-
+                    this.lfId_hidden.Value = res["last_id"].ToString();
                     this.loadFile_fup.Visible = false;
                     this.upLoadFile_btn.Visible = false;
 
-                    this.lfId_hidden.Value = res["last_id"].ToString();
+                   
                     this.upLoadedFile_lbl.Text = "<a href='lf.aspx?id=" + res["last_id"].ToString() + "' target='_blank'>" + this.loadFile_fup.FileName.ToString() + "</a>";
                 }
             }
@@ -187,7 +187,7 @@ public partial class hlasko : System.Web.UI.Page
         data.Add("work_text", my_x2.EncryptString(this.activity_txt.Text.ToString(),Session["passphrase"].ToString()));
         data.Add("osirix", this.check_osirix.Checked);
 
-        if (lfId_hidden.Value.ToString() != "0")
+        if (this.lfId_hidden.Value.ToString() != "0")
         {
             data.Add("lf_id", this.lfId_hidden.Value.ToString());
         }
@@ -294,6 +294,10 @@ public partial class hlasko : System.Web.UI.Page
         headCell7.Text = "OSIRIX";
         headRow.Controls.Add(headCell7);
 
+        TableHeaderCell headCell8 = new TableHeaderCell();
+        headCell8.Text = "Subor";
+        headRow.Controls.Add(headCell8);
+
         this.activity_tbl.Controls.Add(headRow);
 
 
@@ -348,6 +352,22 @@ public partial class hlasko : System.Web.UI.Page
             osirixCell.Controls.Add(ch_osirix);
 
             riadok.Controls.Add(osirixCell);
+
+            TableCell fileCell = new TableCell();
+            Label url_lbl = new Label();
+            if (table[i]["lf_id"] != null)
+            {
+                url_lbl.Text = "<a href='lf.aspx?id=" + table[i]["lf_id"].ToString() + "' target='_blank'>Subor...</a>";
+            }
+            else
+            {
+                url_lbl.Text = "";
+            }
+
+
+            fileCell.Controls.Add(url_lbl);
+
+            riadok.Controls.Add(fileCell);
 
             this.activity_tbl.Controls.Add(riadok);
 
@@ -408,6 +428,7 @@ public partial class hlasko : System.Web.UI.Page
             if (row["lf_id"].ToString() != "0")
             {
                 this.lfId_hidden.Value = row["lf_id"].ToString();
+
             }
             else
             {

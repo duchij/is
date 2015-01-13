@@ -187,19 +187,24 @@ public class x2_var
 
     public string MSDate(string datum)
     {
-        string[] _tmp = datum.Split(new char[] { ' ' });
-        string[] tmp = _tmp[0].Split(new char[] { '-' });
-
-        string result = "";
-        try
+        string result = datum;
+        if (datum.IndexOf("-") != -1)
         {
+            string[] _tmp = datum.Split(new char[] { ' ' });
+            string[] tmp = _tmp[0].Split(new char[] { '-' });
 
-            result = tmp[2] + "." + tmp[1] + "." + tmp[0];
+            
+            try
+            {
+
+                result = tmp[2] + "." + tmp[1] + "." + tmp[0];
+            }
+            catch (Exception e)
+            {
+                result = "chyba:" + e.ToString() + "......." + datum;
+            }
         }
-        catch (Exception e)
-        {
-            result = "chyba:" + e.ToString() + "......." + datum;
-        }
+       
 
         return result;
     }

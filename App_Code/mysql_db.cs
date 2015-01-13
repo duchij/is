@@ -441,8 +441,21 @@ public class mysql_db
                     //string inData = reader.GetValue(i).ToString();
                    // byte[] buffer = Encoding.UTF8.GetBytes(inData);
                     //string outData = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
-
-                    tmp.Add(reader.GetName(i).ToString(), reader.GetString(i));
+                    if (reader.GetValue(i) == null)
+                    {
+                        tmp.Add(reader.GetName(i).ToString(), DBNull.Value);
+                    }
+                    else
+                    {
+                        if (reader.GetFieldType(i).FullName.ToString().IndexOf("text") != -1)
+                        {
+                            tmp.Add(reader.GetName(i).ToString(), reader.GetString(i).ToString());
+                        }
+                        else
+                        {
+                            tmp.Add(reader.GetName(i).ToString(), reader.GetValue(i));
+                        }
+                    }
                 }
                 result.Add(row, tmp);
                 row++;
