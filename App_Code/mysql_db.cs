@@ -144,11 +144,11 @@ public class mysql_db
         return result;
     }
 
-    public SortedList getLfData(int id)
+    public SortedList getLfData2(int id)
     {
         SortedList result = new SortedList();
         StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("SELECT [file-name],[file-size],[file-type],[file-content] FROM [is_data] WHERE [id]='{0}'", id);
+        sb.AppendFormat("SELECT [file-name],[file-size],[file-type] FROM [is_data_2] WHERE [id]='{0}'", id);
         my_con.Open();
         OdbcCommand my_com = new OdbcCommand(this.parseQuery(sb.ToString()), my_con);
         OdbcDataReader reader = my_com.ExecuteReader();
@@ -269,6 +269,113 @@ public class mysql_db
 
         return result;
     }
+
+    public byte[] lfStoredData(int id, int size)
+    {
+        byte[] result = new byte[size];
+        OdbcCommand cmd = new OdbcCommand();
+        cmd.Connection = my_con;
+        cmd.CommandText = "SELECT `file-content` FROM `is_data_2` WHERE `id` = ?";
+
+        cmd.Parameters.Add("id", OdbcType.BigInt).Value = id;
+
+        my_con.Open();
+
+        OdbcDataReader reader = cmd.ExecuteReader();
+
+        if (reader.HasRows)
+        {
+            while (reader.Read())
+            {
+                reader.GetBytes(0,0,result,0, size);
+            }
+        }
+
+        my_con.Close();
+
+        return result;
+        
+    }
+
+    public SortedList lfUpdateData(byte[] data, SortedList lfData)
+    {
+       SortedList result = new SortedList();
+        OdbcTransaction trans1 = null;
+        my_con.Open();
+
+        OdbcCommand cmd = new OdbcCommand();
+        cmd.Connection = my_con;
+        cmd.CommandType = CommandType.Text;
+
+        trans1 = my_con.BeginTransaction();
+
+        cmd.Transaction = trans1;
+        cmd.CommandText = "UPDATE `is_data_2` SET `file-name`=?,`file-size`=?,`file-type`=?,`file-content`=? WHERE `id`=?";
+
+        cmd.Parameters.Add("filename", OdbcType.Text).Value = lfData["file-name"].ToString();
+        cmd.Parameters.Add("filesize", OdbcType.BigInt).Value = Convert.ToInt32(lfData["file-size"]);
+        cmd.Parameters.Add("filetype", OdbcType.VarChar).Value = lfData["file-type"].ToString();
+        cmd.Parameters.Add("filecontent", OdbcType.Binary).Value = data;
+        cmd.Parameters.Add("id", OdbcType.BigInt).Value = Convert.ToInt32(lfData["id"]);
+        cmd.CommandText.ToString();
+        try
+        {
+            cmd.ExecuteNonQuery();
+            //cmd.CommandText = "SELECT LAST_INSERT_ID();";
+            //int id = Convert.ToInt32(cmd.ExecuteScalar());
+            result.Add("status", true);
+            result.Add("last_id",  Convert.ToInt32(lfData["id"]));
+            cmd.Transaction.Commit();
+        }
+        catch (Exception ex)
+        {
+            result.Add("status",false);
+            result.Add("msg",ex.ToString());
+            cmd.Transaction.Rollback();
+        }
+        my_con.Close();
+        return result;
+    }
+
+    public SortedList lfInsertData(byte[] data, SortedList lfData)     
+    {
+        SortedList result = new SortedList();
+        OdbcTransaction trans1 = null;
+        my_con.Open();
+
+        OdbcCommand cmd = new OdbcCommand();
+        cmd.Connection = my_con;
+        cmd.CommandType = CommandType.Text;
+
+        trans1 = my_con.BeginTransaction();
+
+        cmd.Transaction = trans1;
+        cmd.CommandText = "INSERT INTO `is_data_2`(`file-name`,`file-size`,`file-type`,`file-content`) VALUES (?,?,?,?)";
+
+        cmd.Parameters.Add("filename", OdbcType.Text).Value = lfData["file-name"].ToString();
+        cmd.Parameters.Add("filesize", OdbcType.BigInt).Value = Convert.ToInt32(lfData["file-size"]);
+        cmd.Parameters.Add("filetype", OdbcType.VarChar).Value = lfData["file-type"].ToString();
+        cmd.Parameters.Add("filecontent", OdbcType.Binary).Value = data;
+        cmd.CommandText.ToString();
+        try
+        {
+            cmd.ExecuteNonQuery();
+            cmd.CommandText = "SELECT LAST_INSERT_ID();";
+            int id = Convert.ToInt32(cmd.ExecuteScalar());
+            result.Add("status", true);
+            result.Add("last_id", id);
+            cmd.Transaction.Commit();
+        }
+        catch (Exception ex)
+        {
+            result.Add("status",false);
+            result.Add("msg",ex.ToString());
+            cmd.Transaction.Rollback();
+        }
+        my_con.Close();
+        return result;
+    }
+
 
 
     public SortedList mysql_insert(string table, SortedList data)
@@ -391,9 +498,9 @@ public class mysql_db
                 {
                     for (int i = 0; i < reader.FieldCount; i++)
                     {
-                        if (reader.GetValue(i) == null)
+                        if (reader.GetValue(i) == DBNull.Value)
                         {
-                            result.Add(reader.GetName(i).ToString(), "0");
+                            result.Add(reader.GetName(i).ToString(), "NULL");
                         }
                         else
                         {
@@ -441,9 +548,9 @@ public class mysql_db
                     //string inData = reader.GetValue(i).ToString();
                    // byte[] buffer = Encoding.UTF8.GetBytes(inData);
                     //string outData = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
-                    if (reader.GetValue(i) == null)
+                    if (reader.GetValue(i) == DBNull.Value)
                     {
-                        tmp.Add(reader.GetName(i).ToString(), DBNull.Value);
+                        tmp.Add(reader.GetName(i).ToString(), "NULL");
                     }
                     else
                     {
@@ -493,7 +600,24 @@ public class mysql_db
                     // byte[] buffer = Encoding.UTF8.GetBytes(inData);
                     //string outData = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
 
-                    tmp.Add(reader.GetName(i).ToString(), reader.GetString(i));
+                    if (reader.GetValue(i) == DBNull.Value)
+                    {
+                        tmp.Add(reader.GetName(i).ToString(), "NULL");
+                    }
+                    else
+                    {
+                        if (reader.GetFieldType(i).FullName.ToString().IndexOf("text") != -1)
+                        {
+                            tmp.Add(reader.GetName(i).ToString(), reader.GetString(i).ToString());
+                        }
+                        else
+                        {
+                            tmp.Add(reader.GetName(i).ToString(), reader.GetValue(i));
+                        }
+                    }
+
+
+                  //  tmp.Add(reader.GetName(i).ToString(), reader.GetString(i));
                 }
                 result.Add(row, tmp);
                 row++;

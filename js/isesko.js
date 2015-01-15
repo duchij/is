@@ -6,6 +6,19 @@ $(document).ready(function () {
 
     //alert("hura");
 
+    $("select[id$=_worktype_cb]").change(function (e) {
+
+        var selectedValue = $("select[id$=_worktype_cb]").val();
+
+        if (selectedValue == "urgent") {
+            $("input[id$=_patientname_txt]").val("Osetr. pacienti");
+            $("input[id$=_jsWorktimetxt]").val("1440");
+            $("input[id$=_jsWorkstarttxt]").val("07:00");
+        }
+
+       // alert(selectedValue);
+    });
+
     $("input[id$=_jsWorkstarttxt]").change(function (e) {
 
         var str = $("input[id$=_jsWorkstarttxt]").val();

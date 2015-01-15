@@ -30,21 +30,22 @@ public partial class hlasko : System.Web.UI.Page
         {
             Response.Redirect("error.html");
         }
-        Page.Header.DataBind();
-
+       // Page.Header.DataBind();
+        this.loadFile_fup.Attributes.Add("size", "50");
         this.msg_lbl.Text = "";
         this.hlasko_pl.Visible = false;
         this.kompl_work_time.Text = "";
        // Response.AppendHeader("Refresh", 6000 + "; URL=hlasko.aspx");
 
-
+       // Session.Remove("newsToShow");
         if (IsPostBack == false)
         {
             // Calendar1.SelectedDate = DateTime.Today;
             this.setMyDate();
-            
+            this.setShiftForDoctor();
             this.loadHlasko();
             this.setEPC_init();
+          //  this.setShiftForDoctor();
 
         }
         else
@@ -62,6 +63,42 @@ public partial class hlasko : System.Web.UI.Page
 
 
     }
+
+    protected void setShiftForDoctor()
+    {
+        DateTime dt = this.Calendar1.SelectedDate;
+
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("SELECT [typ] FROM [is_sluzby_2] WHERE [user_id] = '{0}' AND [datum]='{1}'", Session["user_id"].ToString(), my_x2.unixDate(dt).ToString());
+
+        SortedList row = x2MySQL.getRow(sb.ToString());
+
+        if (row.Count >0)
+        {
+            string type = row["typ"].ToString();
+
+            switch (type)
+            {
+                case "OUP":
+                    this.hlas_type.SelectedValue = "OUP";
+                    break;
+                case "OddA":
+                    this.hlas_type.SelectedValue = "A";
+                    break;
+                case "OddB":
+                    this.hlas_type.SelectedValue = "B";
+                    break;
+                case "OP":
+                    this.hlas_type.SelectedValue = "OP";
+                    break;
+            }
+
+        }
+        
+
+
+    }
+
 
     protected void setEPC_init()
     {
@@ -102,30 +139,54 @@ public partial class hlasko : System.Web.UI.Page
                 dataFile.Add("file-name", this.loadFile_fup.FileName.ToString());
                 dataFile.Add("file-size", this.loadFile_fup.PostedFile.InputStream.Length);
                 dataFile.Add("file-type", fileEx);
-                dataFile.Add("file-content", Convert.ToBase64String(dataB));
-                
-                SortedList res = x2MySQL.mysql_insert("is_data", dataFile);
+                // dataFile.Add("file-content", Convert.ToBase64String(dataB));
 
-                if (!Convert.ToBoolean(res["status"]))
+                if (this.lfId_hidden.Value.ToString() == "0")
                 {
-                    this.msg_lbl.Text = this.loadFile_fup.PostedFile.FileName + "<br><br>" + res["msg"].ToString();
+                    SortedList res = x2MySQL.lfInsertData(dataB, dataFile);
+
+                    if (Convert.ToBoolean(res["status"]))
+                    {
+                        //this.msg_lbl.Text = res["last_id"].ToString();
+
+                        this.lfId_hidden.Value = res["last_id"].ToString();
+                        this.loadFile_fup.Visible = false;
+                        this.upLoadFile_btn.Visible = false;
+                        this.upLoadedFile_lbl.Text = "<a href='lf.aspx?id=" + res["last_id"].ToString() + "' target='_blank'>" + this.loadFile_fup.FileName.ToString() + "</a>";
+                    }
+                    else
+                    {
+                        this.msg_lbl.Text = res["msg"].ToString();
+                    }
                 }
                 else
                 {
-                    this.lfId_hidden.Value = res["last_id"].ToString();
-                    this.loadFile_fup.Visible = false;
-                    this.upLoadFile_btn.Visible = false;
+                    dataFile.Add("id", Convert.ToInt32(this.lfId_hidden.Value));
+                    SortedList res = x2MySQL.lfUpdateData(dataB, dataFile);
 
-                   
-                    this.upLoadedFile_lbl.Text = "<a href='lf.aspx?id=" + res["last_id"].ToString() + "' target='_blank'>" + this.loadFile_fup.FileName.ToString() + "</a>";
+                    if (Convert.ToBoolean(res["status"]))
+                    {
+                        //this.msg_lbl.Text = res["last_id"].ToString();
+
+                        this.lfId_hidden.Value = res["last_id"].ToString();
+                        this.loadFile_fup.Visible = false;
+                        this.upLoadFile_btn.Visible = false;
+                        this.upLoadedFile_lbl.Text = "<a href='lf.aspx?id=" + res["last_id"].ToString() + "' target='_blank'>" + this.loadFile_fup.FileName.ToString() + "</a>";
+                    }
+                    else
+                    {
+                        this.msg_lbl.Text = res["msg"].ToString();
+                    }
+
                 }
+
+                
+                
             }
             catch (Exception ex)
             {
-                
                 this.msg_lbl.Text = this.loadFile_fup.PostedFile.FileName + "<br><br>" + ex.ToString();
             }
-
         }
 
         
@@ -208,6 +269,11 @@ public partial class hlasko : System.Web.UI.Page
                 this.loadEPCData();
                 this.clearEpcData();
                 this._generateHlasko();
+
+                this.loadFile_fup.Visible = true;
+                this.upLoadFile_btn.Visible = true;
+                this.upLoadedFile_lbl.Text = "";
+
             }
         }
         else
@@ -220,6 +286,10 @@ public partial class hlasko : System.Web.UI.Page
                 this.loadEPCData();
                 this.clearEpcData();
                 this._generateHlasko();
+
+                this.loadFile_fup.Visible = true;
+                this.upLoadFile_btn.Visible = true;
+                this.upLoadedFile_lbl.Text = "";
                 
             }
             else
@@ -258,6 +328,7 @@ public partial class hlasko : System.Web.UI.Page
         this.activity_tbl.Visible = true;
         StringBuilder sb = new StringBuilder();
         sb.AppendFormat("SELECT * FROM [is_hlasko_epc] WHERE [hlasko_id] ='{0}' ORDER BY [work_start] ASC", Session["akt_hlasenie"]);
+        //sb.AppendFormat("SELECT * FROM [is_hlasko_epc] WHERE [user_id] ='{0}' ORDER BY [work_start] ASC", Session["user_id"]);
         Dictionary<int, Hashtable> table = x2MySQL.getTable(sb.ToString());
 
 
@@ -355,7 +426,7 @@ public partial class hlasko : System.Web.UI.Page
 
             TableCell fileCell = new TableCell();
             Label url_lbl = new Label();
-            if (table[i]["lf_id"] != null)
+            if (table[i]["lf_id"].ToString() != "NULL")
             {
                 url_lbl.Text = "<a href='lf.aspx?id=" + table[i]["lf_id"].ToString() + "' target='_blank'>Subor...</a>";
             }
@@ -405,7 +476,7 @@ public partial class hlasko : System.Web.UI.Page
 
         string[] objId = epcBtn.ID.ToString().Split('_');
         //Control controlList = ctpl.FindControl("ddl_" + tmp[1] + "_" + tmp[2]);
-        this.msg_lbl.Text = epcBtn.ID.ToString();
+        //this.msg_lbl.Text = epcBtn.ID.ToString();
 
         StringBuilder sb = new StringBuilder();
        // this.msg_lbl.Text ="...."+ objId[0];
@@ -425,14 +496,23 @@ public partial class hlasko : System.Web.UI.Page
             this.activity_txt.Text = my_x2.DecryptString(row["work_text"].ToString(),Session["passphrase"].ToString());
             this.check_osirix.Checked = Convert.ToBoolean(row["osirix"].ToString());
 
-            if (row["lf_id"].ToString() != "0")
+            if (row["lf_id"].ToString() != "NULL")
             {
                 this.lfId_hidden.Value = row["lf_id"].ToString();
+
+
+                this.loadFile_fup.Visible = true;
+                this.upLoadFile_btn.Visible = true;
+
+                this.upLoadedFile_lbl.Text = "<a href='lf.aspx?id=" + row["lf_id"].ToString() + "' target='_blank'>Priloha....</a>";
+
 
             }
             else
             {
                 this.lfId_hidden.Value = "0";
+                this.loadFile_fup.Visible = true;
+                this.upLoadFile_btn.Visible = true;
             }
 
             this.activitysave_btn.Text = Resources.Resource.save;
@@ -591,7 +671,9 @@ public partial class hlasko : System.Web.UI.Page
                 this.addInfo_btn.Enabled = true;
                 this.view_hlasko.Visible = true;
                 this.hlasko_lbl.Visible = true;
+               
                 this.epc_pl.Visible = false;
+
                 if (data["encrypt"].ToString() == "yes")
                 {
                     this.view_hlasko.Text = my_x2.DecryptString(data["text"].ToString(), Session["passphrase"].ToString());

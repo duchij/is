@@ -312,6 +312,7 @@ public partial class vykaz2 : System.Web.UI.Page
         string[] sviatky = x_db.getFreeDays();
 
         Boolean[] docShifts = this.getShifts(rok, mesiac);
+
         SortedList vykazVypis = this.getValueFromSluzba();
 
         for (int den = 0; den < dniMes; den++)
@@ -507,14 +508,15 @@ public partial class vykaz2 : System.Web.UI.Page
 
         StringBuilder query = new StringBuilder();
         int dateGroup = my_x2.makeDateGroup(rok, mesiac);
-        query.AppendFormat("SELECT [datum] FROM [is_sluzby_2] WHERE [user_id] = {0} AND [date_group]={1} AND [typ]<>'Prijm' ORDER BY [datum] ASC", Session["user_id"].ToString(), dateGroup);
+        query.AppendFormat("SELECT [datum] FROM [is_sluzby_2] WHERE [user_id] = '{0}' AND [date_group]='{1}' AND [typ]<>'Prijm' ORDER BY [datum] ASC", Session["user_id"].ToString(), dateGroup);
         Dictionary<int, Hashtable> table = x2Mysql.getTable(query.ToString());
 
-        ArrayList tmpData = new ArrayList();
+        
         int tmpLen = table.Count;
+        DateTime[] tmpData = new DateTime[tmpLen];
         for (int j = 0; j < tmpLen; j++)
         {
-            tmpData.Add(table[j]["datum"]);
+            tmpData[j] = my_x2.UnixToMsDateTime(table[j]["datum"].ToString());
         }
 
 
@@ -531,8 +533,8 @@ public partial class vykaz2 : System.Web.UI.Page
                 denStr = "0" + denStr;
             }
 
-            dat.AppendFormat("{0}-{1}-{2}", rok, mesStr, denStr);
-            if (tmpData.IndexOf(dat.ToString()) != -1)
+            DateTime dt = new DateTime(rok, mesiac, mDen);
+            if (Array.IndexOf(tmpData,dt) != -1)
             {
                 result[den] = true;
             }
@@ -658,7 +660,7 @@ public partial class vykaz2 : System.Web.UI.Page
 
             int epc_tmp = Array.IndexOf(epcDate, dtTmp);
 
-            int rs_tmp = Array.IndexOf(freeDays, mesDen);
+            int rs_tmp = Array.IndexOf(freeDays, mesDen);                          
 
             if (epc_tmp != -1)
             {
@@ -684,7 +686,7 @@ public partial class vykaz2 : System.Web.UI.Page
                     mTBox2.Text = neaktivna.ToString();
                 }
 
-                if ((vikend == 0 || vikend == 6) && rs_tmp != -1)
+                else if ((vikend == 0 || vikend == 6) && rs_tmp != -1)
                 {
 
                     Control tbox1 = ctpl.FindControl("textBox_" + row.ToString() + "_9");
@@ -696,7 +698,7 @@ public partial class vykaz2 : System.Web.UI.Page
                     mTBox2.Text = neaktivna.ToString();
                 }
 
-                if (vikend != 0 && vikend != 6 && rs_tmp != -1)
+                else if ((vikend != 0 && vikend != 6) && rs_tmp != -1)
                 {
                     Control tbox1 = ctpl.FindControl("textBox_" + row.ToString() + "_9");
                     TextBox mTBox1 = (TextBox)tbox1;
@@ -707,7 +709,7 @@ public partial class vykaz2 : System.Web.UI.Page
                     mTBox2.Text = neaktivna.ToString();
                 }
 
-                if (vikend != 0 && vikend != 6 && rs_tmp == -1)
+                else if ((vikend != 0 && vikend != 6) && rs_tmp == -1)
                 {
                     Control tbox1 = ctpl.FindControl("textBox_" + row.ToString() + "_7");
                     TextBox mTBox1 = (TextBox)tbox1;

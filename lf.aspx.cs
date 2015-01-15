@@ -19,9 +19,12 @@ public partial class lf : System.Web.UI.Page
 
     protected void downloadFile(int id)
     {
-        SortedList lfData = x2Mysql.getLfData(id);
+        SortedList lfData = x2Mysql.getLfData2(id);
+
+        byte[] lc = x2Mysql.lfStoredData(id, Convert.ToInt32(lfData["file-size"]));
+
        // byte[] lfContent = Convert.FromBase64String(x2Mysql.getLfContent(id).ToString());
-        byte[] lfContent = Convert.FromBase64String(lfData["file-content"].ToString());
+        //byte[] lfContent = Convert.FromBase64String(lfData["file-content"].ToString());
         
 
         Response.Clear();
@@ -34,7 +37,7 @@ public partial class lf : System.Web.UI.Page
         Response.AddHeader("content-length", lfData["file-size"].ToString());
         //Stream dat = data["file-content"];
         //byte[] mData = Encoding.Default.GetBytes(data["file-content"].ToString(),0,Convert.ToInt32(data["file-size"]));
-        Response.BinaryWrite(lfContent);
+        Response.BinaryWrite(lc);
        // Response.ContentEncoding = System.Text.Encoding.GetEncoding("Windows-1250");
        // Response.Charset = "Windows-1250";
         //StringWriter stringWriter = new StringWriter(); //System.IO namespace should be used

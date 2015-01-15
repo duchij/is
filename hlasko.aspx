@@ -49,7 +49,7 @@ Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="
                    
                    
                     <h1>Hlásenie služby:</h1>
-    <asp:PlaceHolder ID="epc_pl" runat="server"  Visible="true">
+    <asp:PlaceHolder ID="epc_pl" runat="server" >
         <div class="info box">
       <asp:Label ID="epc_titel" runat="server" Text="<%$ Resources:Resource,epc_titel %>" CssClass="green"></asp:Label>
     <div class="row">
@@ -71,13 +71,15 @@ Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="
             </div>
         <div class="one fourth">
     Typ:<asp:DropDownList ID="worktype_cb" runat="server">
-            <asp:ListItem Value="prijem">Príjem</asp:ListItem>
-         <asp:ListItem Value="operac">Operácia/Asistencia/Výkon</asp:ListItem>
-         <asp:ListItem Value="sledov">Sledovanie</asp:ListItem>
-         <asp:ListItem Value="konzil">Konzílium</asp:ListItem>
-        <asp:ListItem Value="vizita">Vizita</asp:ListItem>
-        <asp:ListItem Value="dekurz">Dekurzovanie</asp:ListItem>
-        </asp:DropDownList>
+               
+                <asp:ListItem Value="prijem">Príjem</asp:ListItem>
+                <asp:ListItem Value="operac">Operácia/Asistencia/Výkon</asp:ListItem>
+                <asp:ListItem Value="sledov">Sledovanie</asp:ListItem>
+                <asp:ListItem Value="konzil">Konzílium</asp:ListItem>
+                <asp:ListItem Value="vizita">Vizita</asp:ListItem>
+                <asp:ListItem Value="dekurz">Dekurzovanie</asp:ListItem>
+                <asp:ListItem Value="urgent">Urgent</asp:ListItem>
+                </asp:DropDownList>
             </div> 
     </div>
     <div class="row">
@@ -97,8 +99,8 @@ Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="
        <asp:PlaceHolder ID="fileupload_pl" runat="server" >
            <div class="box blue align-left">
                Externý súbor....<br />
-           <asp:FileUpload ID="loadFile_fup" runat="server" Width="500" Height="36"  />
-               <asp:Button ID="upLoadFile_btn" runat="server" Text="Nahraj...Max.200MB" OnClick="uploadData_fnc" />
+           <asp:FileUpload ID="loadFile_fup" runat="server"  Width="400" Height="36" size="40px" CssClass="duch" />
+               <asp:Button ID="upLoadFile_btn" runat="server" Text="Nahraj...Max.200MB" OnClick="uploadData_fnc" /> <br /><br />
                <asp:Label ID="upLoadedFile_lbl" runat="server" Text="" CssClass="red"></asp:Label>
                <asp:HiddenField ID="lfId_hidden" runat="server" Value="0" />
             </div>

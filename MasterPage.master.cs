@@ -35,7 +35,23 @@ public partial class MasterPage : System.Web.UI.MasterPage
         
         this.current_user_lbl.Text = Session["fullname"].ToString();
         this.rights = Session["rights"].ToString();
-        this.showInfoMessage();
+
+        if (Session["newsToShow"] != null && !IsPostBack)
+        {
+            if (Session["newsToShow"].ToString().Length != 0)
+            {
+                this.showInfoMessage();
+            }
+            else
+            {
+                Session["newsToShow"] = "";
+            }
+        }
+        else
+        {            
+            this.info_plh.Visible = false;
+        }
+
         if (this.rights.IndexOf("sestra") != -1)
         {
             this.hlas_lekar_plh.Visible = false;
@@ -76,8 +92,7 @@ public partial class MasterPage : System.Web.UI.MasterPage
 
     protected void showInfoMessage()
     {
-        if (Session["newsToShow"] != null)
-        {
+        
             this.info_plh.Visible = true;
 
             StringBuilder sb = new StringBuilder();
@@ -102,8 +117,9 @@ public partial class MasterPage : System.Web.UI.MasterPage
                 this.info_plh.Visible = false;
             }
 
-            Session.Remove("newsToShow");
-        }
+            
+       
+        Session["newsToShow"]="";
     }
 
 

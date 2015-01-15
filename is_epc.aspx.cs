@@ -213,6 +213,12 @@ public partial class is_epc : System.Web.UI.Page
         celldata5.BorderStyle = BorderStyle.Solid;
         celldata5.BorderColor = System.Drawing.Color.Black;
         celldata5.Text = x2.DecryptString(table[row]["work_text"].ToString(), Session["passphrase"].ToString());
+
+        if (table[row]["lf_id"].ToString() != "NULL")
+        {
+            celldata5.Text += "<br><br><a href='lf.aspx?id=" + table[row]["lf_id"].ToString() + "' target='_blank' style='font-size:large;'>Priloha....</a>";
+        }
+
         celldata5.Font.Size = FontUnit.Point(8);
         riadok2.Controls.Add(celldata5);
     }
@@ -268,6 +274,10 @@ public partial class is_epc : System.Web.UI.Page
         celldata5.BorderStyle = BorderStyle.Solid;
         celldata5.BorderColor = System.Drawing.Color.Black;
         celldata5.Text = x2.DecryptString(table[row]["work_text"].ToString(), Session["passphrase"].ToString());
+        if (table[row]["lf_id"].ToString() != "NULL" )
+        {
+            celldata5.Text += "<br><br><a href='lf.aspx?id=" + table[row]["lf_id"].ToString() + "' target='_blank' style='font-size:large;'>Priloha....</a>";
+        }
         celldata5.Font.Size = FontUnit.Point(8);
         riadok.Controls.Add(celldata5);
 

@@ -1,0 +1,5 @@
+﻿  CREATE TABLE `is_data_2` ( `id` bigint(20) NOT NULL AUTO_INCREMENT, `file-name` text COLLATE utf8_slovak_ci NOT NULL, `file-size` bigint(20) NOT NULL, `file-type` varchar(10) CHARACTER SET ascii NOT NULL, `file-content` longblob NOT NULL, PRIMARY KEY (`id`) ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COLLATE=utf8_slovak_ci
+
+  ALTER TABLE `is_hlasko_epc`
+CHANGE `work_type` `work_type` enum('prijem','operac','sledov','konzil','vizita','dekurz','urgent') COLLATE 'ascii_general_ci' NOT NULL AFTER `work_time`,
+COMMENT='';
