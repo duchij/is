@@ -1,0 +1,3 @@
+﻿ALTER TABLE `is_hlasko_epc`
+ADD INDEX `lf_id` (`lf_id`);
+

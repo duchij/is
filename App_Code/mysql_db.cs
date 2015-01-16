@@ -504,7 +504,17 @@ public class mysql_db
                         }
                         else
                         {
-                            result.Add(reader.GetName(i).ToString(), reader.GetValue(i).ToString());
+                            string tf = reader.GetFieldType(i).ToString();
+                            if (tf == "System.Byte[]")
+                            {
+                                byte[] dl = (byte[])reader.GetValue(i);
+                                string rr = System.Text.Encoding.UTF8.GetString(dl);
+                                result.Add(reader.GetName(i).ToString(), rr);
+                            }
+                            else
+                            {
+                                result.Add(reader.GetName(i).ToString(), reader.GetValue(i));
+                            }
                         }
                     }
 
@@ -554,9 +564,15 @@ public class mysql_db
                     }
                     else
                     {
-                        if (reader.GetFieldType(i).FullName.ToString().IndexOf("text") != -1)
+                        string tf = reader.GetFieldType(i).ToString();
+
+                        if (tf == "System.Byte[]")
                         {
-                            tmp.Add(reader.GetName(i).ToString(), reader.GetString(i).ToString());
+                            byte[] dl =(byte[])reader.GetValue(i);
+                            string rr = System.Text.Encoding.UTF8.GetString(dl);
+
+                           // tmp.Add(reader.GetName(i).ToString(), reader.GetString(i).ToString());
+                            tmp.Add(reader.GetName(i).ToString(), rr);
                         }
                         else
                         {
@@ -606,9 +622,15 @@ public class mysql_db
                     }
                     else
                     {
-                        if (reader.GetFieldType(i).FullName.ToString().IndexOf("text") != -1)
+                        string tf = reader.GetFieldType(i).ToString();
+
+                        if (tf == "System.Byte[]")
                         {
-                            tmp.Add(reader.GetName(i).ToString(), reader.GetString(i).ToString());
+                            byte[] dl = (byte[])reader.GetValue(i);
+                            string rr = System.Text.Encoding.UTF8.GetString(dl);
+
+                            // tmp.Add(reader.GetName(i).ToString(), reader.GetString(i).ToString());
+                            tmp.Add(reader.GetName(i).ToString(), rr);
                         }
                         else
                         {

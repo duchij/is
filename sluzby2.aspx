@@ -44,7 +44,8 @@
                 </asp:Table>
                 <div class="row">
                     <div class="one whole padded">
-                    <asp:CheckBox ID="publish_cb" runat="server" Text="Uverejnit" OnCheckedChanged="changePublishStatus" AutoPostBack="true" CssClass="mojInline"  />
+                    <asp:CheckBox ID="publish_cb" runat="server" OnCheckedChanged="changePublishStatus" AutoPostBack="true" CssClass="mojInline"  />
+                        <asp:Label ID="publish_lbl" runat="server" Text="Uvernejniť" CssClass="mojInline"></asp:Label>
                         </div>
                     <asp:Button ID="toWord_btn" runat="server" Text="do Wordu" OnClick="publishSluzby"/>
                 
