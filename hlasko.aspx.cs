@@ -425,19 +425,18 @@ public partial class hlasko : System.Web.UI.Page
             riadok.Controls.Add(osirixCell);
 
             TableCell fileCell = new TableCell();
-            Label url_lbl = new Label();
+            
             if (table[i]["lf_id"].ToString() != "NULL")
             {
+                Label url_lbl = new Label();
                 url_lbl.Text = "<a href='lf.aspx?id=" + table[i]["lf_id"].ToString() + "' target='_blank'>Subor...</a>";
+                fileCell.Controls.Add(url_lbl);
+                Button delLf_btn = new Button();
+                delLf_btn.ID = "delLF_" + table[i]["lf_id"].ToString();
+                delLf_btn.Text = Resources.Resource.delete;
+                delLf_btn.Click += new EventHandler(deleteLFByID);
+                fileCell.Controls.Add(delLf_btn);
             }
-            else
-            {
-                url_lbl.Text = "";
-            }
-
-
-            fileCell.Controls.Add(url_lbl);
-
             riadok.Controls.Add(fileCell);
 
             this.activity_tbl.Controls.Add(riadok);
@@ -463,6 +462,11 @@ public partial class hlasko : System.Web.UI.Page
         }
 
        // this.clearEpcData();
+    }
+
+    protected void deleteLFByID(object sender, EventArgs e)
+    {
+
     }
 
     protected void clickEPC_fnc(object sender, EventArgs e)
