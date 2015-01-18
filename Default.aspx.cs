@@ -57,7 +57,7 @@ public partial class _Default : System.Web.UI.Page
         if (my_x2.isAlfaNum(Login1.UserName))
         {
 
-            data = db_obj.getUserPasswd(Login1.UserName);
+            data = db_obj.getUserPasswd(this.Login1.UserName);
 
             if (data.Count != 0 && data["active"].ToString() == "1")
             {
@@ -70,10 +70,14 @@ public partial class _Default : System.Web.UI.Page
 
                     Session.Add("tuisegumdrum", "activado");
                     Session.Add("user_id", data["id"].ToString());
-                    Session.Add("rights", data["group"].ToString());
+                    Session.Add("rights", data["prava"].ToString());
+                    Session.Add("workgroup", data["work_group"].ToString());
                     Session.Add("fullname", data["full_name"].ToString());
                     Session.Add("login", data["name"].ToString());
                     Session.Add("email", data["email"].ToString());
+
+                    Session.Add("klinika", data["clinics_idf"].ToString());
+                    Session.Add("oddelenie", data["deps_idf"].ToString()); 
 
                     Session.Add("pracdoba", data["pracdoba"].ToString());
                     Session.Add("tyzdoba", data["tyzdoba"].ToString());
@@ -84,31 +88,24 @@ public partial class _Default : System.Web.UI.Page
 
 
 
-                    Response.Cookies["tuisegumdrum"].Value = "activado";
+                   /* Response.Cookies["tuisegumdrum"].Value = "activado";
                     Response.Cookies["user_id"].Value = data["id"].ToString();
                     Response.Cookies["rights"].Value = data["group"].ToString();
                     Response.Cookies["fullname"].Value = data["full_name"].ToString();
                     Response.Cookies["login"].Value = data["name"].ToString();
-                    Response.Cookies["email"].Value = data["email"].ToString();
+                    Response.Cookies["email"].Value = data["email"].ToString(); */
 
                     Response.Redirect("passch.aspx");
                 }
 
                 if (l_pass == g_pass)
                 {
-
-
-
                     e.Authenticated = true;
-
                     this.deleteFilesPerDays();
-
-                    
-
-
                     Session.Add("tuisegumdrum", "activado");
                     Session.Add("user_id", data["id"].ToString());
-                    Session.Add("rights", data["group"].ToString());
+                    Session.Add("rights", data["prava"].ToString());
+                    Session.Add("workgroup", data["work_group"].ToString());
                     Session.Add("fullname", data["full_name"].ToString());
                     Session.Add("login", data["name"].ToString());
                     Session.Add("email", data["email"].ToString());
@@ -116,6 +113,9 @@ public partial class _Default : System.Web.UI.Page
                     Session.Add("pracdoba", data["pracdoba"].ToString());
                     Session.Add("tyzdoba", data["tyzdoba"].ToString());
                     Session.Add("osobcisl", data["osobcisl"].ToString());
+
+                    Session.Add("klinika", data["clinics_idf"].ToString());
+                    Session.Add("oddelenie", data["deps_idf"].ToString());
 
                     Session.Add("titul_pred", data["titul_pred"].ToString());
                     Session.Add("titul_za", data["titul_za"].ToString());
@@ -126,12 +126,12 @@ public partial class _Default : System.Web.UI.Page
                     Session.Add("passphrase", passPhrase["data"].ToString());
 
 
-                    Response.Cookies["tuisegumdrum"].Value = " activado";
+                    /*Response.Cookies["tuisegumdrum"].Value = " activado";
                     Response.Cookies["user_id"].Value = data["id"].ToString();
                     Response.Cookies["rights"].Value = data["group"].ToString();
                     Response.Cookies["fullname"].Value = data["full_name"].ToString();
                     Response.Cookies["login"].Value = data["name"].ToString();
-                    Response.Cookies["email"].Value = data["email"].ToString();
+                    Response.Cookies["email"].Value = data["email"].ToString(); */
 
                     List<string> news = db_obj.getLastNews();
 
@@ -144,24 +144,20 @@ public partial class _Default : System.Web.UI.Page
                     if (data["name"].ToString() == "vtablet")
                     {
                         Response.Redirect("tabletview.aspx");
-
                     }
 
-                    string group = data["group"].ToString();
+                
 
-                    if (group.IndexOf("sestra") == -1 && group.IndexOf("medix") == -1)
+                    if (Session["workgroup"].ToString() == "doctor")
                     {
-                        //ideme zistovat poziadavky
+                       SortedList poz_data = db_obj.getNextPozDatum(DateTime.Today);
 
-                        SortedList poz_data = db_obj.getNextPozDatum(DateTime.Today);
-
-                        if (this.maVyplnPoziadavky(Response.Cookies["user_id"].Value.ToString()) == true)
+                        if (this.maVyplnPoziadavky(Session["user_id"].ToString()) == true)
                         {
                                 Response.Redirect(@"hlasko.aspx");
                         }
                         else
                         {
-
                             if (DateTime.Today < Convert.ToDateTime(poz_data["datum"].ToString()))
                             {
                                 Response.Redirect(@"poziadavky.aspx?a=1");
@@ -171,8 +167,6 @@ public partial class _Default : System.Web.UI.Page
                                 Response.Redirect(@"hlasko.aspx");
                             }
                         }
-
-
                     }
                     /*else if (group.IndexOf("medix") != -1)
                     {
@@ -228,8 +222,6 @@ public partial class _Default : System.Web.UI.Page
         {
             result = true;
         }
-
-
         return result;
 
     }

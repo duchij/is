@@ -431,11 +431,12 @@ public partial class hlasko : System.Web.UI.Page
                 Label url_lbl = new Label();
                 url_lbl.Text = "<a href='lf.aspx?id=" + table[i]["lf_id"].ToString() + "' target='_blank'>Subor...</a>";
                 fileCell.Controls.Add(url_lbl);
-                //Button delLf_btn = new Button();
-                //delLf_btn.ID = "delLF_" + table[i]["lf_id"].ToString();
-                //delLf_btn.Text = Resources.Resource.delete;
-                //delLf_btn.Click += new EventHandler(deleteLFByID);
-                //fileCell.Controls.Add(delLf_btn);
+                Button delLf_btn = new Button();
+                delLf_btn.ID = "delLF_" + table[i]["lf_id"].ToString();
+                delLf_btn.Text = Resources.Resource.delete + " subor";
+                delLf_btn.CssClass = "button red";
+                delLf_btn.Click += new EventHandler(deleteLFByID);
+                fileCell.Controls.Add(delLf_btn);
             }
             riadok.Controls.Add(fileCell);
 
@@ -471,8 +472,19 @@ public partial class hlasko : System.Web.UI.Page
         string id = delBtn.ID.ToString();
         string[] tmp = id.Split('_');
 
-       // StringBuilder sb = new StringBuilder();
-       
+       StringBuilder sb = new StringBuilder();
+       sb.AppendFormat("DELETE FROM [is_data_2] WHERE [id]='{0}'", tmp[1]);
+
+       SortedList res = x2MySQL.execute(sb.ToString());
+
+       if (!Convert.ToBoolean(res["status"]))
+       {
+           this.msg_lbl.Text = res["msg"].ToString();
+       }
+       else
+       {
+           this.loadEPCData();
+       }
 
     }
 
@@ -537,10 +549,14 @@ public partial class hlasko : System.Web.UI.Page
         }
         if (objId[0] == "delBtn")
         {
+            //this.msg_lbl.Text = objId[1].ToString();
             sb.Length = 0;
             sb.AppendFormat("DELETE FROM [is_hlasko_epc] WHERE [id] = '{0}'", objId[1]);
-            x2MySQL.execute(sb.ToString());
-
+            SortedList res =  x2MySQL.execute(sb.ToString());
+            if (!Convert.ToBoolean(res["status"]))
+            {
+                this.msg_lbl.Text = res["msg"].ToString() + "<br><br>"+res["query"].ToString();
+            }
             this.loadEPCData();
             //this._generateHlasko();
         }

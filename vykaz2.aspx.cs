@@ -1139,15 +1139,9 @@ public partial class vykaz2 : System.Web.UI.Page
         }
         else
         {
-            this.msg_lbl.Text = ",,,,,,=" + res["message"].ToString();
+            this.msg_lbl.Text = ",,,,,,=" + res["msg"].ToString();
         }
 
-
-        //
-
-
-
-        //my_x2.createVykazPdf(path, imagepath);
 
     }
 

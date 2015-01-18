@@ -1,4 +1,4 @@
-﻿using System;
+﻿ using System;
 using System.Collections;
 using System.Configuration;
 using System.Data;
@@ -19,8 +19,8 @@ public partial class sestrhlas : System.Web.UI.Page
     mysql_db x2MySql = new mysql_db();
     x2_var x2 = new x2_var();
 
-    string userRights = "";
-
+    public string deps = "";
+    public string rights = ""; 
 
 
 
@@ -33,22 +33,23 @@ public partial class sestrhlas : System.Web.UI.Page
             Response.Redirect("error.html");
         }
 
-        userRights = Session["rights"].ToString();
+        this.deps = Session["oddelenie"].ToString();
+        this.rights = Session["rights"].ToString();
 
         if (IsPostBack == false)
         {
             Calendar1.SelectedDate = DateTime.Today;
 
-            if (userRights == "sestra")
+            if (deps == "MSV")
             {
                 oddType_cb.Items.Add(new ListItem("MSV", "msv"));
             }
-            if (userRights == "sestra_vd")
+            if (deps == "VD")
             {
                 oddType_cb.Items.Add(new ListItem("Velke deti", "vd"));
             }
 
-            if ((userRights == "admin") || (userRights == "poweruser"))
+            if ((this.rights == "admin") || (this.rights == "poweruser"))
             {
                 oddType_cb.Items.Add(new ListItem("MSV", "msv"));
                 oddType_cb.Items.Add(new ListItem("Velke deti", "vd"));

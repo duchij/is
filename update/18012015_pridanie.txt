@@ -1,0 +1,102 @@
+﻿CREATE TABLE `is_clinics` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `idf` varchar(20) COLLATE 'ascii_general_ci' NOT NULL,
+  `full_name` text COLLATE 'utf8_slovak_ci' NOT NULL,
+  `adrress` text COLLATE 'utf8_slovak_ci' NULL
+) COMMENT='' ENGINE='InnoDB' COLLATE 'utf8_slovak_ci';
+
+CREATE TABLE `is_deps` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `clinic_id` bigint unsigned NOT NULL,
+  `idf` varchar(20) COLLATE 'ascii_general_ci' NOT NULL,
+  `label` text COLLATE 'utf8_slovak_ci' NOT NULL
+) COMMENT='' ENGINE='InnoDB' COLLATE 'utf8_slovak_ci';
+
+ALTER TABLE `is_deps`
+ADD INDEX `clinic_id` (`clinic_id`),
+ADD INDEX `idf` (`idf`);
+
+
+ALTER TABLE `is_clinics`
+ADD INDEX `idf` (`idf`),
+ADD INDEX `id` (`id`);
+
+
+ALTER TABLE `is_users`
+ADD `klinika` bigint unsigned NULL AFTER `work_group`,
+ADD `oddelenie` bigint unsigned NULL AFTER `klinika`,
+COMMENT='';
+
+ALTER TABLE `is_users`
+ADD INDEX `klinika` (`klinika`),
+ADD INDEX `oddelenie` (`oddelenie`);
+
+ALTER TABLE `is_deps`
+ADD FOREIGN KEY (`clinic_id`) REFERENCES `is_clinics` (`id`)
+
+ALTER TABLE `is_users`
+ADD FOREIGN KEY (`klinika`) REFERENCES `is_clinics` (`id`)
+
+ALTER TABLE `is_users`
+ADD FOREIGN KEY (`oddelenie`) REFERENCES `is_deps` (`id`) 
+
+create or replace view kdch_nurse AS 
+select is_users.id,is_users.name3, deps.idf from is_users
+INNER JOIN is_deps as deps ON deps.id = is_users.oddelenie
+where is_users.work_group='nurse'
+and is_users.active=1
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `CREATE_NURSE_VIEW`()
+BEGIN
+
+create or replace view kdch_nurse AS 
+	select is_users.id,is_users.name3, deps.idf from is_users
+	INNER JOIN is_deps as deps ON deps.id = is_users.oddelenie
+	where is_users.work_group='nurse'
+	and is_users.active=1;
+
+end
+
+
+-- Adminer 4.1.0 MySQL dump
+
+SET NAMES utf8;
+SET time_zone = '+00:00';
+SET foreign_key_checks = 0;
+SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
+
+DROP TABLE IF EXISTS `is_clinics`;
+CREATE TABLE `is_clinics` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `idf` varchar(20) CHARACTER SET ascii NOT NULL,
+  `full_name` text COLLATE utf8_slovak_ci NOT NULL,
+  `adrress` text COLLATE utf8_slovak_ci,
+  PRIMARY KEY (`id`),
+  KEY `idf` (`idf`),
+  KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_slovak_ci;
+
+INSERT INTO `is_clinics` (`id`, `idf`, `full_name`, `adrress`) VALUES
+(3,	'KDCH',	'Klinika detskej chirurgie LF UK a DFNsP',	'Limbová 1, 83340 Bratislava');
+
+DROP TABLE IF EXISTS `is_deps`;
+CREATE TABLE `is_deps` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `clinic_id` bigint(20) unsigned NOT NULL,
+  `idf` varchar(20) CHARACTER SET ascii NOT NULL,
+  `label` text COLLATE utf8_slovak_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `clinic_id` (`clinic_id`),
+  KEY `idf` (`idf`),
+  CONSTRAINT `is_deps_ibfk_1` FOREIGN KEY (`clinic_id`) REFERENCES `is_clinics` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_slovak_ci;
+
+INSERT INTO `is_deps` (`id`, `clinic_id`, `idf`, `label`) VALUES
+(1,	3,	'VD',	'Veľké deti'),
+(2,	3,	'MSV',	'Oddelenie dievčat'),
+(3,	3,	'KOJ',	'Dojčenské oddelenie');
+
+-- 2015-01-18 20:31:56
+
+
+CREATE TABLE `is_sluzby_2_sestr` ( `item_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT, `datum` date NOT NULL, `typ` enum('D1','D2','RA','A1','S1','S2','N1','N2','A2') CHARACTER SET ascii NOT NULL, `user_id` bigint(20) NOT NULL DEFAULT '-1', `date_group` int(6) unsigned zerofill NOT NULL, `ordering` tinyint(2) NOT NULL, `deps` varchar(10) CHARACTER SET ascii NOT NULL, `comment` text COLLATE utf8_slovak_ci, `state` enum('active','draft') COLLATE utf8_slovak_ci NOT NULL DEFAULT 'draft', PRIMARY KEY (`item_id`), UNIQUE KEY `datum_typ` (`datum`,`typ`), KEY `user_id` (`user_id`), KEY `typ` (`typ`), KEY `date_group` (`date_group`), KEY `ordering` (`ordering`) ) ENGINE=InnoDB AUTO_INCREMENT=535 DEFAULT CHARSET=utf8 COLLATE=utf8_slovak_ci

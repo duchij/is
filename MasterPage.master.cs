@@ -17,6 +17,7 @@ public partial class MasterPage : System.Web.UI.MasterPage
     public my_db oldDb = new my_db();
     public mysql_db x2Mysql = new mysql_db();
     public string rights="";
+    public string wgroup = "";
    /* public string PageName
     {
        get
@@ -30,11 +31,9 @@ public partial class MasterPage : System.Web.UI.MasterPage
     }*/
     protected void Page_Load(object sender, EventArgs e)
     {
-
-           
-        
         this.current_user_lbl.Text = Session["fullname"].ToString();
         this.rights = Session["rights"].ToString();
+        this.wgroup = Session["workgroup"].ToString();
 
         if (Session["newsToShow"] != null && !IsPostBack)
         {
@@ -52,13 +51,13 @@ public partial class MasterPage : System.Web.UI.MasterPage
             this.info_plh.Visible = false;
         }
 
-        if (this.rights.IndexOf("sestra") != -1)
+        if (this.wgroup == "nurse")
         {
             this.hlas_lekar_plh.Visible = false;
             this.hlas_sestier_plh.Visible = true;
         }
 
-        if (this.rights.IndexOf("users") != -1)
+        if (this.wgroup =="doctor")
         {
             this.hlas_lekar_plh.Visible = true;
             this.hlas_sestier_plh.Visible = false;

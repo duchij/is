@@ -4,31 +4,32 @@ Dnes slúži:
     <asp:Label ID="msg_lbl" runat="server" Text=""></asp:Label>
     <div class="one fifth">
         <div class="box red">
-            <strong>OUP: </strong>
+            
+            <strong><asp:Label ID="head1_lbl" runat="server" Text="OUP"></asp:Label></strong>
             <asp:Label ID="oup_lbl" runat="server" Text="..." ></asp:Label>
             </div>
     </div>
     <div class="one fifth">
             <div class="box blue">
-                <strong>Odd A:</strong> 
+                <strong><asp:Label ID="head2_lbl" runat="server" Text="Odd A:"></asp:Label></strong> 
                 <asp:Label ID="odda_lbl" runat="server" Text="..." ></asp:Label>
             </div>
     </div>
     <div class="one fifth">
         <div class="box green">
-            <strong>Odd B: </strong>
+            <strong><asp:Label ID="head3_lbl" runat="server" Text="Odd B:"></asp:Label></strong>
             <asp:Label ID="oddb_lbl" runat="server" Text="..."></asp:Label>
             </div>
     </div>
     <div class="one fifth">
         <div class="box asphalt">
-        <strong>Op.pohot.: </strong>
+        <strong><asp:Label ID="head4_lbl" runat="server" Text="Op.pohot:"></asp:Label></strong>
         <asp:Label ID="op_lbl" runat="server" Text="..."></asp:Label>
         </div>
     </div>
     <div class="one fifth">
      <div class="box purple">
-        <strong>Prijm.amb.:</strong> 
+        <strong><asp:Label ID="head5_lbl" runat="server" Text="Prijm.amb."></asp:Label></strong> 
         <asp:Label ID="trp_lbl" runat="server" Text="..." ></asp:Label>
         </div>
     </div>

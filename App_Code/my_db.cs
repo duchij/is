@@ -220,11 +220,18 @@ public class my_db
     public SortedList getUserPasswd(string name)
     {
         SortedList result = new SortedList();
+
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine("SELECT [users].*, [clinics].[idf] as [clinics_idf], [deps].[idf] AS [deps_idf]");  
+        sb.AppendLine("FROM [is_users] AS [users]");
+        sb.AppendLine("LEFT JOIN [is_clinics] AS [clinics] ON [clinics].[id] = [users].[klinika]");
+        sb.AppendLine("LEFT JOIN [is_deps] AS [deps] ON [deps].[id] = [users].[oddelenie]");
+        sb.AppendFormat("WHERE [name]='{0}'", name);
         
-        string query = "SELECT * FROM is_users WHERE name='"+name+"'";
+        //string query = "SELECT * FROM `is_users` WHERE `name`='"+name+"'";
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(query, my_con);
+        OdbcCommand my_com = new OdbcCommand(this.parseQuery(sb.ToString()), my_con);
         
 
         OdbcDataReader reader = my_com.ExecuteReader();
@@ -235,7 +242,14 @@ public class my_db
             {
                 for (int i = 0; i < reader.FieldCount; i++)
                 {
-                    result.Add(reader.GetName(i).ToString(), reader.GetValue(i).ToString());
+                    if (reader.GetValue(i) == DBNull.Value)
+                    {
+                        result.Add(reader.GetName(i).ToString(), "NULL");
+                    }
+                    else
+                    {
+                        result.Add(reader.GetName(i).ToString(), reader.GetValue(i));
+                    }
                 }
             }
         }
@@ -1685,7 +1699,7 @@ public class my_db
         if (tmp["status"].ToString() == "error")
         {
             result.Add("status", "error");
-            result.Add("message", tmp["message"].ToString());
+            result.Add("msg", tmp["message"].ToString());
         }
 
 

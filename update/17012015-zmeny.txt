@@ -1,0 +1,56 @@
+﻿  ALTER TABLE `is_data_2`
+ADD INDEX `id` (`id`);
+
+trigger after delete is_hlasko_epc	, is_hlasko_epc_ad
+
+begin
+
+set @lfId = OLD.lf_id;
+if @lfId is not NULL THEN
+DELETE FROM is_data_2 WHERE id=@lfId;
+end if;
+
+end
+		///////////////////////
+trigger after delete is_data_2, is_data_2_ad
+
+begin
+
+set @eid = OLD.id;
+set @epc = (SELECT COUNT(*) FROM is_hlasko_epc WHERE lf_id = @eid);
+
+if @epc > 0 THEN
+UPDATE is_hlasko_epc SET lf_id = null where lf_id = @eid;
+end if;
+end
+
+pridanie cudzieho kluca cisteho
+ALTER TABLE `is_hlasko_epc`
+ADD FOREIGN KEY (`lf_id`) REFERENCES `is_data_2` (`id`)
+
+vytvor rights je to varchar 100	v is_users
+
+update is_users set rights='doctor' where `group`='users'
+
+update is_users set rights='nurse' where `group`='sestra'
+
+update is_users set rights='nurse' where `group`='sestra_vd'
+
+update is_users set `group`='users' WHERE `group`='sestra'
+
+update is_users set `group`='users' WHERE `group`='sestra_vd'
+
+ALTER TABLE `is_users`
+CHANGE `rights` `work_group` enum('doctor','nurse','op','other') COLLATE 'ascii_general_ci' NULL AFTER `group`,
+COMMENT='';
+
+zmazat usera medix
+
+ALTER TABLE `is_users`
+CHANGE `group` `prava` enum('admin','poweruser','users') COLLATE 'ascii_general_ci' NULL AFTER `passwd`,
+COMMENT='';
+
+
+
+
+

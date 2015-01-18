@@ -80,7 +80,7 @@
 					<!--<li><button>Nav Item 1</button></li>!-->
 					<li><button>Organizacne veci</button>
 						<ul>
-							<li><a role="medium button" href="sluzby2.aspx" target="_self">Sluzby</a></li>
+							<li><a role="medium button" href="sluzby2.aspx" target="_self">Sluzby lekarov</a></li>
 							<!--<li><button>Sub Menu 1</button>
 								<ul>
 									<li><button>Sub Menu Item 1</button></li>

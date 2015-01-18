@@ -15,45 +15,37 @@ public partial class left_menu : System.Web.UI.UserControl
     {
        
 
-        string rights = Request.Cookies["rights"].Value.ToString();
+        string rights = Session["rights"].ToString();
+        string wgroup = Session["workgroup"].ToString();
 
         if (rights == "admin")
         {
+                
             this.dev_pl.Visible = true;
-        }
-        else
-        {
-            this.dev_pl.Visible = false;
+            this.operacky.Visible = true;
+            this.doctors.Visible = true;
+            this.admin.Visible = true;
+            this.sestra.Visible = true;
         }
 
-        if (rights.IndexOf("admin") != -1 || rights.IndexOf("users_op") != -1)
+        if (wgroup == "op")
         {
             this.operacky.Visible = true;
         }
-        else
-        {
-            this.operacky.Visible = false;
-        }
+       
 
-        if (rights.IndexOf("users") != -1)
-
+        if (wgroup == "doctor")
         {
-            users.Visible = true;
-            admin.Visible = false;
-            sestra.Visible = false;
+            this.doctors.Visible = true;
+            this.admin.Visible = false;
+            this.sestra.Visible = false;
         }
-        if (rights == "admin")
+        
+        if (wgroup == "nurse") 
         {
-            users.Visible = true;
-            admin.Visible = true;
-            sestra.Visible = true;
-            
-        }
-        if (rights.IndexOf("sestra") != -1)
-        {
-            users.Visible = false;
-            admin.Visible = false;
-            sestra.Visible = true;
+            this.doctors.Visible = false;
+            this.admin.Visible = false;
+            this.sestra.Visible = true;
         }
 
         
