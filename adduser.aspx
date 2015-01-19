@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="adduser.aspx.cs" Inherits="adduser" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="adduser.aspx.cs" Inherits="adduser" MaintainScrollPositionOnPostback="true" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
 </asp:Content>
@@ -40,7 +40,7 @@
                     
                     </asp:GridView>
                     
-                    <table>
+                    <table class="responsive" data-max="15">
                      <tr>
                         <td class="blue">Heslo:</td>
                         <td><asp:TextBox ID="passwd_txt" runat="server" Width="300px"></asp:TextBox></td>
@@ -51,6 +51,62 @@
                         <td><asp:TextBox ID="active_txt" runat="server" Width="30px"></asp:TextBox></td>
                     
                     </tr>
+
+                        <tr>
+                        <td class="blue">
+                            <asp:Label ID="rights_lbl" runat="server" Text="Práva"></asp:Label></td>
+                        <td>
+                            <asp:DropDownList ID="rights_cb" runat="server">
+                                <asp:ListItem Value="poweruser">PowerUser</asp:ListItem>
+                                <asp:ListItem Value="admin">Admin</asp:ListItem>
+                                <asp:ListItem Value="users">Users</asp:ListItem>
+                                <%--<asp:ListItem Value="sestra">Sestra</asp:ListItem>
+                                <asp:ListItem Value="sestra_vd">Sestra_vd</asp:ListItem>
+                                <asp:ListItem Value="medix">medix</asp:ListItem>--%>
+                            </asp:DropDownList>
+                        </td>
+                    
+                    </tr>
+
+                        <tr>
+                        <td class="blue">
+                            <asp:Label ID="workgroup_lbl" runat="server" Text="Pracovné zaradenie:"></asp:Label></td>
+                        <td>
+                            <asp:DropDownList ID="DropDownList1" runat="server">
+                                <asp:ListItem Value="doctor">Lekár</asp:ListItem>
+                                <asp:ListItem Value="nurse">Sestra</asp:ListItem>
+                                <asp:ListItem Value="op">Operačky</asp:ListItem>
+                                 <asp:ListItem Value="other">Ostatné</asp:ListItem>
+                                <%--<asp:ListItem Value="sestra">Sestra</asp:ListItem>
+                                <asp:ListItem Value="sestra_vd">Sestra_vd</asp:ListItem>
+                                <asp:ListItem Value="medix">medix</asp:ListItem>--%>
+                            </asp:DropDownList>
+                        </td>
+                    
+                        </tr>
+
+                        <tr>
+                        <td class="blue">
+                            <asp:Label ID="clinics_lbl" runat="server" Text="Kliniky"></asp:Label></td>
+                        <td>
+                            <asp:DropDownList ID="clinics_dl" runat="server" OnSelectedIndexChanged="loadDeps" AutoPostBack="true">
+                                
+                            </asp:DropDownList>
+                        </td>
+                    
+                        </tr>
+
+                        <tr>
+                        <td class="blue">
+                            <asp:Label ID="oddelenie_lbl" runat="server" Text="Oddelenie"></asp:Label></td>
+                        <td>
+                            <asp:DropDownList ID="oddelenie_dl" runat="server">
+                                
+                            </asp:DropDownList>
+                        </td>
+                    
+                        </tr>
+
                     
                     </table>
                    </div>
@@ -108,37 +164,7 @@
                     
                     
                     
-                    <tr>
-                        <td>
-                            <asp:Label ID="rights_lbl" runat="server" Text="Práva"></asp:Label></td>
-                        <td>
-                            <asp:DropDownList ID="rights_cb" runat="server">
-                                <asp:ListItem Value="poweruser">PowerUser</asp:ListItem>
-                                <asp:ListItem Value="admin">Admin</asp:ListItem>
-                                <asp:ListItem Value="users">Users</asp:ListItem>
-                                <%--<asp:ListItem Value="sestra">Sestra</asp:ListItem>
-                                <asp:ListItem Value="sestra_vd">Sestra_vd</asp:ListItem>
-                                <asp:ListItem Value="medix">medix</asp:ListItem>--%>
-                            </asp:DropDownList>
-                        </td>
-                    
-                    </tr>
-
-                        <tr>
-                        <td>
-                            <asp:Label ID="workgroup_lbl" runat="server" Text="Práva"></asp:Label></td>
-                        <td>
-                            <asp:DropDownList ID="DropDownList1" runat="server">
-                                <asp:ListItem Value="poweruser">PowerUser</asp:ListItem>
-                                <asp:ListItem Value="admin">Admin</asp:ListItem>
-                                <asp:ListItem Value="users">Users</asp:ListItem>
-                                <%--<asp:ListItem Value="sestra">Sestra</asp:ListItem>
-                                <asp:ListItem Value="sestra_vd">Sestra_vd</asp:ListItem>
-                                <asp:ListItem Value="medix">medix</asp:ListItem>--%>
-                            </asp:DropDownList>
-                        </td>
-                    
-                    </tr>
+                     
                     
                     
                     

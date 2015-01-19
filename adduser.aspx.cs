@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Web;
@@ -30,6 +31,10 @@ public partial class adduser : System.Web.UI.Page
         {
             Response.Redirect("error.html");
         }
+
+        this.loadClinics();
+
+        
 
         this.msg_lbl.Text = "";
         //string rights = Request.Cookies["rights"].Value.ToString();
@@ -124,6 +129,52 @@ public partial class adduser : System.Web.UI.Page
 
     }
 
+    protected void loadClinics()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine("SELECT [id],[full_name] FROM [is_clinics] ORDER BY [idf]");
+
+        Dictionary<int, Hashtable> table = x2MySql.getTable(sb.ToString());
+
+        int tableLn = table.Count;
+        ListItem[] newItem = new ListItem[tableLn+1];
+        newItem[0] = new ListItem("", "0");
+        for (int i = 0; i < tableLn; i++)
+        {
+            newItem[i+1] = new ListItem(table[i]["full_name"].ToString(), table[i]["id"].ToString());
+        }
+        this.clinics_dl.Items.AddRange(newItem);
+
+       // this.clinics_dl.SelectedIndexChanged += new EventArgs(loadDeps);
+
+
+    }
+
+    protected void loadDeps(object sender, EventArgs e)
+    {
+        this.__loadDeps(); 
+
+    }
+
+    protected void __loadDeps()
+    {
+        int id = Convert.ToInt32(this.clinics_dl.SelectedValue);
+
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("SELECT [id],[label] FROM [is_deps] WHERE [clinic_id]='{0}'", id);
+
+        Dictionary<int, Hashtable> table = x2MySql.getTable(sb.ToString());
+
+        int tableLn = table.Count;
+        ListItem[] newItem = new ListItem[tableLn + 1];
+        newItem[0] = new ListItem("", "0");
+        for (int i = 0; i < tableLn; i++)
+        {
+            newItem[i + 1] = new ListItem(table[i]["label"].ToString(), table[i]["id"].ToString());
+        }
+        this.oddelenie_dl.Items.AddRange(newItem);
+    }
+
     protected void loadData()
     {
         this.users_gv.DataSource = x_db.getAllUsersList();
@@ -150,13 +201,31 @@ public partial class adduser : System.Web.UI.Page
             data.Add("email", email);
             data.Add("passwd", passwd);
             data.Add("active", this.active_txt.Text);
-            data.Add("group", rights_cb.SelectedValue.ToString());
+            data.Add("prava", rights_cb.SelectedValue.ToString());
             data.Add("pracdoba", this.pracdoba_txt.Text.ToString());
             data.Add("tyzdoba", this.tyzdoba_txt.Text.ToString());
             data.Add("osobcisl", this.osobcisl_txt.Text.ToString());
             data.Add("titul_pred", this.titul_pred.Text.ToString());
             data.Add("titul_za", this.titul_za.Text.ToString());
             data.Add("zaradenie", this.zaradenie_txt.Text.ToString());
+
+            if (this.clinics_dl.SelectedValue.ToString() == "0")
+            {
+                data.Add("klinika", null);
+            }
+            else
+            {
+                data.Add("klinika", this.clinics_dl.SelectedValue);
+            }
+
+            if (this.oddelenie_dl.SelectedValue.ToString() == "0")
+            {
+                data.Add("oddelenie", null);
+            }
+            else
+            {
+                data.Add("oddelenie", this.oddelenie_dl.SelectedValue);
+            }
 
             SortedList result = x2MySql.mysql_update("is_users", data, id.ToString());
 
@@ -198,7 +267,7 @@ public partial class adduser : System.Web.UI.Page
 
                     data.Add("full_name", meno);
                     data.Add("name", login);
-                    data.Add("group", rights_cb.SelectedValue.ToString());
+                    data.Add("prava", rights_cb.SelectedValue.ToString());
                     data.Add("active", this.active_txt.Text);
 
                     data.Add("pracdoba", this.pracdoba_txt.Text.ToString());
@@ -209,6 +278,26 @@ public partial class adduser : System.Web.UI.Page
                     data.Add("titul_za", this.titul_za.Text.ToString());
 
                     data.Add("zaradenie", this.zaradenie_txt.Text.ToString());
+
+
+                    if (this.clinics_dl.SelectedValue.ToString() == "0")
+                    {
+                        data.Add("klinika", null);
+                    }
+                    else
+                    {
+                        data.Add("klinika", this.clinics_dl.SelectedValue);
+                    }
+
+                    if (this.oddelenie_dl.SelectedValue.ToString() == "0")
+                    {
+                        data.Add("oddelenie", null);
+                    }
+                    else
+                    {
+                        data.Add("oddelenie", this.oddelenie_dl.SelectedValue);
+                    }
+
                     if (email.Length == 0)
                     {
                         email = "x";
@@ -265,6 +354,8 @@ public partial class adduser : System.Web.UI.Page
         data.Add("titul_pred", this.titul_pred.Text.ToString().Trim());
         data.Add("titul_za", this.titul_za.Text.ToString().Trim());
         data.Add("zaradenie", this.zaradenie_txt.Text.ToString().Trim());
+        /*data.Add("klinika", this.clinics_dl.SelectedValue);
+        data.Add("oddelenie", this.oddelenie_dl.SelectedValue);*/
 
         // string res = x_db.update_row("is_users", data, Session["user_id"].ToString());
 
@@ -320,6 +411,17 @@ public partial class adduser : System.Web.UI.Page
         this.titul_pred.Text = result["titul_pred"].ToString();
         this.titul_za.Text = result["titul_za"].ToString();
         this.zaradenie_txt.Text = result["zaradenie"].ToString();
+
+        this.clinics_dl.SelectedValue = result["klinika"].ToString();
+
+        
+
+        this.__loadDeps();
+        if (result["oddelenie"].ToString().Length > 0)
+        {
+            this.oddelenie_dl.SelectedValue = result["oddelenie"].ToString();
+        } 
+
         string pracdoba = my_x2.getStr(result["pracdoba"].ToString());
         string tyzdoba = my_x2.getStr(result["tyzdoba"].ToString());
 

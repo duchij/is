@@ -112,17 +112,23 @@ public class my_db
             {
                 for (int i = 0; i < reader.FieldCount; i++)
                 {
-                    result.Add(reader.GetName(i).ToString(), reader.GetValue(i).ToString());
+                    if (reader.GetValue(i) == DBNull.Value)
+                    {
+                        result.Add(reader.GetName(i).ToString(), "");
+                    }
+                    else
+                    {
+                        result.Add(reader.GetName(i).ToString(), reader.GetValue(i).ToString());
+                    }
                 }
             }
-            my_con.Close();
+            
         }
         else
         {
             result.Add("result", "none");
-            my_con.Close();
         }
-
+        my_con.Close();
 
 
         return result;
