@@ -94,14 +94,15 @@ public class my_db
 
     }
 
-    public SortedList getUserInfoByID(string table, string id)
+    public SortedList getUserInfoByID(string id)
     {
         SortedList result = new SortedList();
-
-        string query = "SELECT * FROM " + table + " WHERE id=" + id;
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("SELECT * FROM [is_users] WHERE [id]='{0}'", id);
+        //string query = "SELECT * FROM [is_users] WHERE [id]=" + id;
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(query, my_con);
+        OdbcCommand my_com = new OdbcCommand(this.parseQuery(sb.ToString()), my_con);
 
         OdbcDataReader reader = my_com.ExecuteReader();
 
@@ -792,7 +793,7 @@ public class my_db
         return result;
     }
 
-    private string parseQuery(string query)
+    public string parseQuery(string query)
     {
         query = query.Replace('[', '`');
         query = query.Replace(']', '`');

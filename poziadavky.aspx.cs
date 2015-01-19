@@ -94,7 +94,7 @@ public partial class poziadavky : System.Web.UI.Page
 
 
 
-            SortedList akt_user_info = x_db.getUserInfoByID("is_users", Session["user_id"].ToString());
+            SortedList akt_user_info = x_db.getUserInfoByID(Session["user_id"].ToString());
             user.Text = akt_user_info["full_name"].ToString();
             this.loadPoziadavky();
             //this.lock_date.SelectMonthText = DateTime.Today.AddMonths(1).ToString();

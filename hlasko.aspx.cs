@@ -748,7 +748,7 @@ public partial class hlasko : System.Web.UI.Page
                 this.hlasenie.Text = my_x2.DecryptString(data["text"].ToString(), Session["passphrase"].ToString());
             }
             SortedList my_last_user = new SortedList();
-            my_last_user = x_db.getUserInfoByID("is_users", data["last_user"].ToString());
+            my_last_user = x_db.getUserInfoByID(data["last_user"].ToString());
             this.last_user.Text = my_last_user["full_name"].ToString();
             Session.Add("akt_hlasenie", data["id"].ToString());
 
@@ -811,7 +811,7 @@ public partial class hlasko : System.Web.UI.Page
         SortedList res = x2MySQL.mysql_insert("is_hlasko", data);
 
         SortedList my_last_user = new SortedList();
-        my_last_user = x_db.getUserInfoByID("is_users", Session["user_id"].ToString());
+        my_last_user = x_db.getUserInfoByID(Session["user_id"].ToString());
 
         Boolean status = Convert.ToBoolean(res["status"]);
 
@@ -847,7 +847,7 @@ public partial class hlasko : System.Web.UI.Page
         SortedList res = x2MySQL.mysql_insert("is_hlasko", data);
 
         SortedList my_last_user = new SortedList();
-        my_last_user = x_db.getUserInfoByID("is_users", Session["user_id"].ToString());
+        my_last_user = x_db.getUserInfoByID(Session["user_id"].ToString());
 
         Boolean status = Convert.ToBoolean(res["status"]);
 
@@ -875,7 +875,7 @@ public partial class hlasko : System.Web.UI.Page
         data.Add("type", this.hlas_type.SelectedValue.ToString());
 
         SortedList res = x2MySQL.mysql_insert("is_hlasko", data);
-        my_last_user = x_db.getUserInfoByID("is_users", Session["user_id"].ToString());
+        my_last_user = x_db.getUserInfoByID(Session["user_id"].ToString());
 
         Boolean status = Convert.ToBoolean(res["status"]);
 
@@ -951,7 +951,7 @@ public partial class hlasko : System.Web.UI.Page
 
     protected void def_lock_btn_Click(object sender, EventArgs e)
     {
-        SortedList akt_user_info = x_db.getUserInfoByID("is_users", Session["user_id"].ToString());
+        SortedList akt_user_info = x_db.getUserInfoByID(Session["user_id"].ToString());
 
         if (hlasenie.Visible == true)
         {
@@ -977,7 +977,7 @@ public partial class hlasko : System.Web.UI.Page
 
     protected void def_lock_btn_w_Click(object sender, EventArgs e)
     {
-        SortedList akt_user_info = x_db.getUserInfoByID("is_users", Session["user_id"].ToString());
+        SortedList akt_user_info = x_db.getUserInfoByID(Session["user_id"].ToString());
 
         if (hlasenie.Visible == true)
         {
@@ -1004,10 +1004,10 @@ public partial class hlasko : System.Web.UI.Page
 
     protected void addInfo_btn_Click(object sender, EventArgs e)
     {
-        SortedList akt_user_info = x_db.getUserInfoByID("is_users", Session["user_id"].ToString());
+        //SortedList akt_user_info = x_db.getUserInfoByID(Session["user_id"].ToString());
 
         string tmp_hlasko = view_hlasko.Text;
-        tmp_hlasko += "***********Dodatok*******" + DateTime.Now.ToLongDateString() + "...." + akt_user_info["full_name"].ToString();
+        tmp_hlasko += "***********Dodatok*******" + DateTime.Now.ToLongDateString() + "...." + Session["fullname"].ToString();
         tmp_hlasko += "<br>" + dodatok.Text;
         this.saveDodatok(tmp_hlasko);
         this.loadHlasko();

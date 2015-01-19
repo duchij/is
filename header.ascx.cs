@@ -106,24 +106,24 @@ public partial class header : System.Web.UI.UserControl
             }
             if (this.wgroup == "nurse")
             {
-                this.head1_lbl.Text = "Den:";
-                this.oup_lbl.Text = docBefore[0].ToString() + "<br>" + comments[0].ToString() + "<br>";
-                this.oup_lbl.Text += docBefore[1].ToString() + "<br>" + comments[1].ToString() + "<br>";
-                this.oup_lbl.Text += docBefore[2].ToString() + "<br>" + comments[2].ToString() + "<br>";
+                this.head1_lbl.Text = "Den:<br>";
+                this.oup_lbl.Text = docBefore[0].ToString() + "<div style='font-size:8px;'><em>(" + comments[0].ToString() + ")</em></div><br>";
+                this.oup_lbl.Text += docBefore[1].ToString() + "<div style='font-size:8px;'><em>(" + comments[1].ToString() + ")</em></div><br>";
+                this.oup_lbl.Text += docBefore[2].ToString() + "<div style='font-size:8px;'><em>(" + comments[2].ToString() + ")</em></div><br>";
 
                 this.head2_lbl.Text = "Ranka.";
-                this.odda_lbl.Text = docBefore[3].ToString() + "<br>" + comments[3].ToString();
+                this.odda_lbl.Text = docBefore[3].ToString() + "<div style='font-size:8px;'><em>(" + comments[3].ToString()+ ")</em></div>";
 
                 this.head3_lbl.Text = "Sanit.1";
-                this.oddb_lbl.Text = docBefore[4].ToString() + "<br>" + comments[4].ToString();
+                this.oddb_lbl.Text = docBefore[4].ToString() + "<div style='font-size:8px;'><em>(" + comments[4].ToString() + ")</em></div>";
 
                 this.head4_lbl.Text = "Sanit.2";
-                this.op_lbl.Text = docBefore[5].ToString() + "<br>" + comments[5].ToString();
+                this.op_lbl.Text = docBefore[5].ToString() + "<div style='font-size:8px;'><em>(" + comments[5].ToString() + ")</em></div>";
 
                 this.head5_lbl.Text = "Noc:";
-                this.trp_lbl.Text = docBefore[6].ToString() + "<br>" + comments[6].ToString() + "<br>";
-                this.trp_lbl.Text += docBefore[7].ToString() + "<br>" + comments[7].ToString() + "<br>";
-                this.trp_lbl.Text += docBefore[8].ToString() + "<br>" + comments[8].ToString() + "<br>";
+                this.trp_lbl.Text = docBefore[6].ToString() + "<div style='font-size:8px;'><em>(" + comments[6].ToString() + ")</em></div><br>";
+                this.trp_lbl.Text += docBefore[7].ToString() + "<div style='font-size:8px;'><em>(" + comments[7].ToString() + ")</em></div><br>";
+                this.trp_lbl.Text += docBefore[8].ToString() + "<div style='font-size:8px;'><em>(" + comments[8].ToString() + ")</em></div><br>";
 
                 this.po_lbl.Text = table[1]["users_names"].ToString();
                 this.poziadav_lbl.Text = "";

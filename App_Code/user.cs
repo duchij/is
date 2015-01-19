@@ -30,10 +30,10 @@ public class user: my_db
     public DataSet getAllUsersList()
     {
 
-        string query = "SELECT * FROM `is_users`";
+        string query = "SELECT [id],[full_name],[name],[prava] FROM [is_users]";
         my_con.Open();
 
-        OdbcDataAdapter da = new OdbcDataAdapter(query, my_con);
+        OdbcDataAdapter da = new OdbcDataAdapter(this.parseQuery(query), my_con);
         DataSet ds = new DataSet();
         da.Fill(ds);
         my_con.Close();

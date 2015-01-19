@@ -35,10 +35,10 @@ public partial class adduser : System.Web.UI.Page
         //string rights = Request.Cookies["rights"].Value.ToString();
         string rights = Session["rights"].ToString();
 
-        SortedList akt_user_info = x_db.getUserInfoByID("is_users", Session["user_id"].ToString());
+        SortedList akt_user_info = x_db.getUserInfoByID(Session["user_id"].ToString());
 
 
-        if (rights.IndexOf("users") != -1 || rights.IndexOf("sestra") != -1 || rights.IndexOf("poweruser") != -1)
+        if (rights == "users"  || rights == "poweruser")
         {
             this.adminsectionPlace.Visible = false;
             login_txt.ReadOnly = true;
@@ -48,7 +48,7 @@ public partial class adduser : System.Web.UI.Page
             this.passwd_txt.ReadOnly = true;
         }
 
-        if ((rights == "admin") && (Session["login"].ToString() != "vcingel"))
+        if (rights == "admin")
         {
             this.adminsectionPlace.Visible = true;
 
@@ -310,7 +310,7 @@ public partial class adduser : System.Web.UI.Page
         string id = this.users_gv.Rows[e.NewSelectedIndex].Cells[1].Text.ToString();
 
 
-        SortedList result = x_db.getUserInfoByID("is_users", id);
+        SortedList result = x_db.getUserInfoByID(id);
 
         this.name_txt.Text = result["full_name"].ToString();
         this.login_txt.Text = result["name"].ToString();
@@ -343,7 +343,7 @@ public partial class adduser : System.Web.UI.Page
         }
 
 
-        this.rights_cb.SelectedValue = result["group"].ToString();
+        this.rights_cb.SelectedValue = result["prava"].ToString();
 
 
     }

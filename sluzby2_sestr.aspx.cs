@@ -331,12 +331,20 @@ public partial class sluzby2 : System.Web.UI.Page
                 }
                 if (this.rights == "admin" || this.rights == "poweruser")
                 {
-                    int daysTmp = x2Mysql.fillNurseShifts(Convert.ToInt32(dateGroup), Convert.ToInt32(daysMonth), Convert.ToInt32(mesiac), Convert.ToInt32(rok), depsIdf);
-                    this.shiftTable.Controls.Clear();
-                    this.publish_cb.Visible = true;
+                    SortedList myres  = x2Mysql.fillNurseShifts(Convert.ToInt32(dateGroup), Convert.ToInt32(daysMonth), Convert.ToInt32(mesiac), Convert.ToInt32(rok), depsIdf);
+                    
+                    if (Convert.ToBoolean(myres["status"]))
+                    {
+                        this.shiftTable.Controls.Clear();
+                        this.publish_cb.Visible = true;
                     //this.msg_lbl.Text = daysTmp.ToString();
                     //ViewState.Clear();
-                    this.loadSluzby();
+                        this.loadSluzby();
+                    }
+                    else
+                    {
+                        this.msg_lbl.Text = myres["msg"].ToString();
+                    }
                 }
             }
         }

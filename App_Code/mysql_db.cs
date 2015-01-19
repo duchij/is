@@ -215,10 +215,10 @@ public class mysql_db
         return result;
     }
 
-    public int fillNurseShifts(int dategroup, int days, int mesiac, int rok, string odd)
+    public SortedList fillNurseShifts(int dategroup, int days, int mesiac, int rok, string odd)
     {
 
-        int result = 0;
+        SortedList result = new SortedList();
         //OdbcTransaction trans1 = null;
         //my_con.Open();
         //trans1 = my_con.BeginTransaction();
@@ -271,7 +271,17 @@ public class mysql_db
         //vstup3.Value = 2015;
         cmd.Parameters.Add(vstup5);
         my_con.Open();
-        result = (int)cmd.ExecuteNonQuery();
+        try
+        {
+            int res = (int)cmd.ExecuteNonQuery();
+            result.Add("status",true);
+            result.Add("res",res);
+        }
+        catch (Exception ex)
+        {
+            result.Add("status",false);
+            result.Add("msg", ex.ToString());
+        }
 
         my_con.Close();
 

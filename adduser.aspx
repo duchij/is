@@ -6,14 +6,15 @@
     <asp:Label ID="msg_lbl" runat="server" Text="Label"></asp:Label>
 <h2>Informácie o užívateľovi:</h2><hr />
                     <asp:PlaceHolder ID="adminsectionPlace" runat="server">
+                        <div class="blue box">
                         <asp:TextBox ID="search_txt" runat="server"></asp:TextBox>
                         <asp:Button ID="search_btn" runat="server" Text="Hľadaj" OnClick="searchByNameFnc" />
                     
-                     <asp:GridView ID="users_gv" runat="server" AllowPaging="True" 
-                        AutoGenerateColumns="False" CellPadding="4" ForeColor="#333333" 
-                        GridLines="None" onpageindexchanging="users_gv_PageIndexChanging" 
-                        onselectedindexchanging="users_gv_SelectedIndexChanging" Width="100%" 
-                        onrowdeleting="users_gv_RowDeleting">
+                     <asp:GridView ID="users_gv" runat="server" AllowPaging="True" CssClass="static"
+                         AutoGenerateColumns="False" CellPadding="4" ForeColor="#333333"
+                         GridLines="None" OnPageIndexChanging="users_gv_PageIndexChanging"
+                         OnSelectedIndexChanging="users_gv_SelectedIndexChanging" Width="100%"
+                         OnRowDeleting="users_gv_RowDeleting">
                          <RowStyle BackColor="#FFFBD6" ForeColor="#333333" />
                          <Columns>
                              <asp:CommandField ShowSelectButton="True" />
@@ -26,37 +27,36 @@
                              <asp:BoundField DataField="name" HeaderText="login">
                                  <HeaderStyle HorizontalAlign="Left" />
                              </asp:BoundField>
-                             <asp:BoundField ConvertEmptyStringToNull="False" DataField="group" 
+                             <asp:BoundField ConvertEmptyStringToNull="False" DataField="prava" 
                                  HeaderText="Skupina">
                                  <HeaderStyle HorizontalAlign="Left" />
                              </asp:BoundField>
                              <asp:CommandField ShowDeleteButton="True" />
                          </Columns>
-                         <FooterStyle BackColor="#990000" Font-Bold="True" ForeColor="White" />
+                         <FooterStyle BackColor="#990000" Font-Bold="True" ForeColor="Red" />
                          <PagerStyle BackColor="#FFCC66" ForeColor="#333333" HorizontalAlign="Center" />
-                         <SelectedRowStyle BackColor="#FFCC66" Font-Bold="True" ForeColor="Navy" />
-                         <HeaderStyle BackColor="#990000" Font-Bold="True" ForeColor="White" />
-                         <AlternatingRowStyle BackColor="White" />
+                         <SelectedRowStyle BackColor="#FFCC66" Font-Bold="True" ForeColor="Red" />
+                         <AlternatingRowStyle BackColor="Blue" />
                     
                     </asp:GridView>
                     
                     <table>
                      <tr>
-                        <td>Heslo:</td>
+                        <td class="blue">Heslo:</td>
                         <td><asp:TextBox ID="passwd_txt" runat="server" Width="300px"></asp:TextBox></td>
                     
                     </tr>
                      <tr>
-                        <td>Aktivny:</td>
+                        <td class="blue">Aktivny:</td>
                         <td><asp:TextBox ID="active_txt" runat="server" Width="30px"></asp:TextBox></td>
                     
                     </tr>
                     
                     </table>
-                
+                   </div>
                </asp:PlaceHolder>
                     
-                    <table>
+                    <table class="responsive" data-max="15">
                     <tr>
                     <td>Titul pred menom:</td>
                     <td>
@@ -116,9 +116,25 @@
                                 <asp:ListItem Value="poweruser">PowerUser</asp:ListItem>
                                 <asp:ListItem Value="admin">Admin</asp:ListItem>
                                 <asp:ListItem Value="users">Users</asp:ListItem>
-                                <asp:ListItem Value="sestra">Sestra</asp:ListItem>
+                                <%--<asp:ListItem Value="sestra">Sestra</asp:ListItem>
                                 <asp:ListItem Value="sestra_vd">Sestra_vd</asp:ListItem>
-                                <asp:ListItem Value="medix">medix</asp:ListItem>
+                                <asp:ListItem Value="medix">medix</asp:ListItem>--%>
+                            </asp:DropDownList>
+                        </td>
+                    
+                    </tr>
+
+                        <tr>
+                        <td>
+                            <asp:Label ID="workgroup_lbl" runat="server" Text="Práva"></asp:Label></td>
+                        <td>
+                            <asp:DropDownList ID="DropDownList1" runat="server">
+                                <asp:ListItem Value="poweruser">PowerUser</asp:ListItem>
+                                <asp:ListItem Value="admin">Admin</asp:ListItem>
+                                <asp:ListItem Value="users">Users</asp:ListItem>
+                                <%--<asp:ListItem Value="sestra">Sestra</asp:ListItem>
+                                <asp:ListItem Value="sestra_vd">Sestra_vd</asp:ListItem>
+                                <asp:ListItem Value="medix">medix</asp:ListItem>--%>
                             </asp:DropDownList>
                         </td>
                     

@@ -65,7 +65,7 @@ public partial class sestrhlas : System.Web.UI.Page
     {
         this.hlasenie.Text = "";
         this.msg_lbl.Text = "";
-        SortedList akt_user_info = x_db.getUserInfoByID("is_users", Session["user_id"].ToString());
+        SortedList akt_user_info = x_db.getUserInfoByID(Session["user_id"].ToString());
         user.Text = akt_user_info["full_name"].ToString();
 
         SortedList data = x_db.getSestrHlasko(Calendar1.SelectedDate, oddType_cb.SelectedValue.ToString(), predZad_cb.SelectedValue.ToString(), hlasenie.Text.ToString(), Session["user_id"].ToString(), this.time_cb.SelectedValue.ToString());
@@ -101,7 +101,7 @@ public partial class sestrhlas : System.Web.UI.Page
             SortedList my_last_user = new SortedList();
 
             hlasenie.Text = data["hlasko"].ToString();
-            my_last_user = x_db.getUserInfoByID("is_users", data["last_user"].ToString());
+            my_last_user = x_db.getUserInfoByID(data["last_user"].ToString());
             last_user.Text = my_last_user["full_name"].ToString();
             Session.Add("akt_hlasenie", data["id"].ToString());
             //Session.Add("hlasko_creat_user",data["creat_user"].ToString());
@@ -161,7 +161,7 @@ public partial class sestrhlas : System.Web.UI.Page
 
     protected void loadPrevHlasko()
     {
-        SortedList akt_user_info = x_db.getUserInfoByID("is_users", Session["user_id"].ToString());
+        SortedList akt_user_info = x_db.getUserInfoByID(Session["user_id"].ToString());
         user.Text = akt_user_info["full_name"].ToString();
 
         SortedList data = new SortedList();
@@ -242,7 +242,7 @@ public partial class sestrhlas : System.Web.UI.Page
         data.Add("last_user", Session["user_id"].ToString());
 
         string res = x_db.update_row("is_hlasko_sestry", data, Session["akt_hlasenie"].ToString());
-        my_last_user = x_db.getUserInfoByID("is_users", Session["user_id"].ToString());
+        my_last_user = x_db.getUserInfoByID(Session["user_id"].ToString());
         if (res.IndexOf("ok") != -1)
         {
             //msg_lbl.Text = res;
@@ -262,7 +262,7 @@ public partial class sestrhlas : System.Web.UI.Page
 
     protected void def_loc_fnc(object sender, EventArgs e)
     {
-        SortedList akt_user_info = x_db.getUserInfoByID("is_users", Session["user_id"].ToString());
+        //SortedList akt_user_info = x_db.getUserInfoByID(Session["user_id"].ToString());
 
         if (hlasenie.Visible == true)
         {

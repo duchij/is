@@ -27,7 +27,7 @@ public partial class hlasenia_print : System.Web.UI.Page
         my_db x_db = new my_db();
 
         SortedList data = x_db.getDataByID("is_hlasko_sestry", Session["akt_hlasenie"].ToString());
-        SortedList user_info = x_db.getUserInfoByID("is_users", Session["user_id"].ToString());
+        SortedList user_info = x_db.getUserInfoByID(Session["user_id"].ToString());
 
         if (data.Count > 1)
         {
