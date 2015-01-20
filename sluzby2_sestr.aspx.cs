@@ -12,7 +12,7 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 
-public partial class sluzby2 : System.Web.UI.Page
+public partial class sluzby2_sestr : System.Web.UI.Page
 {
     public mysql_db x2Mysql = new mysql_db();
     public x2_var x2 = new x2_var();
@@ -29,10 +29,10 @@ public partial class sluzby2 : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (Session["tuisegumdrum"] == null)
+       if (Session["tuisegumdrum"] == null)
         {
             Response.Redirect("error.html");
-        }
+        } 
 
         this.deps = Session["oddelenie"].ToString();
 

@@ -26,10 +26,10 @@ public partial class header : System.Web.UI.UserControl
     {
         if (IsPostBack == false)
         {
-            if (Session["tuisegumdrum"] == null)
+           /* if (Session["tuisegumdrum"] == null)
             {
                 Response.Redirect("error.html");
-            }
+            }*/
         }
         this.wgroup = Session["workgroup"].ToString();
         this.rights = Session["rights"].ToString();
@@ -82,7 +82,7 @@ public partial class header : System.Web.UI.UserControl
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
 
-        if (table.Count > 0)
+        if (table.Count == 2)
         {
             string[] docBefore = table[0]["users_names"].ToString().Split(';');
             string[] comments = table[0]["comment"].ToString().Split('|');
@@ -124,8 +124,15 @@ public partial class header : System.Web.UI.UserControl
                 this.trp_lbl.Text = docBefore[6].ToString() + "<div style='font-size:8px;'><em>(" + comments[6].ToString() + ")</em></div><br>";
                 this.trp_lbl.Text += docBefore[7].ToString() + "<div style='font-size:8px;'><em>(" + comments[7].ToString() + ")</em></div><br>";
                 this.trp_lbl.Text += docBefore[8].ToString() + "<div style='font-size:8px;'><em>(" + comments[8].ToString() + ")</em></div><br>";
-
-                this.po_lbl.Text = table[1]["users_names"].ToString();
+              
+                if (table[1]["users_names"] != null)
+                {
+                    this.po_lbl.Text = table[1]["users_names"].ToString();
+                }
+                else
+                {
+                    this.po_lbl.Text = "";
+                }
                 this.poziadav_lbl.Text = "";
 
                 this.date_lbl.Text = DateTime.Today.ToLongDateString();

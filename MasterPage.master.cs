@@ -99,11 +99,11 @@ public partial class MasterPage : System.Web.UI.MasterPage
 
             SortedList row = x2Mysql.getRow(sb.ToString());
 
-            if (row["cielova-skupina"].ToString() == "doctors" && (this.rights == "users" || this.rights == "poweruser"))
+            if (row["cielova-skupina"].ToString() == "doctors" && this.wgroup == "doctor")
             {
                 this.info_message_lbl.Text = row["cela_sprava"].ToString();
             }
-            else if (row["cielova-skupina"].ToString() == "nurses" && this.rights.IndexOf("sestra") != -1 )
+            else if (row["cielova-skupina"].ToString() == "nurses" && this.wgroup=="nurse" )
             {
                 this.info_message_lbl.Text = row["cela_sprava"].ToString();
             }
