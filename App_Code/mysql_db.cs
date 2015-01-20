@@ -97,7 +97,14 @@ public class mysql_db
         foreach (DictionaryEntry tmp in data)
         {
             //cols = cols + tmp.Key + ",";
-            strArr[i] = "["+tmp.Key.ToString()+"] ='"+tmp.Value.ToString()+"'";
+            if (tmp.Value.ToString() == "NULL")
+            {
+                strArr[i] = "[" + tmp.Key.ToString() + "]=NULL";
+            }
+            else
+            {
+                strArr[i] = "[" + tmp.Key.ToString() + "] ='" + tmp.Value.ToString() + "'";
+            }
             i++;
            // parse_str = parse_str.Replace("'", "*");
         }

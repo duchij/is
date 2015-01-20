@@ -92,7 +92,7 @@ public partial class adduser : System.Web.UI.Page
         else
         {
             if (!IsPostBack)
-            {
+            {                                           
                 name_txt.Text = akt_user_info["full_name"].ToString();
                 login_txt.Text = Session["login"].ToString();
                 email_txt.Text = Session["email"].ToString();
@@ -131,6 +131,7 @@ public partial class adduser : System.Web.UI.Page
 
     protected void loadClinics()
     {
+        this.clinics_dl.Items.Clear();
         StringBuilder sb = new StringBuilder();
         sb.AppendLine("SELECT [id],[full_name] FROM [is_clinics] ORDER BY [idf]");
 
@@ -158,7 +159,10 @@ public partial class adduser : System.Web.UI.Page
 
     protected void __loadDeps()
     {
+        this.oddelenie_dl.Items.Clear();
         int id = Convert.ToInt32(this.clinics_dl.SelectedValue);
+
+        Session.Add("userSelectedClinic", this.clinics_dl.SelectedValue);
 
         StringBuilder sb = new StringBuilder();
         sb.AppendFormat("SELECT [id],[label] FROM [is_deps] WHERE [clinic_id]='{0}'", id);
@@ -188,14 +192,18 @@ public partial class adduser : System.Web.UI.Page
         string passwd = this.passwd_txt.Text;
         SortedList data = new SortedList();
         int id = 0;
+        Boolean prs = false;
 
-
-        try
+        if (this.users_gv.SelectedIndex > 0)
         {
-            id = Convert.ToInt32(this.users_gv.SelectedRow.Cells[1].Text.ToString());
+            prs = Int32.TryParse(this.users_gv.SelectedRow.Cells[1].Text.ToString(), out id);
+        }
 
-            data.Clear();
+        //int id = Convert.ToInt32(this.users_gv.SelectedRow.Cells[1].Text.ToString());
 
+
+        if (id > 0 && prs)
+        {
             data.Add("full_name", meno);
             data.Add("name", login);
             data.Add("email", email);
@@ -211,7 +219,7 @@ public partial class adduser : System.Web.UI.Page
 
             if (this.clinics_dl.SelectedValue.ToString() == "0")
             {
-                data.Add("klinika", null);
+                data.Add("klinika", "NULL");
             }
             else
             {
@@ -220,7 +228,7 @@ public partial class adduser : System.Web.UI.Page
 
             if (this.oddelenie_dl.SelectedValue.ToString() == "0")
             {
-                data.Add("oddelenie", null);
+                data.Add("oddelenie", "NULL");
             }
             else
             {
@@ -247,94 +255,76 @@ public partial class adduser : System.Web.UI.Page
                 this.zaradenie_txt.Text = "";
                 this.Page_Load(sender, e);
 
+               
+
             }
-
-
-
-
         }
-        catch (Exception error)
+        else
         {
-
-
-            if (meno.Length != 0)
+            if ((my_x2.isAlfaNum(login) == true) && (login.Length != 0))
             {
-                if ((my_x2.isAlfaNum(login) == true) && (login.Length != 0))
+                data.Add("full_name", meno);
+                data.Add("name", login);
+                data.Add("prava", rights_cb.SelectedValue.ToString());
+                data.Add("active", this.active_txt.Text);
+
+                data.Add("pracdoba", this.pracdoba_txt.Text.ToString());
+                data.Add("tyzdoba", this.tyzdoba_txt.Text.ToString());
+
+                data.Add("osobcisl", this.osobcisl_txt.Text.ToString());
+                data.Add("titul_pred", this.titul_pred.Text.ToString());
+                data.Add("titul_za", this.titul_za.Text.ToString());
+
+                data.Add("zaradenie", this.zaradenie_txt.Text.ToString());
+
+
+                if (this.clinics_dl.SelectedValue.ToString() == "0")
                 {
-                    //msg_lbl.Text = "tu sme";
-
-                    data.Clear();
-
-                    data.Add("full_name", meno);
-                    data.Add("name", login);
-                    data.Add("prava", rights_cb.SelectedValue.ToString());
-                    data.Add("active", this.active_txt.Text);
-
-                    data.Add("pracdoba", this.pracdoba_txt.Text.ToString());
-                    data.Add("tyzdoba", this.tyzdoba_txt.Text.ToString());
-
-                    data.Add("osobcisl", this.osobcisl_txt.Text.ToString());
-                    data.Add("titul_pred", this.titul_pred.Text.ToString());
-                    data.Add("titul_za", this.titul_za.Text.ToString());
-
-                    data.Add("zaradenie", this.zaradenie_txt.Text.ToString());
-
-
-                    if (this.clinics_dl.SelectedValue.ToString() == "0")
-                    {
-                        data.Add("klinika", null);
-                    }
-                    else
-                    {
-                        data.Add("klinika", this.clinics_dl.SelectedValue);
-                    }
-
-                    if (this.oddelenie_dl.SelectedValue.ToString() == "0")
-                    {
-                        data.Add("oddelenie", null);
-                    }
-                    else
-                    {
-                        data.Add("oddelenie", this.oddelenie_dl.SelectedValue);
-                    }
-
-                    if (email.Length == 0)
-                    {
-                        email = "x";
-                    }
-                    data.Add("email", email);
-                    SortedList user = x_db.getUserPasswd(login);
-
-                    if ((user.Count != 0) && (user["name"].ToString() == login))
-                    {
-                        msg_lbl.Text = "Daný užívateľ už v databáze existuje !!!!!";
-                    }
-                    else
-                    {
-                        SortedList res = x2MySql.mysql_insert("is_users", data);
-                        // SortedList res = x_db.insert_rows("is_users", data);
-                        Boolean status = Convert.ToBoolean(res["status"]);
-
-                        if (status == true)
-                        {
-                            msg_lbl.Text = "Užívateľ bol pridaný !!!!";
-                        }
-                        else
-                        {
-                            msg_lbl.Text = "Chyba:" + error.ToString() + "<br>" + res["msg"].ToString();
-                        }
-                    }
+                    data.Add("klinika", "NULL");
                 }
                 else
                 {
-                    msg_lbl.Text = "Login, môže byť tvorený len písmenami a číslami, medzera a iné znaky nie sú dovolené!";
+                    data.Add("klinika", this.clinics_dl.SelectedValue);
+                }
+
+                if (this.oddelenie_dl.SelectedValue.ToString() == "0")
+                {
+                    data.Add("oddelenie", "NULL");
+                }
+                else
+                {
+                    data.Add("oddelenie", this.oddelenie_dl.SelectedValue);
+                }
+
+                if (email.Length == 0)
+                {
+                    email = "x";
+                }
+                data.Add("email", email);
+
+                SortedList user = x_db.getUserPasswd(login);
+
+                if ((user.Count != 0) && (user["name"].ToString() == login))
+                {
+                    msg_lbl.Text = "Daný užívateľ už v databáze existuje !!!!!";
+                }
+                else
+                {
+                    SortedList res = x2MySql.mysql_insert("is_users", data);
+                    if (Convert.ToBoolean(res["status"]))
+                    {
+                        msg_lbl.Text = "Užívateľ bol pridaný !!!!";
+                    }
+                    else
+                    {
+                        msg_lbl.Text = "Chyba: <br>" + res["msg"].ToString();
+                    }
                 }
             }
             else
             {
-                msg_lbl.Text = "Meno musi byt vypisane";
+                msg_lbl.Text = "Login, môže byť tvorený len písmenami a číslami, medzera a iné znaky nie sú dovolené!";
             }
-
         }
     }
     protected void uprav_btn_Click(object sender, EventArgs e)
@@ -361,9 +351,7 @@ public partial class adduser : System.Web.UI.Page
 
         SortedList res = x2MySql.mysql_update("is_users", data, Session["user_id"].ToString());
 
-        Boolean status = Convert.ToBoolean(res["status"]);
-
-        if (status == true)
+        if (Convert.ToBoolean(res["status"]))
         {
             msg_lbl.Text = "Zmena bola úspešne vykonaná !!!";
         }
@@ -399,8 +387,6 @@ public partial class adduser : System.Web.UI.Page
     protected void users_gv_SelectedIndexChanging(object sender, GridViewSelectEventArgs e)
     {
         string id = this.users_gv.Rows[e.NewSelectedIndex].Cells[1].Text.ToString();
-
-
         SortedList result = x_db.getUserInfoByID(id);
 
         this.name_txt.Text = result["full_name"].ToString();
