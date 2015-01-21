@@ -607,7 +607,7 @@ public partial class vykaz2 : System.Web.UI.Page
         prenosStr = prenosStr.Replace('.', ',');
         decimal prenos = Convert.ToDecimal(prenosStr);
 
-        this.rozdiel_lbl.Text = (pocetPracHod - real+prenos).ToString();
+        this.rozdiel_lbl.Text = ((real+prenos)-pocetPracHod).ToString();
 
         
 
@@ -686,7 +686,7 @@ public partial class vykaz2 : System.Web.UI.Page
                     mTBox2.Text = neaktivna.ToString();
                 }
 
-                else if ((vikend == 0 || vikend == 6) && rs_tmp != -1)
+                if ((vikend == 0 || vikend == 6) && rs_tmp != -1)
                 {
 
                     Control tbox1 = ctpl.FindControl("textBox_" + row.ToString() + "_9");
@@ -698,7 +698,7 @@ public partial class vykaz2 : System.Web.UI.Page
                     mTBox2.Text = neaktivna.ToString();
                 }
 
-                else if ((vikend != 0 && vikend != 6) && rs_tmp != -1)
+                if ((vikend != 0 && vikend != 6) && rs_tmp != -1)
                 {
                     Control tbox1 = ctpl.FindControl("textBox_" + row.ToString() + "_9");
                     TextBox mTBox1 = (TextBox)tbox1;
@@ -709,7 +709,7 @@ public partial class vykaz2 : System.Web.UI.Page
                     mTBox2.Text = neaktivna.ToString();
                 }
 
-                else if ((vikend != 0 && vikend != 6) && rs_tmp == -1)
+                if ((vikend != 0 && vikend != 6) && rs_tmp == -1)
                 {
                     Control tbox1 = ctpl.FindControl("textBox_" + row.ToString() + "_7");
                     TextBox mTBox1 = (TextBox)tbox1;
@@ -947,7 +947,7 @@ public partial class vykaz2 : System.Web.UI.Page
 
 
         //string lila = "hura";
-        BaseFont mojFont = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, false);
+        BaseFont mojFont = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1250, false);
         cb.SetFontAndSize(mojFont, 10);
 
         //cb.SetColorStroke(new CMYKColor(1f, 0f, 0f, 0f));

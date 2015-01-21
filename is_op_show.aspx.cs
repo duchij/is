@@ -21,8 +21,8 @@ public partial class is_op_show : System.Web.UI.Page
             Response.Redirect("error.html");
         }
 
-        SortedList akt_user_info = x_db.getUserInfoByID(Request.Cookies["user_id"].Value.ToString());
-        this.user.Text = akt_user_info["full_name"].ToString();
+        //SortedList akt_user_info = x_db.getUserInfoByID(Request.Cookies["user_id"].Value.ToString());
+        //this.user.Text = akt_user_info["full_name"].ToString();
 
 
         int id = Convert.ToInt32(Request.QueryString["id"].ToString());

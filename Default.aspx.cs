@@ -64,7 +64,7 @@ public partial class _Default : System.Web.UI.Page
 
                 g_pass = data["passwd"].ToString();
 
-                if (Login1.UserName == Login1.Password && g_pass.Length == 0 && data["name"].ToString() == Login1.Password)
+                if (Login1.UserName == Login1.Password && g_pass == "NULL" && data["name"].ToString() == Login1.Password)
                 {
 
 
@@ -173,11 +173,16 @@ public partial class _Default : System.Web.UI.Page
                         Session.Add("medixUser", "medixUser");
                         Response.Redirect(@"MEDIX/opdg.aspx");
                     }*/
-                    else
+                    else if(Session["workgroup"].ToString() == "nurse")
                     {
                         //SortedList result = db_obj.getNextPozDatum(DateTime.Today);
                         Response.Redirect(@"sestrhlas.aspx");
                     }
+                    else if (Session["workgroup"].ToString() == "op")
+                    {
+                        Response.Redirect(@"opprogram.aspx");
+                    }
+
                     //Response.Write("hura");
 
                 }

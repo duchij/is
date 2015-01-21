@@ -34,12 +34,12 @@ public partial class passch : System.Web.UI.Page
             //data.Add("id",Request.Cookies["user_id"].Value.ToString());
             data.Add("passwd", my_x2.make_hash(my_passwd1));
             info_lbl.Visible = true;
-            string res = x_db.update_row("is_users", data, Request.Cookies["user_id"].Value.ToString());
-            string prava = Request.Cookies["rights"].Value.ToString();
+            string res = x_db.update_row("is_users", data, Session["user_id"].ToString());
+            string prava = Session["workgroup"].ToString();
 
             if (res == "ok")
             {
-                if (prava.IndexOf("sestra") == -1)
+                if (prava == "doctor")
                 {
                     info_lbl.Text = "Heslo bolo úspešne zmenené !!! <a href='hlasko.aspx' target='_self'> Začať pracovať</a>";
                 }

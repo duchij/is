@@ -49,7 +49,7 @@ public partial class header : System.Web.UI.UserControl
         string vceraStr = vcera.ToShortDateString();
 
         StringBuilder sb = new StringBuilder();
-        if (this.wgroup == "doctor")
+        if (this.wgroup == "doctor" || this.wgroup == "op")
         {
 
             sb.Append("SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],");
@@ -64,7 +64,7 @@ public partial class header : System.Web.UI.UserControl
             sb.Append("GROUP BY [t_sluzb].[datum]");
             sb.Append("ORDER BY [t_sluzb].[datum] DESC");
         }
-        if (this.wgroup == "nurse")
+        if (this.wgroup == "nurse" || this.wgroup=="assistent")
         {
             sb.Append("SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],");
             sb.Append("[t_sluzb].[state] AS [state],");
@@ -104,7 +104,7 @@ public partial class header : System.Web.UI.UserControl
                 SortedList data = x_db.getNextPozDatum(DateTime.Today);
                 poziadav_lbl.Text = data["datum"].ToString();
             }
-            if (this.wgroup == "nurse")
+            if (this.wgroup == "nurse" || this.wgroup == "assistent")
             {
                 this.head1_lbl.Text = "Den:<br>";
                 this.oup_lbl.Text = docBefore[0].ToString() + "<div style='font-size:8px;'><em>(" + comments[0].ToString() + ")</em></div><br>";

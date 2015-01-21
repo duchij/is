@@ -51,7 +51,7 @@ public partial class MasterPage : System.Web.UI.MasterPage
             this.info_plh.Visible = false;
         }
 
-        if (this.wgroup == "nurse")
+        if (this.wgroup == "nurse" || this.wgroup == "assistent")
         {
             this.hlas_lekar_plh.Visible = false;
             this.hlas_sestier_plh.Visible = true;

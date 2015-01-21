@@ -6,8 +6,8 @@
 <h2>
                     <asp:Label ID="title_lbl" runat="server" Text="<%$ Resources:Resource, is_news_title %>"></asp:Label></h2>
                 <hr />
-                Prihlasený: <strong>
-                    <asp:Label ID="user" runat="server" Text="Label" ForeColor="#990000" ></asp:Label></strong><br />
+                <%--Prihlasený: <strong>
+                    <asp:Label ID="user" runat="server" Text="Label" ForeColor="#990000" ></asp:Label></strong><br />--%>
                 <%-- Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="Label" ForeColor="#990000"></asp:Label></strong><br />--%>
                 <hr />
                 

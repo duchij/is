@@ -41,7 +41,7 @@ public partial class left_menu : System.Web.UI.UserControl
             this.sestra.Visible = false;
         }
         
-        if (wgroup == "nurse") 
+        if (wgroup == "nurse" || wgroup =="assistent") 
         {
             this.doctors.Visible = false;
             this.admin.Visible = false;
