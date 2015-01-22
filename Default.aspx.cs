@@ -29,9 +29,9 @@ public partial class _Default : System.Web.UI.Page
         
 
 
-        Response.Cookies["akt_sluzba"].Expires = DateTime.Now.AddDays(-1);
-        Response.Cookies["akt_hlasenie "].Expires = DateTime.Now.AddDays(-1);
-        //Response.Cookies["tuisegumdrum"].Expires = DateTime.Now.AddDays(-1);
+        //Response.Cookies["akt_sluzba"].Expires = DateTime.Now.AddDays(-1);
+        //Response.Cookies["akt_hlasenie "].Expires = DateTime.Now.AddDays(-1);
+        Response.Cookies["tuisegumdrum"].Expires = DateTime.Now.AddDays(-1);
 
         if (Request.Browser.Cookies == false)
         {
@@ -48,23 +48,24 @@ public partial class _Default : System.Web.UI.Page
     {
 
         x2_var my_x2 = new x2_var();
-
-        string l_pass = my_x2.make_hash(Login1.Password);
+        string passwd = Login1.Password.ToString().Trim();
+        string l_pass = my_x2.make_hash(passwd);
         string g_pass = "";
 
         SortedList data = new SortedList();
-
-        if (my_x2.isAlfaNum(Login1.UserName))
+        string userName = Login1.UserName.ToString().Trim();
+        
+        if (my_x2.isAlfaNum(userName))
         {
 
-            data = db_obj.getUserPasswd(this.Login1.UserName);
+            data = db_obj.getUserPasswd(userName);
 
             if (data.Count != 0 && data["active"].ToString() == "1")
             {
 
                 g_pass = data["passwd"].ToString();
 
-                if (Login1.UserName == Login1.Password && g_pass == "NULL" && data["name"].ToString() == Login1.Password)
+                if (Login1.UserName == passwd && g_pass == "NULL" && data["name"].ToString() == passwd)
                 {
 
 

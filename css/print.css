@@ -4,4 +4,5 @@ font-size:11px;
 .nonprint 
 {
 	display:none;
+    /*margin:0px !important;*/
 }

@@ -547,6 +547,16 @@ public partial class vykaz2 : System.Web.UI.Page
         return result;
     }
 
+    protected decimal verifyNumber(string number)
+    {
+        decimal num;
+        bool status = Decimal.TryParse(number, out num);
+        if (!status)
+        {
+            num = 0;
+        }
+        return num;
+     }
 
     protected void calcData_Click(object sender, EventArgs e)
     {
@@ -570,7 +580,9 @@ public partial class vykaz2 : System.Web.UI.Page
                 TextBox sumBox = (TextBox)Tbox;
                 string sum = sumBox.Text.ToString();
                 sum = sum.Replace('.', ',');
-                suma += Convert.ToDecimal(sum);
+
+
+                suma += this.verifyNumber(sum);
             }
             Control resTbox = ctpl.FindControl("head_tbox_" + col.ToString());
             TextBox resTxt = (TextBox)resTbox;
@@ -608,10 +620,30 @@ public partial class vykaz2 : System.Web.UI.Page
         decimal prenos = Convert.ToDecimal(prenosStr);
 
         this.rozdiel_lbl.Text = ((real+prenos)-pocetPracHod).ToString();
-
-        
-
         this.saveData();
+
+    }
+
+    protected void calcRealNight(int mesiac, int rok, string id)
+    {
+
+        string dateGroup = my_x2.makeDateGroup(rok, mesiac).ToString();
+        int dni = DateTime.DaysInMonth(rok, mesiac);
+
+        string mesStr = dateGroup.Substring(4, 2);
+
+        string zacDt = rok.ToString() + "-" + mesStr.ToString() + "-" + "01";
+        string koncDt = rok.ToString() + "-" + mesStr.ToString() + "-" + dni.ToString();
+
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine("SELECT [hlasko].[dat_hlas] AS [datum],[hlasko_epc].[user_id] AS [user_id],[hlasko_epc].[user_id]");
+        sb.AppendLine("FROM [is_hlasko_epc] as [hlasko_epc]");
+        sb.AppendLine("LEFT JOIN [is_hlasko] AS [hlasko] ON [hlasko].[id]=[hlasko_epc].[hlasko_id]");
+        sb.AppendFormat("WHERE [hlasko_epc].[work_start] BETWEEN '{0}' AND '{1}'", zacDt, koncDt);
+        sb.AppendFormat("AND [user_id]='{0}'", id);
+        sb.AppendLine("GROUP BY [hlasko].[hlasko_id]");
+
+        Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
 
     }
 
@@ -643,88 +675,64 @@ public partial class vykaz2 : System.Web.UI.Page
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
 
         int tableLn = table.Count;
-        DateTime[] epcDate = new DateTime[tableLn];
+       // DateTime[] epcDate = new DateTime[tableLn];
 
         for (int i = 0; i < tableLn; i++)
         {
-            epcDate[i] = Convert.ToDateTime(my_x2.MSDate(table[i]["datum"].ToString()));
-        }
+            DateTime dt = Convert.ToDateTime(my_x2.MSDate(table[i]["datum"].ToString()));
 
+            int den = dt.Day;
 
-        for (int row = 0; row < dni; row++)
-        {
-            int den = row + 1;
-            int vikend = (int)new DateTime(rok, mesiac, den).DayOfWeek;
-            DateTime dtTmp = new DateTime(rok, mesiac, den);
             string mesDen = den.ToString() + "." + mesiac.ToString();
 
-            int epc_tmp = Array.IndexOf(epcDate, dtTmp);
+            //int epc_tmp = Array.IndexOf(epcDate, dtTmp);
 
-            int rs_tmp = Array.IndexOf(freeDays, mesDen);                          
+            int rs_tmp = Array.IndexOf(freeDays, mesDen);
+            Boolean sviatok = false;
 
-            if (epc_tmp != -1)
+            if  (Array.IndexOf(freeDays, mesDen) != -1)
             {
-                int aktivna = Convert.ToInt32(table[epc_tmp]["worktime"]);
-                decimal hodiny = aktivna / 60;
-                decimal neaktivna = 12 - hodiny;
+                sviatok = true;
+            }
 
-                if (neaktivna < 0)
-                {
-                    hodiny = 12;
-                    neaktivna = 0;
-                }
+            int vikInt = (int)dt.DayOfWeek;
+            Boolean vikend = false;
+            if (vikInt == 0 || vikInt == 6)
+            {
+                vikend = true;
+            }
 
-                if ((vikend == 0 || vikend == 6) && rs_tmp == -1)
-                {
+            int aktivna = Convert.ToInt32(table[i]["worktime"]);
+            decimal hodiny = aktivna / 60;
+            decimal neaktivna = 12 - hodiny;
 
-                    Control tbox1 = ctpl.FindControl("textBox_" + row.ToString() + "_9");
-                    TextBox mTBox1 = (TextBox)tbox1;
-                    Control tbox2 = ctpl.FindControl("textBox_" + row.ToString() + "_11");
-                    TextBox mTBox2 = (TextBox)tbox2;
+            if (neaktivna < 0)
+            {
+                hodiny = 12;
+                neaktivna = 0;
+            }
 
-                    mTBox1.Text = hodiny.ToString();
-                    mTBox2.Text = neaktivna.ToString();
-                }
+            if (vikend || sviatok)
+            {
+                Control tbox1 = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_9");
+                TextBox mTBox1 = (TextBox)tbox1;
+                Control tbox2 = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_11");
+                TextBox mTBox2 = (TextBox)tbox2;
 
-                if ((vikend == 0 || vikend == 6) && rs_tmp != -1)
-                {
+                mTBox1.Text = hodiny.ToString();
+                mTBox2.Text = neaktivna.ToString();
+            }
+            else
+            {
+                Control tbox1 = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_8");
+                TextBox mTBox1 = (TextBox)tbox1;
+                Control tbox2 = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_10");
+                TextBox mTBox2 = (TextBox)tbox2;
 
-                    Control tbox1 = ctpl.FindControl("textBox_" + row.ToString() + "_9");
-                    TextBox mTBox1 = (TextBox)tbox1;
-                    Control tbox2 = ctpl.FindControl("textBox_" + row.ToString() + "_11");
-                    TextBox mTBox2 = (TextBox)tbox2;
-
-                    mTBox1.Text = hodiny.ToString();
-                    mTBox2.Text = neaktivna.ToString();
-                }
-
-                if ((vikend != 0 && vikend != 6) && rs_tmp != -1)
-                {
-                    Control tbox1 = ctpl.FindControl("textBox_" + row.ToString() + "_9");
-                    TextBox mTBox1 = (TextBox)tbox1;
-                    Control tbox2 = ctpl.FindControl("textBox_" + row.ToString() + "_11");
-                    TextBox mTBox2 = (TextBox)tbox2;
-
-                    mTBox1.Text = hodiny.ToString();
-                    mTBox2.Text = neaktivna.ToString();
-                }
-
-                if ((vikend != 0 && vikend != 6) && rs_tmp == -1)
-                {
-                    Control tbox1 = ctpl.FindControl("textBox_" + row.ToString() + "_7");
-                    TextBox mTBox1 = (TextBox)tbox1;
-                    Control tbox2 = ctpl.FindControl("textBox_" + row.ToString() + "_9");
-                    TextBox mTBox2 = (TextBox)tbox2;
-
-                    mTBox1.Text = hodiny.ToString();
-                    mTBox2.Text = neaktivna.ToString();
-                }
-
-
+                mTBox1.Text = hodiny.ToString();
+                mTBox2.Text = neaktivna.ToString();
             }
         }
-
-
     }
 
 

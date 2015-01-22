@@ -7,7 +7,7 @@
     <title>Tlacenie EPC</title>
     <link href="css/print.css" rel="stylesheet" type="text/css" media="print"/>
 </head>
-<body style="font-family:Arial; font-size:12px;margin:10px">
+<body style="font-family:Arial; font-size:12px;margin:0px">
     <form id="form1" runat="server">
 
          
@@ -60,12 +60,21 @@
         <asp:Label ID="finalStat_lbl" runat="server" Text=""></asp:Label>
         <br />
         <br />
-        <div style="text-align:right;">
-            ..............................................<br />
-            Podpis
+            
+            <table align="right" cellpadding="4">
+                <tr>
+                    <td> .............................................................<br />
+                         Podpis a razítko zamestanca</td>
+                    <td> .............................................................<br />
+                         Podpis a razítko vedúceho pracovníka  </td>
+
+                </tr>
+
+            </table>
+             
 
 
-        </div>
+        
 
     </div>
         

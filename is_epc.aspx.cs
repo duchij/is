@@ -53,6 +53,18 @@ public partial class is_epc : System.Web.UI.Page
         sb.AppendFormat("AND [hlasko].[dat_hlas] BETWEEN '{0}' AND '{1}' ORDER BY [hlasko_epc].[work_start] ASC",zacDt,koncDt);
 
         Dictionary<int, SortedList> table = x2Mysql.getTableSL(sb.ToString());
+
+        sb.Length = 0;
+        sb.AppendLine("SELECT [hlasko].[dat_hlas] AS [datum],[hlasko].[type] AS [sluzba_typ],[hlasko_epc].[user_id], SUM([work_time]) AS [worktime]");
+        sb.AppendLine("FROM [is_hlasko_epc] as [hlasko_epc]");
+        sb.AppendLine("LEFT JOIN [is_hlasko] AS [hlasko] ON [hlasko].[id]=[hlasko_epc].[hlasko_id]");
+        sb.AppendFormat("WHERE [hlasko_epc].[work_start] BETWEEN '{0}' AND '{1}'", zacDt, koncDt);
+        sb.AppendFormat("AND [user_id]='{0}'", Session["user_id"].ToString());
+        sb.AppendLine("GROUP BY [hlasko_epc].[hlasko_id]");
+
+        Dictionary<int, Hashtable> statTable = x2Mysql.getTable(sb.ToString());
+
+
         
         int tableLn = table.Count;
 
@@ -88,7 +100,7 @@ public partial class is_epc : System.Web.UI.Page
         headcell5.Width = Unit.Pixel(300);
         headcell5.HorizontalAlign = HorizontalAlign.Left;
         headerRow.Controls.Add(headcell5);
-
+        int stat = 0;
         if (tableLn > 0)
         {
             for (int row = 0; row < tableLn; row++)
@@ -97,7 +109,8 @@ public partial class is_epc : System.Web.UI.Page
 
                 if (row == 0)
                 {
-                    this.newRowData(row, table);
+                    this.newRowData(row, table,statTable,stat);
+                    stat++;
                 }
                 else
                 {
@@ -107,43 +120,44 @@ public partial class is_epc : System.Web.UI.Page
                     }
                     else
                     {
-                        this.newRowData(row, table);
+                        this.newRowData(row, table,statTable,stat);
+                        stat++;
                     }
                 }
             }
         }
-        this.finalStat(zacDt, koncDt);
+       // this.finalStat(zacDt, koncDt);
     }
 
-    protected void finalStat(string zacDt, string koncDt)
-    {
+    //protected void finalStat(string zacDt, string koncDt)
+    //{
 
-        StringBuilder sb = new StringBuilder();
-        sb.AppendLine("SELECT [hlasko].[dat_hlas] AS [datum],[hlasko].[type] AS [sluzba_typ],[hlasko_epc].[user_id], SUM([work_time]) AS [worktime]"); 
-        sb.AppendLine("FROM [is_hlasko_epc] as [hlasko_epc]");
-        sb.AppendLine("LEFT JOIN [is_hlasko] AS [hlasko] ON [hlasko].[id]=[hlasko_epc].[hlasko_id]");
-        sb.AppendFormat("WHERE [hlasko_epc].[work_start] BETWEEN '{0}' AND '{1}'",zacDt,koncDt);
-        sb.AppendFormat("AND [user_id]='{0}'",Session["user_id"].ToString());
-        sb.AppendLine("GROUP BY [hlasko_epc].[hlasko_id]");
+    //    StringBuilder sb = new StringBuilder();
+    //    sb.AppendLine("SELECT [hlasko].[dat_hlas] AS [datum],[hlasko].[type] AS [sluzba_typ],[hlasko_epc].[user_id], SUM([work_time]) AS [worktime]"); 
+    //    sb.AppendLine("FROM [is_hlasko_epc] as [hlasko_epc]");
+    //    sb.AppendLine("LEFT JOIN [is_hlasko] AS [hlasko] ON [hlasko].[id]=[hlasko_epc].[hlasko_id]");
+    //    sb.AppendFormat("WHERE [hlasko_epc].[work_start] BETWEEN '{0}' AND '{1}'",zacDt,koncDt);
+    //    sb.AppendFormat("AND [user_id]='{0}'",Session["user_id"].ToString());
+    //    sb.AppendLine("GROUP BY [hlasko_epc].[hlasko_id]");
 
-        Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
+    //    Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
 
-        string result = "";
+    //    string result = "";
 
-        int tableLn = table.Count;
-        for (int i = 0; i < tableLn; i++)
-        {
-            int min = Convert.ToInt32(table[i]["worktime"]);
+    //    int tableLn = table.Count;
+    //    for (int i = 0; i < tableLn; i++)
+    //    {
+    //        int min = Convert.ToInt32(table[i]["worktime"]);
 
-            decimal celkHod = min / 60;
-            result += "<p><strong>Dátum:</strong> " + x2.MSDate(table[i]["datum"].ToString()) + " <strong>Služba:</strong> " + table[i]["sluzba_typ"].ToString() + " <strong>Odpracované hodiny: </strong> " + celkHod.ToString()+"</p>";
+    //        decimal celkHod = min / 60;
+    //        result += "<p><strong>Dátum:</strong> " + x2.MSDate(table[i]["datum"].ToString()) + " <strong>Služba:</strong> " + table[i]["sluzba_typ"].ToString() + " <strong>Odpracované hodiny: </strong> " + celkHod.ToString()+"</p>";
 
-        }
-        this.finalStat_lbl.Text = result;
+    //    }
+    //    this.finalStat_lbl.Text = result;
 
-    }
+    //}
 
-    protected void newRowData(int row, Dictionary<int, SortedList> table)
+    protected void newRowData(int row, Dictionary<int, SortedList> table, Dictionary<int,Hashtable>statDat,int stat)
     {
         TableRow riadok = new TableRow();
         this.epc_tbl.Controls.Add(riadok);
@@ -163,6 +177,11 @@ public partial class is_epc : System.Web.UI.Page
         kompl.Style.Add("padding", "5px");
         kompl.Font.Bold = true;
         kompl.Text = "Služba: " + table[row]["typ_sluzby"].ToString() + " Dňa: " + x2.MSDate(table[row]["datum_hlasenia"].ToString());
+        int min = Convert.ToInt32(statDat[stat]["worktime"]);
+
+        decimal celkHod = min / 60;
+        
+        kompl.Text += " <strong>Odpracované hodiny: </strong> " + celkHod.ToString() + "</p>";
         riadok.Controls.Add(kompl);
 
 
@@ -177,7 +196,9 @@ public partial class is_epc : System.Web.UI.Page
         celldata1.BorderWidth = Unit.Point(1);
         celldata1.BorderStyle = BorderStyle.Solid;
         celldata1.BorderColor = System.Drawing.Color.Black;
+        celldata1.VerticalAlign = VerticalAlign.Top;
         DateTime dt = Convert.ToDateTime(x2.UnixToMsDateTime(table[row]["work_start"].ToString()));
+        celldata1.Font.Size = FontUnit.Point(8);
         celldata1.Text = dt.ToString();
         riadok2.Controls.Add(celldata1);
 
@@ -186,7 +207,9 @@ public partial class is_epc : System.Web.UI.Page
         celldata2.BorderWidth = Unit.Point(1);
         celldata2.BorderStyle = BorderStyle.Solid;
         celldata2.BorderColor = System.Drawing.Color.Black;
+        celldata2.VerticalAlign = VerticalAlign.Top;
         DateTime dt2 = dt.AddMinutes(Convert.ToInt32(table[row]["work_time"]));
+        celldata2.Font.Size = FontUnit.Point(8);
         celldata2.Text = dt2.ToString();
         riadok2.Controls.Add(celldata2);
 
@@ -195,6 +218,8 @@ public partial class is_epc : System.Web.UI.Page
         celldata3.BorderWidth = Unit.Point(1);
         celldata3.BorderStyle = BorderStyle.Solid;
         celldata3.BorderColor = System.Drawing.Color.Black;
+        celldata3.Font.Size = FontUnit.Point(8);
+        celldata3.VerticalAlign = VerticalAlign.Top;
         celldata3.Text = table[row]["patient_name"].ToString();
         riadok2.Controls.Add(celldata3);
 
@@ -203,6 +228,8 @@ public partial class is_epc : System.Web.UI.Page
         celldata4.BorderWidth = Unit.Point(1);
         celldata4.BorderStyle = BorderStyle.Solid;
         celldata4.BorderColor = System.Drawing.Color.Black;
+        celldata4.Font.Size = FontUnit.Point(8);
+        celldata4.VerticalAlign = VerticalAlign.Top;
         celldata4.Text = table[row]["work_time"].ToString();
         celldata4.Font.Size = FontUnit.Point(8);
         riadok2.Controls.Add(celldata4);
@@ -211,7 +238,9 @@ public partial class is_epc : System.Web.UI.Page
         celldata5.Style.Add("padding", "3px");
         celldata5.BorderWidth = Unit.Point(1);
         celldata5.BorderStyle = BorderStyle.Solid;
+        celldata5.VerticalAlign = VerticalAlign.Top;
         celldata5.BorderColor = System.Drawing.Color.Black;
+        
         celldata5.Text = x2.DecryptString(table[row]["work_text"].ToString(), Session["passphrase"].ToString());
 
         if (table[row]["lf_id"].ToString() != "NULL")
@@ -233,8 +262,8 @@ public partial class is_epc : System.Web.UI.Page
         celldata1.BorderWidth = Unit.Point(1);
         celldata1.BorderStyle = BorderStyle.Solid;
         celldata1.BorderColor = System.Drawing.Color.Black;
-
-
+        celldata1.VerticalAlign = VerticalAlign.Top;
+        celldata1.Font.Size = FontUnit.Point(8);
         DateTime dt = Convert.ToDateTime(x2.UnixToMsDateTime(table[row]["work_start"].ToString()));
         celldata1.Text = dt.ToString();
         riadok.Controls.Add(celldata1);
@@ -243,8 +272,9 @@ public partial class is_epc : System.Web.UI.Page
         celldata2.Style.Add("padding", "3px");
         celldata2.BorderWidth = Unit.Point(1);
         celldata2.BorderStyle = BorderStyle.Solid;
+        celldata2.Font.Size = FontUnit.Point(8);
         celldata2.BorderColor = System.Drawing.Color.Black;
-
+        celldata2.VerticalAlign = VerticalAlign.Top;
         DateTime dt2 = dt.AddMinutes(Convert.ToInt32(table[row]["work_time"]));
         celldata2.Text =dt2.ToString();
         riadok.Controls.Add(celldata2);
@@ -253,16 +283,19 @@ public partial class is_epc : System.Web.UI.Page
         celldata3.Style.Add("padding", "3px");
         celldata3.BorderWidth = Unit.Point(1);
         celldata3.BorderStyle = BorderStyle.Solid;
+        celldata3.Font.Size = FontUnit.Point(8);
         celldata3.BorderColor = System.Drawing.Color.Black;
-
+        celldata3.VerticalAlign = VerticalAlign.Top;
         celldata3.Text = table[row]["patient_name"].ToString();
         riadok.Controls.Add(celldata3);
 
         TableCell celldata4 = new TableCell();
         celldata4.Style.Add("padding", "3px");
+        celldata4.VerticalAlign = VerticalAlign.Top;
         celldata4.BorderWidth = Unit.Point(1);
         celldata4.BorderStyle = BorderStyle.Solid;
         celldata4.BorderColor = System.Drawing.Color.Black;
+        celldata4.Font.Size = FontUnit.Point(8);
         celldata4.Text = table[row]["work_time"].ToString();
         celldata4.Font.Size = FontUnit.Point(8);
         riadok.Controls.Add(celldata4);
@@ -270,9 +303,11 @@ public partial class is_epc : System.Web.UI.Page
 
         TableCell celldata5 = new TableCell();
         celldata5.Style.Add("padding", "3px");
+        celldata5.VerticalAlign = VerticalAlign.Top;
         celldata5.BorderWidth = Unit.Point(1);
         celldata5.BorderStyle = BorderStyle.Solid;
         celldata5.BorderColor = System.Drawing.Color.Black;
+        celldata5.Font.Size = FontUnit.Point(8);
         celldata5.Text = x2.DecryptString(table[row]["work_text"].ToString(), Session["passphrase"].ToString());
         if (table[row]["lf_id"].ToString() != "NULL" )
         {
