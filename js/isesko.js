@@ -2,9 +2,43 @@
 //    alert("pokus");
 //}
 
+function onSuccess(data) {
+    alert(data);
+}
+
 $(document).ready(function () {
 
     //alert("hura");
+
+    $("input[id$=_publish_cb]").click(function (e) {
+        //var st = false;
+        //if ($("input[id$=_publish_cb]").attr("checked")) {
+        //    st = true;
+        //}
+            
+        var st = $("input[id$=_publish_cb]").is(":checked");
+
+        //if (st) {
+           //alert("lolo");
+
+
+            $.ajax({
+                type: "POST",
+                url: "ajaxcall.aspx/setData",
+                data: '{state: "' +st + '" }',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) { alert(response.d); },
+                failure: function (response) {
+                    alert(response.d);
+                }
+            });
+       // }
+
+
+    });
+
+    
 
     $("select[id$=_worktype_cb]").change(function (e) {
 

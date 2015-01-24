@@ -22,6 +22,9 @@ public partial class sluzby2 : System.Web.UI.Page
     public string[] shiftType;
     public string wgroup ="";
 
+   
+
+
     protected void Page_Init(object sender, EventArgs e)
     {
        
@@ -40,6 +43,7 @@ public partial class sluzby2 : System.Web.UI.Page
         if ((this.rights == "admin" || this.rights == "poweruser") && this.wgroup=="doctor")
         {
             this.publish_cb.Visible = true;
+            
         }
         else
         {
@@ -47,15 +51,18 @@ public partial class sluzby2 : System.Web.UI.Page
         }
         if (IsPostBack == false)
         {
-            this.setMonthYear();
+           this.setMonthYear();
 
            this.loadSluzby();
         }
         else
         {
+
             this.shiftTable.Controls.Clear();
             this.loadSluzby();
         }
+        //this.msg_lbl.Text = e.GetType().GetEleme
+       // this.publish_cb.Checked = this.getShiftState();
     }
 
     protected void changeSluzba(object sender, EventArgs e)
@@ -73,7 +80,71 @@ public partial class sluzby2 : System.Web.UI.Page
         this.rok_cb.SelectedValue = rok.ToString();
     }
 
+    protected Boolean getShiftState()
+    {
+        string mesiac = this.mesiac_cb.SelectedValue.ToString();
+        string rok = this.rok_cb.SelectedValue.ToString();
+        Boolean result = false;
+        if (mesiac.Length == 1)
+        {
+            mesiac = "0" + mesiac;
+        }
 
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("SELECT [state] FROM [is_sluzby_2] WHERE [datum] = '{0}-{1}-{2}' LIMIT 1", rok, mesiac, "01");
+
+        SortedList state = x2Mysql.getRow(sb.ToString());
+        
+            if (state["state"].ToString() == "active")
+            {
+                result = true;
+            }
+      
+
+        return result;
+    }
+
+    protected void changePublishStatus(object sender, EventArgs e)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        // CheckBox publ = new CheckBox();
+
+        //CheckBox publ = (CheckBox)sender;
+
+
+        string rok = this.rok_cb.SelectedValue.ToString();
+        string mesiac = this.mesiac_cb.SelectedValue.ToString();
+
+        if (mesiac.Length == 1)
+        {
+            mesiac = "0" + mesiac;
+        }
+
+
+
+        if (this.publish_cb.Checked == true)
+        {
+            sb.AppendFormat("UPDATE [is_sluzby_2] SET [state]='active' WHERE [date_group]='{0}{1}'", rok, mesiac);
+            //this.publish_cb.Checked = false;
+        }
+        else
+        {
+            sb.AppendFormat("UPDATE [is_sluzby_2] SET [state]='draft' WHERE [date_group]='{0}{1}'", rok, mesiac);
+            //this.publish_cb.Checked = true;
+        }
+
+        // this.msg_lbl.Text = sb.ToString();
+        SortedList res = x2Mysql.execute(sb.ToString());
+
+        Boolean result = Convert.ToBoolean(res["status"].ToString());
+
+        if (!result)
+        {
+            this.msg_lbl.Text = res["msg"].ToString();
+        }
+
+    }
 
     protected void loadSluzby()
     {
@@ -136,20 +207,20 @@ public partial class sluzby2 : System.Web.UI.Page
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
         if (table.Count == daysMonth)
         {
-            if (!IsPostBack)
-            {
-                string state = table[0]["state"].ToString();
-
-                if (state == "active")
-                {
-                    this.publish_cb.Checked = true;
-                    //this.publish_cb.ch
-                }
-                else
-                {
-                    this.publish_cb.Checked = false;
-                }
-            }
+            //if (IsPostBack == true)
+            //{
+            //    string state = table[0]["state"].ToString();
+            //    Session.Add("sluzby_status", state);
+            //    if (state == "active")
+            //    {
+            //        this.publish_cb.Checked = true;
+            //        //this.publish_cb.ch
+            //    }
+            //    else
+            //    {
+            //        this.publish_cb.Checked = false;
+            //    }
+            //}
 
             string[] header = shifts;
          
@@ -485,47 +556,7 @@ public partial class sluzby2 : System.Web.UI.Page
         
     }
 
-    protected void changePublishStatus(object sender, EventArgs e)
-    {
-        StringBuilder sb = new StringBuilder();
-
-       // CheckBox publ = new CheckBox();
-
-        //CheckBox publ = (CheckBox)sender;
-
-
-        string rok = this.rok_cb.SelectedValue.ToString();
-        string mesiac = this.mesiac_cb.SelectedValue.ToString();
-
-        if (mesiac.Length == 1)
-        {
-            mesiac = "0" + mesiac;
-        }
-
-
-
-        if (this.publish_cb.Checked == true)
-        {
-            sb.AppendFormat("UPDATE [is_sluzby_2] SET [state]='active' WHERE [date_group]='{0}{1}'", rok, mesiac);
-            //this.publish_cb.Checked = false;
-        }
-        else
-        {
-            sb.AppendFormat("UPDATE [is_sluzby_2] SET [state]='draft' WHERE [date_group]='{0}{1}'", rok, mesiac);
-            //this.publish_cb.Checked = true;
-        }
-
-       // this.msg_lbl.Text = sb.ToString();
-        SortedList res =  x2Mysql.execute(sb.ToString());
-
-        Boolean result = Convert.ToBoolean(res["status"].ToString());
-
-        if (!result)
-        {
-            this.msg_lbl.Text = res["msg"].ToString();
-        }
-
-    }
+    
 
     protected void publishSluzby(object sender, EventArgs e)
     {
@@ -550,8 +581,12 @@ public partial class sluzby2 : System.Web.UI.Page
         }
         
     }
-    
-    
+
+    [System.Web.Services.WebMethod]
+    public static string setPublish_state(string st)
+    {
+        return "halo"+st;
+    }
 
 
 }
