@@ -366,4 +366,10 @@
   <data name="pracovisko" xml:space="preserve">
     <value>KDCH</value>
   </data>
+  <data name="shifts_see_all" xml:space="preserve">
+    <value>&lt;h3 class="red"&gt;Služby sú spristupnené všetkým&lt;/h3&gt;</value>
+  </data>
+  <data name="shifts_see_limited" xml:space="preserve">
+    <value>&lt;h3 class="red"&gt;Služby vidia len oprávnené osoby&lt;/h3&gt;</value>
+  </data>
 </root>

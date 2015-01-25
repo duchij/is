@@ -1,0 +1,79 @@
+﻿ALTER TABLE `is_hlasko_epc`
+	ADD COLUMN `work_night` INT NULL DEFAULT NULL AFTER `work_type`;
+
+	ALTER TABLE `is_users`
+	ADD COLUMN `klinika_label` TEXT(50) NULL COLLATE 'utf8_slovak_ci' AFTER `titul_za`;
+
+	ALTER TABLE `is_users`
+	ADD COLUMN `klinika_label` TEXT(50) NULL DEFAULT NULL COLLATE 'utf8_slovak_ci' AFTER `titul_za`;
+
+
+
+
+	CREATE DEFINER=`root`@`localhost` PROCEDURE `CALC_NOCNA_PRACA`(IN `userID` BIGINT, IN `mesiac` INT, IN `rok` INT, IN `pocetDni` INT)
+	LANGUAGE SQL
+	NOT DETERMINISTIC
+	CONTAINS SQL
+	SQL SECURITY DEFINER
+	COMMENT 'prerata cistu nocnu pracu a updateju stlpce'
+BEGIN
+declare done int default 0;
+
+declare zaciatokNocnej Datetime;
+declare koniecNocnej Datetime;
+
+declare intervalStart Datetime;
+declare intervalEnd Datetime;
+declare odPolnoci Datetime;
+declare odPolnociKoniec Datetime;
+declare cWorkstart Datetime;
+declare cWorktime int;
+declare cWorknight int;
+declare cUserId Bigint;
+declare cId BigInt;
+
+declare nocna int default 0;
+-- set intervalStart = concat(rok,'-',mesiac,'','01');
+-- set intervalEnd = concat(rok,'-',mesiac,'-',pocetDni);
+
+DECLARE cur1 CURSOR for select work_start,work_time, work_night, user_id,id FROM is_hlasko_epc where user_id = userID AND work_start BETWEEN concat(rok,'-',mesiac,'-','01') AND concat(rok,'-',mesiac,'-',pocetDni);
+DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+open cur1;
+
+while done =0 do
+	fetch cur1 into cWorkstart,cWorktime,cWorknight,cUserId,cId;
+	set nocna = 0;
+	-- set @hodinaZac = HOUR(datum);
+	set @hodinaKonc = DATE_ADD(cWorkstart, INTERVAL cWorktime MINUTE);
+	set @lenDatum = DATE(cWorkstart);
+
+	set zaciatokNocnej = concat(@lenDatum,' ','22:00:00');
+	set koniecNocnej = DATE_ADD(zaciatokNocnej, INTERVAL 480 MINUTE);
+	
+	set odPolnoci = CONCAT(@lenDatum, ' ', '00:00:00');
+	set odPolnociKoniec = DATE_ADD(odPolnoci, INTERVAL 360 MINUTE);
+	
+-- toto ak je praca zacata aj skoncena v intervale nocnej	
+IF (cWorkstart BETWEEN zaciatokNocnej AND koniecNocnej) AND (@hodinaKonc BETWEEN zaciatokNocnej AND koniecNocnej) THEN
+	SET nocna=cWorktime;
+-- ak zacala praca pred 22.00 ale skoncila po nej	
+ELSEIF (cWorkstart < zaciatokNocnej) AND (@hodinaKonc BETWEEN zaciatokNocnej AND koniecNocnej) THEN
+	SET nocna=TIMESTAMPDIFF(MINUTE,zaciatokNocnej,@hodinaKonc); 
+-- ak praca zacala po 22.00hod ale pokraovala aj po 6.00hod
+ELSEIF (cWorkstart BETWEEN zaciatokNocnej AND koniecNocnej) AND (@hodinaKonc > koniecNocnej) THEN
+	SET nocna=TIMESTAMPDIFF(MINUTE, cWorkstart, koniecNocnej);
+-- ak praca zacala po polnoci ale trvala len do 06.00
+ELSEIF (cWorkstart BETWEEN odPolnoci AND odPolnociKoniec) AND (@hodinaKonc BETWEEN odPolnoci AND odPolnociKoniec)  THEN
+	SET nocna=cWorktime;
+-- ak praca zacala po polnoci a trvala po po 6.00
+ELSEIF (@hodinaKonc > odPolnociKoniec) AND (cWorkstart BETWEEN odPolnoci AND odPolnociKoniec) THEN
+	SET nocna=TIMESTAMPDIFF(MINUTE, cWorkstart, odPolnociKoniec);
+END IF;
+	
+	UPDATE is_hlasko_epc SET work_night = nocna WHERE id = cId;
+
+END WHILE;
+close cur1;
+
+END

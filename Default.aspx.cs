@@ -75,18 +75,18 @@ public partial class _Default : System.Web.UI.Page
                     Session.Add("workgroup", data["work_group"].ToString());
                     Session.Add("fullname", data["full_name"].ToString());
                     Session.Add("login", data["name"].ToString());
-                    Session.Add("email", data["email"].ToString());
+                    Session.Add("email", x2.getStr(data["email"].ToString()));
 
-                    Session.Add("klinika", data["clinics_idf"].ToString());
-                    Session.Add("oddelenie", data["deps_idf"].ToString()); 
+                    Session.Add("klinika", x2.getStr(data["clinics_idf"].ToString()));
+                    Session.Add("oddelenie", x2.getStr(data["deps_idf"].ToString())); 
 
-                    Session.Add("pracdoba", data["pracdoba"].ToString());
-                    Session.Add("tyzdoba", data["tyzdoba"].ToString());
-                    Session.Add("osobcisl", data["osobcisl"].ToString());
+                    Session.Add("pracdoba", x2.getStr(data["pracdoba"].ToString()));
+                    Session.Add("tyzdoba", x2.getStr(data["tyzdoba"].ToString()));
+                    Session.Add("osobcisl", x2.getStr(data["osobcisl"].ToString()));
 
-                    Session.Add("titul_pred", data["titul_pred"].ToString());
-                    Session.Add("titul_za", data["titul_za"].ToString());
-
+                    Session.Add("titul_pred", x2.getStr(data["titul_pred"].ToString()));
+                    Session.Add("titul_za", x2.getStr(data["titul_za"].ToString()));
+                    Session.Add("klinika_label", x2.getStr(data["klinika_label"].ToString()));
 
 
                    /* Response.Cookies["tuisegumdrum"].Value = "activado";
@@ -111,17 +111,18 @@ public partial class _Default : System.Web.UI.Page
                     Session.Add("login", data["name"].ToString());
                     Session.Add("email", data["email"].ToString());
 
-                    Session.Add("pracdoba", data["pracdoba"].ToString());
-                    Session.Add("tyzdoba", data["tyzdoba"].ToString());
-                    Session.Add("osobcisl", data["osobcisl"].ToString());
+                    Session.Add("pracdoba", x2.getStr(data["pracdoba"].ToString()));
+                    Session.Add("tyzdoba", x2.getStr(data["tyzdoba"].ToString()));
+                    Session.Add("osobcisl", x2.getStr(data["osobcisl"].ToString()));
 
-                    Session.Add("klinika", data["clinics_idf"].ToString());
-                    Session.Add("oddelenie", data["deps_idf"].ToString());
+                    Session.Add("klinika", x2.getStr(data["clinics_idf"].ToString()));
+                    Session.Add("oddelenie",x2.getStr(data["deps_idf"].ToString()));
 
-                    Session.Add("titul_pred", data["titul_pred"].ToString());
-                    Session.Add("titul_za", data["titul_za"].ToString());
+                    Session.Add("titul_pred", x2.getStr(data["titul_pred"].ToString()));
+                    Session.Add("titul_za",  x2.getStr(data["titul_za"].ToString()));
 
-                    Session.Add("zaradenie", data["zaradenie"].ToString());
+                    Session.Add("zaradenie",  x2.getStr(data["zaradenie"].ToString()));
+                    Session.Add("klinika_label", x2.getStr(data["klinika_label"].ToString()));
 
                     SortedList passPhrase = db_obj.getPassPhrase();
                     Session.Add("passphrase", passPhrase["data"].ToString());

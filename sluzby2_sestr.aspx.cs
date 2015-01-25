@@ -36,17 +36,22 @@ public partial class sluzby2_sestr : System.Web.UI.Page
 
         this.deps = Session["oddelenie"].ToString();
 
-        if (deps == "MSV")
+      
+
+        this.rights = Session["rights"].ToString();
+
+        if (this.deps == "MSV")
         {
             this.deps_dl.Items.Add(new ListItem("MSV", "MSV"));
         }
-        if (deps == "VD")
+        if (this.deps == "VD")
         {
             this.deps_dl.Items.Add(new ListItem("Velke deti", "VD"));
         }
 
         if ((this.rights == "admin") || (this.rights == "poweruser"))
         {
+            this.deps_dl.Items.Clear();
             this.deps_dl.Items.Add(new ListItem("MSV", "MSV"));
             this.deps_dl.Items.Add(new ListItem("Velke deti", "VD"));
 
@@ -57,12 +62,20 @@ public partial class sluzby2_sestr : System.Web.UI.Page
 
         if (this.rights == "admin" || this.rights == "poweruser")
         {
-            this.publish_cb.Visible = true;
+            this.publish_btn.Visible = true;
+            this.unpublish_btn.Visible = true;
         }
         else
         {
-            this.publish_cb.Visible = false;
+            this.publish_btn.Visible = false;
+            this.unpublish_btn.Visible = false;
         }
+
+        if (Session["oddelenie"].ToString().Length == 0)
+        {
+            this.deps = this.deps_dl.SelectedValue.ToString();
+        }
+
         if (IsPostBack == false)
         {
             this.setMonthYear();
@@ -104,6 +117,8 @@ public partial class sluzby2_sestr : System.Web.UI.Page
         this.shiftTable.Controls.Clear();
         string mesiac = this.mesiac_cb.SelectedValue.ToString();
         string rok = this.rok_cb.SelectedValue.ToString();
+
+       
 
         int daysMonth = DateTime.DaysInMonth(Convert.ToInt32(rok), Convert.ToInt32(mesiac));
 
@@ -163,18 +178,18 @@ public partial class sluzby2_sestr : System.Web.UI.Page
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
         if (table.Count == daysMonth)
         {
-            if (!IsPostBack)
+            if (this.rights == "admin" || this.rights == "poweruser")
             {
                 string state = table[0]["state"].ToString();
 
                 if (state == "active")
                 {
-                    this.publish_cb.Checked = true;
+                    this.shiftState_lbl.Text = Resources.Resource.shifts_see_all;
                     //this.publish_cb.ch
                 }
                 else
                 {
-                    this.publish_cb.Checked = false;
+                    this.shiftState_lbl.Text = Resources.Resource.shifts_see_limited;
                 }
             }
 
@@ -327,7 +342,7 @@ public partial class sluzby2_sestr : System.Web.UI.Page
                 if (this.rights != "admin" || this.rights != "poweruser")
                 {
                     this.msg_lbl.Text = Resources.Resource.shifts_not_done;
-                    this.publish_cb.Visible = false;
+                   // this.publish_cb.Visible = false;
                 }
                 if (this.rights == "admin" || this.rights == "poweruser")
                 {
@@ -336,7 +351,7 @@ public partial class sluzby2_sestr : System.Web.UI.Page
                     if (Convert.ToBoolean(myres["status"]))
                     {
                         this.shiftTable.Controls.Clear();
-                        this.publish_cb.Visible = true;
+                        //this.publish_cb.Visible = true;
                     //this.msg_lbl.Text = daysTmp.ToString();
                     //ViewState.Clear();
                         this.loadSluzby();
@@ -521,15 +536,9 @@ public partial class sluzby2_sestr : System.Web.UI.Page
         
     }
 
-    protected void changePublishStatus(object sender, EventArgs e)
+    protected void publishOnFnc(object sender, EventArgs e)
     {
         StringBuilder sb = new StringBuilder();
-
-       // CheckBox publ = new CheckBox();
-
-        //CheckBox publ = (CheckBox)sender;
-
-
         string rok = this.rok_cb.SelectedValue.ToString();
         string mesiac = this.mesiac_cb.SelectedValue.ToString();
 
@@ -538,21 +547,8 @@ public partial class sluzby2_sestr : System.Web.UI.Page
             mesiac = "0" + mesiac;
         }
 
-
-
-        if (this.publish_cb.Checked == true)
-        {
-            sb.AppendFormat("UPDATE [is_sluzby_2_sestr] SET [state]='active' WHERE [date_group]='{0}{1}'", rok, mesiac);
-            //this.publish_cb.Checked = false;
-        }
-        else
-        {
-            sb.AppendFormat("UPDATE [is_sluzby_2_sestr] SET [state]='draft' WHERE [date_group]='{0}{1}'", rok, mesiac);
-            //this.publish_cb.Checked = true;
-        }
-
-       // this.msg_lbl.Text = sb.ToString();
-        SortedList res =  x2Mysql.execute(sb.ToString());
+        sb.AppendFormat("UPDATE [is_sluzby_2_sestr] SET [state]='active' WHERE [date_group]='{0}{1}'", rok, mesiac);
+        SortedList res = x2Mysql.execute(sb.ToString());
 
         Boolean result = Convert.ToBoolean(res["status"].ToString());
 
@@ -560,8 +556,85 @@ public partial class sluzby2_sestr : System.Web.UI.Page
         {
             this.msg_lbl.Text = res["msg"].ToString();
         }
-
+        else
+        {
+            if (this.rights == "admin" || this.rights == "poweruser")
+            {
+                this.shiftState_lbl.Text = Resources.Resource.shifts_see_all;
+            }
+        }
     }
+
+    protected void publishOffFnc(object sender, EventArgs e)
+    {
+        StringBuilder sb = new StringBuilder();
+        string rok = this.rok_cb.SelectedValue.ToString();
+        string mesiac = this.mesiac_cb.SelectedValue.ToString();
+
+        if (mesiac.Length == 1)
+        {
+            mesiac = "0" + mesiac;
+        }
+
+        sb.AppendFormat("UPDATE [is_sluzby_2_sestr] SET [state]='draft' WHERE [date_group]='{0}{1}'", rok, mesiac);
+        SortedList res = x2Mysql.execute(sb.ToString());
+
+        Boolean result = Convert.ToBoolean(res["status"].ToString());
+
+        if (!result)
+        {
+            this.msg_lbl.Text = res["msg"].ToString();
+        }
+        else
+        {
+            if (this.rights == "admin" || this.rights == "poweruser")
+            {
+                this.shiftState_lbl.Text = Resources.Resource.shifts_see_limited;
+            }
+        }
+    }
+
+    //protected void changePublishStatus(object sender, EventArgs e)
+    //{
+    //    StringBuilder sb = new StringBuilder();
+
+    //   // CheckBox publ = new CheckBox();
+
+    //    //CheckBox publ = (CheckBox)sender;
+
+
+    //    string rok = this.rok_cb.SelectedValue.ToString();
+    //    string mesiac = this.mesiac_cb.SelectedValue.ToString();
+
+    //    if (mesiac.Length == 1)
+    //    {
+    //        mesiac = "0" + mesiac;
+    //    }
+
+
+
+    //    if (this.publish_cb.Checked == true)
+    //    {
+    //        sb.AppendFormat("UPDATE [is_sluzby_2_sestr] SET [state]='active' WHERE [date_group]='{0}{1}'", rok, mesiac);
+    //        //this.publish_cb.Checked = false;
+    //    }
+    //    else
+    //    {
+    //        sb.AppendFormat("UPDATE [is_sluzby_2_sestr] SET [state]='draft' WHERE [date_group]='{0}{1}'", rok, mesiac);
+    //        //this.publish_cb.Checked = true;
+    //    }
+
+    //   // this.msg_lbl.Text = sb.ToString();
+    //    SortedList res =  x2Mysql.execute(sb.ToString());
+
+    //    Boolean result = Convert.ToBoolean(res["status"].ToString());
+
+    //    if (!result)
+    //    {
+    //        this.msg_lbl.Text = res["msg"].ToString();
+    //    }
+
+    //}
 
     protected void publishSluzby(object sender, EventArgs e)
     {

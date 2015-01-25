@@ -424,6 +424,7 @@ public partial class vykaz2 : System.Web.UI.Page
              }
         }
         this.fillInVacations(mesiac, rok, Session["user_id"].ToString());
+
         this.fillEpcData(mesiac, rok, Session["user_id"].ToString());
     }
 
@@ -649,89 +650,108 @@ public partial class vykaz2 : System.Web.UI.Page
 
     protected void fillEpcData(int mesiac, int rok, string id)
     {
+        
+
         ContentPlaceHolder ctpl = new ContentPlaceHolder();
 
         Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
 
         ctpl = (ContentPlaceHolder)tmpControl;
 
-        string[] freeDays = x_db.getFreeDays();
-        string dateGroup = my_x2.makeDateGroup(rok, mesiac).ToString();
         int dni = DateTime.DaysInMonth(rok, mesiac);
+        SortedList res = x2Mysql.calcNightWork(Convert.ToInt32(id), mesiac, rok, dni);
 
-        string mesStr = dateGroup.Substring(4, 2);
-
-        string zacDt = rok.ToString() + "-" + mesStr.ToString() + "-" + "01";
-        string koncDt = rok.ToString() + "-" + mesStr.ToString() + "-" + dni.ToString();
-
-        StringBuilder sb = new StringBuilder();
-        sb.AppendLine("SELECT [hlasko].[dat_hlas] AS [datum],[hlasko].[type] AS [sluzba_typ],[hlasko_epc].[user_id], SUM([work_time]) AS [worktime]");
-        sb.AppendLine("FROM [is_hlasko_epc] as [hlasko_epc]");
-        sb.AppendLine("LEFT JOIN [is_hlasko] AS [hlasko] ON [hlasko].[id]=[hlasko_epc].[hlasko_id]");
-        sb.AppendFormat("WHERE [hlasko_epc].[work_start] BETWEEN '{0}' AND '{1}'", zacDt, koncDt);
-        sb.AppendFormat("AND [user_id]='{0}'", id);
-        sb.AppendLine("GROUP BY [hlasko_epc].[hlasko_id]");
-
-        Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
-
-        int tableLn = table.Count;
-       // DateTime[] epcDate = new DateTime[tableLn];
-
-        for (int i = 0; i < tableLn; i++)
+        if (Convert.ToBoolean(res["status"]))
         {
-            DateTime dt = Convert.ToDateTime(my_x2.MSDate(table[i]["datum"].ToString()));
 
-            int den = dt.Day;
+            string[] freeDays = x_db.getFreeDays();
+            string dateGroup = my_x2.makeDateGroup(rok, mesiac).ToString();
 
-            string mesDen = den.ToString() + "." + mesiac.ToString();
 
-            //int epc_tmp = Array.IndexOf(epcDate, dtTmp);
+            string mesStr = dateGroup.Substring(4, 2);
 
-            int rs_tmp = Array.IndexOf(freeDays, mesDen);
-            Boolean sviatok = false;
+            string zacDt = rok.ToString() + "-" + mesStr.ToString() + "-" + "01";
+            string koncDt = rok.ToString() + "-" + mesStr.ToString() + "-" + dni.ToString();
 
-            if  (Array.IndexOf(freeDays, mesDen) != -1)
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("SELECT [hlasko].[dat_hlas] AS [datum],[hlasko].[type] AS [sluzba_typ],[hlasko_epc].[user_id], SUM([hlasko_epc].[work_time]) AS [worktime], SUM([hlasko_epc].[work_night]) AS [worknight]");
+            sb.AppendLine("FROM [is_hlasko_epc] as [hlasko_epc]");
+            sb.AppendLine("LEFT JOIN [is_hlasko] AS [hlasko] ON [hlasko].[id]=[hlasko_epc].[hlasko_id]");
+            sb.AppendFormat("WHERE [hlasko_epc].[work_start] BETWEEN '{0}' AND '{1}'", zacDt, koncDt);
+            sb.AppendFormat("AND [user_id]='{0}'", id);
+            sb.AppendLine("GROUP BY [hlasko_epc].[hlasko_id]");
+
+            Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
+
+            int tableLn = table.Count;
+            // DateTime[] epcDate = new DateTime[tableLn];
+
+            for (int i = 0; i < tableLn; i++)
             {
-                sviatok = true;
+                DateTime dt = Convert.ToDateTime(my_x2.MSDate(table[i]["datum"].ToString()));
+
+                int den = dt.Day;
+                Control nightbox = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_5");
+                TextBox nightTBOX = (TextBox)nightbox;
+                decimal night_work = Convert.ToDecimal(table[i]["worknight"]);
+                
+                nightTBOX.Text = (Math.Round(night_work/60,1)).ToString();
+
+                string mesDen = den.ToString() + "." + mesiac.ToString();
+
+                //int epc_tmp = Array.IndexOf(epcDate, dtTmp);
+
+                int rs_tmp = Array.IndexOf(freeDays, mesDen);
+                Boolean sviatok = false;
+
+                if (Array.IndexOf(freeDays, mesDen) != -1)
+                {
+                    sviatok = true;
+                }
+
+                int vikInt = (int)dt.DayOfWeek;
+                Boolean vikend = false;
+                if (vikInt == 0 || vikInt == 6)
+                {
+                    vikend = true;
+                }
+
+                int aktivna = Convert.ToInt32(table[i]["worktime"]);
+                decimal hodiny = aktivna / 60;
+                decimal neaktivna = 12 - hodiny;
+
+                if (neaktivna < 0)
+                {
+                    hodiny = 12;
+                    neaktivna = 0;
+                }
+
+                if (vikend || sviatok)
+                {
+                    Control tbox1 = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_9");
+                    TextBox mTBox1 = (TextBox)tbox1;
+                    Control tbox2 = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_11");
+                    TextBox mTBox2 = (TextBox)tbox2;
+
+                    mTBox1.Text = hodiny.ToString();
+                    mTBox2.Text = neaktivna.ToString();
+                }
+                else
+                {
+                    Control tbox1 = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_8");
+                    TextBox mTBox1 = (TextBox)tbox1;
+                    Control tbox2 = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_10");
+                    TextBox mTBox2 = (TextBox)tbox2;
+
+                    mTBox1.Text = hodiny.ToString();
+                    mTBox2.Text = neaktivna.ToString();
+                }
             }
-
-            int vikInt = (int)dt.DayOfWeek;
-            Boolean vikend = false;
-            if (vikInt == 0 || vikInt == 6)
-            {
-                vikend = true;
-            }
-
-            int aktivna = Convert.ToInt32(table[i]["worktime"]);
-            decimal hodiny = aktivna / 60;
-            decimal neaktivna = 12 - hodiny;
-
-            if (neaktivna < 0)
-            {
-                hodiny = 12;
-                neaktivna = 0;
-            }
-
-            if (vikend || sviatok)
-            {
-                Control tbox1 = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_9");
-                TextBox mTBox1 = (TextBox)tbox1;
-                Control tbox2 = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_11");
-                TextBox mTBox2 = (TextBox)tbox2;
-
-                mTBox1.Text = hodiny.ToString();
-                mTBox2.Text = neaktivna.ToString();
-            }
-            else
-            {
-                Control tbox1 = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_8");
-                TextBox mTBox1 = (TextBox)tbox1;
-                Control tbox2 = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_10");
-                TextBox mTBox2 = (TextBox)tbox2;
-
-                mTBox1.Text = hodiny.ToString();
-                mTBox2.Text = neaktivna.ToString();
-            }
+        }
+        else
+        {
+            this.msg_lbl.Visible = true;
+            this.msg_lbl.Text = res["msg"].ToString();
         }
     }
 
@@ -1025,7 +1045,14 @@ public partial class vykaz2 : System.Web.UI.Page
 
         cb.BeginText();
         cb.MoveText(233, size.Height - 97);
-        cb.ShowText("KDCH");
+        if (Session["klinika_label"].ToString().Length > 0)
+        {
+            cb.ShowText(Session["klinika_label"].ToString());
+        }
+        else
+        {
+            cb.ShowText("");
+        }
         cb.EndText();
 
         cb.BeginText();

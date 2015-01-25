@@ -37,16 +37,18 @@
                 </asp:DropDownList>
                 </div> 
             </div>
- Počet dní v mesiaci: <asp:Label ID="days_lbl" runat="server" Text="Label"></asp:Label><hr />
+ Počet dní v mesiaci: <asp:Label ID="days_lbl" runat="server" Text=""></asp:Label><hr />
                 <asp:Label ID="Label1" runat="server" Text="Víkend" CssClass="red box" Width="130"></asp:Label>
                 <asp:Label ID="Label2" runat="server" Text="Štátny sviatok" CssClass="yellow box" Width="130"></asp:Label>
+                <asp:Label ID="shiftState_lbl" runat="server" Text=""></asp:Label>
                 <asp:Table ID="shiftTable" runat="server" EnableViewState="true" CssClass="responsive" data-max="14">                 
                 </asp:Table>
                 <div class="row">
                     <div class="one whole padded">
-                    <asp:CheckBox ID="publish_cb" runat="server" CssClass="mojInline"  />
+                        <asp:Button ID="publish_btn" runat="server" Text="Sprístupniť všetkým" CssClass="green button" OnClick="publishOnFnc"  />
+                            <asp:Button ID="unpublish_btn" runat="server" Text="Zblokovať prístup všetkým" CssClass="red button"  OnClick="publishOffFnc"/>
 
-                        <asp:Label ID="publish_lbl" runat="server" Text="Uvernejniť" CssClass="mojInline"></asp:Label>
+                        <%--<asp:Label ID="publish_lbl" runat="server" Text="Uvernejniť" CssClass="mojInline"></asp:Label>--%>
                         </div>
                     <asp:Button ID="toWord_btn" runat="server" Text="do Wordu" OnClick="publishSluzby"/>
                 

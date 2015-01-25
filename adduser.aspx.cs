@@ -21,11 +21,7 @@ public partial class adduser : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-
-        //if (Request.Cookies["tuisegumdrum"] == null)
-        //{
-        //    Response.Redirect("error.html");
-        //}
+              
 
         if (Session["tuisegumdrum"] == null)
         {
@@ -66,6 +62,7 @@ public partial class adduser : System.Web.UI.Page
                 this.titul_za.Text = "";
                 this.zaradenie_txt.Text = "";
                 this.passwd_txt.ReadOnly = false;
+                this.klinika_txt.Text = "";
                 this.loadData();
             }
             else
@@ -103,10 +100,11 @@ public partial class adduser : System.Web.UI.Page
                 this.zaradenie_txt.Text = Session["zaradenie"].ToString();
 
 
-                string pracdoba = my_x2.getStr(Session["pracdoba"].ToString());
-                string tyzdoba = my_x2.getStr(Session["tyzdoba"].ToString());
-                string osobcisl = my_x2.getStr(Session["osobcisl"].ToString());
+                string pracdoba = Session["pracdoba"].ToString();
+                string tyzdoba = Session["tyzdoba"].ToString();
+                string osobcisl = Session["osobcisl"].ToString();
 
+                this.klinika_txt.Text = Session["klinika_label"].ToString();
 
                 if (pracdoba.Length > 0)
                 {
@@ -216,6 +214,7 @@ public partial class adduser : System.Web.UI.Page
             data.Add("titul_pred", this.titul_pred.Text.ToString());
             data.Add("titul_za", this.titul_za.Text.ToString());
             data.Add("zaradenie", this.zaradenie_txt.Text.ToString());
+            data.Add("klinika_label", this.klinika_txt.Text.ToString());
 
             if (this.clinics_dl.SelectedValue.ToString() == "0")
             {
@@ -253,6 +252,7 @@ public partial class adduser : System.Web.UI.Page
                 this.titul_pred.Text = "";
                 this.titul_za.Text = "";
                 this.zaradenie_txt.Text = "";
+                this.klinika_txt.Text = "";
                 this.Page_Load(sender, e);
 
                
@@ -276,7 +276,7 @@ public partial class adduser : System.Web.UI.Page
                 data.Add("titul_za", this.titul_za.Text.ToString());
 
                 data.Add("zaradenie", this.zaradenie_txt.Text.ToString());
-
+                data.Add("klinika_label", this.klinika_txt.Text.ToString());
 
                 if (this.clinics_dl.SelectedValue.ToString() == "0")
                 {
@@ -344,6 +344,7 @@ public partial class adduser : System.Web.UI.Page
         data.Add("titul_pred", this.titul_pred.Text.ToString().Trim());
         data.Add("titul_za", this.titul_za.Text.ToString().Trim());
         data.Add("zaradenie", this.zaradenie_txt.Text.ToString().Trim());
+        data.Add("klinika_label", this.klinika_txt.Text.ToString().Trim());
         /*data.Add("klinika", this.clinics_dl.SelectedValue);
         data.Add("oddelenie", this.oddelenie_dl.SelectedValue);*/
 

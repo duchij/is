@@ -159,15 +159,11 @@
                      <tr>
                         <td>Osobné číslo:</td>
                         <td><asp:TextBox ID="osobcisl_txt" runat="server" Text=""></asp:TextBox></td>
-                    
                     </tr>
-                    
-                    
-                    
-                     
-                    
-                    
-                    
+                         <tr>
+                        <td>Klinika (len skratka, napr. na výkaz:</td>
+                        <td><asp:TextBox ID="klinika_txt" runat="server" Text=""></asp:TextBox></td>
+                    </tr>
                     </table>
                 <asp:Label ID="Label1" runat="server" Text="<%$ Resources:Resource,adduser_relogin %>" 
                             Font-Size="14pt" ForeColor="#FF3300"></asp:Label>

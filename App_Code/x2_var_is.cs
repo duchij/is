@@ -297,6 +297,10 @@ public class x2_var
     public string getStr(string text)
     {
         text = text.Trim();
+        if (text == "NULL")
+        {
+            text = "";
+        }
         return text;
     }
 

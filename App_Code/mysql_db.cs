@@ -295,6 +295,50 @@ public class mysql_db
         return result;
     }
 
+    public SortedList calcNightWork(int user_id, int mesiac, int rok, int pocetDni)
+    {
+        SortedList result = new SortedList();
+
+        OdbcTransaction trans1 = null;
+        my_con.Open();
+
+        OdbcCommand cmd = new OdbcCommand();
+        cmd.Connection = my_con;
+        cmd.CommandType = CommandType.Text;
+
+        trans1 = my_con.BeginTransaction();
+
+        cmd.Transaction = trans1;
+        cmd.CommandText = "CALL CALC_NOCNA_PRACA(?,?,?,?);";
+
+        cmd.Parameters.Add("userID", OdbcType.BigInt).Value = user_id;
+        cmd.Parameters.Add("mesiac", OdbcType.Int).Value = mesiac;
+        cmd.Parameters.Add("rok", OdbcType.Int).Value = rok;
+        cmd.Parameters.Add("pocetDni", OdbcType.Int).Value = pocetDni;
+        //cmd.Parameters.Add("id", OdbcType.BigInt).Value = Convert.ToInt32(lfData["id"]);
+        cmd.CommandText.ToString();
+        try
+        {
+            cmd.ExecuteNonQuery();
+            //cmd.CommandText = "SELECT LAST_INSERT_ID();";
+            //int id = Convert.ToInt32(cmd.ExecuteScalar());
+            result.Add("status", true);
+            //result.Add("last_id",  Convert.ToInt32(lfData["id"]));
+            cmd.Transaction.Commit();
+        }
+        catch (Exception ex)
+        {
+            result.Add("status",false);
+            result.Add("msg",ex.ToString());
+            cmd.Transaction.Rollback();
+        }
+        my_con.Close();
+
+
+
+        return result;
+    }
+
     public int fillDocShifts(int dategroup, int days, int mesiac, int rok)
     {
        
