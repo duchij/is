@@ -78,7 +78,10 @@ public partial class _Default : System.Web.UI.Page
                     Session.Add("email", x2.getStr(data["email"].ToString()));
 
                     Session.Add("klinika", x2.getStr(data["clinics_idf"].ToString()));
-                    Session.Add("oddelenie", x2.getStr(data["deps_idf"].ToString())); 
+                    Session.Add("oddelenie", x2.getStr(data["deps_idf"].ToString()));
+
+                    Session.Add("klinika_id", data["klinika"]);
+                    Session.Add("oddelenie_id", x2.getStr(data["oddelenie"].ToString()));
 
                     Session.Add("pracdoba", x2.getStr(data["pracdoba"].ToString()));
                     Session.Add("tyzdoba", x2.getStr(data["tyzdoba"].ToString()));
@@ -114,11 +117,14 @@ public partial class _Default : System.Web.UI.Page
                     Session.Add("pracdoba", x2.getStr(data["pracdoba"].ToString()));
                     Session.Add("tyzdoba", x2.getStr(data["tyzdoba"].ToString()));
                     Session.Add("osobcisl", x2.getStr(data["osobcisl"].ToString()));
-
+                                                                 
                     Session.Add("klinika", x2.getStr(data["clinics_idf"].ToString()));
                     Session.Add("oddelenie",x2.getStr(data["deps_idf"].ToString()));
 
-                    Session.Add("titul_pred", x2.getStr(data["titul_pred"].ToString()));
+                    Session.Add("klinika_id", data["klinika"]);
+                    Session.Add("oddelenie_id", x2.getStr(data["oddelenie"].ToString()));
+                    
+                        Session.Add("titul_pred", x2.getStr(data["titul_pred"].ToString()));
                     Session.Add("titul_za",  x2.getStr(data["titul_za"].ToString()));
 
                     Session.Add("zaradenie",  x2.getStr(data["zaradenie"].ToString()));

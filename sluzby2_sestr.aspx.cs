@@ -29,35 +29,11 @@ public partial class sluzby2_sestr : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-       if (Session["tuisegumdrum"] == null)
+        if (Session["tuisegumdrum"] == null)
         {
             Response.Redirect("error.html");
-        } 
-
+        }
         this.deps = Session["oddelenie"].ToString();
-
-      
-
-        this.rights = Session["rights"].ToString();
-
-        if (this.deps == "MSV")
-        {
-            this.deps_dl.Items.Add(new ListItem("MSV", "MSV"));
-        }
-        if (this.deps == "VD")
-        {
-            this.deps_dl.Items.Add(new ListItem("Velke deti", "VD"));
-        }
-
-        if ((this.rights == "admin") || (this.rights == "poweruser"))
-        {
-            this.deps_dl.Items.Clear();
-            this.deps_dl.Items.Add(new ListItem("MSV", "MSV"));
-            this.deps_dl.Items.Add(new ListItem("Velke deti", "VD"));
-
-        }
-
-
         this.rights = Session["rights"].ToString();
 
         if (this.rights == "admin" || this.rights == "poweruser")
@@ -71,20 +47,22 @@ public partial class sluzby2_sestr : System.Web.UI.Page
             this.unpublish_btn.Visible = false;
         }
 
-        if (Session["oddelenie"].ToString().Length == 0)
+        /*if (Session["oddelenie"].ToString().Length == 0)
         {
             this.deps = this.deps_dl.SelectedValue.ToString();
-        }
-
+        }*/
+        
         if (IsPostBack == false)
         {
             this.setMonthYear();
-
+            this.loadDeps();
            this.loadSluzby();
         }
         else
         {
+           // this.deps_dl.Items.Clear();
             this.shiftTable.Controls.Clear();
+            this.loadDeps();
             this.loadSluzby();
         }
     }
@@ -109,7 +87,35 @@ public partial class sluzby2_sestr : System.Web.UI.Page
         this.rok_cb.SelectedValue = rok.ToString();
     }
 
+    protected void loadDeps()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("SELECT * FROM [is_deps] WHERE [clinic_id]='{0}'", Session["klinika_id"]);
 
+        Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
+
+
+        int depsLn = table.Count;
+        ListItem[] newItem = new ListItem[depsLn];
+       // this.deps_dl.Items.Clear();
+        for (int dep = 0; dep < depsLn; dep++)
+        {
+            if (this.rights == "admin" || this.rights == "poweruser")
+            {
+                newItem[dep] = new ListItem(table[dep]["label"].ToString(), table[dep]["idf"].ToString());
+            }
+            else
+            {
+                if (this.deps == table[dep]["idf"].ToString() && this.rights == "users")
+                {
+                    newItem[dep] = new ListItem(table[dep]["label"].ToString(), table[dep]["idf"].ToString());
+                }
+            }
+        }
+        this.deps_dl.Items.AddRange(newItem);
+
+
+    }
 
     protected void loadSluzby()
     {
@@ -118,8 +124,7 @@ public partial class sluzby2_sestr : System.Web.UI.Page
         string mesiac = this.mesiac_cb.SelectedValue.ToString();
         string rok = this.rok_cb.SelectedValue.ToString();
 
-       
-
+        
         int daysMonth = DateTime.DaysInMonth(Convert.ToInt32(rok), Convert.ToInt32(mesiac));
 
         if (mesiac.Length == 1)
@@ -138,6 +143,11 @@ public partial class sluzby2_sestr : System.Web.UI.Page
         this.shiftType = shifts;
 
         string depsIdf = this.deps_dl.SelectedValue.ToString();
+
+        if (this.deps.Length == 0)
+        {
+            this.deps = depsIdf;
+        }
         
         StringBuilder sb = new StringBuilder();
 
@@ -241,9 +251,6 @@ public partial class sluzby2_sestr : System.Web.UI.Page
                 string nazov = CultureInfo.CurrentCulture.DateTimeFormat.DayNames[dnesJe];
                 string sviatok = (row + 1).ToString() + "." + myDate.Month.ToString();
                 int jeSviatok = Array.IndexOf(freeDays, sviatok);
-
-
-
                 TableCell cellDate = new TableCell();
                 tblRow.Controls.Add(cellDate);
                 // cellDate.ID = "cellDate_" + row;
