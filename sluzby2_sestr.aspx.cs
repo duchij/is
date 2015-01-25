@@ -62,7 +62,7 @@ public partial class sluzby2_sestr : System.Web.UI.Page
         {
            // this.deps_dl.Items.Clear();
             this.shiftTable.Controls.Clear();
-            this.loadDeps();
+           // this.loadDeps();
             this.loadSluzby();
         }
     }
