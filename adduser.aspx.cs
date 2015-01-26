@@ -28,7 +28,7 @@ public partial class adduser : System.Web.UI.Page
             Response.Redirect("error.html");
         }
 
-        this.loadClinics();
+        
 
         
 
@@ -119,10 +119,17 @@ public partial class adduser : System.Web.UI.Page
                 {
                     this.osobcisl_txt.Text = Session["osobcisl"].ToString();
                 }
-
+              
 
             }
         }
+
+        if (!IsPostBack)
+        {
+            this.loadClinics();
+            this.__loadDeps();
+        }
+
         this.generateVykazSettings();
 
     }
@@ -136,13 +143,13 @@ public partial class adduser : System.Web.UI.Page
         Dictionary<int, Hashtable> table = x2MySql.getTable(sb.ToString());
 
         int tableLn = table.Count;
-        ListItem[] newItem = new ListItem[tableLn+1];
-        newItem[0] = new ListItem("", "0");
+       // ListItem[] newItem = new ListItem[tableLn+1];
+       // newItem[0] = new ListItem("", "0");
         for (int i = 0; i < tableLn; i++)
         {
-            newItem[i+1] = new ListItem(table[i]["full_name"].ToString(), table[i]["id"].ToString());
+              this.clinics_dl.Items.Add(new ListItem(table[i]["full_name"].ToString(), table[i]["id"].ToString()));
         }
-        this.clinics_dl.Items.AddRange(newItem);
+       // this.clinics_dl.Items.AddRange(newItem);
 
        // this.clinics_dl.SelectedIndexChanged += new EventArgs(loadDeps);
 
@@ -168,13 +175,13 @@ public partial class adduser : System.Web.UI.Page
         Dictionary<int, Hashtable> table = x2MySql.getTable(sb.ToString());
 
         int tableLn = table.Count;
-        ListItem[] newItem = new ListItem[tableLn + 1];
-        newItem[0] = new ListItem("", "0");
+       // ListItem[] newItem = new ListItem[tableLn + 1];
+       // newItem[0] = new ListItem("", "0");
         for (int i = 0; i < tableLn; i++)
         {
-            newItem[i + 1] = new ListItem(table[i]["label"].ToString(), table[i]["id"].ToString());
+            this.oddelenie_dl.Items.Add(new ListItem(table[i]["label"].ToString(), table[i]["id"].ToString()));
         }
-        this.oddelenie_dl.Items.AddRange(newItem);
+       // this.oddelenie_dl.Items.AddRange(newItem);
     }
 
     protected void loadData()
@@ -182,6 +189,18 @@ public partial class adduser : System.Web.UI.Page
         this.users_gv.DataSource = x_db.getAllUsersList();
         this.users_gv.DataBind();
     }
+
+    protected void createLoginFnc(object sender, EventArgs e)
+    {
+        string[] menoStr = this.name_txt.Text.ToString().Split(' ');
+
+        string let1 = x2_var.UTFtoASCII(menoStr[0].ToLower().Substring(0, 1));
+        string let2 = x2_var.UTFtoASCII(menoStr[1].ToLower());
+
+        this.login_txt.Text = let1 + let2;
+
+    }
+
     protected void send_btn_Click(object sender, EventArgs e)
     {
         string meno = name_txt.Text;
@@ -215,6 +234,12 @@ public partial class adduser : System.Web.UI.Page
             data.Add("titul_za", this.titul_za.Text.ToString());
             data.Add("zaradenie", this.zaradenie_txt.Text.ToString());
             data.Add("klinika_label", this.klinika_txt.Text.ToString());
+
+            string[] menoStr = this.name_txt.Text.ToString().Split(' ');
+
+            data.Add("name2", x2_var.UTFtoASCII(menoStr[1].ToLower()));
+            data.Add("name3", menoStr[1]);
+
 
             if (this.clinics_dl.SelectedValue.ToString() == "0")
             {
@@ -277,6 +302,12 @@ public partial class adduser : System.Web.UI.Page
 
                 data.Add("zaradenie", this.zaradenie_txt.Text.ToString());
                 data.Add("klinika_label", this.klinika_txt.Text.ToString());
+
+                string[] menoStr = this.name_txt.Text.ToString().Split(' ');
+
+                data.Add("name2", x2_var.UTFtoASCII(menoStr[1].ToLower()));
+                data.Add("name3", menoStr[1]);
+
 
                 if (this.clinics_dl.SelectedValue.ToString() == "0")
                 {

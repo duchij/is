@@ -6,7 +6,7 @@
     <asp:Label ID="msg_lbl" runat="server" Text=""></asp:Label>
     <h2> Plán služieb</h2><hr />
         <div class="row">
-            <div class="one half">
+            <div class="one half"> 
                  Mesiac:<asp:DropDownList ID="mesiac_cb" runat="server" 
                         AutoPostBack="True" onselectedindexchanged="changeSluzba" >
                         <asp:ListItem Value="1">Január</asp:ListItem>

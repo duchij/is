@@ -1,0 +1,6 @@
+﻿ALTER TABLE `is_users`
+	CHANGE COLUMN `passwd` `passwd` TEXT NULL DEFAULT NULL COLLATE 'ascii_general_ci' AFTER `name3`;
+
+	ALTER TABLE `is_users`
+	CHANGE COLUMN `work_group` `work_group` ENUM('doctor','nurse','op','other','assistent') NULL DEFAULT NULL COLLATE 'ascii_general_ci' AFTER `prava`;
+SELECT `DEFAULT_COLLATION_NAME` FROM `information_schema`.`SCHEMATA` WHERE `SCHEMA_NAME`='kdch_sk';

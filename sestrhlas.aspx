@@ -11,7 +11,7 @@
                 <hr />
                 <div class="row">
                     <div class="one sixth">
-                    <asp:DropDownList ID="oddType_cb" runat="server" 
+                    <asp:DropDownList ID="deps_dl" runat="server" 
                         AutoPostBack="True" OnSelectedIndexChanged="Calendar1_SelectionChanged" >
                     </asp:DropDownList>
                     </div>

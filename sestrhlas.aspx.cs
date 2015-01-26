@@ -1,5 +1,6 @@
 ﻿ using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Web;
@@ -40,24 +41,52 @@ public partial class sestrhlas : System.Web.UI.Page
         {
             Calendar1.SelectedDate = DateTime.Today;
 
-            if (deps == "MSV")
-            {
-                oddType_cb.Items.Add(new ListItem("MSV", "msv"));
-            }
-            if (deps == "VD")
-            {
-                oddType_cb.Items.Add(new ListItem("Velke deti", "vd"));
-            }
+            //if (deps == "MSV")
+            //{
+            //    deps_dl.Items.Add(new ListItem("MSV", "msv"));
+            //}
+            //if (deps == "VD")
+            //{
+            //    deps_dl.Items.Add(new ListItem("Velke deti", "vd"));
+            //}
 
-            if ((this.rights == "admin") || (this.rights == "poweruser"))
-            {
-                oddType_cb.Items.Add(new ListItem("MSV", "msv"));
-                oddType_cb.Items.Add(new ListItem("Velke deti", "vd"));
+            //if ((this.rights == "admin") || (this.rights == "poweruser"))
+            //{
+            //    deps_dl.Items.Add(new ListItem("MSV", "msv"));
+            //    deps_dl.Items.Add(new ListItem("Velke deti", "vd"));
 
-            }
-
+            //}
+            this.loadDeps();
             this.loadHlasko();
         }
+    }
+
+    protected void loadDeps()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("SELECT * FROM [is_deps] WHERE [clinic_id]='{0}'", Session["klinika_id"]);
+
+        Dictionary<int, Hashtable> table = x2MySql.getTable(sb.ToString());
+
+
+        int depsLn = table.Count;
+        //ListItem[] newItem = new ListItem[depsLn];
+        // this.deps_dl.Items.Clear();
+        for (int dep = 0; dep < depsLn; dep++)
+        {
+            if (this.rights == "admin" || this.rights == "poweruser")
+            {
+                this.deps_dl.Items.Add(new ListItem(table[dep]["label"].ToString(),table[dep]["idf"].ToString()));
+            }
+            else
+            {
+                if (this.deps == table[dep]["idf"].ToString() && this.rights == "users")
+                {
+                    this.deps_dl.Items.Add(new ListItem(table[dep]["label"].ToString(), table[dep]["idf"].ToString()));
+                }
+            }
+        }
+       // this.deps_dl.Items.AddRange(newItem);
     }
 
 
@@ -68,7 +97,7 @@ public partial class sestrhlas : System.Web.UI.Page
         SortedList akt_user_info = x_db.getUserInfoByID(Session["user_id"].ToString());
         user.Text = akt_user_info["full_name"].ToString();
 
-        SortedList data = x_db.getSestrHlasko(Calendar1.SelectedDate, oddType_cb.SelectedValue.ToString(), predZad_cb.SelectedValue.ToString(), hlasenie.Text.ToString(), Session["user_id"].ToString(), this.time_cb.SelectedValue.ToString());
+        SortedList data = x_db.getSestrHlasko(Calendar1.SelectedDate, deps_dl.SelectedValue.ToString(), predZad_cb.SelectedValue.ToString(), hlasenie.Text.ToString(), Session["user_id"].ToString(), this.time_cb.SelectedValue.ToString());
 
         if (Convert.ToInt32(data["id"]) != 0)
         {
@@ -108,7 +137,7 @@ public partial class sestrhlas : System.Web.UI.Page
         }
         else
         {
-            /* Calendar1.SelectedDate, oddType_cb.SelectedValue.ToString(), predZad_cb.SelectedValue.ToString(), hlasenie.Text.ToString(), Session["user_id"].ToString(), this.time_cb.SelectedValue.ToString()*/
+            /* Calendar1.SelectedDate, deps_dl.SelectedValue.ToString(), predZad_cb.SelectedValue.ToString(), hlasenie.Text.ToString(), Session["user_id"].ToString(), this.time_cb.SelectedValue.ToString()*/
 
             this.hlasenie.Visible = true;
             //dodatok.Visible = false;
@@ -121,7 +150,7 @@ public partial class sestrhlas : System.Web.UI.Page
 
             SortedList newData = new SortedList();
             newData.Add("dat_hlas", x2.unixDate(this.Calendar1.SelectedDate));
-            newData.Add("oddelenie", this.oddType_cb.SelectedValue.ToString());
+            newData.Add("oddelenie", this.deps_dl.SelectedValue.ToString());
             newData.Add("lokalita", this.predZad_cb.SelectedValue.ToString());
             newData.Add("cas", this.time_cb.SelectedValue.ToString());
             newData.Add("creat_user", Session["user_id"].ToString());
@@ -168,12 +197,12 @@ public partial class sestrhlas : System.Web.UI.Page
 
         if (this.time_cb.SelectedValue.ToString() == "d")
         {
-            data = x_db.getSestrHlasko(Calendar1.SelectedDate.AddDays(-1), oddType_cb.SelectedValue.ToString(), predZad_cb.SelectedValue.ToString(), hlasenie.Text.ToString(), Session["user_id"].ToString(), "n");
+            data = x_db.getSestrHlasko(Calendar1.SelectedDate.AddDays(-1), deps_dl.SelectedValue.ToString(), predZad_cb.SelectedValue.ToString(), hlasenie.Text.ToString(), Session["user_id"].ToString(), "n");
         }
 
         if (this.time_cb.SelectedValue.ToString() == "n")
         {
-            data = x_db.getSestrHlasko(Calendar1.SelectedDate, oddType_cb.SelectedValue.ToString(), predZad_cb.SelectedValue.ToString(), hlasenie.Text.ToString(), Session["user_id"].ToString(), "d");
+            data = x_db.getSestrHlasko(Calendar1.SelectedDate, deps_dl.SelectedValue.ToString(), predZad_cb.SelectedValue.ToString(), hlasenie.Text.ToString(), Session["user_id"].ToString(), "d");
         }
 
         hlasenie.Text += Resources.Resource.odd_prev_hlasko + data["hlasko"].ToString();
@@ -195,7 +224,7 @@ public partial class sestrhlas : System.Web.UI.Page
         data.Add("hlasko", hlasenie.Text.ToString());
         data.Add("last_user", Session["user_id"].ToString());
         data.Add("dat_hlas", x2.unixDate(this.Calendar1.SelectedDate));
-        data.Add("oddelenie", this.oddType_cb.SelectedValue.ToString());
+        data.Add("oddelenie", this.deps_dl.SelectedValue.ToString());
         data.Add("lokalita", this.predZad_cb.SelectedValue.ToString());
         data.Add("cas", this.time_cb.SelectedValue.ToString());
         data.Add("creat_user", 0);

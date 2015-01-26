@@ -607,6 +607,10 @@ public class mysql_db
 
     public SortedList getRow(string query)
     {
+        if (query.IndexOf("LIMIT 1") == -1)
+        {
+            query += " LIMIT 1";
+        }
         SortedList result = new SortedList();
         my_con.Open();
 

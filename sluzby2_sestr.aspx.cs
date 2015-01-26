@@ -56,7 +56,7 @@ public partial class sluzby2_sestr : System.Web.UI.Page
         {
             this.setMonthYear();
             this.loadDeps();
-           this.loadSluzby();
+            this.loadSluzby();
         }
         else
         {
@@ -102,17 +102,17 @@ public partial class sluzby2_sestr : System.Web.UI.Page
         {
             if (this.rights == "admin" || this.rights == "poweruser")
             {
-                newItem[dep] = new ListItem(table[dep]["label"].ToString(), table[dep]["idf"].ToString());
+                this.deps_dl.Items.Add(new ListItem(table[dep]["label"].ToString(), table[dep]["idf"].ToString()));
             }
             else
             {
                 if (this.deps == table[dep]["idf"].ToString() && this.rights == "users")
                 {
-                    newItem[dep] = new ListItem(table[dep]["label"].ToString(), table[dep]["idf"].ToString());
+                    this.deps_dl.Items.Add(new ListItem(table[dep]["label"].ToString(), table[dep]["idf"].ToString()));
                 }
             }
         }
-        this.deps_dl.Items.AddRange(newItem);
+       // this.deps_dl.Items.AddRange(newItem);
 
 
     }
@@ -232,7 +232,8 @@ public partial class sluzby2_sestr : System.Web.UI.Page
             shiftTable.Controls.Add(headRow);
 
             string[] freeDays = x2Sluzby.getFreeDays();
-            ArrayList doctorList = this.loadDoctors();
+
+            ArrayList doctorList = this.loadDoctors(this.deps_dl.SelectedValue.ToString());
 
             int aktDenMesiac = DateTime.Today.Day;
 
@@ -419,10 +420,10 @@ public partial class sluzby2_sestr : System.Web.UI.Page
         return result;        
     }
 
-    protected ArrayList loadDoctors()
+    protected ArrayList loadDoctors(string sDeps)
     {
         StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("SELECT * FROM [kdch_nurse] WHERE ([idf]='{0}')  ORDER BY [name3]",this.deps);
+        sb.AppendFormat("SELECT * FROM [kdch_nurse] WHERE ([idf]='{0}')  ORDER BY [name3]",sDeps);
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
 

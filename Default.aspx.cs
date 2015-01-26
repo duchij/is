@@ -99,7 +99,7 @@ public partial class _Default : System.Web.UI.Page
                     Response.Cookies["login"].Value = data["name"].ToString();
                     Response.Cookies["email"].Value = data["email"].ToString(); */
 
-                    Response.Redirect("passch.aspx");
+                    Response.Redirect("passch2.aspx");
                 }
 
                 if (l_pass == g_pass)

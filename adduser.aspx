@@ -10,7 +10,7 @@
                         <asp:TextBox ID="search_txt" runat="server"></asp:TextBox>
                         <asp:Button ID="search_btn" runat="server" Text="Hľadaj" OnClick="searchByNameFnc" />
                     
-                     <asp:GridView ID="users_gv" runat="server" AllowPaging="True" CssClass="static"
+                     <asp:GridView ID="users_gv" runat="server" AllowPaging="True" CssClass="responsive" data-max="15"
                          AutoGenerateColumns="False" CellPadding="4" ForeColor="#333333"
                          GridLines="None" OnPageIndexChanging="users_gv_PageIndexChanging"
                          OnSelectedIndexChanging="users_gv_SelectedIndexChanging" Width="100%"
@@ -48,7 +48,7 @@
                     </tr>
                      <tr>
                         <td class="blue">Aktivny:</td>
-                        <td><asp:TextBox ID="active_txt" runat="server" Width="30px"></asp:TextBox></td>
+                        <td><asp:TextBox ID="active_txt" runat="server" Width="30px" Text="1"></asp:TextBox></td>
                     
                     </tr>
 
@@ -75,6 +75,7 @@
                             <asp:DropDownList ID="DropDownList1" runat="server">
                                 <asp:ListItem Value="doctor">Lekár</asp:ListItem>
                                 <asp:ListItem Value="nurse">Sestra</asp:ListItem>
+                                <asp:ListItem Value="assistent">Assistent</asp:ListItem>
                                 <asp:ListItem Value="op">Operačky</asp:ListItem>
                                  <asp:ListItem Value="other">Ostatné</asp:ListItem>
                                 <%--<asp:ListItem Value="sestra">Sestra</asp:ListItem>
@@ -121,7 +122,7 @@
                                        
                     <tr>
                         <td>Meno a priezvisko:</td>
-                        <td><asp:TextBox ID="name_txt" runat="server"></asp:TextBox></td>
+                        <td><asp:TextBox ID="name_txt" runat="server" AutoPostBack="true" OnTextChanged="createLoginFnc"></asp:TextBox></td>
                     
                     </tr>
                     <tr>
