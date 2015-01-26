@@ -92,6 +92,10 @@ public partial class sestrhlas : System.Web.UI.Page
 
     protected void loadHlasko()
     {
+        if (Session["oddelenie"].ToString().Length > 0)
+        {
+            this.deps_dl.SelectedValue = Session["oddelenie"].ToString();
+        }
         this.hlasenie.Text = "";
         this.msg_lbl.Text = "";
         SortedList akt_user_info = x_db.getUserInfoByID(Session["user_id"].ToString());

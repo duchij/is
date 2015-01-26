@@ -1,4 +1,4 @@
-<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="dovolenky.aspx.cs" Inherits="dovolenky" culture="sk-SK"%>
+<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="dovolenky.aspx.cs" Inherits="dovolenky" culture="sk-Sk" MaintainScrollPositionOnPostback="true"%>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
 </asp:Content>
@@ -9,16 +9,16 @@
 <div class="row">
     <div class="one half">
                     <asp:DropDownList ID="mesiac_cb" runat="server" AutoPostBack="True" >
-                        <asp:ListItem Value="1">Január</asp:ListItem>
-                        <asp:ListItem Value="2">Február</asp:ListItem>
+                        <asp:ListItem Value="1">Januar</asp:ListItem>
+                        <asp:ListItem Value="2">Februar</asp:ListItem>
                         <asp:ListItem Value="3">Marec</asp:ListItem>
-                        <asp:ListItem Value="4">Apríl</asp:ListItem>
-                        <asp:ListItem Value="5">Máj</asp:ListItem>
-                        <asp:ListItem Value="6">Jún</asp:ListItem>
-                        <asp:ListItem Value="7">Júl</asp:ListItem>
+                        <asp:ListItem Value="4">April</asp:ListItem>
+                        <asp:ListItem Value="5">Maj</asp:ListItem>
+                        <asp:ListItem Value="6">Jun</asp:ListItem>
+                        <asp:ListItem Value="7">Jul</asp:ListItem>
                         <asp:ListItem Value="8">August</asp:ListItem>
                         <asp:ListItem Value="9">September</asp:ListItem>
-                        <asp:ListItem Value="10">Október</asp:ListItem>
+                        <asp:ListItem Value="10">Oktober</asp:ListItem>
                         <asp:ListItem Value="11">November</asp:ListItem>
                         <asp:ListItem Value="12">December</asp:ListItem>
                     </asp:DropDownList>

@@ -465,15 +465,17 @@ public partial class vykaz2 : System.Web.UI.Page
                 Session["pracdoba"] = 0;
             }
 
-            string dStr = Session["pracdoba"].ToString().Replace(",", ".");
+            string dStr = Session["pracdoba"].ToString().Replace(',','.');
 
-            decimal pracDoba = Convert.ToDecimal(dStr);
+            float pracDoba = Convert.ToSingle(dStr);
 
-            decimal zacPrac = 7;
-            decimal polHod = (decimal)0.5;
+            int zacPrac = 7;
+            float polHod = (float)0.5;
 
-            decimal dlzkaPrace = zacPrac+pracDoba+polHod;
+            float dlzkaPrace = zacPrac+pracDoba+polHod;
+
             string pracDobaTmp = pracDoba.ToString().Replace(',', '.');
+
             sb.AppendFormat("7,12:30,13:00,{0},{1},0,0,0,0,0,0,0,0", dlzkaPrace, pracDobaTmp);
             result["normDen"] = sb.ToString();
             sb.Length = 0;
