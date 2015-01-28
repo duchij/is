@@ -78,26 +78,29 @@
         <nav class="nav hide-on-desktop blue responsive" data-max="15" role="navigation" title="Mobile">
     			 <ul>
 					<!--<li><button>Nav Item 1</button></li>!-->
-					<li><button>Organizačné veci</button>
+					<%--<li><button>Organizačné veci</button>
 						<ul>
-							<li><a role="medium button" href="sluzby2.aspx" target="_self">Služby lekárov</a></li>
+							
 							<!--<li><button>Sub Menu 1</button>
 								<ul>
 									<li><button>Sub Menu Item 1</button></li>
 									<li><button>Sub Menu Item 2</button></li>
 								</ul>
 							</li>!-->
-							<li><a role="medium button" href="staze.aspx" target="_self">Stáže</a></li>
-							<li><a role="medium button" href="ransed.aspx" target="_self">RTG Diagnostika</a></li>
-                            <li><a role="medium button" href="dovolenky.aspx" target="_self">Dovolenky</a></li>
+							
 
 						</ul>
-					</li>
+					</li>--%>
 				<asp:PlaceHolder ID="hlas_lekar_plh" runat="server">
                     <li><button>Lekár</button>
                         <ul>
-                         <li><a role="medium button" href="hlasko.aspx" target="_self">Hlásenie lekárov</a></li> 
-                         <li><a role="medium button" href="poziadavky.aspx" target="_self">Požiadavky na služby</a></li>
+                            <li><a role="medium button" href="sluzby2.aspx" target="_self">Služby lekárov</a></li>
+                            <li><a role="medium button" href="hlasko.aspx" target="_self">Hlásenie lekárov</a></li> 
+                            <li><a role="medium button" href="poziadavky.aspx" target="_self">Požiadavky na služby</a></li>
+
+                            <li><a role="medium button" href="staze.aspx" target="_self">Stáže</a></li>
+							<li><a role="medium button" href="ransed.aspx" target="_self">RTG Diagnostika</a></li>
+                            <li><a role="medium button" href="dovolenky.aspx" target="_self">Dovolenky</a></li>
                         </ul>
                     </li>
 
