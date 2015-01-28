@@ -18,6 +18,7 @@ public partial class dovolenky : System.Web.UI.Page
     x2_var my_x2 = new x2_var();
 
     public string rights = "";
+    public string wgroup = "";
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -28,12 +29,13 @@ public partial class dovolenky : System.Web.UI.Page
 
         this.warning_lbl.Visible = false;
         // Lab.Text = sender.GetType().TypeHandle.ToString();
-        if (Request["del"] != null)
+       /* if (Request["del"] != null)
         {
             // this.deleteDovolenka();
-        }
+        }*/
 
         this.rights = Session["rights"].ToString();
+        this.wgroup = Session["workgroup"].ToString();
 
         if (this.rights == "users")
         {
@@ -43,7 +45,7 @@ public partial class dovolenky : System.Web.UI.Page
         }
         else if (this.rights == "admin" || this.rights == "poweruser")
         {
-            this.vkladanie_dov.Visible = true;
+            this.vkladanie_dov.Visible = false;
             this.uziv_dovolenka.Visible = true;
         }
 
@@ -52,7 +54,10 @@ public partial class dovolenky : System.Web.UI.Page
             this.mesiac_cb.SelectedValue = DateTime.Today.Month.ToString();
             this.rok_cb.SelectedValue = DateTime.Today.Year.ToString();
 
-            if (this.rights.IndexOf("users") == -1)
+            this.drawDovolenTab();
+            this.drawUserActDovolenky();
+
+           /*( if (this.rights != "users")
             {
                 od_cal.SelectedDate = DateTime.Today;
                 do_cal.SelectedDate = DateTime.Today;
@@ -84,25 +89,23 @@ public partial class dovolenky : System.Web.UI.Page
                 this.drawDovolenTab();
                 this.drawUserActDovolenky();
                 //this.actStatusDovol();
-            }
+            }*/
         }
         else
         {
             dovolenky_tab.Controls.Clear();
 
-            if (this.rights.IndexOf("users") == -1)
+            if (this.rights != "users")
             {
 
                 this.drawDovolenTab();
                 this.drawActDovolenky();
-                //this.actStatusDovol();
-
 
             }
             else
             {
                 this.drawDovolenTab();
-                this.drawUserActDovolenky();
+                //this.drawUserActDovolenky();
             }
         }
 
@@ -114,11 +117,6 @@ public partial class dovolenky : System.Web.UI.Page
         int _id = Convert.ToInt32(dov_id);
 
         SortedList dov_data = x_db.getDovolenkaByID(_id.ToString());
-
-
-
-
-
         DateTime do_date = Convert.ToDateTime(dov_data["do"].ToString());
         DateTime od_date = Convert.ToDateTime(dov_data["od"].ToString());
 
@@ -175,7 +173,7 @@ public partial class dovolenky : System.Web.UI.Page
 
     protected void changeDovStatus_fnc(object sender, EventArgs e)
     {
-        this.actStatusDovol();
+        //this.actStatusDovol();
     }
 
 
@@ -184,18 +182,10 @@ public partial class dovolenky : System.Web.UI.Page
         // msg_lbl.Text = "tu dom";
 
         SortedList dov_data = x_db.getDovolStatus("is_dovolen_zost", zamestnanci.SelectedValue.ToString());
-
-
-
-
-
         if (dov_data["error"] == null)
         {
             if (dov_data.Count != 0)
             {
-
-
-
                 dovolenkaPravo_txt.Text = dov_data["narok"].ToString();
                 dovolenkaZost_txt.Text = dov_data["zostatok"].ToString();
 

@@ -40,10 +40,16 @@ public partial class adduser : System.Web.UI.Page
             rights_cb.Visible = false;
             rights_lbl.Visible = false;
             this.passwd_txt.ReadOnly = true;
+
+           
         }
 
         if (rights == "admin")
         {
+            this.name_txt.AutoPostBack = true;
+            //AutoPostBack="true" OnTextChanged="createLoginFnc"
+            this.name_txt.TextChanged += new EventHandler(createLoginFnc);
+
             this.adminsectionPlace.Visible = true;
 
             if (!IsPostBack)
@@ -187,10 +193,13 @@ public partial class adduser : System.Web.UI.Page
     {
         string[] menoStr = this.name_txt.Text.ToString().Split(' ');
 
-        string let1 = x2_var.UTFtoASCII(menoStr[0].ToLower().Substring(0, 1));
-        string let2 = x2_var.UTFtoASCII(menoStr[1].ToLower());
+        if (menoStr.Length > 0)
+        {
+            string let1 = x2_var.UTFtoASCII(menoStr[0].ToLower().Substring(0, 1));
+            string let2 = x2_var.UTFtoASCII(menoStr[1].ToLower());
 
-        this.login_txt.Text = let1 + let2;
+            this.login_txt.Text = let1 + let2;
+        }
 
     }
 
@@ -252,6 +261,9 @@ public partial class adduser : System.Web.UI.Page
                 data.Add("oddelenie", this.oddelenie_dl.SelectedValue);
             }
 
+            data.Add("work_group", this.workgroup_dl.SelectedValue);
+
+
             SortedList result = x2MySql.mysql_update("is_users", data, id.ToString());
 
             Boolean status = Convert.ToBoolean(result["status"]);
@@ -271,6 +283,9 @@ public partial class adduser : System.Web.UI.Page
                 this.titul_za.Text = "";
                 this.zaradenie_txt.Text = "";
                 this.klinika_txt.Text = "";
+
+                x2MySql.callStoredProcWithoutParam("CREATE_NURSE_VIEW");
+
                 this.Page_Load(sender, e);
 
                
@@ -320,6 +335,8 @@ public partial class adduser : System.Web.UI.Page
                     data.Add("oddelenie", this.oddelenie_dl.SelectedValue);
                 }
 
+                data.Add("work_group", this.workgroup_dl.SelectedValue);
+
                 if (email.Length == 0)
                 {
                     email = "x";
@@ -338,6 +355,11 @@ public partial class adduser : System.Web.UI.Page
                     if (Convert.ToBoolean(res["status"]))
                     {
                         msg_lbl.Text = "Užívateľ bol pridaný !!!!";
+                        this.clearFields();
+
+                        x2MySql.callStoredProcWithoutParam("CREATE_NURSE_VIEW");
+                                               
+
                     }
                     else
                     {
@@ -348,7 +370,7 @@ public partial class adduser : System.Web.UI.Page
             else
             {
                 msg_lbl.Text = "Login, môže byť tvorený len písmenami a číslami, medzera a iné znaky nie sú dovolené!";
-            }
+            } 
         }
     }
     protected void uprav_btn_Click(object sender, EventArgs e)
@@ -407,6 +429,9 @@ public partial class adduser : System.Web.UI.Page
         this.titul_pred.Text = "";
         this.titul_za.Text = "";
         this.zaradenie_txt.Text = "";
+        this.klinika_txt.Text = "";
+
+        
     }
 
     protected void users_gv_SelectedIndexChanging(object sender, GridViewSelectEventArgs e)

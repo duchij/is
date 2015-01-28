@@ -72,10 +72,10 @@
                         <td class="blue">
                             <asp:Label ID="workgroup_lbl" runat="server" Text="Pracovné zaradenie:"></asp:Label></td>
                         <td>
-                            <asp:DropDownList ID="DropDownList1" runat="server">
+                            <asp:DropDownList ID="workgroup_dl" runat="server">
                                 <asp:ListItem Value="doctor">Lekár</asp:ListItem>
                                 <asp:ListItem Value="nurse">Sestra</asp:ListItem>
-                                <asp:ListItem Value="assistent">Assistent</asp:ListItem>
+                                <asp:ListItem Value="assistent">Asistent</asp:ListItem>
                                 <asp:ListItem Value="op">Operačky</asp:ListItem>
                                  <asp:ListItem Value="other">Ostatné</asp:ListItem>
                                 <%--<asp:ListItem Value="sestra">Sestra</asp:ListItem>
@@ -122,7 +122,9 @@
                                        
                     <tr>
                         <td>Meno a priezvisko:</td>
-                        <td><asp:TextBox ID="name_txt" runat="server" AutoPostBack="true" OnTextChanged="createLoginFnc"></asp:TextBox></td>
+                        <td><asp:TextBox ID="name_txt" runat="server" ></asp:TextBox>
+                            <br /><div class="red">V prípade viacerých priezvisk oddeliť len meno a prvé priezvisko medzerou, ostatné priezviská pomlčkou....!!!</div>
+                        </td>
                     
                     </tr>
                     <tr>

@@ -20,7 +20,7 @@ public partial class header : System.Web.UI.UserControl
     public string deps = "";
     public string rights = "";
     public string wgroup = "";
-    sluzbyclass mySluz = new sluzbyclass();
+    //sluzbyclass mySluz = new sluzbyclass();
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -74,7 +74,7 @@ public partial class header : System.Web.UI.UserControl
             sb.Append("[t_sluzb].[date_group] AS [dategroup]");
             sb.Append("FROM [is_sluzby_2_sestr] AS [t_sluzb]");
             sb.Append("LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]");
-            sb.AppendFormat("WHERE [t_sluzb].[datum]='{0}' OR [t_sluzb].[datum]='{1}'", my_x2.unixDate(vcera), my_x2.unixDate(dnes));
+            sb.AppendFormat("WHERE ([t_sluzb].[datum]='{0}' OR [t_sluzb].[datum]='{1}')", my_x2.unixDate(vcera), my_x2.unixDate(dnes));
             sb.AppendFormat("AND [t_sluzb].[deps]='{0}'", this.deps);
             sb.Append("GROUP BY [t_sluzb].[datum]");
             sb.Append("ORDER BY [t_sluzb].[datum] DESC");
@@ -104,6 +104,7 @@ public partial class header : System.Web.UI.UserControl
                 SortedList data = x_db.getNextPozDatum(DateTime.Today);
                 poziadav_lbl.Text = data["datum"].ToString();
             }
+
             if (this.wgroup == "nurse" || this.wgroup == "assistent")
             {
                 this.head1_lbl.Text = "Den:<br>";

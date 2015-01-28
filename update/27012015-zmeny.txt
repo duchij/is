@@ -1,0 +1,22 @@
+﻿-- oprava nurse view
+
+CREATE OR REPLACE VIEW kdch_nurse AS 
+	SELECT is_users.id,is_users.name3, is_users.name2, deps.idf from is_users
+		INNER JOIN is_deps as deps ON deps.id = is_users.oddelenie
+		INNER JOIN is_clinics AS clinics ON clinics.id = is_users.klinika
+	WHERE (is_users.work_group='nurse' OR is_users.work_group='assistent')
+		AND is_users.active = 1
+		AND clinics.idf = 'KDCH';
+
+
+		ALTER TABLE `is_users`
+ADD UNIQUE `name` (`name`(100)),
+DROP INDEX `name`;
+
+ALTER TABLE `is_settings` ADD UNIQUE `name` (`name`(100));
+
+INSERT INTO `is_settings` (`name`, `data`) VALUES ('KDCH_vykaz_nurse', 'prichod,obed.zac,obed.konc,odchod,zuct.hod,nadcas,nocna.praca,sobot.nedel,sviatok');
+INSERT INTO `is_settings` (`name`, `data`) VALUES ('KDCH_nurse_vykaz_riadky', 'dennka,nocna,nocna2');
+INSERT INTO `is_settings` (`name`, `data`) VALUES ('KDCH_nurse_vykaz_hod', 'D,6.00,12.30,13.00,18.00,11.5,0,0,0,11.5\r\nN,18.00,23.00,23.30,0,11.5,0,0,8\r\n0,0,0,0,0,6.00');
+
+

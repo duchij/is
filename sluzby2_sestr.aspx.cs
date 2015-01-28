@@ -56,6 +56,10 @@ public partial class sluzby2_sestr : System.Web.UI.Page
         {
             this.setMonthYear();
             this.loadDeps();
+            if (this.deps.Length > 0)
+            {
+                this.deps_dl.SelectedValue = this.deps;
+            }
             this.loadSluzby();
         }
         else
@@ -65,6 +69,8 @@ public partial class sluzby2_sestr : System.Web.UI.Page
            // this.loadDeps();
             this.loadSluzby();
         }
+
+        
     }
 
     protected void changeSluzba(object sender, EventArgs e)
@@ -423,7 +429,7 @@ public partial class sluzby2_sestr : System.Web.UI.Page
     protected ArrayList loadDoctors(string sDeps)
     {
         StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("SELECT * FROM [kdch_nurse] WHERE ([idf]='{0}')  ORDER BY [name3]",sDeps);
+        sb.AppendFormat("SELECT * FROM [kdch_nurse] WHERE ([idf]='{0}')  ORDER BY [name2]",sDeps);
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
 

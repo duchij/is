@@ -181,7 +181,11 @@ public partial class _Default : System.Web.UI.Page
                         Session.Add("medixUser", "medixUser");
                         Response.Redirect(@"MEDIX/opdg.aspx");
                     }*/
-                    else if(Session["workgroup"].ToString() == "nurse")
+                    else if (Session["workgroup"].ToString() == "assistent")
+                    {
+                        Response.Redirect(@"sestrhlas.aspx");
+                    }
+                    else if (Session["workgroup"].ToString() == "nurse")
                     {
                         //SortedList result = db_obj.getNextPozDatum(DateTime.Today);
                         Response.Redirect(@"sestrhlas.aspx");

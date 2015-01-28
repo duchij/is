@@ -466,8 +466,9 @@ public partial class vykaz2 : System.Web.UI.Page
             }
 
             string dStr = Session["pracdoba"].ToString().Replace(',','.');
+            //string dStr = Session["pracdoba"].ToString();
 
-            float pracDoba = Convert.ToSingle(dStr);
+            float pracDoba = Convert.ToSingle(dStr,CultureInfo.InvariantCulture.NumberFormat);
 
             int zacPrac = 7;
             float polHod = (float)0.5;

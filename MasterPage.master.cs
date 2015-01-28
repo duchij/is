@@ -126,7 +126,14 @@ public partial class MasterPage : System.Web.UI.MasterPage
     {
         int dateGroup = X2.makeDateGroup(DateTime.Today.Year, DateTime.Today.Month);
         StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("SELECT [datum] FROM [is_sluzby_2] WHERE [date_group] ='{0}' AND [user_id] = '{1}' AND [typ]<>'prijm' ORDER BY [datum]", dateGroup, Session["user_id"]);
+        if (this.wgroup == "doctor")
+        {
+            sb.AppendFormat("SELECT [datum] FROM [is_sluzby_2] WHERE [date_group] ='{0}' AND [user_id] = '{1}' AND [typ] != 'Prijm' ORDER BY [datum]", dateGroup, Session["user_id"]);
+        }
+        else
+        {
+            sb.AppendFormat("SELECT [datum],[typ] FROM [is_sluzby_2_sestr] WHERE [date_group] ='{0}' AND [user_id] = '{1}' AND [deps]='{2}' ORDER BY [datum]", dateGroup, Session["user_id"],Session["oddelenie"]);
+        }
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
         string[] shifts = new string[table.Count];
@@ -135,7 +142,14 @@ public partial class MasterPage : System.Web.UI.MasterPage
             int tblLen = table.Count;
             for (int i = 0; i < tblLen; i++)
             {
-                shifts[i] = X2.UnixToMsDateTime(table[i]["datum"].ToString()).ToString("d");
+                if (this.wgroup == "doctor")
+                {
+                    shifts[i] = X2.UnixToMsDateTime(table[i]["datum"].ToString()).ToString("d");
+                }
+                else
+                {
+                    shifts[i] = X2.UnixToMsDateTime(table[i]["datum"].ToString()).ToString("d") + "(" + table[i]["typ"].ToString() + ")";
+                }
             }
             this.currentShifts_lbl.Text = String.Join(", ",shifts);
 
