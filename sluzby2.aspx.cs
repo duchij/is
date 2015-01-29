@@ -21,8 +21,7 @@ public partial class sluzby2 : System.Web.UI.Page
     public string  rights = "";
     public string[] shiftType;
     public string wgroup ="";
-
-   
+    
 
 
     protected void Page_Init(object sender, EventArgs e)
@@ -59,7 +58,7 @@ public partial class sluzby2 : System.Web.UI.Page
         }
         else
         {
-
+           
             this.shiftTable.Controls.Clear();
             this.loadSluzby();
         }

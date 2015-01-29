@@ -22,6 +22,8 @@ public partial class sluzby2_sestr : System.Web.UI.Page
     public string deps = "";
     public string[] shiftType;
 
+
+
     protected void Page_Init(object sender, EventArgs e)
     {
        
@@ -38,11 +40,13 @@ public partial class sluzby2_sestr : System.Web.UI.Page
 
         if (this.rights == "admin" || this.rights == "poweruser")
         {
+            this.editShiftView_pl.Visible = true;
             this.publish_btn.Visible = true;
             this.unpublish_btn.Visible = true;
         }
         else
         {
+            this.editShiftView_pl.Visible = false;
             this.publish_btn.Visible = false;
             this.unpublish_btn.Visible = false;
         }
@@ -80,6 +84,7 @@ public partial class sluzby2_sestr : System.Web.UI.Page
 
     protected void changeDeps_fnc(object sender, EventArgs e)
     {
+        this.editShift_chk.Checked = false;
         this.loadSluzby();
     }
 
@@ -242,7 +247,7 @@ public partial class sluzby2_sestr : System.Web.UI.Page
             ArrayList doctorList = this.loadDoctors(this.deps_dl.SelectedValue.ToString());
 
             int aktDenMesiac = DateTime.Today.Day;
-
+            Boolean editShifts = this.editShift_chk.Checked;
 
             for (int row = 0; row < days; row++)
             {
@@ -284,7 +289,7 @@ public partial class sluzby2_sestr : System.Web.UI.Page
                     //  {
 
 
-                    if (this.rights == "admin" || this.rights == "poweruser")
+                    if ((this.rights == "admin" || this.rights == "poweruser") && editShifts)
                     {
                         DropDownList doctors_lb = new DropDownList();
                         doctors_lb.ID = "ddl_" + row.ToString() + "_" + cols.ToString();
@@ -303,6 +308,7 @@ public partial class sluzby2_sestr : System.Web.UI.Page
                         string dd = userId[cols].ToString();
 
                         doctors_lb.SelectedValue = dd; // userId[cols].ToString();
+                        doctors_lb.ToolTip = names[cols].ToString();
                         dataCell.Controls.Add(doctors_lb);
                         //doctors_lb.SelectedIndex = doctors_lb.Items.IndexOf(doctors_lb.Items.FindByValue(userId[cols]));
 
@@ -424,6 +430,10 @@ public partial class sluzby2_sestr : System.Web.UI.Page
         }
 
         return result;        
+    }
+
+    protected void reDrawTableFnc(object sender, EventArgs e)
+    {
     }
 
     protected ArrayList loadDoctors(string sDeps)

@@ -5,7 +5,14 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
     <asp:Label ID="msg_lbl" runat="server" Text=""></asp:Label>
     <h2> Plán služieb</h2><hr />
+    <asp:PlaceHolder ID="editShiftView_pl" runat="server">
+                <asp:CheckBox ID="editShift_chk" runat="server" AutoPostBack="true" Checked="false" />
+        <asp:Label ID="Label3" runat="server" Text=" Editácia služieb" CssClass="green"></asp:Label>
+        <hr />
+            </asp:PlaceHolder>
         <div class="row">
+            
+            
             <div class="one third">
              Oddelenie:          
                 <asp:DropDownList ID="deps_dl" runat="server" OnSelectedIndexChanged="changeDeps_fnc" AutoPostBack="true"></asp:DropDownList>
