@@ -421,7 +421,7 @@ public partial class adduser : System.Web.UI.Page
         this.name_txt.Text = "";
         this.login_txt.Text = "";
         this.email_txt.Text = "";
-        this.active_txt.Text = "0";
+        this.active_txt.Text = "1";
         this.passwd_txt.Text = "";
         this.pracdoba_txt.Text = "";
         this.tyzdoba_txt.Text = "";

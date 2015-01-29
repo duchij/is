@@ -31,8 +31,8 @@ public partial class staze : System.Web.UI.Page
             Response.Redirect("error.html");
         }
 
-        user_rights = Session["rights"].ToString();
-        u_name = Session["login"].ToString();
+        this.user_rights = Session["rights"].ToString();
+        this.u_name = Session["login"].ToString();
 
         if ((user_rights == "admin") || (user_rights == "poweruser") || (u_name == "jbabala") || (u_name == "bduchaj"))
         {

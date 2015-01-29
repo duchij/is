@@ -34,7 +34,7 @@ public partial class left_menu : System.Web.UI.UserControl
         }
        
 
-        if (wgroup == "doctor" && rights!="admin")
+        if ((wgroup == "doctor" || wgroup=="other") && rights!="admin" )
         {
             this.doctors.Visible = true;
             this.admin.Visible = false;

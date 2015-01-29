@@ -105,7 +105,7 @@ public partial class dovolenky : System.Web.UI.Page
             else
             {
                 this.drawDovolenTab();
-                //this.drawUserActDovolenky();
+                this.drawUserActDovolenky();
             }
         }
 
@@ -127,19 +127,9 @@ public partial class dovolenky : System.Web.UI.Page
 
         int pocetDni = (do_date - od_date).Days + 1;
 
-        //msg_lbl.Text = "volne:" + pocetVolnychDni.ToString() + "...." + pocetDni.ToString();
-
         int pocetPracDni = pocetDni - pocetVolnychDni;
 
         SortedList data = x_db.getDovolStatus("is_dovolen_zost", dov_data["user_id"].ToString());
-
-        //int act_zost = Convert.ToInt32(data["zostatok"].ToString()) + pocetPracDni;
-        //SortedList new_data = new SortedList();
-        //new_data.Add("zostatok", act_zost.ToString());
-
-        //x_db.update_row("is_dovolen_zost", new_data, data["id"].ToString());
-        // this.dovolenkaZost_txt.Text = act_zost.ToString();
-
         string res = x_db.eraseRowByID("is_dovolenky", _id.ToString());
 
         if (res != "ok")
@@ -160,10 +150,6 @@ public partial class dovolenky : System.Web.UI.Page
         {
             this.drawUserActDovolenky();
         }
-
-
-
-
     }
 
 
@@ -235,34 +221,36 @@ public partial class dovolenky : System.Web.UI.Page
         {
             lila += o.ToString() + "..";
             mes_dov.Add("<ul>");
-
+            int posCnt = 0;
             for (int i = 0; i < data.Count; i++)
             {
 
                 //lila += data[i].ToString();
                 string muf = data[i].ToString();
-                tmp = muf.Split(new char[] { ';' });
+                tmp = muf.Split(';');
+
                 DateTime tmp_od_mes = Convert.ToDateTime(tmp[1]);
                 DateTime tmp_do_mes = Convert.ToDateTime(tmp[2]);
                 DateTime tmp_den_mes = new DateTime(tc_rok, tc_month, o + 1);
 
-                if ((tmp_den_mes >= tmp_od_mes) && (tmp_den_mes <= tmp_do_mes))
+                if (tmp_den_mes >= tmp_od_mes && tmp_den_mes <= tmp_do_mes)
                 {
                     string lo_name = tmp[0];
 
                     if (mes_dov[o].ToString().IndexOf(lo_name) == -1)
                     {
-                        if (i % 2 == 0)
+                        if (posCnt % 2 == 0)
                         {
-                            mes_dov[o] += "<li><strong>" + tmp[0] + "</strong></li>";
+                            mes_dov[o] += "<li style='font-size:smaller;'><strong>" + tmp[0] + "</strong></li>";
                         }
                         else
                         {
-                            mes_dov[o] += "<li>" + tmp[0] + "</li>";
+                            mes_dov[o] += "<li style='font-size:smaller;'>" + tmp[0] + "</li>";
                         }
+                        posCnt++;
                     }
                 }
-
+                
             }
             mes_dov[o] += "</ul>";
 
@@ -281,6 +269,7 @@ public partial class dovolenky : System.Web.UI.Page
                 TableCell mojaCela = new TableCell();
                 mojaCela.ID = "mojaCelb_" + i.ToString() + "_" + x.ToString();
                 mojaCela.VerticalAlign = VerticalAlign.Top;
+                
                // mojaCela.CssClass = "duch";
                 // mojaCela.Width = 100;
                 my_den++;
@@ -288,13 +277,14 @@ public partial class dovolenky : System.Web.UI.Page
                 //DateTime tmp_den_mes = new DateTime(tc_rok, tc_month, o + 1);
                 if (DateTime.Today.Day == my_den)
                 {
-                    mojaCela.BackColor = System.Drawing.Color.Yellow;
-                    mojaCela.ForeColor = System.Drawing.Color.FromArgb(0x990000);
+                    mojaCela.CssClass = "box yellow";
+                    //mojaCela.BackColor = System.Drawing.Color.Yellow;
+                   // mojaCela.ForeColor = System.Drawing.Color.FromArgb(0x990000);
                 }
 
 
                 mojaCela.BorderWidth = 1;
-                mojaCela.BorderColor = System.Drawing.Color.FromArgb(0x990000);
+                mojaCela.BorderColor = System.Drawing.Color.LightGray;
 
 
                 if (my_den <= pocetDni)
@@ -302,37 +292,29 @@ public partial class dovolenky : System.Web.UI.Page
                     DateTime my_date = new DateTime(tc_rok, tc_month, my_den);
                     int dnesJe = (int)my_date.DayOfWeek;
                     string nazov = CultureInfo.CurrentCulture.DateTimeFormat.DayNames[dnesJe];
+
                     if ((nazov == "sobota") || (nazov == "nedeľa"))
                     {
-                        mojaCela.BackColor = System.Drawing.Color.FromArgb(0x990000);
-                        mojaCela.ForeColor = System.Drawing.Color.Yellow;
+                        //mojaCela.BackColor = System.Drawing.Color.FromArgb(0x990000);
+                       // mojaCela.ForeColor = System.Drawing.Color.Yellow;
+                        mojaCela.CssClass = "box red";
                     }
 
                     if (DateTime.Today.Day == my_den)
                     {
-                        mojaCela.BackColor = System.Drawing.Color.Yellow;
-                        mojaCela.ForeColor = System.Drawing.Color.FromArgb(0x990000);
+                        //mojaCela.BackColor = System.Drawing.Color.Yellow;
+                       // mojaCela.ForeColor = System.Drawing.Color.FromArgb(0x990000);
+                        mojaCela.CssClass = "box yellow";
                     }
 
-                    mojaCela.Text = "<strong>" + my_den.ToString() + "<br/></strong><font> " + nazov + "</font><br><br/>";
+                    mojaCela.Text = "<strong>" + my_den.ToString() + ".</strong><font> " + nazov.Substring(0, 3) + "</font><br><br/>";
                     //mojaCela.Text += "<font style='font-size:10px;'>"+mes_dov[my_den-1].ToString()+"</font>";
                     mojaCela.Text += mes_dov[my_den - 1].ToString();
                 }
-
-                //counter++;
-
                 mojRiadok.Controls.Add(mojaCela);
-
             }
-            // counter++;
             dovolenky_tab.Controls.Add(mojRiadok);
-
-
-
         }
-
-
-
     }
 
     protected void saveZoz_fnc_Click(object sender, EventArgs e)

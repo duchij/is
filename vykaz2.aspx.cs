@@ -598,7 +598,18 @@ public partial class vykaz2 : System.Web.UI.Page
             Control resTbox = ctpl.FindControl("head_tbox_" + col.ToString());
             TextBox resTxt = (TextBox)resTbox;
 
-            resTxt.Text = suma.ToString();
+            if (col == 4)
+            {
+                float prn = Convert.ToSingle(this.predMes_txt.Text.ToString().Replace(',', '.'), CultureInfo.InvariantCulture.NumberFormat);
+
+                suma = suma + (decimal)prn;
+                resTxt.Text = suma.ToString();
+
+            }
+            else
+            {
+                resTxt.Text = suma.ToString();
+            }
 
         }
         DateTime od_date = new DateTime(rok, mesiac, 1);
@@ -631,6 +642,7 @@ public partial class vykaz2 : System.Web.UI.Page
         decimal prenos = Convert.ToDecimal(prenosStr);
 
         this.rozdiel_lbl.Text = ((real+prenos)-pocetPracHod).ToString();
+        //this.
         this.saveData();
 
     }

@@ -372,4 +372,43 @@
   <data name="shifts_see_limited" xml:space="preserve">
     <value>&lt;h3 class="red"&gt;Služby vidia len oprávnené osoby&lt;/h3&gt;</value>
   </data>
+  <data name="date_april" xml:space="preserve">
+    <value>Apríl</value>
+  </data>
+  <data name="date_august" xml:space="preserve">
+    <value>August</value>
+  </data>
+  <data name="date_december" xml:space="preserve">
+    <value>December</value>
+  </data>
+  <data name="date_februar" xml:space="preserve">
+    <value>Február</value>
+  </data>
+  <data name="date_info_lbl" xml:space="preserve">
+    <value>Výber dovolenky je klik na dátum v kalenári OD a klik na dátum v kalendári DO, následne Ulož....</value>
+  </data>
+  <data name="date_januar" xml:space="preserve">
+    <value>Január</value>
+  </data>
+  <data name="date_july" xml:space="preserve">
+    <value>Júl</value>
+  </data>
+  <data name="date_june" xml:space="preserve">
+    <value>Jún</value>
+  </data>
+  <data name="date_maj" xml:space="preserve">
+    <value>Máj</value>
+  </data>
+  <data name="date_march" xml:space="preserve">
+    <value>Marec</value>
+  </data>
+  <data name="date_november" xml:space="preserve">
+    <value>November</value>
+  </data>
+  <data name="date_october" xml:space="preserve">
+    <value>Október</value>
+  </data>
+  <data name="date_september" xml:space="preserve">
+    <value>September</value>
+  </data>
 </root>

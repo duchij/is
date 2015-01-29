@@ -190,6 +190,10 @@ public partial class _Default : System.Web.UI.Page
                         //SortedList result = db_obj.getNextPozDatum(DateTime.Today);
                         Response.Redirect(@"sestrhlas.aspx");
                     }
+                    else if (Session["workgroup"].ToString() == "other")
+                    {
+                        Response.Redirect(@"sluzby2.aspx");
+                    }
                     else if (Session["workgroup"].ToString() == "op")
                     {
                         Response.Redirect(@"opprogram.aspx");

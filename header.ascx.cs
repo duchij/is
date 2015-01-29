@@ -49,7 +49,7 @@ public partial class header : System.Web.UI.UserControl
         string vceraStr = vcera.ToShortDateString();
 
         StringBuilder sb = new StringBuilder();
-        if (this.wgroup == "doctor" || this.wgroup == "op")
+        if (this.wgroup == "doctor" || this.wgroup == "op" || this.wgroup == "other")
         {
 
             sb.Append("SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],");
@@ -86,7 +86,7 @@ public partial class header : System.Web.UI.UserControl
         {
             string[] docBefore = table[0]["users_names"].ToString().Split(';');
             string[] comments = table[0]["comment"].ToString().Split('|');
-            if (this.wgroup == "doctor")
+            if (this.wgroup == "doctor" || this.wgroup=="other")
             {
                 
                 // string[] docAfter = table[1]["users_names"].ToString().Split(';');
