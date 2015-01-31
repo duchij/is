@@ -1,0 +1,16 @@
+﻿CREATE DEFINER=`root`@`localhost` TRIGGER `is_hlasko_epc_au` AFTER UPDATE ON `is_hlasko_epc` FOR EACH ROW begin
+   
+	
+    set @userId = NEW.user_id;
+    set @mesiac = MONTH(NEW.work_start);
+    set @rok = YEAR(NEW.work_start);
+    
+    set @vykaz_pocet = (SELECT count(*) FROM is_vykaz WHERE mesiac = @mesiac AND rok=@rok AND user_id = @userId);
+   
+    IF (@vykaz_pocet > 0) THEN
+		
+			DELETE FROM is_vykaz WHERE user_id=@userId AND mesiac=@mesiac AND rok=@rok;
+		END IF;
+    
+    
+    end

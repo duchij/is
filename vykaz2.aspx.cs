@@ -23,6 +23,10 @@ public partial class vykaz2 : System.Web.UI.Page
     public mysql_db x2Mysql = new mysql_db();
     public my_db x_db = new my_db();
     public string[] vykazHeader;
+    public string rights;
+
+    public SortedList gData = new SortedList();
+
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -40,7 +44,7 @@ public partial class vykaz2 : System.Web.UI.Page
             //Response.Redirect("adduser.aspx");
         }
 
-       
+        this.rights = Session["rights"].ToString();
 
 
         //this.zaMesiac_lbl.Text = "Maj,2012";
@@ -52,6 +56,14 @@ public partial class vykaz2 : System.Web.UI.Page
             DateTime dnesJe = DateTime.Today;
             this.mesiac_cb.SelectedValue = dnesJe.Month.ToString();
             this.rok_cb.SelectedValue = dnesJe.Year.ToString();
+            if ((this.rights == "poweruser" || Session["login"].ToString() == "lsykora") || this.rights=="admin")
+            {
+                this.anotherUser_pl.Visible = true;
+            }
+            else
+            {
+                this.anotherUser_pl.Visible = false;
+            }
         }
 
         this.createVykaz();

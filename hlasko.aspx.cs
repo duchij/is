@@ -9,6 +9,9 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Text.RegularExpressions;
 
+
+
+
 public partial class hlasko : System.Web.UI.Page
 {
     my_db x_db = new my_db();
@@ -1064,4 +1067,12 @@ public partial class hlasko : System.Web.UI.Page
         string[] result = Regex.Split(str, "\r\n");
         return result;
     }
+
+
+    [System.Web.Services.WebMethod]
+    public static string setdata(string name)
+    {
+        return name+"pokus";
+    }
+
 }

@@ -40,7 +40,7 @@ public partial class sluzby2_sestr : System.Web.UI.Page
 
         if (this.rights == "admin" || this.rights == "poweruser")
         {
-            this.editShiftView_pl.Visible = true;
+            this.editShiftView_pl.Visible = false;
             this.publish_btn.Visible = true;
             this.unpublish_btn.Visible = true;
         }
@@ -289,7 +289,8 @@ public partial class sluzby2_sestr : System.Web.UI.Page
                     //  {
 
 
-                    if ((this.rights == "admin" || this.rights == "poweruser") && editShifts)
+                   // if ((this.rights == "admin" || this.rights == "poweruser") && editShifts)
+                    if (this.rights == "admin" || this.rights == "poweruser")
                     {
                         DropDownList doctors_lb = new DropDownList();
                         doctors_lb.ID = "ddl_" + row.ToString() + "_" + cols.ToString();

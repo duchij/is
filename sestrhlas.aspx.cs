@@ -57,11 +57,13 @@ public partial class sestrhlas : System.Web.UI.Page
             //    deps_dl.Items.Add(new ListItem("Velke deti", "vd"));
 
             //}
+
             this.loadDeps();
             if (Session["oddelenie"].ToString().Length > 0)
             {
                 this.deps_dl.SelectedValue = Session["oddelenie"].ToString();
             }
+            
             this.loadHlasko();
         }
     }

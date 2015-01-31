@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Web.Services;
 
 namespace callExt
 {
@@ -12,10 +13,11 @@ namespace callExt
         {
 
         }
-        [System.Web.Services.WebMethod]
-        public static string setData()
+
+        [WebMethod]
+        public static string setData(string name)
         {
-            return "pokus";
+            return name+"pokus";
         }
     }
     

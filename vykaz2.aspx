@@ -6,6 +6,14 @@
     <asp:Label ID="msg_lbl" runat="server" Text=""></asp:Label>
   
  <h1> Mesačný výkaz</h1>
+    <asp:PlaceHolder ID="anotherUser_pl" runat="server">
+        <div class="row">
+            <div class="one third">Výkaz pre uživateľa:</div>
+        <div class="one third"> <div align="left"><asp:DropDownList ID="doctors_dl" runat="server"></asp:DropDownList></div></div>
+        <div class="one third"><div align="left"><asp:Button ID="insertForUser_btn" runat="server" Text="Načítaj" /></div></div>
+            </div>
+        <hr />
+    </asp:PlaceHolder>
     <div class="row">
         <div class="one third">
                 <asp:Label ID="zaMesiac_lbl" runat="server"></asp:Label>

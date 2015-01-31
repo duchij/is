@@ -6,37 +6,62 @@ function onSuccess(data) {
     alert(data);
 }
 
+function test() {
+    //alert("lolo");
+   // var st = $("input[id$=testButton").val();
+    var st = "test";
+    $.ajax({
+        type: "POST",
+        url: "../WebService.asmx/setData",
+        data: "{data:'text'}",
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("Content-type",
+                                 "application/json; charset=utf-8");
+        },
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        // success: function (response) { alert("uspech"+ response); },
+        failure: function (response) {
+            alert("chyba"+response);
+        },
+        complete: function (res) {alert(res);}
+    });
+
+
+}
+
 $(document).ready(function () {
 
     //alert("hura");
 
-    $("input[id$=_publish_cb]").click(function (e) {
-        //var st = false;
-        //if ($("input[id$=_publish_cb]").attr("checked")) {
-        //    st = true;
-        //}
+    //$("input[id$=testButton").click(function (e) {
+    //    //var st = false;
+    //    //if ($("input[id$=_publish_cb]").attr("checked")) {
+    //    //    st = true;
+    //    //}
             
-        var st = $("input[id$=_publish_cb]").is(":checked");
+    //    var st = $("input[id$=_publish_cb]").is(":checked");
 
-        //if (st) {
-           //alert("lolo");
-
-
-            $.ajax({
-                type: "POST",
-                url: "ajaxcall.aspx/setData",
-                data: '{state: "' +st + '" }',
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                success: function (response) { alert(response.d); },
-                failure: function (response) {
-                    alert(response.d);
-                }
-            });
-       // }
+    //    //if (st) {
+    //    alert("lolo");
 
 
-    });
+    //    $.ajax({
+    //        type: "POST",
+    //        url: "hlasko.aspx/setData",
+    //        data: '{state: "' +st + '" }',
+    //        contentType: "application/json; charset=utf-8",
+    //        dataType: "json",
+    //        success: function (response) { alert(response.d); },
+
+    //        failure: function (response) {
+    //            alert(response.d);
+    //        }
+    //    });
+    //    // }
+
+
+    //});
 
     
 
@@ -50,7 +75,7 @@ $(document).ready(function () {
             $("input[id$=_jsWorkstarttxt]").val("07:00");
         }
 
-       // alert(selectedValue);
+        // alert(selectedValue);
     });
 
     $("input[id$=_jsWorkstarttxt]").change(function (e) {
@@ -68,7 +93,7 @@ $(document).ready(function () {
 
     $("input[id$=_jsWorktimetxt]").change(function (e) {
         var str = $("input[id$=_jsWorktimetxt]").val();
-       // alert(Number(str));
+        // alert(Number(str));
         if (isNaN(str)) {
             $("input[id$=_jsWorktimetxt]").val("15");
             alert("Toto nie je cele cislo!!!!");
