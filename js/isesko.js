@@ -85,7 +85,16 @@ $(document).ready(function () {
         //alert(str);
         if (!re.test(str)) {
             var dt = new Date();
-            $("input[id$=_jsWorkstarttxt]").val(dt.getHours()+":"+dt.getMinutes()   );
+            var min = dt.getMinutes();
+            var minStr = "";
+            if (min >= 0 || min <= 9) {
+                minStr = "0" + min;
+            }
+            else {
+                minStr = min.toString();
+            }
+
+                $("input[id$=_jsWorkstarttxt]").val(dt.getHours() + ":" + dt.getMinutes());
             alert("Chyba!!! toto nie je spravny format casu!!!! Nastaveny bude aktualny");
         }
 

@@ -95,11 +95,7 @@ public partial class hlasko : System.Web.UI.Page
                     this.hlas_type.SelectedValue = "OP";
                     break;
             }
-
         }
-        
-
-
     }
 
 
@@ -235,6 +231,42 @@ public partial class hlasko : System.Web.UI.Page
         }
     }
 
+    protected int  calcAfter19()
+    {
+        DateTime date = Convert.ToDateTime(this.hl_datum_cb.SelectedValue.ToString() + " " + this.jsWorkstarttxt.Text.ToString());
+
+        DateTime datePlus = date.AddMinutes(Convert.ToInt32(this.jsWorktimetxt.Text.ToString()));
+        DateTime dateMore19 = Convert.ToDateTime(this.hl_datum_cb.SelectedValue.ToString() + " " + "19:00");
+
+        DateTime daterAfretMidNight = dateMore19.AddMinutes(301);
+        int minutes = 0;
+        if (datePlus > dateMore19)
+        {
+            if (datePlus > daterAfretMidNight)
+            {
+
+                DateTime dateTmp = dateMore19.AddMinutes(301);
+                minutes = (datePlus-dateTmp).Minutes;
+                minutes = minutes + 300;
+            }
+           /* if (date > dateMore19 && date <daterAfretMidNight)
+            {
+                minutes = Convert.ToInt32(this.jsWorktimetxt.Text.ToString());
+            }   */
+            else if (datePlus < daterAfretMidNight)
+            {
+                minutes = (datePlus - dateMore19).Minutes;
+            }
+            else
+            {
+                minutes = Convert.ToInt32(this.jsWorktimetxt.Text.ToString());
+            }
+
+        }
+
+        return minutes;
+    }
+
     protected void saveActivity_fnc(object sender, EventArgs e)
     {
 
@@ -245,7 +277,8 @@ public partial class hlasko : System.Web.UI.Page
         DateTime dateTmp = Convert.ToDateTime(this.hl_datum_cb.SelectedValue.ToString());
 
         data.Add("work_start", my_x2.unixDate(dateTmp) + " " + this.jsWorkstarttxt.Text.ToString());
-        data.Add("work_time", this.jsWorktimetxt.Text.ToString());
+       // data.Add("work_time", this.jsWorktimetxt.Text.ToString());
+        data.Add("work_time", this.calcAfter19());
         data.Add("work_type", this.worktype_cb.SelectedValue.ToString());
         data.Add("patient_name", this.patientname_txt.Text.ToString());
         data.Add("work_text", my_x2.EncryptString(this.activity_txt.Text.ToString(),Session["passphrase"].ToString()));
@@ -353,7 +386,7 @@ public partial class hlasko : System.Web.UI.Page
         headRow.Controls.Add(headCell3);
 
         TableHeaderCell headCell4 = new TableHeaderCell();
-        headCell4.Text = "Trvanie prace";
+        headCell4.Text = "Trvanie prace<br><font style='font-size:smaller;'>počíta sa čas od 19.00</font> ";
         headRow.Controls.Add(headCell4);
 
         TableHeaderCell headCell5 = new TableHeaderCell();
