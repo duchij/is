@@ -881,6 +881,9 @@ public partial class vykaz2 : System.Web.UI.Page
     {
         int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue.ToString());
         int rok = Convert.ToInt32(this.rok_cb.SelectedValue.ToString());
+
+        this.createVykaz();
+
         this.createPdf(rok, mesiac);
     }
 
