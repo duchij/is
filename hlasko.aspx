@@ -8,7 +8,7 @@
 <asp:Label ID="msg_lbl" runat="server" Text=""></asp:Label>
 
 <h2>Hlásenie službieb KDCH, DOrK a KPU</h2>
- <input type="button" id="testButton" value="test" onclick="test()"/>        
+<%-- <input type="button" id="testButton" value="test" onclick="test()"/>      --%>  
    
     
     

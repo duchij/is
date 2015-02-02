@@ -36,7 +36,7 @@ public partial class hlasko : System.Web.UI.Page
        // Page.Header.DataBind();
         this.loadFile_fup.Attributes.Add("size", "50");
         this.msg_lbl.Text = "";
-        this.hlasko_pl.Visible = false;
+        this.hlasko_pl.Visible = true;
         this.kompl_work_time.Text = "";
        // Response.AppendHeader("Refresh", 6000 + "; URL=hlasko.aspx");
 
@@ -240,19 +240,25 @@ public partial class hlasko : System.Web.UI.Page
 
         DateTime daterAfretMidNight = dateMore19.AddMinutes(301);
         int minutes = 0;
+
         if (datePlus > dateMore19)
         {
-            if (datePlus > daterAfretMidNight)
+            if (datePlus > daterAfretMidNight && date <= dateMore19)
             {
 
-                DateTime dateTmp = dateMore19.AddMinutes(301);
+                DateTime dateTmp = dateMore19.AddMinutes(300);
                 minutes = (datePlus-dateTmp).Minutes;
                 minutes = minutes + 300;
             }
+           // else if (datePlus < daterAfretMidNight && datePLus
            /* if (date > dateMore19 && date <daterAfretMidNight)
             {
                 minutes = Convert.ToInt32(this.jsWorktimetxt.Text.ToString());
             }   */
+            else if (datePlus > daterAfretMidNight && date >= dateMore19)
+            {
+                minutes = Convert.ToInt32(this.jsWorktimetxt.Text.ToString());
+            }
             else if (datePlus < daterAfretMidNight)
             {
                 minutes = (datePlus - dateMore19).Minutes;
@@ -277,8 +283,8 @@ public partial class hlasko : System.Web.UI.Page
         DateTime dateTmp = Convert.ToDateTime(this.hl_datum_cb.SelectedValue.ToString());
 
         data.Add("work_start", my_x2.unixDate(dateTmp) + " " + this.jsWorkstarttxt.Text.ToString());
-       // data.Add("work_time", this.jsWorktimetxt.Text.ToString());
-        data.Add("work_time", this.calcAfter19());
+        data.Add("work_time", this.jsWorktimetxt.Text.ToString());
+       // data.Add("work_time", this.calcAfter19());
         data.Add("work_type", this.worktype_cb.SelectedValue.ToString());
         data.Add("patient_name", this.patientname_txt.Text.ToString());
         data.Add("work_text", my_x2.EncryptString(this.activity_txt.Text.ToString(),Session["passphrase"].ToString()));

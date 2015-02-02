@@ -35,11 +35,11 @@ public partial class hlasenia_print : System.Web.UI.Page
             string lok = "";
             if (data["oddelenie"].ToString() == "vd")
             {
-                odd = "Veľkém deti";
+                odd = "Veľké deti";
             }
             if (data["oddelenie"].ToString() == "msv")
             {
-                odd = "MSV";
+                odd = "MŠV";
             }
             if (data["oddelenie"].ToString() == "koj")
             {
@@ -54,48 +54,48 @@ public partial class hlasenia_print : System.Web.UI.Page
             {
                 lok = "Zadné hlásenie";
             }
-            odd_lbl.Text = odd + ", " + lok;
+            this.odd_lbl.Text = odd + ", " + lok;
             //type_lbl.Text = data["type"].ToString();
-            hlas_lbl.Text = data["hlasko"].ToString();
+            this.hlas_lbl.Text = data["hlasko"].ToString();
             
         }
            
 
-        user_lbl.Text = user_info["full_name"].ToString();
-        SortedList lekari = this.getSluzbyByDen(Convert.ToInt32(Request["den"].ToString()));
+        this.user_lbl.Text = Session["fullname"].ToString();
+       // SortedList lekari = this.getSluzbyByDen(Convert.ToInt32(Request["den"].ToString()));
         
-        oup_lbl.Text = lekari["OUP"].ToString();
+        /*oup_lbl.Text = lekari["OUP"].ToString();
         odda_lbl.Text = lekari["OddA"].ToString();
         oddb_lbl.Text = lekari["OddB"].ToString();
-        op_lbl.Text = lekari["OP"].ToString();
+        op_lbl.Text = lekari["OP"].ToString();*/
       
     }
 
-    protected SortedList getSluzbyByDen(int xden)
-    {
-        SortedList result = new SortedList();
-        DateTime dnesJe = DateTime.Today;
-        int den = Convert.ToInt32(Request["den"].ToString());
-        int mesiac = Convert.ToInt32(Request["m"].ToString());
+    //protected SortedList getSluzbyByDen(int xden)
+    //{
+    //    SortedList result = new SortedList();
+    //    DateTime dnesJe = DateTime.Today;
+    //    int den = Convert.ToInt32(Request["den"].ToString());
+    //    int mesiac = Convert.ToInt32(Request["m"].ToString());
 
-        SortedList tmp = x_db.loadSluzbaMonthYear("is_sluzby", mesiac.ToString(), dnesJe.Year.ToString());
+    //    SortedList tmp = x_db.loadSluzbaMonthYear("is_sluzby", mesiac.ToString(), dnesJe.Year.ToString());
 
         
 
-        //SortedList tmp = x_db.loadSluzbaMonthYear("is_sluzby", dnesJe.Month.ToString(), dnesJe.Year.ToString());
+    //    //SortedList tmp = x_db.loadSluzbaMonthYear("is_sluzby", dnesJe.Month.ToString(), dnesJe.Year.ToString());
 
-        string[][] data = my_x2.parseSluzba(tmp["rozpis"].ToString());
+    //    string[][] data = my_x2.parseSluzba(tmp["rozpis"].ToString());
 
-       // int den = dnesJe.Day;
+    //   // int den = dnesJe.Day;
 
-        result.Add("OUP", data[den - 1][1].ToString());
-        result.Add("OddA", data[den - 1][2].ToString());
-        result.Add("OddB", data[den - 1][3].ToString());
-        result.Add("OP", data[den - 1][4].ToString());
-       // result.Add("TRP", data[den - 1][5].ToString());
+    //    result.Add("OUP", data[den - 1][1].ToString());
+    //    result.Add("OddA", data[den - 1][2].ToString());
+    //    result.Add("OddB", data[den - 1][3].ToString());
+    //    result.Add("OP", data[den - 1][4].ToString());
+    //   // result.Add("TRP", data[den - 1][5].ToString());
 
-        return result;
+    //    return result;
 
-    }
+    //}
 
 }

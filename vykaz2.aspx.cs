@@ -64,9 +64,10 @@ public partial class vykaz2 : System.Web.UI.Page
             {
                 this.anotherUser_pl.Visible = false;
             }
+            this.createVykaz();
         }
 
-        this.createVykaz();
+       
 
         //this.generateVykaz(Convert.ToInt32(this.mesiac_cb.SelectedValue.ToString()),Convert.ToInt32(this.rok_cb.SelectedValue.ToString()));
 
@@ -94,7 +95,16 @@ public partial class vykaz2 : System.Web.UI.Page
 
         if (row.Count > 0)
         {
-            this.predMes_txt.Text = row["prenos"].ToString();
+            string tmp =my_x2.getStr(row["prenos"].ToString());
+
+            if (tmp.Length == 0)
+            {
+                this.predMes_txt.Text = "0";
+            }
+            else
+            {
+                this.predMes_txt.Text = tmp;
+            }
         }
         else
         {
@@ -107,10 +117,10 @@ public partial class vykaz2 : System.Web.UI.Page
         
         int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue.ToString());
         int rok = Convert.ToInt32(this.rok_cb.SelectedValue.ToString());
-        if (IsPostBack == false)
-        {
-            this.getPrenos(mesiac, rok);
-        }
+
+        
+        this.getPrenos(mesiac, rok);
+        
 
         StringBuilder sb = new StringBuilder();
         sb.AppendFormat("SELECT * FROM [is_vykaz] WHERE [mesiac]='{0}' AND [rok]='{1}' AND [user_id]='{2}'",mesiac,rok,Session["user_id"].ToString());
@@ -127,6 +137,7 @@ public partial class vykaz2 : System.Web.UI.Page
 
     protected void reCreateVykaz(SortedList data, int mesiac, int rok)
     {
+        this.vykaz_tbl.Controls.Clear();
         string mesStr = mesiac.ToString();
         if (mesStr.Length == 1)
         {
@@ -583,6 +594,8 @@ public partial class vykaz2 : System.Web.UI.Page
 
     protected void calcData_Click(object sender, EventArgs e)
     {
+        this.createVykaz();
+
         int cols = this.vykazHeader.Length;
 
         int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue.ToString());
@@ -767,6 +780,17 @@ public partial class vykaz2 : System.Web.UI.Page
                     Control tbox2 = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_11");
                     TextBox mTBox2 = (TextBox)tbox2;
 
+                    Control hodTmp = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_4");
+                    TextBox zucHodTxt = (TextBox)hodTmp;
+
+                    Control mzvyhTmp = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_7");
+                    TextBox mzvyhTxt = (TextBox)mzvyhTmp;
+
+                    decimal zuctHodinyFLOAT = Convert.ToDecimal(zucHodTxt.Text.ToString(),CultureInfo.InvariantCulture.NumberFormat);
+                    decimal defZuc = zuctHodinyFLOAT + hodiny;
+                    mzvyhTxt.Text = defZuc.ToString();
+
+
                     mTBox1.Text = hodiny.ToString();
                     mTBox2.Text = neaktivna.ToString();
                 }
@@ -866,13 +890,14 @@ public partial class vykaz2 : System.Web.UI.Page
         this.pocetHod_txt.Text = "";
        // this.hodiny_lbl.Text = "0";
         this.rozdiel_lbl.Text = "0";
-        string mesiac = this.mesiac_cb.SelectedValue.ToString();
-        string rok = this.rok_cb.SelectedValue.ToString();
+       // string mesiac = this.mesiac_cb.SelectedValue.ToString();
+       // string rok = this.rok_cb.SelectedValue.ToString();
 
-        this.vykaz_tbl.Controls.Clear();
+        //this.vykaz_tbl.Controls.Clear();
         //Session.Remove("vykaz_id");
 
        // this.runGenerate(Convert.ToInt32(mesiac), Convert.ToInt32(rok));
+        this.createVykaz();
     }
 
     protected void onYearChangedFnc(object sender, EventArgs e)
@@ -881,11 +906,12 @@ public partial class vykaz2 : System.Web.UI.Page
         this.pocetHod_txt.Text = "";
        // this.hodiny_lbl.Text = "0";
         this.rozdiel_lbl.Text = "0";
-        string mesiac = this.mesiac_cb.SelectedValue.ToString();
-        string rok = this.rok_cb.SelectedValue.ToString();
-        Session.Remove("vykaz_id");
+        this.createVykaz();
+        //string mesiac = this.mesiac_cb.SelectedValue.ToString();
+       // string rok = this.rok_cb.SelectedValue.ToString();
+       // Session.Remove("vykaz_id");
 
-        this.vykaz_tbl.Controls.Clear();
+       // this.vykaz_tbl.Controls.Clear();
 
       //  this.runGenerate(Convert.ToInt32(mesiac), Convert.ToInt32(rok));
     }

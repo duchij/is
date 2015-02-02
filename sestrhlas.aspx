@@ -60,8 +60,8 @@ runat="Server"></FTB:FreeTextBox>--%>
                     
                     <asp:Button ID="copyYesterday_btn" runat="server" Text="<%$Resources:Resource,odd_vloz_clip %>" onclick="copyYesterday_btn_Click" />
                 <asp:Button ID="print_btn" runat="server"  Text="Vytlač" onClick = "print_fnc" />
-                <asp:Button ID="def_lock_btn" runat="server" Text="Uzavrieť a vytlačiť hlásko" 
-                     BackColor="#990000" ForeColor="Yellow" OnClick="def_loc_fnc" />
+                <%--<asp:Button ID="def_lock_btn" runat="server" Text="Uzavrieť a vytlačiť hlásko" 
+                     BackColor="#990000" ForeColor="Yellow" OnClick="def_loc_fnc" />--%>
                 <%--<asp:Button ID="addInfo_btn" runat="server" Text="Ulož dodatok" Enabled="False" onclick="addInfo_btn_Click"/>--%>
 </asp:Content>
 

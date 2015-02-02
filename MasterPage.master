@@ -50,12 +50,13 @@
         menubar:true,
         plugins : 'paste textcolor code',
         paste_word_valid_elements: "b,strong,i,em,h1,h2",
-        paste_as_text: true,
+        paste_as_text: false,
         force_p_newlines: false,
        // forced_root_block : 'div',
         force_br_newlines : true,
-
-        autosave_retention: "30m"
+        forced_root_block : '',
+        autosave_retention: "30m",
+        language:'sk'
 
      });
  </script>

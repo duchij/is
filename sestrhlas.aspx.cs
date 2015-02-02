@@ -113,7 +113,7 @@ public partial class sestrhlas : System.Web.UI.Page
             {
                 hlasenie.Visible = false;
                 //dodatok.Visible = true;
-                def_lock_btn.Enabled = false;
+                //def_lock_btn.Enabled = false;
                 //addInfo_btn.Enabled = true;
                 view_hlasko.Visible = true;
                 hlasko_lbl.Visible = true;
@@ -127,7 +127,7 @@ public partial class sestrhlas : System.Web.UI.Page
             {
                 hlasenie.Visible = true;
                 //dodatok.Visible = false;
-                def_lock_btn.Enabled = true;
+                //def_lock_btn.Enabled = true;
                 view_hlasko.Visible = false;
 
                 //addInfo_btn.Enabled = false;
@@ -149,7 +149,7 @@ public partial class sestrhlas : System.Web.UI.Page
 
             this.hlasenie.Visible = true;
             //dodatok.Visible = false;
-            this.def_lock_btn.Enabled = true;
+           // this.def_lock_btn.Enabled = true;
             this.view_hlasko.Visible = false;
 
             //addInfo_btn.Enabled = false;
