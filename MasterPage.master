@@ -43,12 +43,12 @@
         tinymce.init({
         selector: ".dtextbox",
         //theme:"advanced",
-        toolbar:"undo redo | alignleft aligncenter alignright | bold italic | bullist numlist | fontsizeselect | fontselect | forecolor",
+        toolbar:"undo redo | print | alignleft aligncenter alignright | bold italic | bullist numlist | fontsizeselect | fontselect | forecolor",
         
         fontsize_formats: "8pt 10pt 12pt 14pt 18pt 24pt 36pt",
         font_formats: "Arial=arial,helvetica,sans-serif;Courier New=courier new,courier,monospace;Verdana=verdana",
         menubar:true,
-        plugins : 'paste textcolor code',
+        plugins : 'paste textcolor code print',
         paste_word_valid_elements: "b,strong,i,em,h1,h2",
         paste_as_text: false,
         force_p_newlines: false,
