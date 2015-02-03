@@ -45,9 +45,10 @@ Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="
                         </asp:Calendar>
                     </div>
                     </div>
-                    
-                   
-                   
+
+    <asp:Label ID="hlaskoInfoMessage_lbl" runat="server" Text="<%$ Resources:Resource,hlasko_infomessage %>"></asp:Label>
+    <asp:CheckBox ID="showHlasko_cb" runat="server" AutoPostBack="true" OnCheckedChanged="setHlaskoVisibiltyFnc" /><asp:Label ID="Label3" runat="server" Text=" Rozumiem riziku..." CssClass="mojInline"></asp:Label>
+    <asp:PlaceHolder ID="viewHlasko_pl" runat="server">
                     <h1>Hlásenie služby:</h1>
     <asp:PlaceHolder ID="epc_pl" runat="server" >
         <div class="info box">
@@ -167,6 +168,7 @@ Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="
                     
                 <asp:Button ID="addInfo_btn" runat="server" Text="Ulož dodatok" Enabled="False" 
                     onclick="addInfo_btn_Click" CssClass="button asphalt" />
+        </asp:PlaceHolder>
         </asp:PlaceHolder>
 </asp:Content>
 

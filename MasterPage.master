@@ -43,7 +43,7 @@
         tinymce.init({
         selector: ".dtextbox",
         //theme:"advanced",
-        toolbar:"undo redo | print | alignleft aligncenter alignright | bold italic | bullist numlist | fontsizeselect | fontselect | forecolor",
+        toolbar:"undo redo | print | indent outdent | alignleft aligncenter alignright | bold italic | bullist numlist | fontsizeselect | fontselect | forecolor",
         
         fontsize_formats: "8pt 10pt 12pt 14pt 18pt 24pt 36pt",
         font_formats: "Arial=arial,helvetica,sans-serif;Courier New=courier new,courier,monospace;Verdana=verdana",
@@ -105,7 +105,7 @@
                         </ul>
                     </li>
 
-                    </li></asp:PlaceHolder>
+                    <%--</li>--%></asp:PlaceHolder>
 
                 <asp:PlaceHolder ID="hlas_sestier_plh" runat="server">
                 <li><button>Sestra</button>

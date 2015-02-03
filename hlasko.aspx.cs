@@ -45,7 +45,7 @@ public partial class hlasko : System.Web.UI.Page
         {
             // Calendar1.SelectedDate = DateTime.Today;
             this.setMyDate();
-            this.setShiftForDoctor();
+            this.setShiftForDoctor(false,true);
             this.loadHlasko();
             this.setEPC_init();
           //  this.setShiftForDoctor();
@@ -66,8 +66,22 @@ public partial class hlasko : System.Web.UI.Page
 
 
     }
+    protected void setHlaskoVisibility(Boolean st)
+    {
+        this.showHlasko_cb.Checked = st;
+        if (st)
+        {
+            this.hlaskoInfoMessage_lbl.Visible = false;
+            this.viewHlasko_pl.Visible = true;
+        }
+        else
+        {
+            this.hlaskoInfoMessage_lbl.Visible = true;
+            this.viewHlasko_pl.Visible = false;
+        }
+    }
 
-    protected void setShiftForDoctor()
+    protected void setShiftForDoctor(Boolean hlaskoSt, Boolean setShift)
     {
         DateTime dt = this.Calendar1.SelectedDate;
 
@@ -76,25 +90,47 @@ public partial class hlasko : System.Web.UI.Page
 
         SortedList row = x2MySQL.getRow(sb.ToString());
 
-        if (row.Count >0)
+        if (row.Count > 0)
         {
             string type = row["typ"].ToString();
 
             switch (type)
             {
                 case "OUP":
-                    this.hlas_type.SelectedValue = "OUP";
+                    hlaskoSt = true;
+                    if (setShift) this.hlas_type.SelectedValue = "OUP";
                     break;
                 case "OddA":
-                    this.hlas_type.SelectedValue = "A";
+                    hlaskoSt = true;
+                   if (setShift) this.hlas_type.SelectedValue = "A";
                     break;
                 case "OddB":
-                    this.hlas_type.SelectedValue = "B";
+                    hlaskoSt = true;
+                    if (setShift) this.hlas_type.SelectedValue = "B";
                     break;
                 case "OP":
-                    this.hlas_type.SelectedValue = "OP";
+                    hlaskoSt = true;
+                    if (setShift) this.hlas_type.SelectedValue = "OP";
                     break;
             }
+        }
+        else
+        {
+            hlaskoSt = false;
+        }
+        this.setHlaskoVisibility(hlaskoSt);
+    }
+
+    protected void setHlaskoVisibiltyFnc(object sender, EventArgs e)
+    {
+        Boolean st = this.showHlasko_cb.Checked;
+        if (st)
+        {
+            this.viewHlasko_pl.Visible = true;
+        }
+        else
+        {
+            this.viewHlasko_pl.Visible = false;
         }
     }
 
@@ -704,6 +740,8 @@ public partial class hlasko : System.Web.UI.Page
         //user.Text = Calendar1.SelectedDate.ToString();
         //last_user.Text = Request.Cookies["user_id"].Value.ToString();
         //this.Calendar1.SelectedDate = this.Calendar1.SelectedDate;
+        //this.msg_lbl.Text = sender.ToString();
+        this.setShiftForDoctor(false,false);
         this.loadHlasko();
         this.setEPC_init();
 
