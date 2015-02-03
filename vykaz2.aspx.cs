@@ -680,6 +680,9 @@ public partial class vykaz2 : System.Web.UI.Page
 
         string mesStr = dateGroup.Substring(4, 2);
 
+
+
+
         string zacDt = rok.ToString() + "-" + mesStr.ToString() + "-" + "01";
         string koncDt = rok.ToString() + "-" + mesStr.ToString() + "-" + dni.ToString();
 
@@ -715,18 +718,22 @@ public partial class vykaz2 : System.Web.UI.Page
             string dateGroup = my_x2.makeDateGroup(rok, mesiac).ToString();
 
 
+            DateTime denPO = new DateTime(rok, mesiac, dni, 7, 0, 0);
+            denPO = denPO.AddDays(1);
+
             string mesStr = dateGroup.Substring(4, 2);
 
             string zacDt = rok.ToString() + "-" + mesStr.ToString() + "-" + "01";
-            string koncDt = rok.ToString() + "-" + mesStr.ToString() + "-" + dni.ToString();
-
+            //string koncDt = rok.ToString() + "-" + mesStr.ToString() + "-" + dni.ToString();
+            string koncDt = my_x2.unixDate(denPO);
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("SELECT [hlasko].[dat_hlas] AS [datum],[hlasko].[type] AS [sluzba_typ],[hlasko_epc].[user_id], SUM([hlasko_epc].[work_time]) AS [worktime], SUM([hlasko_epc].[work_night]) AS [worknight]");
             sb.AppendLine("FROM [is_hlasko_epc] as [hlasko_epc]");
             sb.AppendLine("LEFT JOIN [is_hlasko] AS [hlasko] ON [hlasko].[id]=[hlasko_epc].[hlasko_id]");
-            sb.AppendFormat("WHERE [hlasko_epc].[work_start] BETWEEN '{0}' AND '{1}'", zacDt, koncDt);
+            sb.AppendFormat("WHERE [hlasko_epc].[work_start] BETWEEN '{0} 00:00:00' AND '{1} 07:00:00'", zacDt, koncDt);
             sb.AppendFormat("AND [user_id]='{0}'", id);
             sb.AppendLine("GROUP BY [hlasko_epc].[hlasko_id]");
+            sb.AppendLine("ORDER BY [hlasko_epc].[work_start] ASC");
 
             Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
 
