@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="vykaz2.aspx.cs" Inherits="vykaz2" Culture="sk-SK" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="vykaz2.aspx.cs" Trace="true" Inherits="vykaz2" Culture="sk-SK" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
 </asp:Content>
@@ -15,10 +15,9 @@
         <hr />
     </asp:PlaceHolder>
     <div class="row">
-        <div class="one third">
+        <div class="one third"><%--OnSelectedIndexChanged = "onMonthChangedFnc"--%>
                 <asp:Label ID="zaMesiac_lbl" runat="server"></asp:Label>
-                 Mesiac:<asp:DropDownList ID="mesiac_cb" runat="server" Width="100"  CssClass="mojInline" 
-                        AutoPostBack="True" OnSelectedIndexChanged = "onMonthChangedFnc">
+                 Mesiac:<asp:DropDownList ID="mesiac_cb" runat="server" Width="100"  CssClass="mojInline">
                         <asp:ListItem Value="1">Január</asp:ListItem>
                         <asp:ListItem Value="2">Február</asp:ListItem>
                         <asp:ListItem Value="3">Marec</asp:ListItem>
@@ -35,8 +34,8 @@
         </div>
         <div class="one third"> 
             
-                    Rok: 
-                <asp:DropDownList ID="rok_cb" runat="server" AutoPostBack="True" OnSelectedIndexChanged = "onYearChangedFnc" CssClass="mojInline" Width="100">
+                    Rok: <%--OnSelectedIndexChanged = "onYearChangedFnc"--%>
+                <asp:DropDownList ID="rok_cb" runat="server" CssClass="mojInline" Width="100">
                     <asp:ListItem Value="2010">Rok 2010</asp:ListItem>
                     <asp:ListItem Value="2011">Rok 2011</asp:ListItem>
                     <asp:ListItem Value="2012">Rok 2012</asp:ListItem>
@@ -48,10 +47,10 @@
                 
             </div>
         <div class="one third">
-            <asp:Button ID="generateEPC_btn" runat="server" CssClass="button blue"  Text="<%$ Resources:Resource,generate_epc %>" OnClick="generateEpc_fnc" />
+         <asp:Button ID="generateVykaz_btn" runat="server" CssClass="button green"  Text="Generuj vykaz" OnClick="generateVykaz_fnc" />    <asp:Button ID="generateEPC_btn" runat="server" CssClass="button blue"  Text="<%$ Resources:Resource,generate_epc %>" OnClick="generateEpc_fnc" />
         </div>
-       
-
+        <asp:PlaceHolder ID="vykazInfoHours_pl" runat="server" Visible="false">
+             
          <div class="row">
             <div class="one">
                     <hr />
@@ -71,7 +70,7 @@
                 <hr />
             </div>
         </div>
-
+        </asp:PlaceHolder>
         <div class="row">
 
             <asp:Table ID="vykaz_tbl" runat="server" CssClass="responsive" data-max="13"></asp:Table>

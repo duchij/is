@@ -27,6 +27,15 @@ public partial class vykaz2 : System.Web.UI.Page
 
     public SortedList gData = new SortedList();
 
+    protected void Page_Init(object sender, EventArgs e)
+    {
+        if (IsPostBack)
+        {
+            //this.msg_lbl.Text = ViewState["head_tbox_4"].ToString();
+           //this.createVykaz(false);
+        }
+    }
+
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -49,14 +58,18 @@ public partial class vykaz2 : System.Web.UI.Page
 
         //this.zaMesiac_lbl.Text = "Maj,2012";
 
-        this.msg_lbl.Visible = false;
+       // this.msg_lbl.Visible = false;
 
         if (!IsPostBack)
         {
             DateTime dnesJe = DateTime.Today;
             this.mesiac_cb.SelectedValue = dnesJe.Month.ToString();
             this.rok_cb.SelectedValue = dnesJe.Year.ToString();
-            if ((this.rights == "poweruser" || Session["login"].ToString() == "lsykora") || this.rights=="admin")
+
+            Session["vykaz_akt_month"] = dnesJe.Month;
+            Session["vykaz_akt_year"] = dnesJe.Year;
+            
+            if ((this.rights == "poweruser" || Session["login"].ToString() == "lsykora") || this.rights == "admin")
             {
                 this.anotherUser_pl.Visible = true;
             }
@@ -64,13 +77,44 @@ public partial class vykaz2 : System.Web.UI.Page
             {
                 this.anotherUser_pl.Visible = false;
             }
-            this.createVykaz();
+            //this.createVykaz(true);
+        }
+        else
+        {
+           this.createVykaz(true);
+            //this.createVykaz(false);
+            //string mes = this.mesiac_cb.SelectedValue.ToString();
+            //string rok = this.rok_cb.SelectedValue.ToString();
+
+            //if (Session["vykaz_akt_month"].ToString() == mes && Session["vykaz_akt_year"].ToString() == rok)
+            //{
+            //    //this.msg_lbl.Text = sender.ToString();
+            //    this.createVykaz(false);
+            //}
+            //else
+            //{
+            //    Session["vykaz_akt_month"] = mes;
+            //    Session["vykaz_akt_year"] = rok;
+            //    this.vykaz_tbl.Controls.Clear();
+            //    this.createVykaz(true);
+                
+            //}
         }
 
        
 
         //this.generateVykaz(Convert.ToInt32(this.mesiac_cb.SelectedValue.ToString()),Convert.ToInt32(this.rok_cb.SelectedValue.ToString()));
 
+
+    }
+
+    protected void generateVykaz_fnc(object sender, EventArgs e)
+    {
+        this.mesiac_cb.Enabled = false;
+        this.rok_cb.Enabled = false;
+        this.vykazInfoHours_pl.Visible = true;
+        this.generateVykaz_btn.Enabled = false;
+       // this.createVykaz(true);
 
     }
 
@@ -112,7 +156,7 @@ public partial class vykaz2 : System.Web.UI.Page
         }
     }
 
-    protected void createVykaz()
+    protected void createVykaz(Boolean writeText)
     {
         
         int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue.ToString());
@@ -127,17 +171,20 @@ public partial class vykaz2 : System.Web.UI.Page
         SortedList row = x2Mysql.getRow(sb.ToString());
         if (row.Count > 0)
         {
-            this.reCreateVykaz(row,mesiac,rok);
+            this.reCreateVykaz(row,mesiac,rok,writeText);
         }
         else
         {
-            this.generateVykaz(mesiac, rok);
+            this.generateVykaz(mesiac, rok,writeText);
         }
+
+        this._calcData();
     }
 
-    protected void reCreateVykaz(SortedList data, int mesiac, int rok)
+    protected void reCreateVykaz(SortedList data, int mesiac, int rok, Boolean writeText)
     {
         this.vykaz_tbl.Controls.Clear();
+
         string mesStr = mesiac.ToString();
         if (mesStr.Length == 1)
         {
@@ -204,31 +251,28 @@ public partial class vykaz2 : System.Web.UI.Page
                
                 if (res == -1)
                 {
-                    this.makeRow(den, cols, rowData, rok, mesiac, false, true);
+                    this.makeRow(den, cols, rowData, rok, mesiac, false, true,writeText);
                 }
                 else
                 {
-                    this.makeRow(den, cols, rowData, rok, mesiac, true, true);
+                    this.makeRow(den, cols, rowData, rok, mesiac, true, true, writeText);
                 }
-
             }
             else
             {
                 if (res == -1)
                 {
-                    this.makeRow(den, cols, rowData, rok, mesiac, false, false);
+                    this.makeRow(den, cols, rowData, rok, mesiac, false, false, writeText);
                 }
                 else
                 {
-                    this.makeRow(den, cols, rowData, rok, mesiac, true, false);
+                    this.makeRow(den, cols, rowData, rok, mesiac, true, false, writeText);
                 }
             }
-
         }
-
     }
 
-    protected void makeRow(int den, int cols, string[] rowData, int rok, int mesiac, Boolean sviatok, Boolean shift)
+    protected void makeRow(int den, int cols, string[] rowData, int rok, int mesiac, Boolean sviatok, Boolean shift, Boolean writeText)
     {
         DateTime my_date = new DateTime(rok, mesiac, den + 1);
 
@@ -281,14 +325,77 @@ public partial class vykaz2 : System.Web.UI.Page
             {
                 tBox.Font.Bold = false;
             }
-            tBox.Text = rowData[col];
+            if (writeText) tBox.Text = rowData[col];
             dataCell.Controls.Add(tBox);
             riadok.Controls.Add(dataCell);
         }
     }
 
-    protected void generateVykaz(int mesiac, int rok)
+    protected void makeEmptyRow(int den, int cols, string[] rowData, int rok, int mesiac, Boolean sviatok, Boolean shift, Boolean writeText)
     {
+        DateTime my_date = new DateTime(rok, mesiac, den + 1);
+
+        int dnesJe = (int)my_date.DayOfWeek;
+
+        TableRow riadok = new TableRow();
+        this.vykaz_tbl.Controls.Add(riadok);
+
+        TableCell dateCell = new TableCell();
+        dateCell.ID = "dateCell_" + den.ToString();
+
+        if (dnesJe == 6 || dnesJe == 0)
+        {
+            dateCell.CssClass = "box red";
+        }
+        if (dnesJe != 6 && dnesJe != 0 && sviatok == true)
+        {
+            dateCell.CssClass = "box yellow";
+        }
+
+
+        dateCell.Text = (den + 1).ToString();
+
+        riadok.Controls.Add(dateCell);
+
+        for (int col = 0; col < cols; col++)
+        {
+            TableCell dataCell = new TableCell();
+            dataCell.ID = "dataCell_" + den.ToString() + "_" + col.ToString();
+
+            if (dnesJe == 6 || dnesJe == 0)
+            {
+                dataCell.CssClass = "box red";
+            }
+
+            if (dnesJe != 6 && dnesJe != 0 && sviatok)
+            {
+                dataCell.CssClass = "box yellow";
+            }
+
+            //  dataCell.CssClass = "box red";
+            TextBox tBox = new TextBox();
+            tBox.ID = "textBox_" + den.ToString() + "_" + col.ToString();
+            if (shift)
+            {
+                tBox.Font.Bold = true;
+                tBox.BackColor = System.Drawing.Color.LightGray;
+            }
+            else
+            {
+                tBox.Font.Bold = false;
+            }
+            if (writeText) tBox.Text = rowData[col];
+            dataCell.Controls.Add(tBox);
+            riadok.Controls.Add(dataCell);
+        }
+    }
+
+
+
+    protected void generateVykaz(int mesiac, int rok, Boolean writeText)
+    {
+        this.vykaz_tbl.Controls.Clear();
+
         string mesStr = mesiac.ToString();
         if (mesStr.Length == 1)
         {
@@ -357,18 +464,18 @@ public partial class vykaz2 : System.Web.UI.Page
                      if (res == -1)
                      {
                          rowData = vykazVypis["velkaSluzba"].ToString().Split(',');
-                         this.makeRow(den, cols, rowData, rok, mesiac, false,true);
+                         this.makeRow(den, cols, rowData, rok, mesiac, false, true, writeText);
                      }
                      else
                      {
                          rowData = vykazVypis["sviatokVikend"].ToString().Split(',');
-                         this.makeRow(den, cols,rowData, rok, mesiac, true,true);
+                         this.makeRow(den, cols, rowData, rok, mesiac, true, true, writeText);
                      }
 
                      den++;
                      rowData = vykazVypis["malaSluzba2"].ToString().Split(',');
                    //  TableRow riadok1 = new TableRow();
-                     this.makeRow(den, cols, rowData, rok, mesiac,false,false);
+                     this.makeRow(den, cols, rowData, rok, mesiac, false, false, writeText);
                      
                      //den++;
 
@@ -378,12 +485,12 @@ public partial class vykaz2 : System.Web.UI.Page
                      if (res == -1)
                      {
                          rowData = vykazVypis["velkaSluzba"].ToString().Split(',');
-                         this.makeRow(den, cols, rowData, rok, mesiac,false,true);
+                         this.makeRow(den, cols, rowData, rok, mesiac, false, true, writeText);
                      }
                      else
                      {
                          rowData = vykazVypis["sviatokVikend"].ToString().Split(',');
-                         this.makeRow(den, cols, rowData, rok, mesiac,true,true);
+                         this.makeRow(den, cols, rowData, rok, mesiac, true, true, writeText);
                      }
 
                      if (den + 1 < dniMes)
@@ -391,14 +498,14 @@ public partial class vykaz2 : System.Web.UI.Page
                          den++;
                          rowData = vykazVypis["velkaSluzba2"].ToString().Split(',');
                          //TableRow riadok1 = new TableRow();
-                         this.makeRow(den, cols, rowData, rok, mesiac, false, true);
+                         this.makeRow(den, cols, rowData, rok, mesiac, false, true, writeText);
                      }
                      if (den + 2 < dniMes)
                      {
                          den++;
                          rowData = vykazVypis["exday"].ToString().Split(',');
                          //TableRow riadok2 = new TableRow();
-                         this.makeRow(den, cols, rowData, rok, mesiac, false, false);
+                         this.makeRow(den, cols, rowData, rok, mesiac, false, false, writeText);
                      }
                      
                  }
@@ -407,20 +514,20 @@ public partial class vykaz2 : System.Web.UI.Page
                      if (res == -1)
                      {
                          rowData = vykazVypis["malaSluzba"].ToString().Split(',');
-                         this.makeRow(den, cols, rowData, rok, mesiac, false,true);
+                         this.makeRow(den, cols, rowData, rok, mesiac, false, true, writeText);
                         
                      }
                      else
                      {
                          rowData = vykazVypis["sviatok"].ToString().Split(',');
-                         this.makeRow(den, cols, rowData, rok, mesiac, true,true);
+                         this.makeRow(den, cols, rowData, rok, mesiac, true, true, writeText);
                          
                      }
                      if (den + 1 < dniMes)
                      {
                          den++;
                          rowData = vykazVypis["malaSluzba2"].ToString().Split(',');
-                         this.makeRow(den, cols, rowData, rok, mesiac, false, false);
+                         this.makeRow(den, cols, rowData, rok, mesiac, false, false, writeText);
                      }
                  }
              }
@@ -432,17 +539,17 @@ public partial class vykaz2 : System.Web.UI.Page
                  if (dnesJe != 0 && dnesJe != 6 && res == -1)
                  {
                      rowData = vykazVypis["normDen"].ToString().Split(',');
-                     this.makeRow(den, cols, rowData, rok, mesiac, false,false);
+                     this.makeRow(den, cols, rowData, rok, mesiac, false, false, writeText);
                  }
                  else if (res != -1 && dnesJe != 0 && dnesJe != 6)
                  {
                      rowData = vykazVypis["sviatokNieVikend"].ToString().Split(',');
-                     this.makeRow(den, cols, rowData, rok, mesiac, true,false);
+                     this.makeRow(den, cols, rowData, rok, mesiac, true, false, writeText);
                  }
                  else
                  {
                      rowData = vykazVypis["exday"].ToString().Split(',');
-                     this.makeRow(den, cols, rowData, rok, mesiac,false,false);
+                     this.makeRow(den, cols, rowData, rok, mesiac, false, false, writeText);
                  }
              }
         }
@@ -591,10 +698,15 @@ public partial class vykaz2 : System.Web.UI.Page
         }
         return num;
      }
-
     protected void calcData_Click(object sender, EventArgs e)
     {
-        this.createVykaz();
+        this._calcData();
+    }
+   
+
+    protected void _calcData()
+    {
+       //this.createVykaz(false);
 
         int cols = this.vykazHeader.Length;
 
@@ -889,10 +1001,181 @@ public partial class vykaz2 : System.Web.UI.Page
         int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue.ToString());
         int rok = Convert.ToInt32(this.rok_cb.SelectedValue.ToString());
 
-        this.createVykaz();
-
+        //this.createVykaz();
+        
+        //this.calcData_Click(sender, e);
+        //this.createEmptyVykaz();
         this.createPdf(rok, mesiac);
     }
+
+    /*protected void createEmptyVykaz()
+    {
+        int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue.ToString());
+        int rok = Convert.ToInt32(this.rok_cb.SelectedValue.ToString());
+
+        this.vykaz_tbl.Controls.Clear();
+        string mesStr = mesiac.ToString();
+        if (mesStr.Length == 1)
+        {
+            mesStr = "0" + mesStr;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.Append("SELECT * FROM [is_settings]  WHERE [name]='vykaz_doctors'");
+
+        SortedList row = x2Mysql.getRow(sb.ToString());
+        this.vykazHeader = row["data"].ToString().Split(',');
+
+        int cols = this.vykazHeader.Length;
+        TableHeaderRow headerRow = new TableHeaderRow();
+
+        TableHeaderCell headCellDate = new TableHeaderCell();
+        headCellDate.ID = "datum_cell";
+        headCellDate.Text = "Datum";
+        headerRow.Controls.Add(headCellDate);
+
+        this.vykaz_tbl.Controls.Add(headerRow);
+
+        for (int col = 0; col < cols; col++)
+        {
+            TableHeaderCell headCell = new TableHeaderCell();
+            headCell.ID = "headCell_" + col.ToString();
+
+            Label headLabel = new Label();
+            headLabel.ID = this.vykazHeader[col] + "_lbl<br>";
+            headLabel.Font.Size = FontUnit.Point(8);
+            headLabel.Text = this.vykazHeader[col];
+
+            headCell.Controls.Add(headLabel);
+
+            TextBox tBox = new TextBox();
+            tBox.ID = "head_tbox_" + col.ToString();
+            tBox.Text = "";
+            headCell.Controls.Add(tBox);
+
+
+            headerRow.Controls.Add(headCell);
+        }
+
+        int dniMes = DateTime.DaysInMonth(rok, mesiac);
+        string[] sviatky = x_db.getFreeDays();
+
+        Boolean[] docShifts = this.getShifts(rok, mesiac);
+
+        SortedList vykazVypis = this.getValueFromSluzba();
+
+        for (int den = 0; den < dniMes; den++)
+        {
+            // 
+            DateTime my_date = new DateTime(rok, mesiac, den + 1);
+            int dnesJe = (int)my_date.DayOfWeek;
+
+            string[] rowData;
+
+            if (docShifts[den])
+            {
+                string dentmp = (den + 1).ToString() + "." + mesiac.ToString();
+
+                int res = Array.IndexOf(sviatky, dentmp);
+
+                if (dnesJe == 0)
+                {
+                    if (res == -1)
+                    {
+                        rowData = vykazVypis["velkaSluzba"].ToString().Split(',');
+                        this.makeRow(den, cols, rowData, rok, mesiac, false, true, writeText);
+                    }
+                    else
+                    {
+                        rowData = vykazVypis["sviatokVikend"].ToString().Split(',');
+                        this.makeRow(den, cols, rowData, rok, mesiac, true, true, writeText);
+                    }
+
+                    den++;
+                    rowData = vykazVypis["malaSluzba2"].ToString().Split(',');
+                    //  TableRow riadok1 = new TableRow();
+                    this.makeRow(den, cols, rowData, rok, mesiac, false, false, writeText);
+
+                    //den++;
+
+                }
+                else if (dnesJe == 6)
+                {
+                    if (res == -1)
+                    {
+                        rowData = vykazVypis["velkaSluzba"].ToString().Split(',');
+                        this.makeRow(den, cols, rowData, rok, mesiac, false, true, writeText);
+                    }
+                    else
+                    {
+                        rowData = vykazVypis["sviatokVikend"].ToString().Split(',');
+                        this.makeRow(den, cols, rowData, rok, mesiac, true, true, writeText);
+                    }
+
+                    if (den + 1 < dniMes)
+                    {
+                        den++;
+                        rowData = vykazVypis["velkaSluzba2"].ToString().Split(',');
+                        //TableRow riadok1 = new TableRow();
+                        this.makeRow(den, cols, rowData, rok, mesiac, false, true, writeText);
+                    }
+                    if (den + 2 < dniMes)
+                    {
+                        den++;
+                        rowData = vykazVypis["exday"].ToString().Split(',');
+                        //TableRow riadok2 = new TableRow();
+                        this.makeRow(den, cols, rowData, rok, mesiac, false, false, writeText);
+                    }
+
+                }
+                else
+                {
+                    if (res == -1)
+                    {
+                        rowData = vykazVypis["malaSluzba"].ToString().Split(',');
+                        this.makeRow(den, cols, rowData, rok, mesiac, false, true, writeText);
+
+                    }
+                    else
+                    {
+                        rowData = vykazVypis["sviatok"].ToString().Split(',');
+                        this.makeRow(den, cols, rowData, rok, mesiac, true, true, writeText);
+
+                    }
+                    if (den + 1 < dniMes)
+                    {
+                        den++;
+                        rowData = vykazVypis["malaSluzba2"].ToString().Split(',');
+                        this.makeRow(den, cols, rowData, rok, mesiac, false, false, writeText);
+                    }
+                }
+            }
+            else
+            {
+                string dentmp = (den + 1).ToString() + "." + mesiac.ToString();
+
+                int res = Array.IndexOf(sviatky, dentmp);
+                if (dnesJe != 0 && dnesJe != 6 && res == -1)
+                {
+                    rowData = vykazVypis["normDen"].ToString().Split(',');
+                    this.makeRow(den, cols, rowData, rok, mesiac, false, false, writeText);
+                }
+                else if (res != -1 && dnesJe != 0 && dnesJe != 6)
+                {
+                    rowData = vykazVypis["sviatokNieVikend"].ToString().Split(',');
+                    this.makeRow(den, cols, rowData, rok, mesiac, true, false, writeText);
+                }
+                else
+                {
+                    rowData = vykazVypis["exday"].ToString().Split(',');
+                    this.makeRow(den, cols, rowData, rok, mesiac, false, false, writeText);
+                }
+            }
+        }
+
+
+
+        //this.generateVykaz(mesiac, rok, false);
+    }*/
 
     protected void onMonthChangedFnc(object sender, EventArgs e)
     {
@@ -907,7 +1190,7 @@ public partial class vykaz2 : System.Web.UI.Page
         //Session.Remove("vykaz_id");
 
        // this.runGenerate(Convert.ToInt32(mesiac), Convert.ToInt32(rok));
-        this.createVykaz();
+        //this.createVykaz(true);
     }
 
     protected void onYearChangedFnc(object sender, EventArgs e)
@@ -916,7 +1199,7 @@ public partial class vykaz2 : System.Web.UI.Page
         this.pocetHod_txt.Text = "";
        // this.hodiny_lbl.Text = "0";
         this.rozdiel_lbl.Text = "0";
-        this.createVykaz();
+        this.createVykaz(true);
         //string mesiac = this.mesiac_cb.SelectedValue.ToString();
        // string rok = this.rok_cb.SelectedValue.ToString();
        // Session.Remove("vykaz_id");
@@ -1189,10 +1472,10 @@ public partial class vykaz2 : System.Web.UI.Page
 
         for (int col = 4; col < cols; col++)
         {
-            Control Tbox = ctpl.FindControl("head_tbox_" + col.ToString());
-            TextBox mBox = (TextBox)Tbox;
+            Control THbox = ctpl.FindControl("head_tbox_" + col.ToString());
+            TextBox hBox = (TextBox)THbox;
             cb.BeginText();
-            string num = mBox.Text.ToString();
+            string num = hBox.Text.ToString();
             cb.MoveText((float)koor[col], size.Height - 604);
             cb.ShowText(num);
 
