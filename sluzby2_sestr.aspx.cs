@@ -17,6 +17,7 @@ public partial class sluzby2_sestr : System.Web.UI.Page
     public mysql_db x2Mysql = new mysql_db();
     public x2_var x2 = new x2_var();
     public sluzbyclass x2Sluzby = new sluzbyclass();
+    log x2log = new log();
 
     public string  rights = "";
     public string deps = "";
@@ -147,7 +148,7 @@ public partial class sluzby2_sestr : System.Web.UI.Page
         Session.Add("aktDateGroup", dateGroup);
 
         SortedList res = x2Mysql.getRow("SELECT * FROM [is_settings] WHERE [name] = '"+Session["klinika"].ToString()+"_shifts_nurse'");
-
+        
         // Boolean status = Convert.ToBoolean(res["status"].ToString());
 
         string[] shifts = res["data"].ToString().Split(',');
@@ -197,6 +198,8 @@ public partial class sluzby2_sestr : System.Web.UI.Page
       //  this.msg_lbl.Text = sb.ToString();
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
+
+       
         if (table.Count == daysMonth)
         {
             if (this.rights == "admin" || this.rights == "poweruser")

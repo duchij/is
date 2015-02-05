@@ -14,6 +14,7 @@ public partial class _Default : System.Web.UI.Page
 {
     my_db db_obj = new my_db();
     x2_var x2 = new x2_var();
+    log x2log = new log();
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -68,6 +69,7 @@ public partial class _Default : System.Web.UI.Page
                 if (Login1.UserName == passwd && g_pass == "NULL" && data["name"].ToString() == passwd)
                 {
 
+                    x2log.logData(data,"","first user login");
 
                     Session.Add("tuisegumdrum", "activado");
                     Session.Add("user_id", data["id"].ToString());
@@ -105,6 +107,7 @@ public partial class _Default : System.Web.UI.Page
                 if (l_pass == g_pass)
                 {
                     e.Authenticated = true;
+                    x2log.logData(data, "", "user login:"+data["full_name"]);
                     this.deleteFilesPerDays();
                     Session.Add("tuisegumdrum", "activado");
                     Session.Add("user_id", data["id"].ToString());
@@ -206,11 +209,13 @@ public partial class _Default : System.Web.UI.Page
                 else
                 {
                     e.Authenticated = false;
+                    x2log.logData(data, "bad user or password", "bad user login:" + data["full_name"]);
                 }
             }
             else
             {
                 e.Authenticated = false;
+                x2log.logData(data, "bad user or password", "bad user login:" + data["full_name"]);
             }
         }
     }

@@ -17,9 +17,9 @@ using iTextSharp.text.pdf;
 
 public partial class vykaz2 : System.Web.UI.Page
 {
-   public  x2_var my_x2 = new x2_var();
+    public  x2_var my_x2 = new x2_var();
    // vykazdb x_db = new vykazdb();
-
+    public log x2log = new log();
     public mysql_db x2Mysql = new mysql_db();
     public my_db x_db = new my_db();
     public string[] vykazHeader;
@@ -39,6 +39,7 @@ public partial class vykaz2 : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        
 
         if (Session["tuisegumdrum"] == null)
         {
@@ -66,8 +67,8 @@ public partial class vykaz2 : System.Web.UI.Page
             this.mesiac_cb.SelectedValue = dnesJe.Month.ToString();
             this.rok_cb.SelectedValue = dnesJe.Year.ToString();
 
-            Session["vykaz_akt_month"] = dnesJe.Month;
-            Session["vykaz_akt_year"] = dnesJe.Year;
+           // Session["vykaz_akt_month"] = dnesJe.Month;
+         //   Session["vykaz_akt_year"] = dnesJe.Year;
             
             if ((this.rights == "poweruser" || Session["login"].ToString() == "lsykora") || this.rights == "admin")
             {
@@ -114,8 +115,14 @@ public partial class vykaz2 : System.Web.UI.Page
         this.rok_cb.Enabled = false;
         this.vykazInfoHours_pl.Visible = true;
         this.generateVykaz_btn.Enabled = false;
+        this.newVykaz_btn.Enabled = true;
        // this.createVykaz(true);
 
+    }
+
+    protected void newVykaz_fnc(object sender, EventArgs e)
+    {
+        Response.Redirect("vykaz2.aspx");
     }
 
     protected void getPrenos(int mesiac, int rok)
@@ -136,6 +143,8 @@ public partial class vykaz2 : System.Web.UI.Page
         sb.AppendFormat("SELECT [prenos] FROM [is_vykaz] WHERE [user_id] ='{0}' AND [mesiac] = '{1}' AND [rok] = '{2}'", Session["user_id"], mesiac, rok);
 
         SortedList row = x2Mysql.getRow(sb.ToString());
+        
+        x2log.logData(row,"","pokus");
 
         if (row.Count > 0)
         {
@@ -563,7 +572,7 @@ public partial class vykaz2 : System.Web.UI.Page
         SortedList result = new SortedList();
         SortedList typSluziebVykaz = x2Mysql.getRow("SELECT * FROM [is_settings] WHERE [name]='typ_vykaz'");
         SortedList userVykazData = x2Mysql.getRow("SELECT * FROM [is_settings] WHERE [name]='" + Session["login"].ToString() + "_vykaz'");
-
+       
         if (typSluziebVykaz.Count > 0 && userVykazData.Count > 0)
         {
             string[] typArr = typSluziebVykaz["data"].ToString().Split(',');

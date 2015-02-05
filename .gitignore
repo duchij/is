@@ -10,6 +10,7 @@
 Web.config
 bin/*
 App_Data/vykaz_*
+App_Data/*.log
 
 # Build results
 [Dd]ebug/

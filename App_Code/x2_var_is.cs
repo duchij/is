@@ -22,7 +22,7 @@ using iTextSharp.text.html.simpleparser;
 /// </summary>
 public class x2_var
 {
-    mysql_db x2MySql = new mysql_db();
+    //mysql_db x2MySql = new mysql_db();
 
 	public x2_var()
 	{
@@ -31,13 +31,7 @@ public class x2_var
 		//
 	}
 
-    public Boolean offline()
-    {
-        SortedList res = x2MySql.getRow("SELECT [name],[data] FROM [is_settings] WHERE [name]='webstatus'");
-        Boolean status = Convert.ToBoolean(res["data"]);
-        return status;
-    }
-
+  
 
 
     public int makeDateGroup(int rok, int mesiac)

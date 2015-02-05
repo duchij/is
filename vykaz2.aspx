@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="vykaz2.aspx.cs" Trace="true" Inherits="vykaz2" Culture="sk-SK" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="vykaz2.aspx.cs" Trace="false" Inherits="vykaz2" Culture="sk-SK" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
 </asp:Content>
@@ -6,16 +6,18 @@
     <asp:Label ID="msg_lbl" runat="server" Text=""></asp:Label>
   
  <h1> Mesačný výkaz</h1>
+     <hr />
     <asp:PlaceHolder ID="anotherUser_pl" runat="server">
         <div class="row">
             <div class="one third">Výkaz pre uživateľa:</div>
         <div class="one third"> <div align="left"><asp:DropDownList ID="doctors_dl" runat="server"></asp:DropDownList></div></div>
         <div class="one third"><div align="left"><asp:Button ID="insertForUser_btn" runat="server" Text="Načítaj" /></div></div>
             </div>
-        <hr />
+     <hr />   
     </asp:PlaceHolder>
     <div class="row">
         <div class="one third"><%--OnSelectedIndexChanged = "onMonthChangedFnc"--%>
+            <asp:Button ID="newVykaz_btn" runat="server" CssClass="button asphalt"  Text="Novy vykaz" Enabled="false" OnClick="newVykaz_fnc" />
                 <asp:Label ID="zaMesiac_lbl" runat="server"></asp:Label>
                  Mesiac:<asp:DropDownList ID="mesiac_cb" runat="server" Width="100"  CssClass="mojInline">
                         <asp:ListItem Value="1">Január</asp:ListItem>
@@ -47,7 +49,9 @@
                 
             </div>
         <div class="one third">
-         <asp:Button ID="generateVykaz_btn" runat="server" CssClass="button green"  Text="Vtvor vykaz" OnClick="generateVykaz_fnc" />    <asp:Button ID="generateEPC_btn" runat="server" CssClass="button blue"  Text="<%$ Resources:Resource,generate_epc %>" OnClick="generateEpc_fnc" />
+            
+         <asp:Button ID="generateVykaz_btn" runat="server" CssClass="button green"  Text="Vtvor vykaz" OnClick="generateVykaz_fnc" />    
+            <asp:Button ID="generateEPC_btn" runat="server" CssClass="button blue"  Text="<%$ Resources:Resource,generate_epc %>" OnClick="generateEpc_fnc" />
         </div>
         <asp:PlaceHolder ID="vykazInfoHours_pl" runat="server" Visible="false">
              

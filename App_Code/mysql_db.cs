@@ -48,7 +48,9 @@ catch(Excption ex)*/
 /// </summary>
 public class mysql_db
 {
+    public log x2log = new log();  
     public OdbcConnection my_con = new OdbcConnection();
+    //public log x2log = new log();  
 
 	public mysql_db()
 	{
@@ -61,6 +63,14 @@ public class mysql_db
         my_con.ConnectionString = connString.ToString();
 
 	}
+
+    public Boolean offline()
+    {
+        SortedList res = this.getRow("SELECT [name],[data] FROM [is_settings] WHERE [name]='webstatus'");
+        Boolean status = Convert.ToBoolean(res["data"]);
+        return status;
+    }
+
 
     private string parseQuery(string query)
     {
@@ -141,6 +151,8 @@ public class mysql_db
         }
         catch (Exception e)
         {
+            x2log.logData(query, e.ToString(), "db error");
+
             result.Add("status", false);
             result.Add("msg", e.ToString());
             result.Add("last_id", 0);
@@ -213,6 +225,7 @@ public class mysql_db
         }
         catch (Exception e)
         {
+            x2log.logData(cmd.CommandText.ToString(), e.ToString(), "db error");
             result.Add("status", false);
             result.Add("msg", e.ToString());
         }
@@ -286,6 +299,8 @@ public class mysql_db
         }
         catch (Exception ex)
         {
+            x2log.logData(cmd.CommandText.ToString(), ex.ToString(), "db error");
+
             result.Add("status",false);
             result.Add("msg", ex.ToString());
         }
@@ -328,6 +343,8 @@ public class mysql_db
         }
         catch (Exception ex)
         {
+            x2log.logData(cmd.CommandText.ToString(), ex.ToString(), "db error");
+
             result.Add("status",false);
             result.Add("msg",ex.ToString());
             cmd.Transaction.Rollback();
@@ -453,6 +470,7 @@ public class mysql_db
         }
         catch (Exception ex)
         {
+            x2log.logData(cmd.CommandText.ToString(), ex.ToString(), "db error");
             result.Add("status",false);
             result.Add("msg",ex.ToString());
             cmd.Transaction.Rollback();
@@ -492,6 +510,7 @@ public class mysql_db
         }
         catch (Exception ex)
         {
+            x2log.logData(cmd.CommandText.ToString(), ex.ToString(), "db error");
             result.Add("status",false);
             result.Add("msg",ex.ToString());
             cmd.Transaction.Rollback();
@@ -558,6 +577,7 @@ public class mysql_db
         }
         catch (Exception e)
         {
+            x2log.logData(query, e.ToString(), "db error");
             result.Add("status",false);
             result.Add("msg",e.ToString());
             result.Add("last_id", 0);
@@ -591,6 +611,7 @@ public class mysql_db
         }
         catch (Exception e)
         {
+            x2log.logData(query, e.ToString(), "db error");
             trans1.Rollback();
             result.Add("status", false);
             result.Add("msg", e.ToString());
@@ -615,8 +636,8 @@ public class mysql_db
         my_con.Open();
 
         OdbcCommand my_com = new OdbcCommand(this.parseQuery(query.ToString()), my_con);
-        //try
-        //{
+        try
+        {
             OdbcDataReader reader = my_com.ExecuteReader();
 
 
@@ -648,13 +669,14 @@ public class mysql_db
 
                 }
             }
-           
-        //}
-        //catch (Exception e)
-        //{
-        //    result.Add("status", false);
-        //    result.Add("msg", e.ToString());
-        //}
+
+        }
+        catch (Exception e)
+        {
+            x2log.logData(this.parseQuery(query.ToString()),e.ToString(),"db error");
+            result.Add("status", false);
+            result.Add("msg", e.ToString());
+        }
         my_con.Close();
 
 
@@ -669,48 +691,56 @@ public class mysql_db
 
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(this.parseQuery(query.ToString()), my_con);
-
-        OdbcDataReader reader = my_com.ExecuteReader();
-        int row = 0;
-
-        if (reader.HasRows)
+        try
         {
-            while (reader.Read())
+
+            OdbcCommand my_com = new OdbcCommand(this.parseQuery(query.ToString()), my_con);
+
+            OdbcDataReader reader = my_com.ExecuteReader();
+            int row = 0;
+
+            if (reader.HasRows)
             {
-                Hashtable tmp = new Hashtable();
-                for (int i = 0; i < reader.FieldCount; i++)
+                while (reader.Read())
                 {
-                    
-
-                    //string inData = reader.GetValue(i).ToString();
-                   // byte[] buffer = Encoding.UTF8.GetBytes(inData);
-                    //string outData = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
-                    if (reader.GetValue(i) == DBNull.Value)
+                    Hashtable tmp = new Hashtable();
+                    for (int i = 0; i < reader.FieldCount; i++)
                     {
-                        tmp.Add(reader.GetName(i).ToString(), "NULL");
-                    }
-                    else
-                    {
-                        string tf = reader.GetFieldType(i).ToString();
 
-                        if (tf == "System.Byte[]")
+
+                        //string inData = reader.GetValue(i).ToString();
+                        // byte[] buffer = Encoding.UTF8.GetBytes(inData);
+                        //string outData = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
+                        if (reader.GetValue(i) == DBNull.Value)
                         {
-                            byte[] dl =(byte[])reader.GetValue(i);
-                            string rr = System.Text.Encoding.UTF8.GetString(dl);
-
-                           // tmp.Add(reader.GetName(i).ToString(), reader.GetString(i).ToString());
-                            tmp.Add(reader.GetName(i).ToString(), rr);
+                            tmp.Add(reader.GetName(i).ToString(), "NULL");
                         }
                         else
                         {
-                            tmp.Add(reader.GetName(i).ToString(), reader.GetValue(i));
+                            string tf = reader.GetFieldType(i).ToString();
+
+                            if (tf == "System.Byte[]")
+                            {
+                                byte[] dl = (byte[])reader.GetValue(i);
+                                string rr = System.Text.Encoding.UTF8.GetString(dl);
+
+                                // tmp.Add(reader.GetName(i).ToString(), reader.GetString(i).ToString());
+                                tmp.Add(reader.GetName(i).ToString(), rr);
+                            }
+                            else
+                            {
+                                tmp.Add(reader.GetName(i).ToString(), reader.GetValue(i));
+                            }
                         }
                     }
+                    result.Add(row, tmp);
+                    row++;
                 }
-                result.Add(row, tmp);
-                row++;
             }
+        }
+        catch (Exception ex)
+        {
+            x2log.logData(this.parseQuery(query.ToString()), ex.ToString(), "db error");
         }
         my_con.Close();
 
@@ -730,48 +760,55 @@ public class mysql_db
 
         OdbcDataReader reader = my_com.ExecuteReader();
         int row = 0;
-
-        if (reader.HasRows)
+        try
         {
-            while (reader.Read())
+
+            if (reader.HasRows)
             {
-                SortedList tmp = new SortedList();
-                for (int i = 0; i < reader.FieldCount; i++)
+                while (reader.Read())
                 {
-
-
-                    //string inData = reader.GetValue(i).ToString();
-                    // byte[] buffer = Encoding.UTF8.GetBytes(inData);
-                    //string outData = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
-
-                    if (reader.GetValue(i) == DBNull.Value)
+                    SortedList tmp = new SortedList();
+                    for (int i = 0; i < reader.FieldCount; i++)
                     {
-                        tmp.Add(reader.GetName(i).ToString(), "NULL");
-                    }
-                    else
-                    {
-                        string tf = reader.GetFieldType(i).ToString();
 
-                        if (tf == "System.Byte[]")
+
+                        //string inData = reader.GetValue(i).ToString();
+                        // byte[] buffer = Encoding.UTF8.GetBytes(inData);
+                        //string outData = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
+
+                        if (reader.GetValue(i) == DBNull.Value)
                         {
-                            byte[] dl = (byte[])reader.GetValue(i);
-                            string rr = System.Text.Encoding.UTF8.GetString(dl);
-
-                            // tmp.Add(reader.GetName(i).ToString(), reader.GetString(i).ToString());
-                            tmp.Add(reader.GetName(i).ToString(), rr);
+                            tmp.Add(reader.GetName(i).ToString(), "NULL");
                         }
                         else
                         {
-                            tmp.Add(reader.GetName(i).ToString(), reader.GetValue(i));
+                            string tf = reader.GetFieldType(i).ToString();
+
+                            if (tf == "System.Byte[]")
+                            {
+                                byte[] dl = (byte[])reader.GetValue(i);
+                                string rr = System.Text.Encoding.UTF8.GetString(dl);
+
+                                // tmp.Add(reader.GetName(i).ToString(), reader.GetString(i).ToString());
+                                tmp.Add(reader.GetName(i).ToString(), rr);
+                            }
+                            else
+                            {
+                                tmp.Add(reader.GetName(i).ToString(), reader.GetValue(i));
+                            }
                         }
+
+
+                        //  tmp.Add(reader.GetName(i).ToString(), reader.GetString(i));
                     }
-
-
-                  //  tmp.Add(reader.GetName(i).ToString(), reader.GetString(i));
+                    result.Add(row, tmp);
+                    row++;
                 }
-                result.Add(row, tmp);
-                row++;
             }
+        }
+        catch (Exception ex)
+        {
+            x2log.logData(this.parseQuery(query.ToString()), ex.ToString(), "db error");
         }
         my_con.Close();
 

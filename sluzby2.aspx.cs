@@ -17,7 +17,7 @@ public partial class sluzby2 : System.Web.UI.Page
     public mysql_db x2Mysql = new mysql_db();
     public x2_var x2 = new x2_var();
     public sluzbyclass x2Sluzby = new sluzbyclass();
-
+    log x2log = new log();
     public string  rights = "";
     public string[] shiftType;
     public string wgroup ="";
@@ -264,6 +264,7 @@ public partial class sluzby2 : System.Web.UI.Page
       //  this.msg_lbl.Text = sb.ToString();
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
+
         if (table.Count == daysMonth)
         {
             if (this.rights == "admin" || this.rights == "poweruser")

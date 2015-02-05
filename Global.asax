@@ -45,8 +45,8 @@
 
     void Application_BeginRequest(object sender, EventArgs e)
     {
-        x2_var x2 = new x2_var();
-        Boolean status = x2.offline();
+        mysql_db mysql = new mysql_db();
+        Boolean status = mysql.offline();
 
         if (status == false)
         {
