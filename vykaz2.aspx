@@ -47,7 +47,7 @@
                 
             </div>
         <div class="one third">
-         <asp:Button ID="generateVykaz_btn" runat="server" CssClass="button green"  Text="Generuj vykaz" OnClick="generateVykaz_fnc" />    <asp:Button ID="generateEPC_btn" runat="server" CssClass="button blue"  Text="<%$ Resources:Resource,generate_epc %>" OnClick="generateEpc_fnc" />
+         <asp:Button ID="generateVykaz_btn" runat="server" CssClass="button green"  Text="Vtvor vykaz" OnClick="generateVykaz_fnc" />    <asp:Button ID="generateEPC_btn" runat="server" CssClass="button blue"  Text="<%$ Resources:Resource,generate_epc %>" OnClick="generateEpc_fnc" />
         </div>
         <asp:PlaceHolder ID="vykazInfoHours_pl" runat="server" Visible="false">
              
