@@ -1,0 +1,28 @@
+﻿ALTER TABLE `is_dovolenky`
+ADD `type` enum('do','pn','sk','ci','ko') COLLATE 'armscii8_general_ci' NOT NULL DEFAULT 'do' AFTER `do`,
+COMMENT='';
+
+ALTER TABLE `is_dovolenky`
+COMMENT='' ENGINE='InnoDB';
+
+
+ALTER TABLE `is_dovolenky`
+ADD INDEX `type` (`type`),
+ADD INDEX `od` (`od`),
+ADD INDEX `do` (`do`);
+
+ALTER TABLE `is_dovolenky`
+CHANGE `user_id` `user_id` bigint unsigned NOT NULL AFTER `id`,
+COMMENT='';
+
+ALTER TABLE `is_dovolenky`
+ADD FOREIGN KEY (`user_id`) REFERENCES `is_users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+delete from `is_dovolenky` where `od` < '2015-01-01';
+
+ALTER TABLE `is_dovolenky`
+ADD UNIQUE `od_do_type` (`od`, `do`, `type`);
+
+ALTER TABLE `is_dovolenky`
+ADD `clinics` bigint unsigned NOT NULL AFTER `type`,
+COMMENT='';

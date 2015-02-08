@@ -43,14 +43,14 @@
     <br />
 
 
-    <asp:PlaceHolder ID="vkladanie_dov" runat="server">
+     <%-- <asp:PlaceHolder ID="vkladanie_dov" runat="server">
 
         <hr />
 
 
 
 
-        <table width="99%">
+      <table width="99%">
 
             <td valign="top">PracovnÌk</td>
 
@@ -123,16 +123,12 @@
         <asp:Table ID="zoznam_tbl" runat="server">
         </asp:Table>
         <hr />
-    </asp:PlaceHolder>
+    </asp:PlaceHolder>--%>
 
 
     <asp:PlaceHolder ID="uziv_dovolenka" runat="server">
 
         <hr />
-
-
-
-
         <div class="row">
             <div class="one">
                 <h2>
@@ -175,19 +171,30 @@
                     <DayHeaderStyle BackColor="#CCCCCC" Font-Bold="True" />
                     <TitleStyle BackColor="#999999" Font-Bold="True" BorderColor="Black" />
                 </asp:Calendar>
-
-
-                <div align="right">
-                    <asp:Button ID="Button2" runat="server" CssClass="large button blue" Text="<%$ Resources:Resource, save %>" OnClick="save_user_btn_Click" />
-                </div>
             </div>
         </div>
+               <br /><br />
+
+                <div class="row">
+                    <div class="one half">
+                    <asp:DropDownList ID="freeType_dl" runat="server">
+                         <asp:ListItem Value="do">Dovolenka</asp:ListItem>
+                          <asp:ListItem Value="pn">Pr·ce neschopnosù</asp:ListItem>
+                        <asp:ListItem Value="sk">äkolenie</asp:ListItem>
+                        <asp:ListItem Value="ci">Cirkul·cia</asp:ListItem>
+                        <asp:ListItem Value="ko">Kongress</asp:ListItem>
+                        </asp:DropDownList>
+                        </div>
+                    <div class="one half align-right">
+                    <asp:Button ID="Button2" runat="server" CssClass="large button blue" Text="<%$ Resources:Resource, save %>" OnClick="save_user_btn_Click" />
+                        </div> 
+                         </div>
         <asp:Label ID="Label1" runat="server" Visible="false"></asp:Label>
         <hr />
         <h2>
             <asp:Label ID="holiday_for_user" runat="server" Text="<%$ Resources:Resource, holiday_for_user_month %>"></asp:Label>
             <asp:Label ID="monthUser_lbl" runat="server" Text=""></asp:Label></h2>
-        <asp:Table ID="zoznamUser_tbl" runat="server" CssClass="responsive" data-max="15">
+        <asp:Table ID="zoznamUser_tbl" runat="server" style="font-size:large;">
         </asp:Table>
         <hr />
     </asp:PlaceHolder>

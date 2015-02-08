@@ -767,7 +767,7 @@ public partial class vykaz2 : System.Web.UI.Page
 
         decimal pocetPracHod = 0;
 
-        if (Session["pracdoba"] != null)
+        if (Session["pracdoba"].ToString().Length != 0)
         {
             Session["pracdoba"] = Session["pracdoba"].ToString().Replace(".", ",");
             pocetPracHod = pocetPracdni * Convert.ToDecimal(Session["pracdoba"]);

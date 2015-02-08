@@ -5,7 +5,31 @@
     
     void Application_Start(object sender, EventArgs e) 
     {
-     
+        log x2log = new log();
+        mysql_db mysql = new mysql_db();
+        x2log.checkIfLogExists();
+
+        Boolean status = mysql.offline();
+
+        if (status == false)
+        {
+            try
+            {
+                if (Session != null)
+                {
+                    Session.Abandon();
+
+                }
+                //Response.Redirect("offline.html");
+                Server.Transfer("offline.html");
+            }
+            catch (Exception error)
+            {
+                Server.Transfer("offline.html");
+            }
+            //Session.Abandon();
+        }
+        
         // Code that runs on application startup
 
     }
@@ -13,12 +37,15 @@
     void Application_End(object sender, EventArgs e) 
     {
         //  Code that runs on application shutdown
+        Session.Abandon();
         
 
     }
         
     void Application_Error(object sender, EventArgs e) 
     {
+        log x2log = new log();
+        x2log.logData("Global error", Environment.StackTrace.ToString(), "Global ERROR");
         //Server.Transfer("error.html");
         // Code that runs when an unhandled error occurs
 
@@ -45,27 +72,8 @@
 
     void Application_BeginRequest(object sender, EventArgs e)
     {
-        mysql_db mysql = new mysql_db();
-        Boolean status = mysql.offline();
-
-        if (status == false)
-        {
-            try
-            {
-                if (Session != null)
-                {
-                    Session.Abandon();
-
-                }
-                //Response.Redirect("offline.html");
-                Server.Transfer("offline.html");
-            }
-            catch (Exception error)
-            {
-                Server.Transfer("offline.html");
-            }
-            //Session.Abandon();
-        }
+        
+        
 
         
     }

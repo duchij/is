@@ -6,6 +6,10 @@
     <asp:Label ID="msg_lbl" runat="server" Text=""></asp:Label>
   
  <h1> Mesačný výkaz</h1>
+    <div class="red">Ako prvé je nutné si vybrať mesiac a rok, následne je nutné stlačiť tlačidlo <strong>Vytvor výkaz</strong>. Vygeneruje sa už výkaz aj s vypočítanými hodnotami. Ak je nutné 
+        upraviť tak si hodnoty a stlačiť tlačidlo <strong>Vypočítaj</strong>... a až potom je možné výkaz vytlačiť pomocou tlačidla Tlač...<br />
+        Ak chcete vytvoriť nový výkaz tak je nutné stlačiť tlačidlo <strong>Nový výkaz</strong>
+    </div>
      <hr />
     <asp:PlaceHolder ID="anotherUser_pl" runat="server">
         <div class="row">
@@ -18,6 +22,7 @@
     <div class="row">
         <div class="one third"><%--OnSelectedIndexChanged = "onMonthChangedFnc"--%>
             <asp:Button ID="newVykaz_btn" runat="server" CssClass="button asphalt"  Text="Novy vykaz" Enabled="false" OnClick="newVykaz_fnc" />
+             
                 <asp:Label ID="zaMesiac_lbl" runat="server"></asp:Label>
                  Mesiac:<asp:DropDownList ID="mesiac_cb" runat="server" Width="100"  CssClass="mojInline">
                         <asp:ListItem Value="1">Január</asp:ListItem>
@@ -50,7 +55,7 @@
             </div>
         <div class="one third">
             
-         <asp:Button ID="generateVykaz_btn" runat="server" CssClass="button green"  Text="Vtvor vykaz" OnClick="generateVykaz_fnc" />    
+         <asp:Button ID="generateVykaz_btn" runat="server" CssClass="button green"  Text="Vytvor vykaz" OnClick="generateVykaz_fnc" />    
             <asp:Button ID="generateEPC_btn" runat="server" CssClass="button blue"  Text="<%$ Resources:Resource,generate_epc %>" OnClick="generateEpc_fnc" />
         </div>
         <asp:PlaceHolder ID="vykazInfoHours_pl" runat="server" Visible="false">

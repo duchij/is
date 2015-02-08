@@ -141,6 +141,7 @@ public class mysql_db
         SortedList result = new SortedList();
         try
         {
+            x2log.logData(query, "", "mysql update");
             cmdtrans.CommandText = query;
             cmdtrans.ExecuteNonQuery();
             //cmdtrans.CommandText = "SELECT last_insert_id();";
@@ -567,6 +568,7 @@ public class mysql_db
         int id = 0;
         try
         {
+            x2log.logData(query, "", "mysql insert");
             cmdtrans.CommandText = query;
             cmdtrans.ExecuteNonQuery();
             cmdtrans.CommandText = "SELECT last_insert_id();";
@@ -604,6 +606,7 @@ public class mysql_db
         cmdtrans.Transaction = trans1;
         try
         {
+            x2log.logData(query, "", "mysql execute");
             cmdtrans.CommandText = query;
             cmdtrans.ExecuteNonQuery();
             trans1.Commit();
@@ -635,9 +638,11 @@ public class mysql_db
         SortedList result = new SortedList();
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(this.parseQuery(query.ToString()), my_con);
+        
         try
         {
+            OdbcCommand my_com = new OdbcCommand(this.parseQuery(query.ToString()), my_con);
+            //x2log.logData(this.parseQuery(query.ToString()),"","mysql getrow");
             OdbcDataReader reader = my_com.ExecuteReader();
 
 
@@ -695,7 +700,7 @@ public class mysql_db
         {
 
             OdbcCommand my_com = new OdbcCommand(this.parseQuery(query.ToString()), my_con);
-
+            x2log.logData(this.parseQuery(query.ToString()),"","mysql getTable");
             OdbcDataReader reader = my_com.ExecuteReader();
             int row = 0;
 
