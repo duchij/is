@@ -18,11 +18,23 @@ COMMENT='';
 ALTER TABLE `is_dovolenky`
 ADD FOREIGN KEY (`user_id`) REFERENCES `is_users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
-delete from `is_dovolenky` where `od` < '2015-01-01';
+-- delete from `is_dovolenky` where `od` < '2015-01-01';
+
+update is_dovolenky set do = concat(date(do)," 23:59:00");
 
 ALTER TABLE `is_dovolenky`
-ADD UNIQUE `od_do_type` (`od`, `do`, `type`);
+ADD UNIQUE `user_id_od_do_type` (`user_id`, `od`, `do`, `type`);
 
 ALTER TABLE `is_dovolenky`
 ADD `clinics` bigint unsigned NOT NULL AFTER `type`,
 COMMENT='';
+
+ALTER TABLE `is_dovolenky`
+CHANGE `od` `od` datetime NOT NULL AFTER `user_id`,
+CHANGE `do` `do` datetime NOT NULL AFTER `od`,
+COMMENT='';
+
+update is_dovolenky set clinics=3;
+
+
+

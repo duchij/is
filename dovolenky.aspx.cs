@@ -215,14 +215,14 @@ public partial class dovolenky : System.Web.UI.Page
 
         //string tmp_do = my_x2.unixDate(new DateTime(datum.Year, datum.Month, pocetDni));
         //ArrayList data = x_db.getDovolenky(tc_month, tc_rok);
+        string typ = this.activies_dl.SelectedValue.ToString();
         StringBuilder sb = new StringBuilder();
         sb.AppendLine("SELECT [is_users].[id],[is_users].[full_name],[is_dovolenky].[id] AS [dov_id],[is_dovolenky].[user_id],[is_dovolenky].[od], ");
-        sb.AppendLine("[is_dovolenky].[do] FROM [is_users]");
-        sb.AppendLine("INNER JOIN [is_dovolenky] ON [is_users].[id]=[is_dovolenky].[user_id]");
-        sb.AppendFormat("WHERE (MONTH([is_dovolenky].[od]) = '{0}' OR MONTH([is_dovolenky].[do]) = '{0}')", tc_month); 
+        sb.AppendLine("[is_dovolenky].[do] FROM [is_users] ");
+        sb.AppendLine("INNER JOIN [is_dovolenky] ON [is_users].[id]=[is_dovolenky].[user_id] ");
+        sb.AppendFormat("WHERE (MONTH([is_dovolenky].[od]) = '{0}' OR MONTH([is_dovolenky].[do]) = '{0}') ", tc_month); 
         sb.AppendFormat("AND (YEAR([is_dovolenky].[od]) = '{0}' OR YEAR([is_dovolenky].[do]) = '{0}')", tc_rok);
-
-
+        sb.AppendFormat(" AND [is_dovolenky].[type]='{0}' AND [is_dovolenky].[clinics]='{1}' ORDER BY [is_dovolenky].[do] ASC",typ,Session["klinika_id"]);
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
         int tableCnt = table.Count;

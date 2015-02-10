@@ -1,29 +1,29 @@
-<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="dovolenky.aspx.cs" Inherits="dovolenky" Culture="sk-Sk" MaintainScrollPositionOnPostback="true" UICulture="sk-SK" %>
+Ôªø<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="dovolenky.aspx.cs" Inherits="dovolenky" Culture="sk-Sk" MaintainScrollPositionOnPostback="true" UICulture="sk-SK" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
 
     <asp:Label ID="msg_lbl" runat="server" Text=""></asp:Label>
-    <h1>Dovolenky na mesiac:</h1>
+    <h1>Aktivity na mesiac:</h1>
     <div class="row">
-        <div class="one half">
-            <asp:DropDownList ID="mesiac_cb" runat="server" AutoPostBack="True">
+        <div class="one fourth">
+            <asp:DropDownList ID="mesiac_cb" runat="server" AutoPostBack="True" >
                 <asp:ListItem Value="1" Text="<%$ Resources:Resource,date_januar %>"></asp:ListItem>
-                <asp:ListItem Value="2" Text="<%$ Resources:Resource,date_februar %>">Febru·r</asp:ListItem>
+                <asp:ListItem Value="2" Text="<%$ Resources:Resource,date_februar %>">Febru√°r</asp:ListItem>
                 <asp:ListItem Value="3" Text="<%$ Resources:Resource,date_march %>">Marec</asp:ListItem>
-                <asp:ListItem Value="4" Text="<%$ Resources:Resource,date_april %>">AprÌl</asp:ListItem>
-                <asp:ListItem Value="5" Text="<%$ Resources:Resource,date_maj %>">M·j</asp:ListItem>
-                <asp:ListItem Value="6" Text="<%$ Resources:Resource,date_june %>">J˙n</asp:ListItem>
-                <asp:ListItem Value="7" Text="<%$ Resources:Resource,date_july %>">J˙l</asp:ListItem>
+                <asp:ListItem Value="4" Text="<%$ Resources:Resource,date_april %>">Apr√≠l</asp:ListItem>
+                <asp:ListItem Value="5" Text="<%$ Resources:Resource,date_maj %>">M√°j</asp:ListItem>
+                <asp:ListItem Value="6" Text="<%$ Resources:Resource,date_june %>">J√∫n</asp:ListItem>
+                <asp:ListItem Value="7" Text="<%$ Resources:Resource,date_july %>">J√∫l</asp:ListItem>
                 <asp:ListItem Value="8" Text="<%$ Resources:Resource,date_august %>">August</asp:ListItem>
                 <asp:ListItem Value="9" Text="<%$ Resources:Resource,date_september %>">September</asp:ListItem>
-                <asp:ListItem Value="10" Text="<%$ Resources:Resource,date_october %>">OktÛber</asp:ListItem>
+                <asp:ListItem Value="10" Text="<%$ Resources:Resource,date_october %>">Okt√≥ber</asp:ListItem>
                 <asp:ListItem Value="11" Text="<%$ Resources:Resource,date_november %>">November</asp:ListItem>
                 <asp:ListItem Value="12" Text="<%$ Resources:Resource,date_december %>">December</asp:ListItem>
             </asp:DropDownList>
         </div>
-        <div class="one half">
+        <div class="one fourth">
 
             <asp:DropDownList ID="rok_cb" runat="server" AutoPostBack="True">
                 <asp:ListItem Value="2011">Rok 2011</asp:ListItem>
@@ -35,6 +35,19 @@
                 <asp:ListItem Value="2017">Rok 2017</asp:ListItem>
             </asp:DropDownList>
         </div>
+        <div class="one fourth">
+         Typ:<asp:DropDownList ID="activies_dl" runat="server" CssClass="mojInline" AutoPostBack="True" Width="150">
+                         <asp:ListItem Value="do" Text="<%$ Resources:Resource,free_do %>"></asp:ListItem>
+                          <asp:ListItem Value="pn" Text="<%$ Resources:Resource,free_pn %>">¬ù</asp:ListItem>
+                        <asp:ListItem Value="sk" Text="<%$ Resources:Resource,free_sk %>"></asp:ListItem>
+                        <asp:ListItem Value="ci" Text="<%$ Resources:Resource,free_ci %>"></asp:ListItem>
+                        <asp:ListItem Value="ko" Text="<%$ Resources:Resource,free_ko %>"></asp:ListItem>
+                        </asp:DropDownList>
+            </div>
+         <div class="one fourth">
+        <asp:Button ID="Button1" runat="server" Text="Kompletn√Ω prehlad" CssClass="green button" />
+             </div>
+
     </div>
     <hr />
     <asp:Label ID="Lab" runat="server" Text="" Visible="false"></asp:Label>
@@ -52,7 +65,7 @@
 
       <table width="99%">
 
-            <td valign="top">PracovnÌk</td>
+            <td valign="top">Pracovn√≠k</td>
 
 
             </tr>
@@ -61,7 +74,7 @@
                          <asp:DropDownList ID="zamestnanci" runat="server" AutoPostBack="True" OnSelectedIndexChanged="changeDovStatus_fnc">
                          </asp:DropDownList>
                      </td>
-                     <td>Pr·vo na dovolenku:<br />
+                     <td>Pr√°vo na dovolenku:<br />
                          <asp:TextBox ID="dovolenkaPravo_txt" runat="server" Width="60px"></asp:TextBox>
                      </td>
                      <td>Zostatok:<br />
@@ -178,11 +191,11 @@
                 <div class="row">
                     <div class="one half">
                     <asp:DropDownList ID="freeType_dl" runat="server">
-                         <asp:ListItem Value="do">Dovolenka</asp:ListItem>
-                          <asp:ListItem Value="pn">Pr·ce neschopnosù</asp:ListItem>
-                        <asp:ListItem Value="sk">äkolenie</asp:ListItem>
-                        <asp:ListItem Value="ci">Cirkul·cia</asp:ListItem>
-                        <asp:ListItem Value="ko">Kongress</asp:ListItem>
+                         <asp:ListItem Value="do" Text="<%$ Resources:Resource,free_do %>"></asp:ListItem>
+                          <asp:ListItem Value="pn" Text="<%$ Resources:Resource,free_pn %>">¬ù</asp:ListItem>
+                        <asp:ListItem Value="sk" Text="<%$ Resources:Resource,free_sk %>"></asp:ListItem>
+                        <asp:ListItem Value="ci" Text="<%$ Resources:Resource,free_ci %>"></asp:ListItem>
+                        <asp:ListItem Value="ko" Text="<%$ Resources:Resource,free_ko %>"></asp:ListItem>
                         </asp:DropDownList>
                         </div>
                     <div class="one half align-right">

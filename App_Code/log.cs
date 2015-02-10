@@ -20,10 +20,15 @@ public class log
 
     private string Ip()
     {
-        string ipAddress = HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
-        if (ipAddress == null || ipAddress == "")
+        string ipAddress = "unkown";
+        if (HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"] != null)
         {
-            ipAddress = HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"];
+
+            ipAddress = HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+            if (ipAddress == null || ipAddress == "")
+            {
+                ipAddress = HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"];
+            }
         }
         return ipAddress;
     }

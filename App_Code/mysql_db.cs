@@ -164,6 +164,16 @@ public class mysql_db
         return result;
     }
 
+    public string[] getFreeDays()
+    {
+        string query = "SELECT * FROM [is_settings] WHERE [name]='free_days'";
+        SortedList data = this.getRow(this.parseQuery(query));
+
+        string[] result = data["data"].ToString().Split(',');
+
+        return result;
+    }
+
     public SortedList getLfData2(int id)
     {
         SortedList result = new SortedList();
