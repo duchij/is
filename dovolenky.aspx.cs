@@ -220,8 +220,9 @@ public partial class dovolenky : System.Web.UI.Page
         sb.AppendLine("SELECT [is_users].[id],[is_users].[full_name],[is_dovolenky].[id] AS [dov_id],[is_dovolenky].[user_id],[is_dovolenky].[od], ");
         sb.AppendLine("[is_dovolenky].[do] FROM [is_users] ");
         sb.AppendLine("INNER JOIN [is_dovolenky] ON [is_users].[id]=[is_dovolenky].[user_id] ");
-        sb.AppendFormat("WHERE (MONTH([is_dovolenky].[od]) = '{0}' OR MONTH([is_dovolenky].[do]) = '{0}') ", tc_month); 
-        sb.AppendFormat("AND (YEAR([is_dovolenky].[od]) = '{0}' OR YEAR([is_dovolenky].[do]) = '{0}')", tc_rok);
+        sb.AppendFormat("WHERE [is_dovolenky].[od] BETWEEN '{0}-{1}-01 00:00:00' AND '{0}-{1}-{2} 23:59:00'",tc_rok,tc_month,pocetDni);
+        //sb.AppendFormat("WHERE (MONTH([is_dovolenky].[od]) = '{0}' OR MONTH([is_dovolenky].[do]) = '{0}') ", tc_month); 
+        //sb.AppendFormat("AND (YEAR([is_dovolenky].[od]) = '{0}' OR YEAR([is_dovolenky].[do]) = '{0}')", tc_rok);
         sb.AppendFormat(" AND [is_dovolenky].[type]='{0}' AND [is_dovolenky].[clinics]='{1}' ORDER BY [is_dovolenky].[do] ASC",typ,Session["klinika_id"]);
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
@@ -334,6 +335,32 @@ public partial class dovolenky : System.Web.UI.Page
 
     }
 
+    protected Boolean checkConflict(DateTime date)
+    {
+        Boolean st = false;
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("SELECT COUNT(*) AS [pocet] FROM [is_dovolenky] WHERE '{0} 00:00:00' ", my_x2.unixDate(date));
+        sb.AppendLine("BETWEEN [od] AND [do] ");
+        sb.AppendFormat("AND [clinics]='{0}' AND [user_id]='{1}'", Session["klinika_id"], Session["user_id"]);
+
+        SortedList result = x2Mysql.getRow(sb.ToString());
+
+        if (Convert.ToBoolean(result["status"]))
+        {
+            st = true;
+        }
+        else
+        {
+            this.msg_lbl.Text = result["msg"].ToString();
+            st = true;
+        }
+
+        return st;
+        // sb.AppendLine("do
+
+    }
+
+
     //protected void zmenaNarok_fnc(object sender, EventArgs e)
     //{
     //    //msg_lbl.Text = "jijo";
@@ -380,11 +407,14 @@ public partial class dovolenky : System.Web.UI.Page
         }
         else
         {
+          
+         //  if (!this.checkConflict(dovOd_user.SelectedDate))
+
             SortedList data = new SortedList();
             data.Add("user_id", Session["user_id"].ToString());
-            data.Add("od", my_x2.unixDate(dovOd_user.SelectedDate));
+            data.Add("od", my_x2.unixDate(dovOd_user.SelectedDate)+" 00:00:00");
             // if (do_cal.s
-            data.Add("do", my_x2.unixDate(dovDo_user.SelectedDate));
+            data.Add("do", my_x2.unixDate(dovDo_user.SelectedDate) + " 23:59:00");
             data.Add("type" , this.freeType_dl.SelectedValue);
             data.Add("clinics", Session["klinika_id"]);
             //ata.Add("rok",
@@ -537,11 +567,16 @@ public partial class dovolenky : System.Web.UI.Page
 
         StringBuilder query = new StringBuilder();
         query.AppendLine("SELECT [is_users].[id],[is_users].[full_name] AS [full_name],");
-        query.AppendLine("[is_dovolenky].[id] AS [dov_id], [is_dovolenky].[user_id],[is_dovolenky].[od],[is_dovolenky].[do], [is_dovolenky].[type]");
-        query.AppendLine("FROM [is_users] INNER JOIN [is_dovolenky] ON [is_users].[id] = [is_dovolenky].[user_id]");
-        query.AppendFormat("WHERE (MONTH([is_dovolenky].[od]) = '{0}' OR MONTH([is_dovolenky].[do]) = '{0}')", tc_month);
-        query.AppendFormat("AND (YEAR([is_dovolenky].[od]) = '{0}' OR YEAR([is_dovolenky].[do]) = '{0}') AND [is_users].[id] = {1} ", tc_year, Session["user_id"]);
-        query.AppendLine(" ORDER BY [is_dovolenky].[od]");
+        query.AppendLine("[is_dovolenky].[id] AS [dov_id], [is_dovolenky].[user_id],[is_dovolenky].[od],[is_dovolenky].[do], [is_dovolenky].[type] ");
+        query.AppendLine("FROM [is_users] INNER JOIN [is_dovolenky] ON [is_users].[id] = [is_dovolenky].[user_id] ");
+        query.AppendFormat("WHERE [is_dovolenky].[od] BETWEEN '{0}-{1}-01 00:00:00' AND '{0}-{1}-{2} 23:59:00' ", tc_year, tc_month, pocetDni);
+        query.AppendFormat("AND [is_dovolenky].[user_id] = '{0}' ",Session["user_id"]);
+        query.AppendLine("ORDER BY [is_dovolenky].[od]");
+        //query.AppendFormat("WHERE (MONTH([is_dovolenky].[od]) = '{0}' OR MONTH([is_dovolenky].[do]) = '{0}')", tc_month);
+       
+        
+        //query.AppendFormat("AND (YEAR([is_dovolenky].[od]) = '{0}' OR YEAR([is_dovolenky].[do]) = '{0}') AND [is_users].[id] = {1} ", tc_year, Session["user_id"]);
+        //query.AppendLine(" ORDER BY [is_dovolenky].[od]");
 
         Dictionary<int, Hashtable> data = x2Mysql.getTable(query.ToString());
         

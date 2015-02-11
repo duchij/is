@@ -40,49 +40,119 @@ public partial class dovkompl : System.Web.UI.Page
             DateTime tmp_do_mes = Convert.ToDateTime(data[rec]["do"]);
 
             int dayCount = tmp_do_mes.Subtract(tmp_od_mes).Days;
+
             if (dayCount == 0)
             {
                 int hrsCount = tmp_do_mes.Subtract(tmp_od_mes).Hours;
 
-                if (hrsCount > 23)
+                if (hrsCount >= 23)
                 {
                     dayCount = 1;
                 }
             }
-            
-            int startDay =  
 
-
-            for (int den = tmp_od_mes.Day; den <= dayCount; den++)
+            int startDay = tmp_od_mes.Day;
+            int endDay = tmp_do_mes.Day;
+            // for (int den = 0 ; den <= dayCount; den++)
+           // int den = 0;
+            int dDen = 0;
+            for (int den = 0; den <= dayCount; den++)
             {
-                if (den <= days)
+                if (den == dayCount && dayCount == 1)
                 {
-                    Control crtl = FindControl("stCell_" + den.ToString() + "_" + data[rec]["user_id"].ToString());
-                    TableCell stCell = (TableCell)crtl;
+                    break;
+                }
 
-                    if (data[rec]["type"].ToString() == "do")
-                    {
-                        
-                        stCell.Text = "D";
-
-                    }
-                    if (data[rec]["type"].ToString() == "ci")
-                    {
-                       
-                        stCell.Text = "C";
-
-                    }
+                if (dayCount > 1)
+                {
+                    dDen = startDay + den;
+                  //  den++;
                 }
                 else
                 {
-                  // break;
+                    dDen = startDay;
+                    
                 }
+
+                if (dDen <= days)
+                {
+                    Control crtl = FindControl("stCell_" + dDen.ToString() + "_" + data[rec]["user_id"].ToString());
+                    TableCell stCell = (TableCell)crtl;
+                    stCell.HorizontalAlign = HorizontalAlign.Center;
+
+                    SortedList cellData = this.getActivityType(data[rec]["type"].ToString());
+                    stCell.ForeColor = System.Drawing.Color.White;
+                    stCell.Text = cellData["code"].ToString();
+                    stCell.ToolTip = cellData["label"].ToString();
+                    stCell.BackColor = System.Drawing.Color.FromArgb(Convert.ToInt32(cellData["color"]));
+
+                    //if (data[rec]["type"].ToString() == "do")
+                    //{
+                    //    string pos = stCell.Text.ToString().Trim();
+                    //    if (pos.Length == 0)
+                    //    {
+                    //        stCell.Text = "D";
+                    //    }
+                    //    else
+                    //    {
+                    //        stCell.Text = "k";
+                    //    }
+                    //}
+                    //if (data[rec]["type"].ToString() == "ci")
+                    //{
+                    //    string pos = stCell.Text.ToString().Trim();
+                    //    if (pos.Length == 0)
+                    //    {
+                    //        stCell.Text = "C";
+                    //    }
+                    //    else
+                    //    {
+                    //        stCell.Text = "k";
+                    //    }
+                    //}
+                }
+                else
+                {
+                  break;
+                }
+
+                //if (dayCount > 1)
+                //{
+                //    den++;
+                //}
+                //else
+                //{
+                //    den = 1;
+                //}
             }
+        }
+    }
+
+    protected SortedList getActivityType(string type)
+    {
+        SortedList result = new SortedList();
+
+        switch (type)
+        {
+            case "do":
+                result.Add("code", "D");
+                result.Add("color", 0x261758);
+                result.Add("label", "Dovolenka");
+                break;
+            case "ci":
+                result.Add("code", "C");
+                result.Add("color", 0x804515);
+                result.Add("label", "Cirkulacia");
+                break;
+            case "ko":
+                result.Add("code", "K");
+                result.Add("color", 0x801815);
+                result.Add("label", "Kongress");
+                break;
 
         }
 
-
-
+        return result;
     }
 
     protected void init(int rok, int mesiac)
