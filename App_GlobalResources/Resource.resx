@@ -412,7 +412,7 @@
     <value>September</value>
   </data>
   <data name="hlasko_infomessage" xml:space="preserve">
-    <value>&lt;h3 class="red"&gt;Toto nie je Vaša služba, alebo dnes neslúžite !!!! Ak si prajete aj napriek tomu prezerať alebo upravovať odfajknite súhla. Pozor !!! Ak budete robiť zápis tak sa Vám nemusí korektne spraviť zápis EPČ&lt;/h3&gt; V prípade, že služba bola zmená akútne, prosíme čo najskôr ju zmeniť v pláne služieb. Kvoli generovaniu výkazu a EPČ</value>
+    <value>&lt;h3 class="red"&gt;Toto nie je Vaša služba, alebo dnes neslúžite !!!! Ak si prajete aj napriek tomu prezerať alebo upravovať odfajknite súhlas. Pozor !!! Ak budete robiť zápis tak sa Vám nemusí korektne spraviť zápis EPČ&lt;/h3&gt; V prípade, že služba bola zmená akútne, prosíme čo najskôr ju zmeniť v pláne služieb. Kvoli generovaniu výkazu a EPČ</value>
   </data>
   <data name="free_ci" xml:space="preserve">
     <value>Cirkulácia</value>
