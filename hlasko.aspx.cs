@@ -119,7 +119,7 @@ public partial class hlasko : System.Web.UI.Page
         {
             DateTime teraz = DateTime.Now;
 
-            if ((teraz.Hour >= 7 && teraz.Minute >= 30) && (teraz.Hour <= 9 && teraz.Minute <= 30))
+            if (teraz.Hour >=7 && teraz.Hour <= 9)
             {
                 hlaskoSt = true;
             }

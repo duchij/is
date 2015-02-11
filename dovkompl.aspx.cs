@@ -85,45 +85,11 @@ public partial class dovkompl : System.Web.UI.Page
                     stCell.Text = cellData["code"].ToString();
                     stCell.ToolTip = cellData["label"].ToString();
                     stCell.BackColor = System.Drawing.Color.FromArgb(Convert.ToInt32(cellData["color"]));
-
-                    //if (data[rec]["type"].ToString() == "do")
-                    //{
-                    //    string pos = stCell.Text.ToString().Trim();
-                    //    if (pos.Length == 0)
-                    //    {
-                    //        stCell.Text = "D";
-                    //    }
-                    //    else
-                    //    {
-                    //        stCell.Text = "k";
-                    //    }
-                    //}
-                    //if (data[rec]["type"].ToString() == "ci")
-                    //{
-                    //    string pos = stCell.Text.ToString().Trim();
-                    //    if (pos.Length == 0)
-                    //    {
-                    //        stCell.Text = "C";
-                    //    }
-                    //    else
-                    //    {
-                    //        stCell.Text = "k";
-                    //    }
-                    //}
                 }
                 else
                 {
                   break;
                 }
-
-                //if (dayCount > 1)
-                //{
-                //    den++;
-                //}
-                //else
-                //{
-                //    den = 1;
-                //}
             }
         }
     }
@@ -148,6 +114,16 @@ public partial class dovkompl : System.Web.UI.Page
                 result.Add("code", "K");
                 result.Add("color", 0x801815);
                 result.Add("label", "Kongress");
+                break;
+            case "pn":
+                result.Add("code", "P");
+                result.Add("color", 0x201858);
+                result.Add("label", "Prace neschopnost");
+                break;
+            case "sk":
+                result.Add("code", "S");
+                result.Add("color", 0x550000);
+                result.Add("label", "Skolenie");
                 break;
 
         }
