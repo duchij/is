@@ -46,7 +46,8 @@ Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="
                     </div>
                     </div>
 
-    <asp:Label ID="hlaskoInfoMessage_lbl" runat="server" Text="<%$ Resources:Resource,hlasko_infomessage %>"></asp:Label>
+    <asp:Label ID="hlaskoInfoMessage_lbl" runat="server" Text="<%$ Resources:Resource,hlasko_infomessage %>"></asp:Label><br />
+    <br />
     <asp:CheckBox ID="showHlasko_cb" runat="server" AutoPostBack="true" OnCheckedChanged="setHlaskoVisibiltyFnc" /><asp:Label ID="Label3" runat="server" Text=" Rozumiem riziku..." CssClass="mojInline"></asp:Label>
     <asp:PlaceHolder ID="viewHlasko_pl" runat="server">
                     <h1>Hlásenie služby:</h1>

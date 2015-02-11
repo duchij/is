@@ -69,6 +69,7 @@ public partial class hlasko : System.Web.UI.Page
     protected void setHlaskoVisibility(Boolean st)
     {
         this.showHlasko_cb.Checked = st;
+
         if (st)
         {
             this.hlaskoInfoMessage_lbl.Visible = false;
@@ -116,7 +117,16 @@ public partial class hlasko : System.Web.UI.Page
         }
         else
         {
-            hlaskoSt = false;
+            DateTime teraz = DateTime.Now;
+
+            if ((teraz.Hour >= 7 && teraz.Minute >= 30) && (teraz.Hour <= 9 && teraz.Minute <= 30))
+            {
+                hlaskoSt = true;
+            }
+            else
+            {
+                hlaskoSt = false;
+            }
         }
         this.setHlaskoVisibility(hlaskoSt);
     }

@@ -116,6 +116,11 @@ public partial class vykaz2 : System.Web.UI.Page
         this.vykazInfoHours_pl.Visible = true;
         this.generateVykaz_btn.Enabled = false;
         this.newVykaz_btn.Enabled = true;
+
+        int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue);
+        int rok = Convert.ToInt32(this.rok_cb.SelectedValue);
+
+        this.getPrenos(mesiac, rok);
        // this.createVykaz(true);
 
     }
@@ -171,10 +176,6 @@ public partial class vykaz2 : System.Web.UI.Page
         int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue.ToString());
         int rok = Convert.ToInt32(this.rok_cb.SelectedValue.ToString());
 
-        
-        this.getPrenos(mesiac, rok);
-        
-
         StringBuilder sb = new StringBuilder();
         sb.AppendFormat("SELECT * FROM [is_vykaz] WHERE [mesiac]='{0}' AND [rok]='{1}' AND [user_id]='{2}'",mesiac,rok,Session["user_id"].ToString());
         SortedList row = x2Mysql.getRow(sb.ToString());
@@ -187,7 +188,7 @@ public partial class vykaz2 : System.Web.UI.Page
             this.generateVykaz(mesiac, rok,writeText);
         }
 
-        this._calcData();
+        //this._calcData();
     }
 
     protected void reCreateVykaz(SortedList data, int mesiac, int rok, Boolean writeText)
@@ -1259,6 +1260,7 @@ public partial class vykaz2 : System.Web.UI.Page
         data.Add("mesiac",mesiac.ToString());
         data.Add("rok",rok.ToString());
         data.Add("vykaz", finalStr);
+        data.Add("prenos", this.rozdiel_lbl.Text);
 
         SortedList res = x2Mysql.mysql_insert("is_vykaz", data);
 
