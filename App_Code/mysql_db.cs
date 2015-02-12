@@ -157,6 +157,7 @@ public class mysql_db
             result.Add("status", false);
             result.Add("msg", e.ToString());
             result.Add("last_id", 0);
+            result.Add("sql", query);
             trans1.Rollback();
 
         }
@@ -654,7 +655,7 @@ public class mysql_db
             OdbcCommand my_com = new OdbcCommand(this.parseQuery(query.ToString()), my_con);
             //x2log.logData(this.parseQuery(query.ToString()),"","mysql getrow");
             OdbcDataReader reader = my_com.ExecuteReader();
-
+           // result.Add("status", true);
 
             if (reader.HasRows)
             {
@@ -691,6 +692,7 @@ public class mysql_db
             x2log.logData(this.parseQuery(query.ToString()),e.ToString(),"db error");
             result.Add("status", false);
             result.Add("msg", e.ToString());
+            result.Add("sql", this.parseQuery(query.ToString()));
         }
         my_con.Close();
 

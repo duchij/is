@@ -21,18 +21,26 @@ public class log
     private string Ip()
     {
         string ipAddress = "unknown";
-        if (HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"] != null)
+        try
         {
 
-            ipAddress = HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
-           /* if (ipAddress == null || ipAddress == "unknown")
+            if (HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"] != null)
+            {
+
+                ipAddress = HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+                /* if (ipAddress == null || ipAddress == "unknown")
+                 {
+                     ipAddress = HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"];
+                 }*/
+            }
+            else
             {
                 ipAddress = HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"];
-            }*/
+            }
         }
-        else
+        catch (Exception e)
         {
-            ipAddress = HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"];
+
         }
         return ipAddress;
     }

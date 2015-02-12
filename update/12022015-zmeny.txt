@@ -1,0 +1,12 @@
+﻿-- pozor pridat len comment to tabulky na macu
+
+CREATE TABLE `is_dovolenky` 
+( `id` int(11) NOT NULL AUTO_INCREMENT,
+ `user_id` bigint(20) unsigned NOT NULL,
+  `od` datetime NOT NULL, `do` datetime NOT NULL, `type` enum('do','pn','sk','ci','ko') 
+  CHARACTER SET armscii8 NOT NULL DEFAULT 'do', `comment` longtext COLLATE utf8_slovak_ci,
+   `clinics` bigint(20) unsigned NOT NULL,
+    `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, 
+	PRIMARY KEY (`id`), UNIQUE KEY `user_id_od_do_type` (`user_id`,`od`,`do`,`type`), 
+	KEY `type` (`type`), KEY `od` (`od`), KEY `do` (`do`), KEY `user_id` (`user_id`) ) 
+	ENGINE=InnoDB AUTO_INCREMENT=648 DEFAULT CHARSET=utf8 COLLATE=utf8_slovak_ci

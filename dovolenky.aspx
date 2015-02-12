@@ -45,7 +45,7 @@
                         </asp:DropDownList>
             </div>
          <div class="one fourth">
-        <asp:Button ID="Button1" runat="server" Text="Kompletný prehlad" CssClass="green button" />
+        <asp:Button ID="kompl_btn" runat="server" Text="Kompletný prehlad" CssClass="green button" OnClick="loadKomplViewFnc" />
              </div>
 
     </div>
@@ -189,7 +189,7 @@
                <br /><br />
 
                 <div class="row">
-                    <div class="one half">
+                    <div class="one third">
                     <asp:DropDownList ID="freeType_dl" runat="server">
                          <asp:ListItem Value="do" Text="<%$ Resources:Resource,free_do %>"></asp:ListItem>
                           <asp:ListItem Value="pn" Text="<%$ Resources:Resource,free_pn %>"></asp:ListItem>
@@ -198,12 +198,13 @@
                         <asp:ListItem Value="ko" Text="<%$ Resources:Resource,free_ko %>"></asp:ListItem>
                         </asp:DropDownList>
                         </div>
-                    <div class="one half align-right">
+                    <div class="one third"> Poznamka:<asp:TextBox ID="comment_txt" runat="server" CssClass="mojInline" Width="200"></asp:TextBox></div>
+                    <div class="one third align-right">
                     <asp:Button ID="Button2" runat="server" CssClass="large button blue" Text="<%$ Resources:Resource, save %>" OnClick="save_user_btn_Click" />
-                        </div> 
-                         </div>
-        <asp:Label ID="Label1" runat="server" Visible="false"></asp:Label>
+                        </div>         <asp:Label ID="statusInfo_lbl" runat="server" Visible="true" Text=""></asp:Label>
         <hr />
+
+                         </div>
         <h2>
             <asp:Label ID="holiday_for_user" runat="server" Text="<%$ Resources:Resource, holiday_for_user_month %>"></asp:Label>
             <asp:Label ID="monthUser_lbl" runat="server" Text=""></asp:Label></h2>
