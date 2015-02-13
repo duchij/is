@@ -279,49 +279,43 @@ public partial class hlasko : System.Web.UI.Page
 
     protected int  calcAfter19()
     {
-        DateTime date = Convert.ToDateTime(this.hl_datum_cb.SelectedValue.ToString() + " " + this.jsWorkstarttxt.Text.ToString());
+        int result = 0;
+        DateTime dateZac = Convert.ToDateTime(this.hl_datum_cb.SelectedValue.ToString() + " " + this.jsWorkstarttxt.Text.ToString());
 
-        DateTime datePlus = date.AddMinutes(Convert.ToInt32(this.jsWorktimetxt.Text.ToString()));
+        DateTime dateKonc = dateZac.AddMinutes(Convert.ToInt32(this.jsWorktimetxt.Text));
+
         DateTime dateMore19 = Convert.ToDateTime(this.hl_datum_cb.SelectedValue.ToString() + " " + "19:00");
 
-        DateTime daterAfretMidNight = dateMore19.AddMinutes(301);
-        int minutes = 0;
+        int h1 = dateZac.Hour;
+        int m1 = dateZac.Minute;
 
-        if (datePlus > dateMore19)
+        int h2 = dateKonc.Hour;
+        int m2 = dateKonc.Minute;
+
+        if (h1 < 19)
         {
-            if (datePlus > daterAfretMidNight && date <= dateMore19)
+            if (h2 >= 19 && m2 > 0)
             {
-
-                DateTime dateTmp = dateMore19.AddMinutes(300);
-                minutes = (datePlus-dateTmp).Minutes;
-                minutes = minutes + 300;
+                result = (dateKonc - dateMore19).Minutes;
             }
-           // else if (datePlus < daterAfretMidNight && datePLus
-           /* if (date > dateMore19 && date <daterAfretMidNight)
+            if (h2 < 19)
             {
-                minutes = Convert.ToInt32(this.jsWorktimetxt.Text.ToString());
-            }   */
-            else if (datePlus > daterAfretMidNight && date >= dateMore19)
-            {
-                minutes = Convert.ToInt32(this.jsWorktimetxt.Text.ToString());
+                result = 0;
             }
-            else if (datePlus < daterAfretMidNight)
-            {
-                minutes = (datePlus - dateMore19).Minutes;
-            }
-            else
-            {
-                minutes = Convert.ToInt32(this.jsWorktimetxt.Text.ToString());
-            }
-
         }
-
-        return minutes;
+        if (h1 >= 19)
+        {
+            result = Convert.ToInt32(this.jsWorktimetxt.Text);
+        }
+        
+        
+        return result;
     }
 
     protected void saveActivity_fnc(object sender, EventArgs e)
     {
-
+        int realTime =  this.calcAfter19();
+        this.jsWorktimetxt.Text = realTime.ToString();
         SortedList data = new SortedList();
         data.Add("user_id", Session["user_id"].ToString());
         data.Add("hlasko_id", Session["akt_hlasenie"].ToString());

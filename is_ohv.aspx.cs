@@ -41,7 +41,7 @@ public partial class is_ohv : System.Web.UI.Page
         // newItem[0] = new ListItem("", "0");
         for (int i = 0; i < tableLn; i++)
         {
-            this.clgroup_dl.Items.Add(new ListItem(table[i]["text"].ToString(), table[i]["odbkod"].ToString()));
+            this.clgroup_dl.Items.Add(new ListItem(table[i]["odbkod"].ToString()+" - "+table[i]["text"].ToString(), table[i]["odbkod"].ToString()));
         }
 
         this.clgroup_dl.SelectedValue = "107";

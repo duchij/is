@@ -85,7 +85,7 @@ public class log
 
     private StreamWriter openFile()
     {
-        string serverPath = HttpContext.Current.Server.MapPath("~");
+         string serverPath = HttpContext.Current.Server.MapPath("~");
 
         DateTime dt = DateTime.Today;
         

@@ -102,6 +102,7 @@
                             <li><a role="medium button" href="staze.aspx" target="_self">Stáže</a></li>
 							<li><a role="medium button" href="ransed.aspx" target="_self">RTG Diagnostika</a></li>
                             <li><a role="medium button" href="dovolenky.aspx" target="_self">Dovolenky</a></li>
+                            <li><a role="medium button" href="is_ohv.aspx" target="_self">OHV Kódy</a></li>
                         </ul>
                     </li>
 

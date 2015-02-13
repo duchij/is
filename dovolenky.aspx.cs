@@ -558,11 +558,22 @@ public partial class dovolenky : System.Web.UI.Page
         Control data = (Control)sender;
 
         string name = data.ID.ToString();
-        string[] tmp = name.Split(new char[] { '_' });
+        string[] tmp = name.Split('_');
 
         StringBuilder sb = new StringBuilder();
         sb.AppendFormat("DELETE FROM [is_dovolenky] WHERE [id]='{0}'", tmp[1]);
-        x2Mysql.execute(sb.ToString());
+        SortedList res = x2Mysql.execute(sb.ToString());
+
+        if (Convert.ToBoolean(res["status"]))
+        {
+            Response.Redirect("dovolenky.aspx");
+        }
+        else
+        {
+            this.msg_lbl.Visible = true;
+            this.msg_lbl.Text = res["msg"].ToString();
+        }
+
 
         //this.deleteDovolenka(tmp[1].ToString());
     }

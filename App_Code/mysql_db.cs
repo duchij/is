@@ -625,11 +625,12 @@ public class mysql_db
         }
         catch (Exception e)
         {
-            x2log.logData(query, e.ToString(), "db error");
+           
             trans1.Rollback();
             result.Add("status", false);
             result.Add("msg", e.ToString());
             result.Add("query", query);
+            x2log.logData(result, e.ToString(), "db error");
         }
         my_con.Close();
 

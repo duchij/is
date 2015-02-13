@@ -3,13 +3,13 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
-    <h1>OHV Kody</h1>
+    <h1>OHV Kódy</h1>
     <hr />
     <div class="row">
         <div class="one third">
              <asp:DropDownList ID="insurance_dl" runat="server" AutoPostBack="true" OnSelectedIndexChanged="loadCodecsFnc">
-        <asp:ListItem Value="24" Text="24 Dovera"></asp:ListItem>
-        <asp:ListItem Value="25" Text="25 Vseobecna zdrav. poistovna"></asp:ListItem>
+        <asp:ListItem Value="24" Text="24 Dôvera"></asp:ListItem>
+        <asp:ListItem Value="25" Text="25 Všeobecné zdrav. poisťovňa"></asp:ListItem>
         <asp:ListItem Value="27" Text="27 Union"></asp:ListItem>
     </asp:DropDownList>
 
@@ -19,7 +19,7 @@
 
         </div>
         <div class="one third">
-            <asp:Button ID="allCodes_btn" runat="server" OnClick="loadAllCodesFnc" CssClass="green button" Text="Nahraj vsetky kody" />
+            <asp:Button ID="allCodes_btn" runat="server" OnClick="loadAllCodesFnc" CssClass="green button" Text="Nahraj všetky kódy" />
 
         </div>
 

@@ -942,10 +942,27 @@ public partial class vykaz2 : System.Web.UI.Page
         }
     }
 
+    protected Dictionary<int, Hashtable> getActivities(int mesiac, int rok, string id)
+    {
+        //Dictionary<int, Hashtable> result = 
+        int days = DateTime.DaysInMonth(rok,mesiac);
+
+         StringBuilder sb = new StringBuilder();
+        sb.AppendLine("SELECT [is_dovolenky].[id] AS [dov_id],[is_dovolenky].[user_id],[is_dovolenky].[od], ");
+        sb.AppendLine("[is_dovolenky].[do],[is_dovolenky].[type] FROM [is_dovolenky] ");
+         sb.AppendFormat("WHERE [is_dovolenky].[od] BETWEEN '{0}-{1}-01 00:00:00' AND '{0}-{1}-{2} 23:59:00'",rok,mesiac,days);
+        sb.AppendFormat(" AND [is_dovolenky].[user_id]='{0}' ORDER BY [is_dovolenky].[do] ASC",id);
+
+        Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
+
+        return table;
+    }
+
 
     protected void fillInVacations(int mesiac, int rok, string id)
     {
-        ArrayList dovolenky = x_db.getDovolenkyByID(mesiac, rok, Convert.ToInt32(id));
+        //ArrayList dovolenky = x_db.getDovolenkyByID(mesiac, rok, Convert.ToInt32(id));
+        Dictionary<int, Hashtable> dovolenky = this.getActivities(mesiac, rok, id);
         int dovCnt = dovolenky.Count;
 
         ContentPlaceHolder ctpl = new ContentPlaceHolder();
@@ -956,14 +973,15 @@ public partial class vykaz2 : System.Web.UI.Page
 
         for (int i = 0; i < dovCnt; i++)
         {
-            string[] data = dovolenky[i].ToString().Split(';');
+            //string[] data = dovolenky[i].ToString().Split(';');
 
             //string dd1 = my_x2.MSDate(data[1].ToString());
             //string dd2 = my_x2.MSDate(data[2].ToString());
 
-            DateTime odDov = Convert.ToDateTime(data[1].ToString());
-            DateTime doDov = Convert.ToDateTime(data[2].ToString());
+            DateTime odDov = Convert.ToDateTime(my_x2.UnixToMsDateTime(dovolenky[i]["od"].ToString()));
+            DateTime doDov = Convert.ToDateTime(my_x2.UnixToMsDateTime(dovolenky[i]["do"].ToString()));
             string[] freeDays = x_db.getFreeDays();
+
             for (DateTime ddStart = odDov; ddStart <= doDov; ddStart += TimeSpan.FromDays(1))
             {
                 if (ddStart.Month == mesiac && ddStart.Year == rok)
@@ -979,10 +997,6 @@ public partial class vykaz2 : System.Web.UI.Page
                     {
 
                         int ddTemp = ddStart.Day - 1;
-
-                       
-
-
                         Control tbox = ctpl.FindControl("textBox_" + ddTemp.ToString() + "_0");
                         Control tbox1 = ctpl.FindControl("textBox_" + ddTemp.ToString() + "_3");
 
@@ -996,8 +1010,10 @@ public partial class vykaz2 : System.Web.UI.Page
                         TextBox my_text_box2 = (TextBox)tbox2;
                         TextBox my_text_box3 = (TextBox)tbox3;
 
-                        my_text_box.Text = "D";
-                        my_text_box1.Text = "D";
+                        if (dovolenky[i]["type"].ToString() == "do") { my_text_box.Text = "D"; my_text_box1.Text = "D"; }
+                        if (dovolenky[i]["type"].ToString() == "pn") { my_text_box.Text = "PN"; my_text_box1.Text = "PN"; }
+                        if (dovolenky[i]["type"].ToString() == "sk") {my_text_box.Text = "SK"; my_text_box1.Text = "SK"; }
+                       
                         my_text_box2.Text = "0";
                         my_text_box3.Text = "0";
                     }
