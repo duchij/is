@@ -4,6 +4,8 @@ using System.IO;
 using System.Collections.Generic;
 using System.Collections;
 using System.Web;
+using System.Net;
+using System.Net.Mail;
 
 /// <summary>
 /// Summary description for log
@@ -52,6 +54,39 @@ public class log
         string rok = datum.Year.ToString();
 
         return rok + "-" + mesiac + "-" + den;
+    }
+
+    private void sendMail(SortedList data)
+    {
+        MailAddress from = new MailAddress("kdch@kdch.sk");
+        MailAddress to = new MailAddress("bduchaj@gmail.com");
+
+        MailMessage sprava = new MailMessage();
+        sprava.From = from;
+        sprava.To.Add(to);
+        sprava.Subject = "Error is.kdch.sk - " + DateTime.Now.ToLongDateString();
+        sprava.IsBodyHtml = true;
+        sprava.BodyEncoding = Encoding.UTF8;
+
+        string regSprava = "";
+        regSprava += "<h3>Error in is.kdch.sk - "+DateTime.Now.ToLongDateString()+"</h3>";
+        regSprava += "<hr>";
+        regSprava += "<p>"+data["stack"].ToString()+"</p>";
+        regSprava += "<br>";
+        regSprava += "<p>"+data["error"].ToString()+"</p>";
+
+        sprava.Body = regSprava;
+        SmtpClient mail_klient = new SmtpClient("mail3.webglobe.sk");
+        try
+        {
+            mail_klient.Send(sprava);
+        }
+        catch (Exception e)
+        {
+            
+        }
+
+
     }
 
     public void checkIfLogExists()
@@ -112,11 +147,15 @@ public class log
         string dt = DateTime.Today.ToShortDateString();
         string dh = DateTime.Now.ToLongTimeString();
         StringBuilder sb = new StringBuilder();
+        SortedList errorDt = new SortedList();
         if (error.Length > 0)
         {
             sb.AppendFormat("ERROR   {0} {1} -- {2}, IP:{3} ERROR:\r\n {4} ", dt, dh, idf,logIp, error);
             sb.AppendFormat("Stack trace: {0} \r\n", Environment.StackTrace.ToString());
             sb.AppendLine("\r\n-----------------------------------------------------------END OF ERROR\r\n");
+
+            
+            errorDt.Add("stack", Environment.StackTrace.ToString());
         }
         //sw.WriteLine(sb.ToString());
        // sb.Length = 0;
@@ -167,8 +206,15 @@ public class log
             sb.AppendFormat("{0} {1} -- {2} -- IP:{3} -- string data:\r\n", dt, dh, idf,logIp); 
             sb.AppendFormat("        string = {0} \r\n", data.ToString());
             sb.AppendLine("\r\n-----------------------------------------------------------END OF  string\r\n");
+
+            if (error.Length > 0)
+            {
+                errorDt.Add("error", data.ToString());
+                this.sendMail(errorDt);
+            }
         }
 
+        
 
         StreamWriter sw = this.openFile();
         sw.WriteLine(sb.ToString());

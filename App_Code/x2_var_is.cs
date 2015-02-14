@@ -23,6 +23,7 @@ using iTextSharp.text.html.simpleparser;
 public class x2_var
 {
     //mysql_db x2MySql = new mysql_db();
+    log x2log = new log();
 
 	public x2_var()
 	{
@@ -164,16 +165,40 @@ public class x2_var
             string _res = tmp2[2] + ". " + tmp2[1] + ". " + tmp2[0];
             if (tmp1.Length > 1)
             {
-                result = Convert.ToDateTime(_res + " " + tmp1[1]);
+                try
+                {
+                    result = Convert.ToDateTime(_res + " " + tmp1[1]);
+                }
+                catch (Exception e)
+                {
+                    x2log.logData(e, "error", "datetime error");
+                    result = DateTime.Today;
+                }
             }
             else
             {
-                result = Convert.ToDateTime(_res);
+                try
+                {
+                    result = Convert.ToDateTime(_res);
+                }
+                catch (Exception e)
+                {
+                    x2log.logData(e, "error", "datetime error");
+                    result = DateTime.Today;
+                }
             }
         }
         else
         {
-            result = Convert.ToDateTime(datetime);
+            try
+            {
+                result = Convert.ToDateTime(datetime);
+            }
+            catch (Exception e)
+            {
+                x2log.logData(e, "error", "datetime error");
+                result = DateTime.Today;
+            }
         }
 
         return result;

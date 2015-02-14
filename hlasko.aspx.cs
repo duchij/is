@@ -292,7 +292,7 @@ public partial class hlasko : System.Web.UI.Page
         int h2 = dateKonc.Hour;
         int m2 = dateKonc.Minute;
 
-        if (h1 < 19)
+        if (h1 < 19 && h1 > 7)
         {
             if (h2 >= 19 && m2 > 0)
             {
@@ -303,7 +303,7 @@ public partial class hlasko : System.Web.UI.Page
                 result = 0;
             }
         }
-        if (h1 >= 19)
+        if (h1 >= 0 || h1 <=8 )
         {
             result = Convert.ToInt32(this.jsWorktimetxt.Text);
         }
@@ -314,8 +314,8 @@ public partial class hlasko : System.Web.UI.Page
 
     protected void saveActivity_fnc(object sender, EventArgs e)
     {
-        int realTime =  this.calcAfter19();
-        this.jsWorktimetxt.Text = realTime.ToString();
+       // int realTime =  this.calcAfter19();
+       // this.jsWorktimetxt.Text = realTime.ToString();
         SortedList data = new SortedList();
         data.Add("user_id", Session["user_id"].ToString());
         data.Add("hlasko_id", Session["akt_hlasenie"].ToString());
