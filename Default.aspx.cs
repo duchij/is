@@ -209,13 +209,13 @@ public partial class _Default : System.Web.UI.Page
                 else
                 {
                     e.Authenticated = false;
-                    x2log.logData(data, "bad user or password", "bad user login:" + data["full_name"]);
+                    x2log.logData(data, "bad user or password", "error bad user login:" + data["full_name"]);
                 }
             }
             else
             {
                 e.Authenticated = false;
-                x2log.logData(data, "bad user or password", "bad user login:" + data["full_name"]);
+                x2log.logData(data, "bad user or password", "error bad user login:" + data["full_name"]);
             }
         }
     }

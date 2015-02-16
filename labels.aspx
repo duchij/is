@@ -7,7 +7,7 @@
     <hr />
     Prefix skupiny (napr. nazov_):<asp:TextBox ID="prefix_txt" runat="server"></asp:TextBox><asp:Button ID="search_btn" runat="server" Text="Hladaj" OnClick="searchPrefixFnc" />
     <hr />
-    <asp:Table ID="listTable_tbl" runat="server" CssClass="responsive" data-max="15"></asp:Table>
+    <asp:Table ID="listTable_tbl" runat="server"></asp:Table>
     <hr />
     <asp:Button ID="save_btn" runat="server" CssClass="button green" Text="uloz zmeny"/> 
 </asp:Content>

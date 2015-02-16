@@ -36,25 +36,42 @@ public partial class labels_labels : System.Web.UI.Page
                 TableCell cellIdf = new TableCell();
                 //cellIdf.ID = "cellIdf_" + table[i]["id"].ToString();
 
-                TextBox textIdf = new TextBox();
-                //textIdf.ID = "tboxIdf_" + table[i]["id"].ToString();
-                cellIdf.Controls.Add(textIdf);
-
+                Label labelIdf = new Label();
+                labelIdf.ID = "labelIdf_" + table[i]["id"].ToString();
+                labelIdf.Text = table[i]["idf"].ToString();
+                cellIdf.Controls.Add(labelIdf);
                 riadok.Controls.Add(cellIdf);
 
-
                 TableCell cellLabel = new TableCell();
-
                 TextBox textLabel = new TextBox();
-                //textLabel.ID = "tboxLabel_" + table[i]["id"].ToString();
+                textLabel.ID = "tboxLabel_" + table[i]["id"].ToString();
+                textLabel.Width = Unit.Pixel(400);
+                textLabel.Text = table[i]["label"].ToString();
                 cellLabel.Controls.Add(textLabel);
+                riadok.Controls.Add(cellLabel);
+
+                TableCell actionCell = new TableCell();
+                Button saveBtn = new Button();
+                saveBtn.CssClass = "button green";
+                saveBtn.ID = "saveLabel_" + table[i]["id"].ToString();
+                saveBtn.Text = Resources.Resource.save;
+                actionCell.Controls.Add(saveBtn);
+
+                
+                Button deleteBtn = new Button();
+                deleteBtn.ID = "deleteLabel_" + table[i]["id"].ToString();
+                deleteBtn.CssClass = "button red";
+                deleteBtn.Text = Resources.Resource.delete;
+                actionCell.Controls.Add(deleteBtn);
+
+                riadok.Controls.Add(actionCell);
 
 
             }
         }
         else
         {
-            TableRow riadok = new TableRow();
+            /*TableRow riadok = new TableRow();
             this.listTable_tbl.Controls.Add(riadok);
 
             TableCell cellIdf = new TableCell();
@@ -77,7 +94,7 @@ public partial class labels_labels : System.Web.UI.Page
             addNew.Text = "Pridaj";
             cellButtons.Controls.Add(addNew);
 
-            riadok.Controls.Add(cellButtons);
+            riadok.Controls.Add(cellButtons);*/
         }
     }
 

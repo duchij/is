@@ -13,8 +13,10 @@ using System.Net.Mail;
 public class log
 {
    // x2_var x2 = new x2_var(); 
+    
 	public log()
 	{
+        //this.ServerPath = path;
 		//
 		// TODO: Add constructor logic here
 		//
@@ -72,8 +74,8 @@ public class log
         regSprava += "<h3>Error in is.kdch.sk - "+DateTime.Now.ToLongDateString()+"</h3>";
         regSprava += "<hr>";
         regSprava += "<p>"+data["stack"].ToString()+"</p>";
-        regSprava += "<br>";
-        regSprava += "<p>"+data["error"].ToString()+"</p>";
+        regSprava += "<p>" + data["error"].ToString() + "</p>";
+        regSprava += "<p>"+data["data"].ToString()+"</p>";
 
         sprava.Body = regSprava;
         SmtpClient mail_klient = new SmtpClient("mail3.webglobe.sk");
@@ -89,9 +91,18 @@ public class log
 
     }
 
-    public void checkIfLogExists()
+    public void checkIfLogExists(string serverPath)
     {
-        string serverPath = HttpContext.Current.Server.MapPath("~");
+       /* string serverPath = "";
+        try
+        {
+        
+            serverPath = HttpContext.Current.Server.MapPath("~");
+        }
+        catch (Exception e)
+        {
+             serverPath = System.Web.Hosting.HostingEnvironment.MapPath("~");
+        }*/
 
         DateTime dt = DateTime.Today;
         string shortDate = this.unixDate(dt);
@@ -120,7 +131,20 @@ public class log
 
     private StreamWriter openFile()
     {
-         string serverPath = HttpContext.Current.Server.MapPath("~");
+        string serverPath;
+
+       // serverP System.Web.HttpContext.Current.Session["serverUrl"].ToString();
+
+       /* try
+        {
+            serverPath = HttpContext.Current.Server.MapPath("~");
+        }
+        catch(Exception e)
+        {
+            serverPath = System.Web.Hosting.HostingEnvironment.MapPath("~");
+            
+        }*/
+        
 
         DateTime dt = DateTime.Today;
         
@@ -148,14 +172,19 @@ public class log
         string dh = DateTime.Now.ToLongTimeString();
         StringBuilder sb = new StringBuilder();
         SortedList errorDt = new SortedList();
+
+        Boolean sendMail = false;
+
         if (error.Length > 0)
         {
             sb.AppendFormat("ERROR   {0} {1} -- {2}, IP:{3} ERROR:\r\n {4} ", dt, dh, idf,logIp, error);
             sb.AppendFormat("Stack trace: {0} \r\n", Environment.StackTrace.ToString());
             sb.AppendLine("\r\n-----------------------------------------------------------END OF ERROR\r\n");
 
+            sendMail = true;
             
             errorDt.Add("stack", Environment.StackTrace.ToString());
+            errorDt.Add("error", error);
         }
         //sw.WriteLine(sb.ToString());
        // sb.Length = 0;
@@ -168,6 +197,9 @@ public class log
                 sb.AppendFormat("       ['{0}'] = {1} \r\n", row.Key.ToString(), row.Value.ToString());
             }
             sb.AppendLine("\r\n-----------------------------------------------------------END OF  SortedList\r\n");
+
+            if (sendMail) errorDt.Add("data", sb.ToString());
+            
         }
 
         if (data.GetType() == typeof(Dictionary<int, Hashtable>))
@@ -183,6 +215,7 @@ public class log
                 }
             }
             sb.AppendLine("\r\n-----------------------------------------------------------END OF  Dictionary<int, Hashtable>\r\n");
+            if (sendMail) errorDt.Add("data", sb.ToString());
         }
 
         if (data.GetType() == typeof(Dictionary<int, SortedList>))
@@ -198,6 +231,7 @@ public class log
                 }
             }
             sb.AppendLine("\r\n-----------------------------------------------------------END OF  Dictionary<int, SortedList>\r\n");
+            if (sendMail) errorDt.Add("data", sb.ToString());
         }
 
 
@@ -207,11 +241,8 @@ public class log
             sb.AppendFormat("        string = {0} \r\n", data.ToString());
             sb.AppendLine("\r\n-----------------------------------------------------------END OF  string\r\n");
 
-            if (error.Length > 0)
-            {
-                errorDt.Add("error", data.ToString());
-                this.sendMail(errorDt);
-            }
+           
+            if (sendMail) errorDt.Add("data", sb.ToString());
         }
 
         
@@ -219,6 +250,7 @@ public class log
         StreamWriter sw = this.openFile();
         sw.WriteLine(sb.ToString());
         sw.Close();
+        if (sendMail) this.sendMail(errorDt);
     }
 
    

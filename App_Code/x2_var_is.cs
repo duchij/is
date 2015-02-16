@@ -171,7 +171,7 @@ public class x2_var
                 }
                 catch (Exception e)
                 {
-                    x2log.logData(e, "error", "datetime error");
+                    x2log.logData(datetime.ToString(), e.ToString(), "datetime error UnixToMsDateTime() Incorect date in db check db!!");
                     result = DateTime.Today;
                 }
             }
@@ -183,7 +183,7 @@ public class x2_var
                 }
                 catch (Exception e)
                 {
-                    x2log.logData(e, "error", "datetime error");
+                    x2log.logData(datetime.ToString(), e.ToString(), "datetime error UnixToMsDateTime()  Incorect date in db check db!!");
                     result = DateTime.Today;
                 }
             }
@@ -196,7 +196,7 @@ public class x2_var
             }
             catch (Exception e)
             {
-                x2log.logData(e, "error", "datetime error");
+                x2log.logData(datetime.ToString(), e.ToString(), "datetime error UnixToMsDateTime()  Incorect date in db check db!!");
                 result = DateTime.Today;
             }
         }
@@ -220,6 +220,7 @@ public class x2_var
             }
             catch (Exception e)
             {
+                x2log.logData(datum.ToString(), e.ToString(), "datetime error MSDate()  Incorect date in db check db!!");
                 result = "chyba:" + e.ToString() + "......." + datum;
             }
         }

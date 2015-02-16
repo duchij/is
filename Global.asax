@@ -5,10 +5,12 @@
     
     void Application_Start(object sender, EventArgs e) 
     {
+        
+        string tmp = System.Web.HttpContext.Current.Server.MapPath("~");
         log x2log = new log();
         mysql_db mysql = new mysql_db();
-        x2log.checkIfLogExists();
-
+        x2log.checkIfLogExists(tmp);
+        
         Boolean status = mysql.offline();
 
         if (status == false)
@@ -53,7 +55,7 @@
 
     void Session_Start(object sender, EventArgs e) 
     {
-
+        Session["serverUrl"] = System.Web.HttpContext.Current.Server.MapPath("~");
         //Session.Timeout = 10;
         // Code that runs when a new session is started
         

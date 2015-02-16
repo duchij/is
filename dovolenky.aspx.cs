@@ -56,6 +56,9 @@ public partial class dovolenky : System.Web.UI.Page
             this.mesiac_cb.SelectedValue = DateTime.Today.Month.ToString();
             this.rok_cb.SelectedValue = DateTime.Today.Year.ToString();
 
+            this.dovOd_user.SelectedDate = DateTime.Today;
+            this.dovDo_user.SelectedDate = DateTime.Today.AddDays(1);
+
             this.drawDovolenTab();
             this.drawUserActDovolenky();
 

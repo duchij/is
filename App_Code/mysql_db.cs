@@ -152,7 +152,7 @@ public class mysql_db
         }
         catch (Exception e)
         {
-            x2log.logData(query, e.ToString(), "db error");
+            x2log.logData(query, e.ToString(), "error db wrong sql in mysql_update()");
 
             result.Add("status", false);
             result.Add("msg", e.ToString());
@@ -237,7 +237,7 @@ public class mysql_db
         }
         catch (Exception e)
         {
-            x2log.logData(cmd.CommandText.ToString(), e.ToString(), "db error");
+            x2log.logData(cmd.CommandText.ToString(), e.ToString(), "error wrong sql in callStoredProcWithoutParam()");
             result.Add("status", false);
             result.Add("msg", e.ToString());
         }
@@ -311,7 +311,7 @@ public class mysql_db
         }
         catch (Exception ex)
         {
-            x2log.logData(cmd.CommandText.ToString(), ex.ToString(), "db error");
+            x2log.logData(cmd.CommandText.ToString(), ex.ToString(), "error wrong sql in fillNurseShifts()");
 
             result.Add("status",false);
             result.Add("msg", ex.ToString());
@@ -355,7 +355,7 @@ public class mysql_db
         }
         catch (Exception ex)
         {
-            x2log.logData(cmd.CommandText.ToString(), ex.ToString(), "db error");
+            x2log.logData(cmd.CommandText.ToString(), ex.ToString(), "error wrong sql in calcNightWork ");
 
             result.Add("status",false);
             result.Add("msg",ex.ToString());
@@ -482,7 +482,7 @@ public class mysql_db
         }
         catch (Exception ex)
         {
-            x2log.logData(cmd.CommandText.ToString(), ex.ToString(), "db error");
+            x2log.logData(cmd.CommandText.ToString(), ex.ToString(), "error wrong sql in lfUpdateData()");
             result.Add("status",false);
             result.Add("msg",ex.ToString());
             cmd.Transaction.Rollback();
@@ -522,7 +522,7 @@ public class mysql_db
         }
         catch (Exception ex)
         {
-            x2log.logData(cmd.CommandText.ToString(), ex.ToString(), "db error");
+            x2log.logData(cmd.CommandText.ToString(), ex.ToString(), "error wrong sql in lfInsertData()");
             result.Add("status",false);
             result.Add("msg",ex.ToString());
             cmd.Transaction.Rollback();
@@ -590,7 +590,7 @@ public class mysql_db
         }
         catch (Exception e)
         {
-            x2log.logData(query, e.ToString(), "db error");
+            x2log.logData(query, e.ToString(), "error wrong sql in mysql_insert()");
             result.Add("status",false);
             result.Add("msg",e.ToString());
             result.Add("last_id", 0);
@@ -630,7 +630,7 @@ public class mysql_db
             result.Add("status", false);
             result.Add("msg", e.ToString());
             result.Add("query", query);
-            x2log.logData(result, e.ToString(), "db error");
+            x2log.logData(result, e.ToString(), "error wrong sql in execute()");
         }
         my_con.Close();
 
@@ -690,7 +690,7 @@ public class mysql_db
         }
         catch (Exception e)
         {
-            x2log.logData(this.parseQuery(query.ToString()),e.ToString(),"db error");
+            x2log.logData(this.parseQuery(query.ToString()),e.ToString(),"error wrong sql in getRow()");
             result.Add("status", false);
             result.Add("msg", e.ToString());
             result.Add("sql", this.parseQuery(query.ToString()));
@@ -758,7 +758,7 @@ public class mysql_db
         }
         catch (Exception ex)
         {
-            x2log.logData(this.parseQuery(query.ToString()), ex.ToString(), "db error");
+            x2log.logData(this.parseQuery(query.ToString()), ex.ToString(), "error wrong sql in getTable()");
         }
         my_con.Close();
 
@@ -826,7 +826,7 @@ public class mysql_db
         }
         catch (Exception ex)
         {
-            x2log.logData(this.parseQuery(query.ToString()), ex.ToString(), "db error");
+            x2log.logData(this.parseQuery(query.ToString()), ex.ToString(), "error wrong sql in getTableSL()");
         }
         my_con.Close();
 

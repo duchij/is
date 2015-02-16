@@ -1,0 +1,8 @@
+﻿ALTER TABLE `is_hlasko_epc`
+ADD `created` timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP,
+COMMENT='';
+
+
+ALTER TABLE `is_hlasko_epc`
+CHANGE `created` `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `lf_id`,
+COMMENT='';
