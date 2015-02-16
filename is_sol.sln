@@ -1,8 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2012 for Web
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "is", ".", "{5B5BEAF8-A9BD-4688-96C5-C0DCD5EDCBD2}"
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "is", "http://localhost:50167", "{5B5BEAF8-A9BD-4688-96C5-C0DCD5EDCBD2}"
 	ProjectSection(WebsiteProperties) = preProject
+		UseIISExpress = "true"
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv2.0"
 		Debug.AspNetCompiler.VirtualPath = "/is"
 		Debug.AspNetCompiler.PhysicalPath = "..\is\"
@@ -18,7 +19,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "is", ".", "{5B5BEAF8-A9BD-4
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "50167"
+		SlnRelativePath = "..\is\"
 	EndProjectSection
 EndProject
 Global

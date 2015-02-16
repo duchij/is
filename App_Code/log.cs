@@ -133,8 +133,15 @@ public class log
     {
         string serverPath;
 
-       // serverP System.Web.HttpContext.Current.Session["serverUrl"].ToString();
-
+        if (System.Web.HttpContext.Current.Session["serverUrl"] != null)
+        {
+            serverPath = System.Web.HttpContext.Current.Session["serverUrl"].ToString();
+        }
+        else
+        {
+            serverPath = "";
+        }
+      //  System.Web.HttpContext.Current.Server.
        /* try
         {
             serverPath = HttpContext.Current.Server.MapPath("~");

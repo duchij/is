@@ -47,7 +47,11 @@
     void Application_Error(object sender, EventArgs e) 
     {
         log x2log = new log();
-        x2log.logData("Global error", Environment.StackTrace.ToString(), "Global ERROR");
+        SortedList data = new SortedList();
+        data.Add("object", sender.ToString());
+        data.Add("type", sender.GetType().ToString());
+        
+        x2log.logData(data,Environment.StackTrace.ToString(),"Global ERROR");
         //Server.Transfer("error.html");
         // Code that runs when an unhandled error occurs
 
@@ -74,9 +78,6 @@
 
     void Application_BeginRequest(object sender, EventArgs e)
     {
-        
-        
-
         
     }
        
