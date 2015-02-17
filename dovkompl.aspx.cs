@@ -74,7 +74,15 @@ public partial class dovkompl : System.Web.UI.Page
                                 stCell.ToolTip += "Príjmová ambulancia" + "\r\n";
                                 break;
                         }
-                        stCell.Text = typArr[i];
+                        string tmpStCell = stCell.Text.ToString();
+                        if (tmpStCell.Length > 0)
+                        {
+                            stCell.Text += "\r\n" + typArr[i];
+                        }
+                        else
+                        {
+                            stCell.Text = typArr[i];
+                        }
                     }
 
                     if (typArr[i] != "Prijm")
@@ -216,28 +224,33 @@ public partial class dovkompl : System.Web.UI.Page
             case "do":
                 result.Add("code", "D");
                 result.Add("color", 0x261758);
-                result.Add("label", "Dovolenka");
+                result.Add("label", Resources.Resource.free_do);
                
                 break;
             case "ci":
                 result.Add("code", "C");
                 result.Add("color", 0x804515);
-                result.Add("label", "Cirkulacia");
+                result.Add("label", Resources.Resource.free_ci);
                 break;
             case "ko":
                 result.Add("code", "K");
                 result.Add("color", 0x801815);
-                result.Add("label", "Kongress");
+                result.Add("label", Resources.Resource.free_ko);
                 break;
             case "pn":
                 result.Add("code", "P");
                 result.Add("color", 0x201858);
-                result.Add("label", "Prace neschopnost");
+                result.Add("label", Resources.Resource.free_pn);
                 break;
             case "sk":
                 result.Add("code", "S");
                 result.Add("color", 0x550000);
-                result.Add("label", "Skolenie");
+                result.Add("label", Resources.Resource.free_sk);
+                break;
+            case "le":
+                result.Add("code", "L");
+                result.Add("color", 0x260339);
+                result.Add("label", Resources.Resource.free_le);
                 break;
 
         }

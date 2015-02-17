@@ -432,4 +432,7 @@
   <data name="dov_konflikt" xml:space="preserve">
     <value>&lt;h3 class="red"&gt;V tomto čase máte už naplánovanú dovolenku, ev inú akciu. Nemôžete mať v rovnakom čase dve veci !!!!!!&lt;/h3&gt;</value>
   </data>
+  <data name="free_le" xml:space="preserve">
+    <value>Návšteva lekára</value>
+  </data>
 </root>
