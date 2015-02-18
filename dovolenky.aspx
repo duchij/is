@@ -42,6 +42,7 @@
                         <asp:ListItem Value="sk" Text="<%$ Resources:Resource,free_sk %>"></asp:ListItem>
                         <asp:ListItem Value="ci" Text="<%$ Resources:Resource,free_ci %>"></asp:ListItem>
                         <asp:ListItem Value="ko" Text="<%$ Resources:Resource,free_ko %>"></asp:ListItem>
+                        <asp:ListItem Value="le" Text="<%$ Resources:Resource,free_le %>"></asp:ListItem>
                         </asp:DropDownList>
             </div>
          <div class="one fourth">
@@ -196,6 +197,7 @@
                         <asp:ListItem Value="sk" Text="<%$ Resources:Resource,free_sk %>"></asp:ListItem>
                         <asp:ListItem Value="ci" Text="<%$ Resources:Resource,free_ci %>"></asp:ListItem>
                         <asp:ListItem Value="ko" Text="<%$ Resources:Resource,free_ko %>"></asp:ListItem>
+                         <asp:ListItem Value="le" Text="<%$ Resources:Resource,free_le %>"></asp:ListItem>
                         </asp:DropDownList>
                         </div>
                     <div class="one third"> Poznamka:<asp:TextBox ID="comment_txt" runat="server" CssClass="mojInline" Width="200"></asp:TextBox></div>

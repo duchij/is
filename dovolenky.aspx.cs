@@ -472,6 +472,9 @@ public partial class dovolenky : System.Web.UI.Page
             case "sk":
                 result = Resources.Resource.free_sk;
                 break;
+            case "le":
+                result = Resources.Resource.free_le;
+                break;
         }
 
         return result;

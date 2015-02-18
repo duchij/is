@@ -1,0 +1,3 @@
+﻿ALTER TABLE `is_dovolenky`
+CHANGE `type` `type` enum('do','pn','sk','ci','ko','le') COLLATE 'armscii8_general_ci' NOT NULL DEFAULT 'do' AFTER `do`,
+COMMENT='';
