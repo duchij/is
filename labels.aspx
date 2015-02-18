@@ -9,6 +9,14 @@
     <hr />
     <asp:Table ID="listTable_tbl" runat="server"></asp:Table>
     <hr />
-    <asp:Button ID="save_btn" runat="server" CssClass="button green" Text="uloz zmeny"/> 
+    <table>
+        <tr>
+            <td><asp:TextBox ID="labelIdf_txt" runat="server" Text=""></asp:TextBox></td>
+            <td><asp:TextBox ID="labelTxt_txt" runat="server" Text=""></asp:TextBox></td>
+            <td><asp:Button ID="save_btn" runat="server" CssClass="button green" Text="<%$ Resources:Resource,save %>" OnClick="saveLabelFnc"/></td>
+        </tr>
+
+    </table>
+    
 </asp:Content>
 

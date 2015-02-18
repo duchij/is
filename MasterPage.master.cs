@@ -18,6 +18,7 @@ public partial class MasterPage : System.Web.UI.MasterPage
     public mysql_db x2Mysql = new mysql_db();
     public string rights="";
     public string wgroup = "";
+    
    /* public string PageName
     {
        get
@@ -29,8 +30,13 @@ public partial class MasterPage : System.Web.UI.MasterPage
             lblpageName.Text = value;
         }
     }*/
+
+    
+
     protected void Page_Load(object sender, EventArgs e)
     {
+        this.web_titel.Text = X2.setLabel("web_titel");
+
         this.current_user_lbl.Text = Session["fullname"].ToString();
         this.rights = Session["rights"].ToString();
         this.wgroup = Session["workgroup"].ToString();

@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 //using System.Linq;
 using System.Web;
+using System.Text;
 using System.Threading;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -15,6 +16,7 @@ public partial class _Default : System.Web.UI.Page
     my_db db_obj = new my_db();
     x2_var x2 = new x2_var();
     log x2log = new log();
+    mysql_db x2Mysql = new mysql_db();
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -93,6 +95,8 @@ public partial class _Default : System.Web.UI.Page
                     Session.Add("titul_za", x2.getStr(data["titul_za"].ToString()));
                     Session.Add("klinika_label", x2.getStr(data["klinika_label"].ToString()));
 
+                    Session.Add("LABELS",this.loadLabels(data["klinika"].ToString()));
+
 
                    /* Response.Cookies["tuisegumdrum"].Value = "activado";
                     Response.Cookies["user_id"].Value = data["id"].ToString();
@@ -135,7 +139,7 @@ public partial class _Default : System.Web.UI.Page
 
                     SortedList passPhrase = db_obj.getPassPhrase();
                     Session.Add("passphrase", passPhrase["data"].ToString());
-
+                    Session.Add("LABELS", this.loadLabels(data["klinika"].ToString()));
 
                     /*Response.Cookies["tuisegumdrum"].Value = " activado";
                     Response.Cookies["user_id"].Value = data["id"].ToString();
@@ -218,6 +222,21 @@ public partial class _Default : System.Web.UI.Page
                 x2log.logData(data, "bad user or password", "error bad user login:" + data["full_name"]);
             }
         }
+    }
+
+    protected SortedList loadLabels(string cId)
+    {
+        SortedList labels = new SortedList();
+
+        SortedList res = x2Mysql.getLabels(cId);
+        if (res["status"] == null)
+        {
+            labels = res;
+        }
+
+        return labels;
+
+        
     }
 
     protected void deleteFilesPerDays()

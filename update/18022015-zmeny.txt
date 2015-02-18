@@ -1,0 +1,1 @@
+﻿CREATE TABLE `is_labels` ( `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT, `clinic` bigint(20) NOT NULL, `idf` varchar(20) CHARACTER SET ascii NOT NULL, `label` longtext COLLATE utf8_slovak_ci NOT NULL, PRIMARY KEY (`id`), UNIQUE KEY `clinic_idf` (`clinic`,`idf`) ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_slovak_ci

@@ -12,11 +12,19 @@ public partial class labels_labels : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        
+        if (IsPostBack)
+        { 
+            string prefix = this.prefix_txt.Text.ToString().Trim();
+            if (prefix.Length > 0)
+            {
+                this._searchPrefix();
+            }
+        }
     }
 
-    protected void searchPrefixFnc(object sender, EventArgs e)
+    protected void _searchPrefix()
     {
+        this.listTable_tbl.Controls.Clear();
         string prefix = this.prefix_txt.Text.ToString();
 
         StringBuilder sb = new StringBuilder();
@@ -52,51 +60,87 @@ public partial class labels_labels : System.Web.UI.Page
 
                 TableCell actionCell = new TableCell();
                 Button saveBtn = new Button();
-                saveBtn.CssClass = "button green";
+                
                 saveBtn.ID = "saveLabel_" + table[i]["id"].ToString();
+                saveBtn.Click += new EventHandler(changeHandlerFnc);
+                saveBtn.CssClass = "button green";
                 saveBtn.Text = Resources.Resource.save;
                 actionCell.Controls.Add(saveBtn);
 
-                
+
                 Button deleteBtn = new Button();
                 deleteBtn.ID = "deleteLabel_" + table[i]["id"].ToString();
+                
+                deleteBtn.Click += new EventHandler(changeHandlerFnc);
                 deleteBtn.CssClass = "button red";
                 deleteBtn.Text = Resources.Resource.delete;
                 actionCell.Controls.Add(deleteBtn);
 
                 riadok.Controls.Add(actionCell);
-
-
             }
         }
-        else
-        {
-            /*TableRow riadok = new TableRow();
-            this.listTable_tbl.Controls.Add(riadok);
-
-            TableCell cellIdf = new TableCell();
-            TextBox textIdf = new TextBox();
-            textIdf.ID = "textIdfTmp_0";
-            cellIdf.Controls.Add(textIdf);
-
-            riadok.Controls.Add(cellIdf);
-
-
-            TableCell cellLabel = new TableCell();
-            TextBox textLabel = new TextBox();
-            textLabel.ID = "textLabelTmp_0";
-            cellLabel.Controls.Add(textLabel);
-            riadok.Controls.Add(cellLabel);
-
-            TableCell cellButtons = new TableCell();
-            Button addNew = new Button();
-            addNew.Click += new EventHandler(newRow_fnc);
-            addNew.Text = "Pridaj";
-            cellButtons.Controls.Add(addNew);
-
-            riadok.Controls.Add(cellButtons);*/
-        }
     }
+
+    protected void searchPrefixFnc(object sender, EventArgs e)
+    {
+        this._searchPrefix();
+    }
+
+    protected void clearFields()
+    {
+        this.labelIdf_txt.Text = "";
+        this.labelTxt_txt.Text = "";
+    }
+
+    protected void changeHandlerFnc(object sender, EventArgs e)
+    {
+        Button delBtn = (Button)sender;
+        StringBuilder sb = new StringBuilder();
+        string[] tmp = delBtn.ID.ToString().Split('_');
+        if (tmp[0] == "deleteLabel")
+        {
+            sb.AppendFormat("DELETE FROM [is_labels] WHERE [id]='{0}'", tmp[1]);
+
+            SortedList res = x2Mysql.execute(sb.ToString());
+            if (Convert.ToBoolean(res["status"]))
+            {
+                this.clearFields();
+                this._searchPrefix();
+            }
+        }
+        if (tmp[0] == "saveLabel")
+        {
+            SortedList data = new SortedList();
+            data.Add("idf", this.labelIdf_txt.Text.ToString());
+            data.Add("label", this.labelTxt_txt.Text.ToString());
+
+            SortedList res1 = x2Mysql.mysql_update("is_labels", data, tmp[1]);
+            if (Convert.ToBoolean(res1["statu"]))
+            {
+                this.clearFields();
+                this._searchPrefix();
+            }
+        }
+
+    }
+
+    protected void saveLabelFnc(object sender, EventArgs e)
+    {
+        SortedList data = new SortedList();
+        data.Add("idf", this.labelIdf_txt.Text.ToString());
+        data.Add("label", this.labelTxt_txt.Text.ToString());
+        data.Add("clinic", Session["klinika_id"].ToString());
+
+        SortedList res = x2Mysql.mysql_insert("is_labels", data);
+        if (Convert.ToBoolean(res["status"]))
+        {
+
+            this.clearFields();
+            this._searchPrefix();
+        }
+
+    }
+
 
     protected void newRow_fnc(object sender, EventArgs e)
     {

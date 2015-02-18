@@ -33,7 +33,22 @@ public class x2_var
 	}
 
   
+    public string setLabel(string label)
+    {
+        string result = "";
+        SortedList _labels = (SortedList)System.Web.HttpContext.Current.Session["LABELS"];
 
+        if (_labels.ContainsKey(label))
+        {
+            result = _labels[label].ToString();
+        }
+        else
+        {
+            result = label;
+        }
+
+        return result;
+    }
 
     public int makeDateGroup(int rok, int mesiac)
     {

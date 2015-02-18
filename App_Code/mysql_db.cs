@@ -767,6 +767,34 @@ public class mysql_db
 
     }
 
+    public SortedList getLabels(string clinic)
+    {
+        SortedList result = new SortedList();
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("SELECT [idf],[label] FROM [is_labels] WHERE [clinic]='{0}'", clinic);
+        my_con.Open();
+        string query = this.parseQuery(sb.ToString());
+        OdbcCommand my_command = new OdbcCommand(query, my_con);
+        try
+        {
+            OdbcDataReader reader = my_command.ExecuteReader();
+
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    result.Add(reader["idf"].ToString(), reader["label"].ToString());
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            x2log.logData(query, e.ToString(), "getLabels error");
+            result.Add("status", false);
+        }
+        return result;
+    }
+
     public Dictionary<int, SortedList> getTableSL(string query)
     {
 

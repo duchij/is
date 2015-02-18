@@ -299,7 +299,7 @@ public partial class sluzby2 : System.Web.UI.Page
             {
                 TableHeaderCell headCell1 = new TableHeaderCell();
                 headCell1.ID = "headCell_" + head;
-                headCell1.Text = "<strong><center>" + header[head].ToString() + "</center></strong>";
+                headCell1.Text = "<strong><center>" + x2.setLabel(header[head].ToString()) + "</center></strong>";
                 // headCell1.
                 headRow.Controls.Add(headCell1);
             }

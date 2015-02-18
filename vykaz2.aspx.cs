@@ -915,10 +915,13 @@ public partial class vykaz2 : System.Web.UI.Page
                     Control mzvyhTmp = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_7");
                     TextBox mzvyhTxt = (TextBox)mzvyhTmp;
 
+                    Control mzvyhTmpSv = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_6");
+                    TextBox mzvyhTxtSv = (TextBox)mzvyhTmpSv;
+
                     decimal zuctHodinyFLOAT = Convert.ToDecimal(zucHodTxt.Text.ToString(),CultureInfo.InvariantCulture.NumberFormat);
                     decimal defZuc = zuctHodinyFLOAT + hodiny;
                     mzvyhTxt.Text = defZuc.ToString();
-
+                    mzvyhTxtSv.Text = defZuc.ToString();
 
                     mTBox1.Text = hodiny.ToString();
                     mTBox2.Text = neaktivna.ToString();
@@ -1013,7 +1016,7 @@ public partial class vykaz2 : System.Web.UI.Page
                         if (dovolenky[i]["type"].ToString() == "do") { my_text_box.Text = "D"; my_text_box1.Text = "D"; }
                         if (dovolenky[i]["type"].ToString() == "pn") { my_text_box.Text = "PN"; my_text_box1.Text = "PN"; }
                         if (dovolenky[i]["type"].ToString() == "sk") {my_text_box.Text = "SK"; my_text_box1.Text = "SK"; }
-                       
+                        if (dovolenky[i]["type"].ToString() == "le") { my_text_box.Text = "SK"; my_text_box1.Text = "Le"; }
                         my_text_box2.Text = "0";
                         my_text_box3.Text = "0";
                     }
