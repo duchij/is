@@ -133,7 +133,7 @@ public class log
     {
         string serverPath;
 
-        if (System.Web.HttpContext.Current.Session["serverUrl"] != null)
+         if (System.Web.HttpContext.Current.Session["serverUrl"] != null)
         {
             serverPath = System.Web.HttpContext.Current.Session["serverUrl"].ToString();
         }
