@@ -29,7 +29,7 @@ public class omegadb
 		//
         Configuration myConfig = WebConfigurationManager.OpenWebConfiguration("/is");
         ConnectionStringSettings connString;
-        connString = myConfig.ConnectionStrings.ConnectionStrings["omega"];
+        connString = myConfig.ConnectionStrings.ConnectionStrings["test_dfnsp"];
         my_con.ConnectionString = connString.ToString();
 	}
 

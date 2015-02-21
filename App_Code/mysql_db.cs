@@ -531,6 +531,85 @@ public class mysql_db
         return result;
     }
 
+    public SortedList mysql_insert_arr(string table, Dictionary<int,Hashtable> data)
+    {
+        SortedList result = new SortedList();
+
+        int dataCnt = data.Count;
+
+        string[] arr = new string[dataCnt];
+        string[] columns = new string[data[0].Count];
+        string[] col_vals = new string[data[0].Count];
+
+        for (int i = 0; i < dataCnt; i++)
+        {
+            string[] _tmp = new string[data[i].Count];
+            int j = 0;
+            foreach (DictionaryEntry _row in data[i])
+            {
+                if (i == 0)
+                {
+                    columns[j] = "`" + _row.Key.ToString() + "`";
+                    col_vals[j] = "`" + _row.Key.ToString() + "` =  values(`" + _row.Key.ToString() + "`)";
+                }
+
+                if (_row.Value == null)
+                {
+                    _tmp[j] = "NULL";
+                }
+                else
+                {
+                    _tmp[j] = "'" + _row.Value.ToString() + "'";
+                }
+                j++;
+            }
+            arr[i] = "("+string.Join(",",_tmp)+")";
+        }
+
+        string t_cols = string.Join(",", columns);
+        string t_cols_vals = string.Join(",", arr);
+        string t_vals = string.Join(",", col_vals);
+
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("INSERT INTO `{0}` ({1}) VALUES {2} ON DUPLICATE KEY UPDATE {3};", table, t_cols, t_cols_vals, t_vals);
+        string query = sb.ToString();
+
+        OdbcTransaction trans1 = null;
+        my_con.Open();
+        trans1 = my_con.BeginTransaction();
+
+        OdbcCommand cmdtrans = new OdbcCommand();
+        cmdtrans.Connection = my_con;
+        cmdtrans.Transaction = trans1;
+
+        try
+        {
+            x2log.logData(query, "", "mysql insert");
+            cmdtrans.CommandText = query;
+            cmdtrans.ExecuteNonQuery();
+           // cmdtrans.CommandText = "SELECT last_insert_id();";
+           // id = Convert.ToInt32(cmdtrans.ExecuteScalar());
+            trans1.Commit();
+            result.Add("status", true);
+            //result.Add("last_id", id);
+        }
+        catch (Exception e)
+        {
+            x2log.logData(query, e.ToString(), "error wrong sql in mysql_insert_arr()");
+            result.Add("status", false);
+            result.Add("msg", e.ToString());
+            //result.Add("last_id", 0);
+            result.Add("sql", query);
+            trans1.Rollback();
+
+        }
+        my_con.Close();
+
+
+
+       return result;
+    }
+
 
 
     public SortedList mysql_insert(string table, SortedList data)

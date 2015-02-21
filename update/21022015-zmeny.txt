@@ -1,0 +1,96 @@
+﻿CREATE TABLE `is_omega_doctors` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `view_id` bigint unsigned NOT NULL,
+  `ms_item_id` bigint unsigned NOT NULL,
+  `full_name` text COLLATE 'utf8_slovak_ci' NOT NULL,
+  `name` text COLLATE 'utf8_slovak_ci' NOT NULL,
+  `login` varchar(15) COLLATE 'ascii_general_ci' NOT NULL,
+  `clinic` bigint unsigned NOT NULL
+) COMMENT='' ENGINE='InnoDB' COLLATE 'utf8_slovak_ci';
+
+
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `FILL_DK_SHIFTS`(IN `dategroup` int, IN `days` int, IN `mesiac` int, IN `rok` int, IN `freeDays` varchar(150) CHARACTER SET 'ascii', OUT `res` int)
+	LANGUAGE SQL
+	NOT DETERMINISTIC
+	CONTAINS SQL
+	SQL SECURITY DEFINER
+	COMMENT ''
+BEGIN
+
+declare flag int default 1;
+
+	DECLARE exit handler for sqlexception
+	BEGIN
+		set flag = 0;
+        set res = -1;
+		ROLLBACK;
+		-- exit procedure;
+	END;
+
+	-- DECLARE exit handler for sqlwarning
+	-- BEGIN
+		-- set flag = 0;
+       -- set res = -2;
+		-- ROLLBACK;
+		-- exit procedure;
+	-- END;
+
+	
+	SET res = 0;
+   START TRANSACTION;
+	mojLoop:LOOP
+		SET res = res + 1;
+		
+		set @wDay = dayofweek(concat(rok,'-',mesiac,'-',res));
+		
+		-- call debug_msg(true,concat('wday: ',@wDay));
+		SELECT @wDay as 'wDay';
+		
+		-- set @freeD = concat((SELECT `data` FROM `is_settings` WHERE `name`='free_days'));
+		
+		-- call debug_msg(true,concat('freedays: ',freeDays));
+		set @den = concat(res,'.',mesiac);
+		select @den as 'den';
+		set @free = FIND_IN_SET(@den,freeDays);
+		select @free as 'free';
+		
+		-- call debug_msg(true,concat('free: ',@free));
+		
+		IF (res <= days AND flag=1) THEN
+		begin
+			set @datum = concat(rok,'-',mesiac,'-',res);
+			select @datum as 'datum';
+			IF ((@wDay = 1 OR @wDay = 7) OR @free>0) THEN
+				begin
+				select concat ('volno ',@free) as 'podmienka';
+			
+				INSERT INTO is_sluzby_dk (datum,typ,tyzden,user_id,date_group,ordering,comment,state) VALUES 
+				(@datum,'Odd1','konz','0',dategroup,'1','-','setup'),
+				(@datum,'Odd2','konz','0',dategroup,'2','-','setup'),
+				(@datum,'OupA1','konz','0',dategroup,'3','-','setup'),
+				(@datum,'OupA2','konz','0',dategroup,'4','-','setup'),
+				(@datum,'OupB','konz','0',dategroup,'5','-','setup'),
+				(@datum,'Expe','konz','0',dategroup,'6','-','setup');
+				
+				end;
+			ELSE
+				begin
+				select concat ('norm ',@free) as 'podmienka';
+				INSERT INTO is_sluzby_dk (datum,typ,tyzden,user_id,date_group,ordering,comment,state) VALUES 
+				(@datum,'Odd','konz','0',dategroup,'1','-','setup'),
+				(@datum,'OupA1','konz','0',dategroup,'2','-','setup'),
+				(@datum,'OupB1','konz','0',dategroup,'3','-','setup'),
+				(@datum,'Expe','konz','0',dategroup,'4','-','setup');
+				end;
+			END IF;
+
+			
+
+			ITERATE mojLoop;
+		end;
+		END IF;
+	LEAVE mojLoop;
+	END LOOP mojLoop;
+   COMMIT;
+END

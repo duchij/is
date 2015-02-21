@@ -234,6 +234,7 @@ public partial class sluzby2 : System.Web.UI.Page
         int colsNum = shifts.Length;
         string[] header = shifts;
 
+        ArrayList doctors = this.loadOmegaDoctors();
 
         TableHeaderRow headRow = new TableHeaderRow();
 
@@ -299,15 +300,27 @@ public partial class sluzby2 : System.Web.UI.Page
                 if (cell >=1 || cell<=3)
                 {
                     TableCell dataCell = new TableCell();
+
                     if (dnesJe == 0 || dnesJe == 6)
                     {
                         dataCell.CssClass = "box red";
 
-                        switch (cell)
+                        if (cell==1)
                         {
-                            case 1:
+                            
                                 dataCell.ID = "Odd1_" + (row + 1).ToString();
                                 DropDownList dl = new DropDownList();
+                                dl.ID = "Odd1_" + (row + 1).ToString();
+                                ListItem[] item = new ListItem[doctors.Count];
+
+                                for (int doc = 0; doc < doctors.Count; doc++)
+                                {
+                                    string[] tmp = doctors[doc].ToString().Split('|');
+                                    item[doc] = new ListItem(tmp[1].ToString(), tmp[0].ToString());
+                                }
+                                dl.Items.AddRange(item);
+
+
                                 dataCell.Controls.Add(dl);
 
                                 
@@ -315,28 +328,71 @@ public partial class sluzby2 : System.Web.UI.Page
                                 dataCell.Controls.Add(dl1);
 
                                 tblRow.Controls.Add(dataCell);
-                                break;
-                        }
 
+                        }
+                        if (cell == 2)
+                        {
+                                dataCell.ID = "OUP1_" + (row + 1).ToString();
+                                DropDownList dl = new DropDownList();
+                                dataCell.Controls.Add(dl);
+
+
+                                DropDownList dl1 = new DropDownList();
+                                dataCell.Controls.Add(dl1);
+
+                                tblRow.Controls.Add(dataCell);
+                        }
+                        if (cell > 2)
+                        {
+                            dataCell.ID = "OUP1_" + (row + 1).ToString();
+                            DropDownList dl = new DropDownList();
+                            dataCell.Controls.Add(dl);
+                            tblRow.Controls.Add(dataCell);
+                        }
                     }
                     if (jeSviatok != -1 && dnesJe != 0 && dnesJe != 6)
                     {
-                        cellDate.CssClass = "box yellow";
+                        dataCell.CssClass = "box yellow";
 
-                        switch (cell)
+                        if (cell == 1)
                         {
-                            case 1:
-                                dataCell.ID = "Odd1_" + (row + 1).ToString();
-                                DropDownList dl = new DropDownList();
-                                dataCell.Controls.Add(dl);
-                                DropDownList dl1 = new DropDownList();
-                                dataCell.Controls.Add(dl1);
-                                tblRow.Controls.Add(dataCell);
-                                break;
+
+                            dataCell.ID = "Odd1_" + (row + 1).ToString();
+                            DropDownList dl = new DropDownList();
+                            dataCell.Controls.Add(dl);
+
+
+                            DropDownList dl1 = new DropDownList();
+                            dataCell.Controls.Add(dl1);
+
+                            tblRow.Controls.Add(dataCell);
+
+                        }
+                        if (cell == 2)
+                        {
+                            dataCell.ID = "OUP1_" + (row + 1).ToString();
+                            DropDownList dl = new DropDownList();
+                            dataCell.Controls.Add(dl);
+
+
+                            DropDownList dl1 = new DropDownList();
+                            dataCell.Controls.Add(dl1);
+
+                            tblRow.Controls.Add(dataCell);
+
+                            tblRow.Controls.Add(dataCell);
+
+                        }
+                        if (cell > 2)
+                        {
+                            dataCell.ID = "OUP1_" + (row + 1).ToString();
+                            DropDownList dl = new DropDownList();
+                            dataCell.Controls.Add(dl);
+                            tblRow.Controls.Add(dataCell);
                         }
                     }
 
-                    if (dnesJe != 0 && dnesJe != 6)
+                    if ((dnesJe != 0 && dnesJe != 6) && cell >0 )
                     {
                         //dataCell.ID = "Odd1_" + (row + 1).ToString();
                         DropDownList dl = new DropDownList();
@@ -644,6 +700,27 @@ public partial class sluzby2 : System.Web.UI.Page
         }
 
         return result;        
+    }
+
+    protected ArrayList loadOmegaDoctors()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append("SELECT [ms_item_id],[name] FROM [is_omega_doctors] WHERE [clinic]='4'  ORDER BY [name]");
+
+        Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
+
+        int dataLn = table.Count;
+
+        ArrayList result = new ArrayList();
+        //result.Add("-", "-");
+        result.Add("0|-");
+        for (int i = 1; i <= dataLn; i++)
+        {
+            result.Add(table[i - 1]["ms_item_id"].ToString() + "|" + table[i - 1]["name"].ToString());
+        }
+
+        return result;
+
     }
 
     protected ArrayList loadDoctors()

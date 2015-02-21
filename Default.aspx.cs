@@ -95,6 +95,9 @@ public partial class _Default : System.Web.UI.Page
                     Session.Add("titul_za", x2.getStr(data["titul_za"].ToString()));
                     Session.Add("klinika_label", x2.getStr(data["klinika_label"].ToString()));
 
+                    SortedList passPhrase = db_obj.getPassPhrase();
+                    Session.Add("passphrase", passPhrase["data"].ToString());
+
                     Session.Add("LABELS",this.loadLabels(data["klinika"].ToString()));
 
 
