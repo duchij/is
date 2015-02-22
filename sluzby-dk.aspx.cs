@@ -36,6 +36,8 @@ public partial class sluzby2 : System.Web.UI.Page
             Response.Redirect("error.html");
         }
 
+        
+
         this.rights = Session["rights"].ToString();
         this.wgroup = Session["workgroup"].ToString();
 
@@ -52,8 +54,9 @@ public partial class sluzby2 : System.Web.UI.Page
         }
         if (IsPostBack == false)
         {
+            
            this.setMonthYear();
-
+           this.generateWeekRule();
             //if (Session["klinika"].ToString().IndexOf("dk") !=-1)
             //{
                 this.generateDKShiftTableForm();
@@ -96,6 +99,36 @@ public partial class sluzby2 : System.Web.UI.Page
         this.rok_cb.SelectedValue = rok.ToString();
     }
 
+    protected void generateWeekRule()
+    {
+        int month= Convert.ToInt32(this.mesiac_cb.SelectedValue); 
+        int year = Convert.ToInt32(this.rok_cb.SelectedValue);
+
+        int days = DateTime.DaysInMonth(year,month);
+
+
+        TableRow headRow = new TableRow();
+        this.weekRule_tbl.Controls.Add(headRow);
+        int firstDay = 1;
+        for (int week = 0; week < 4; week++)
+        {
+            
+            TableCell headCell = new TableCell();
+            if (week < 3)
+            {
+                int lastDay = firstDay + 7;
+                headCell.Text = firstDay.ToString() + ". -" + lastDay.ToString() + ". " + month.ToString() + ". " + year.ToString();
+            }
+            else
+            {
+                headCell.Text = firstDay.ToString() + ". -" + days.ToString() + ". " + month.ToString() + ". " + year.ToString();
+            }
+
+            firstDay = firstDay + 8;
+            headRow.Controls.Add(headCell);
+        }
+    }
+
     //protected Boolean getShiftState()
     //{
     //    string mesiac = this.mesiac_cb.SelectedValue.ToString();
@@ -110,12 +143,12 @@ public partial class sluzby2 : System.Web.UI.Page
     //    sb.AppendFormat("SELECT [state] FROM [is_sluzby_2] WHERE [datum] = '{0}-{1}-{2}' LIMIT 1", rok, mesiac, "01");
 
     //    SortedList state = x2Mysql.getRow(sb.ToString());
-        
+
     //        if (state["state"].ToString() == "active")
     //        {
     //            result = true;
     //        }
-      
+
 
     //    return result;
     //}
@@ -310,7 +343,9 @@ public partial class sluzby2 : System.Web.UI.Page
                             
                                 dataCell.ID = "Odd1_" + (row + 1).ToString();
                                 DropDownList dl = new DropDownList();
+                                //dl.
                                 dl.ID = "Odd1_" + (row + 1).ToString();
+                           
                                 ListItem[] item = new ListItem[doctors.Count];
 
                                 for (int doc = 0; doc < doctors.Count; doc++)
@@ -325,6 +360,15 @@ public partial class sluzby2 : System.Web.UI.Page
 
                                 
                                 DropDownList dl1 = new DropDownList();
+                                dl1.ID = "Odd2_" + (row + 1).ToString();
+                                ListItem[] item2 = new ListItem[doctors.Count];
+
+                                for (int doc = 0; doc < doctors.Count; doc++)
+                                {
+                                    string[] tmp = doctors[doc].ToString().Split('|');
+                                    item2[doc] = new ListItem(tmp[1].ToString(), tmp[0].ToString());
+                                }
+                                dl1.Items.AddRange(item);
                                 dataCell.Controls.Add(dl1);
 
                                 tblRow.Controls.Add(dataCell);

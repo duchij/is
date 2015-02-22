@@ -5,6 +5,8 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
     <asp:Label ID="msg_lbl" runat="server" Text=""></asp:Label>
     <h2> Plán služieb</h2><hr />
+
+    <asp:Table ID="weekRule_tbl" runat="server"></asp:Table>
         <div class="row">
             <div class="one half"> 
                  Mesiac:<asp:DropDownList ID="mesiac_cb" runat="server" 

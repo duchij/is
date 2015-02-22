@@ -77,9 +77,10 @@ public partial class helpers_synco : System.Web.UI.Page
     
     protected string makeName(string name)
     {
+        string tmpF = name.Substring(0, 1);
         int pos = name.IndexOf(" ");
 
-        return name.Substring(pos, name.Length-pos); 
+        return name.Substring(pos, name.Length - pos) + ", " + tmpF + "."; 
     }
 
 }
