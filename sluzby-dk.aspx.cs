@@ -53,10 +53,12 @@ public partial class sluzby2 : System.Web.UI.Page
         if (IsPostBack == false)
         {
            this.setMonthYear();
+           
 
             //if (Session["klinika"].ToString().IndexOf("dk") !=-1)
             //{
-                this.generateDKShiftTableForm();
+          this.generateDKShiftTableForm();
+          this.generateWeekStatus();
             //}
             //else
             //{
@@ -66,11 +68,13 @@ public partial class sluzby2 : System.Web.UI.Page
         }
         else
         {
-           
-            this.shiftTable.Controls.Clear();
+            
+
+            //this.shiftTable.Controls.Clear();
             //if (Session["klinika"].ToString().IndexOf("dk") != -1)
             //{
                 this.generateDKShiftTableForm();
+                this.generateWeekStatus();
             //}
             //else
             //{
@@ -119,6 +123,150 @@ public partial class sluzby2 : System.Web.UI.Page
 
     //    return result;
     //}
+
+    protected void generateWeekStatus()
+    {
+        int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue);
+        int rok = Convert.ToInt32(this.rok_cb.SelectedValue);
+
+        int days = DateTime.DaysInMonth(rok, mesiac);
+
+        TableHeaderRow headRow = new TableHeaderRow();
+        this.weekState_tbl.Controls.Add(headRow);
+        int startDay = 1;
+        int endDay = 8;
+
+        Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+        ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
+
+        for (int week=0; week < 4; week++)
+        {
+           
+            TableHeaderCell headCell = new TableHeaderCell();
+
+            //tempData.Value = "lo";
+            int rWeek = week + 1;
+            Control tmpC = ctpl.FindControl("tempWeek_" + rWeek.ToString());
+
+            HiddenField tempWeek = (HiddenField)tmpC;
+            
+
+            if (week<3) 
+            {
+               if (week>0) endDay = endDay + 7;
+                
+                headCell.Text = startDay.ToString()+". - "+endDay.ToString()+". "+mesiac.ToString()+". "+rok.ToString();
+                tempWeek.Value = startDay.ToString() + "_" + endDay.ToString();
+            }
+            else
+            {
+                headCell.Text = startDay.ToString() + ". - " + days.ToString() + ". " + mesiac.ToString() + ". " + rok.ToString();
+                tempWeek.Value = startDay.ToString() + "_" + days.ToString();
+            }
+            headRow.Controls.Add(headCell);
+
+            startDay = endDay + 1;
+        }
+        TableRow riadok = new TableRow();
+        this.weekState_tbl.Controls.Add(riadok);
+
+        for (int week=0; week < 4; week++)
+        {
+            Control cl = ctpl.FindControl("tempWeek_"+(week+1).ToString());
+
+            HiddenField tempData = (HiddenField)cl;
+            string[] hdValue = tempData.Value.ToString().Split('_');
+        
+            string startD = rok.ToString()+"-"+mesiac.ToString()+"-"+hdValue[0];
+            string endD = rok.ToString()+"-"+mesiac.ToString()+"-"+hdValue[1];
+
+            TableCell cellData = new TableCell();
+
+            DropDownList dl = new DropDownList();
+            dl.ID = "week_"+(week+1).ToString()+"_dl";
+            dl.Items.Add(new ListItem("Konziliarny", "konz"));
+            dl.Items.Add(new ListItem("Prijmovy", "prijm"));
+
+            dl.SelectedIndexChanged += new EventHandler(setWeekStatus);
+            dl.AutoPostBack = true;
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("SELECT [tyzden] FROM [is_sluzby_dk] WHERE [datum] BETWEEN '{0}' AND '{1}' GROUP BY [tyzden]", startD, endD);
+
+            SortedList row = x2Mysql.getRow(sb.ToString());
+            if (row["status"] == null)
+            {
+                if (row.Count > 0)
+                {
+                    dl.SelectedValue = row["tyzden"].ToString();
+
+                    int start = Convert.ToInt32(hdValue[0]);
+                    int end = Convert.ToInt32(hdValue[1]);
+
+                    for (int iWeek = start; iWeek <= end; iWeek++)
+                    {
+                        Control txtCl = ctpl.FindControl("konzWeek_" + iWeek.ToString());
+                        TableCell txtB = (TableCell)txtCl;
+
+                        txtB.Text = row["tyzden"].ToString();
+
+                        if (row["tyzden"].ToString() == "konz")
+                        {
+                            txtB.CssClass = "box green";
+                        }
+                        else
+                        {
+                            txtB.CssClass = "box pink";
+                        }
+
+                    }
+                }
+            }
+
+            cellData.Controls.Add(dl);
+            riadok.Controls.Add(cellData);
+
+        }
+
+    }
+
+    protected void setWeekStatus(object sender, EventArgs e)
+    {
+        int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue);
+        int rok = Convert.ToInt32(this.rok_cb.SelectedValue);
+        DropDownList dl = (DropDownList)sender;
+        string[] id = dl.ID.ToString().Split('_');
+
+        string week = dl.SelectedValue;
+
+        Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+        ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
+
+        Control cl = ctpl.FindControl("tempWeek_"+id[1].ToString());
+
+        HiddenField tempData = (HiddenField)cl;
+        string[] hdValue = tempData.Value.ToString().Split('_');
+        
+        string startD = rok.ToString()+"-"+mesiac.ToString()+"-"+hdValue[0];
+        string endD = rok.ToString()+"-"+mesiac.ToString()+"-"+hdValue[1];
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("UPDATE [is_sluzby_dk] SET [tyzden]='{0}' WHERE [datum] BETWEEN '{1}' AND '{2}' ", week, startD, endD);
+
+        SortedList res = x2Mysql.execute(sb.ToString());
+        if (Convert.ToBoolean(res["status"]))
+        {
+            int start = Convert.ToInt32(hdValue[0]);
+            int end = Convert.ToInt32(hdValue[1]);
+
+            for (int iWeek = start; iWeek <= end; iWeek++)
+            {
+                Control txtCl = ctpl.FindControl("konzWeek_" + iWeek.ToString());
+                TableCell txtB = (TableCell)txtCl;
+
+                txtB.Text =week;
+            }
+        }
+
+    }
 
     protected void publishOnFnc(object sender, EventArgs e)
     {
@@ -220,6 +368,47 @@ public partial class sluzby2 : System.Web.UI.Page
 
     //}
 
+    protected DropDownList makeDoctorList(string ID, ArrayList doctors)
+    {
+        DropDownList dl = new DropDownList();
+
+        dl.ID = ID;
+        dl.SelectedIndexChanged += new EventHandler(dlItemChangedDK);
+
+        ListItem[] item = new ListItem[doctors.Count];
+
+        for (int doc = 0; doc < doctors.Count; doc++)
+        {
+            string[] tmp = doctors[doc].ToString().Split('|');
+            item[doc] = new ListItem(tmp[1].ToString(), tmp[0].ToString());
+        }
+        dl.Items.AddRange(item);
+
+        return dl;
+    }
+
+    protected void dlItemChangedDK(object sender, EventArgs e)
+    {
+        DropDownList dl = (DropDownList)sender;
+
+        string[] dlId = dl.ID.ToString().Split('_');
+
+        int userId = Convert.ToInt32(dl.SelectedValue);
+
+        int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue);
+        int rok = Convert.ToInt32(this.rok_cb.SelectedValue);
+
+        string datum = rok.ToString() + "-" + mesiac + "-" + dlId[1].ToString();
+
+        SortedList data = new SortedList();
+        data.Add("datum", datum);
+        data.Add("typ", dlId[0]);
+        data.Add("user_id", userId);
+
+
+
+    }
+
     protected void generateDKShiftTableForm()
     {
         string mesiac = this.mesiac_cb.SelectedValue.ToString();
@@ -292,127 +481,145 @@ public partial class sluzby2 : System.Web.UI.Page
                 if (cell == 0)
                 {
                     TableCell konzCell = new TableCell();
-                    konzCell.Text = "konz";
+                    konzCell.ID = "konzWeek_" + (row + 1).ToString();
+                    string tmp = konzCell.Text.ToString().Trim();
+                    if (tmp.Length == 0) konzCell.Text="konz";
+
+                    
+                   /* if (konzCell.Text.ToString() == "konz")
+                    {
+                        konzCell.CssClass = "box green";
+
+                    }
+                    else
+                    {
+                        konzCell.CssClass = "box pink";
+                    }*/
+
+                    //konzCell.Text = "konz";
 
                     tblRow.Controls.Add(konzCell);
                 }
 
-                if (cell >=1 || cell<=3)
+                
+                TableCell dataCell = new TableCell();
+
+                if ((dnesJe == 0 || dnesJe == 6) && jeSviatok == -1) //vikend
                 {
-                    TableCell dataCell = new TableCell();
+                    dataCell.CssClass = "box red";
 
-                    if (dnesJe == 0 || dnesJe == 6)
+                    if (cell==1)
                     {
-                        dataCell.CssClass = "box red";
-
-                        if (cell==1)
-                        {
-                            
-                                dataCell.ID = "Odd1_" + (row + 1).ToString();
-                                DropDownList dl = new DropDownList();
-                                dl.ID = "Odd1_" + (row + 1).ToString();
-                                ListItem[] item = new ListItem[doctors.Count];
-
-                                for (int doc = 0; doc < doctors.Count; doc++)
-                                {
-                                    string[] tmp = doctors[doc].ToString().Split('|');
-                                    item[doc] = new ListItem(tmp[1].ToString(), tmp[0].ToString());
-                                }
-                                dl.Items.AddRange(item);
-
-
-                                dataCell.Controls.Add(dl);
-
-                                
-                                DropDownList dl1 = new DropDownList();
-                                dataCell.Controls.Add(dl1);
-
-                                tblRow.Controls.Add(dataCell);
-
-                        }
-                        if (cell == 2)
-                        {
-                                dataCell.ID = "OUP1_" + (row + 1).ToString();
-                                DropDownList dl = new DropDownList();
-                                dataCell.Controls.Add(dl);
-
-
-                                DropDownList dl1 = new DropDownList();
-                                dataCell.Controls.Add(dl1);
-
-                                tblRow.Controls.Add(dataCell);
-                        }
-                        if (cell > 2)
-                        {
-                            dataCell.ID = "OUP1_" + (row + 1).ToString();
-                            DropDownList dl = new DropDownList();
-                            dataCell.Controls.Add(dl);
-                            tblRow.Controls.Add(dataCell);
-                        }
-                    }
-                    if (jeSviatok != -1 && dnesJe != 0 && dnesJe != 6)
-                    {
-                        dataCell.CssClass = "box yellow";
-
-                        if (cell == 1)
-                        {
-
-                            dataCell.ID = "Odd1_" + (row + 1).ToString();
-                            DropDownList dl = new DropDownList();
-                            dataCell.Controls.Add(dl);
-
-
-                            DropDownList dl1 = new DropDownList();
-                            dataCell.Controls.Add(dl1);
-
-                            tblRow.Controls.Add(dataCell);
-
-                        }
-                        if (cell == 2)
-                        {
-                            dataCell.ID = "OUP1_" + (row + 1).ToString();
-                            DropDownList dl = new DropDownList();
-                            dataCell.Controls.Add(dl);
-
-
-                            DropDownList dl1 = new DropDownList();
-                            dataCell.Controls.Add(dl1);
-
-                            tblRow.Controls.Add(dataCell);
-
-                            tblRow.Controls.Add(dataCell);
-
-                        }
-                        if (cell > 2)
-                        {
-                            dataCell.ID = "OUP1_" + (row + 1).ToString();
-                            DropDownList dl = new DropDownList();
-                            dataCell.Controls.Add(dl);
-                            tblRow.Controls.Add(dataCell);
-                        }
-                    }
-
-                    if ((dnesJe != 0 && dnesJe != 6) && cell >0 )
-                    {
-                        //dataCell.ID = "Odd1_" + (row + 1).ToString();
-                        DropDownList dl = new DropDownList();
+                        DropDownList dl = this.makeDoctorList("Odd1_"+(row+1).ToString(),doctors);
                         dataCell.Controls.Add(dl);
+                        DropDownList dl1 = this.makeDoctorList("Odd2_" + (row + 1).ToString(), doctors);
+                        dataCell.Controls.Add(dl1);
+
+                        tblRow.Controls.Add(dataCell);
+
+                    }
+                    if (cell == 2)
+                    {
+                        DropDownList dl = this.makeDoctorList("OupA1_" + (row + 1).ToString(), doctors);
+                        dataCell.Controls.Add(dl);
+                        DropDownList dl1 = this.makeDoctorList("OupA2_" + (row + 1).ToString(), doctors);
+                        dataCell.Controls.Add(dl1);
+
+                        tblRow.Controls.Add(dataCell);
+                    }
+                    if (cell == 3)
+                    {
+                        DropDownList dl = this.makeDoctorList("OupB1_" + (row + 1).ToString(), doctors);
+                        dataCell.Controls.Add(dl);
+                            
+                        tblRow.Controls.Add(dataCell);
+                    }
+                    if (cell == 4)
+                    {
+                        DropDownList dl = this.makeDoctorList("Expe_" + (row + 1).ToString(), doctors);
+                        dataCell.Controls.Add(dl);
+
+                        tblRow.Controls.Add(dataCell);
+                    }
+                }
+                if (jeSviatok != -1 && (dnesJe != 0 && dnesJe != 6)) //je sviatok
+                {
+                    dataCell.CssClass = "box yellow";
+
+                    if (cell == 1)
+                    {
+
+                        DropDownList dl = this.makeDoctorList("Odd1_" + (row + 1).ToString(), doctors);
+                        dataCell.Controls.Add(dl);
+                        DropDownList dl1 = this.makeDoctorList("Odd2_" + (row + 1).ToString(), doctors);
+                        dataCell.Controls.Add(dl1);
+
+                        tblRow.Controls.Add(dataCell);
+
+                    }
+                    if (cell == 2)
+                    {
+                        DropDownList dl = this.makeDoctorList("OupA1_" + (row + 1).ToString(), doctors);
+                        dataCell.Controls.Add(dl);
+                        DropDownList dl1 = this.makeDoctorList("OupA2_" + (row + 1).ToString(), doctors);
+                        dataCell.Controls.Add(dl1);
+
+                        tblRow.Controls.Add(dataCell); ;
+
+                    }
+                    if (cell == 3)
+                    {
+                        DropDownList dl = this.makeDoctorList("OupB1_" + (row + 1).ToString(), doctors);
+                        dataCell.Controls.Add(dl);
+
+                        tblRow.Controls.Add(dataCell);
+                    }
+                    if (cell == 4)
+                    {
+                        DropDownList dl = this.makeDoctorList("Expe_" + (row + 1).ToString(), doctors);
+                        dataCell.Controls.Add(dl);
+
                         tblRow.Controls.Add(dataCell);
                     }
                 }
 
+                if ((dnesJe != 0 && dnesJe != 6) && jeSviatok == -1) //normDen
+                {
+                    //dataCell.ID = "Odd1_" + (row + 1).ToString();
+                    if (cell == 1)
+                    {
+                        DropDownList dl = this.makeDoctorList("Odd_" + (row + 1).ToString(), doctors);
+                        dataCell.Controls.Add(dl);
+                        tblRow.Controls.Add(dataCell);
+                    }
+
+                    if (cell == 2)
+                    {
+                        DropDownList dl = this.makeDoctorList("OupA_" + (row + 1).ToString(), doctors);
+                        dataCell.Controls.Add(dl);
+                        tblRow.Controls.Add(dataCell);
+                    }
+
+                    if (cell == 3)
+                    {
+                        DropDownList dl = this.makeDoctorList("OupB_" + (row + 1).ToString(), doctors);
+                        dataCell.Controls.Add(dl);
+                        tblRow.Controls.Add(dataCell);
+                    }
+                    
+                    if (cell == 4)
+                    {
+                        DropDownList dl = this.makeDoctorList("Expe_" + (row + 1).ToString(), doctors);
+                        dataCell.Controls.Add(dl);
+                        tblRow.Controls.Add(dataCell);
+                    }
+
+                   
+                }
+                
+
             }
-
-
-
-
         }
-
-
-        
-
-
-
     }
 
     protected void loadSluzby()

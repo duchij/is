@@ -132,14 +132,14 @@ public class log
     private StreamWriter openFile()
     {
         string serverPath;
-
-         if (System.Web.HttpContext.Current.Session["serverUrl"] != null)
+        
+        try
         {
             serverPath = System.Web.HttpContext.Current.Session["serverUrl"].ToString();
         }
-        else
+        catch (Exception e)
         {
-            serverPath = "";
+            serverPath = @"c:\inetpub\wwwroot\is\";
         }
       //  System.Web.HttpContext.Current.Server.
        /* try
