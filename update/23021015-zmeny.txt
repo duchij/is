@@ -1,0 +1,167 @@
+﻿BEGIN
+
+declare flag int default 1;
+
+	DECLARE exit handler for sqlexception
+	BEGIN
+		set flag = 0;
+        set res = -1;
+		ROLLBACK;
+		-- exit procedure;
+	END;
+
+	-- DECLARE exit handler for sqlwarning
+	-- BEGIN
+		-- set flag = 0;
+       -- set res = -2;
+		-- ROLLBACK;
+		-- exit procedure;
+	-- END;
+
+	
+	SET res = 0;
+	SET @freeDays = (SELECT `data` FROM `is_settings` WHERE `name`='free_days');
+
+   START TRANSACTION;
+	mojLoop:LOOP
+		SET res = res + 1;
+		
+		set @wDay = dayofweek(concat(rok,'-',mesiac,'-',res));
+		
+		-- call debug_msg(true,concat('wday: ',@wDay));
+		-- SELECT @wDay as 'wDay';
+		
+	
+		
+		-- call debug_msg(true,concat('freedays: ',freeDays));
+		set @den = concat(res,'.',mesiac);
+		-- select @den as 'den';
+		set @free = FIND_IN_SET(@den,@freeDays);
+		-- select @free as 'free';
+		
+		-- call debug_msg(true,concat('free: ',@free));
+		
+		IF (res <= days AND flag=1) THEN
+		begin
+			set @datum = concat(rok,'-',mesiac,'-',res);
+			-- select @datum as 'datum';
+			IF ((@wDay = 1 OR @wDay = 7) OR @free>0) THEN
+				begin
+			-- 	select concat ('volno ',@free) as 'podmienka';
+			
+				INSERT INTO is_sluzby_dk (datum,typ,tyzden,user_id,date_group,ordering,comment,state,clinic) VALUES 
+				(@datum,'Odd1','konz','0',dategroup,'1','-','setup',@klinika),
+				(@datum,'Odd2','konz','0',dategroup,'2','-','setup',@klinika),
+				(@datum,'OupA1','konz','0',dategroup,'3','-','setup',@klinika),
+				(@datum,'OupA2','konz','0',dategroup,'4','-','setup',@klinika),
+				(@datum,'OupB','konz','0',dategroup,'5','-','setup',@klinika),
+				(@datum,'Expe','konz','0',dategroup,'6','-','setup',@klinika);
+				
+				end;
+			ELSE
+				begin
+				-- select concat ('norm ',@free) as 'podmienka';
+				INSERT INTO is_sluzby_dk (datum,typ,tyzden,user_id,date_group,ordering,comment,state,clinic) VALUES 
+				(@datum,'Odd','konz','0',dategroup,'1','-','setup',@klinika),
+				(@datum,'OupA','konz','0',dategroup,'2','-','setup',@klinika),
+				(@datum,'OupB','konz','0',dategroup,'3','-','setup',@klinika),
+				(@datum,'Expe','konz','0',dategroup,'4','-','setup',@klinika);
+				end;
+			END IF;
+
+			-- INSERT INTO is_sluzby_2 (datum, typ,user_id,date_group,ordering,comment,state) VALUES 
+			-- (concat(rok,'-',mesiac,'-',res),'OUP','0',dategroup,'1','-','draft'),
+			-- (concat(rok,'-',mesiac,'-',res),'OddA','0',dategroup,'2','-','draft'),
+			-- (concat(rok,'-',mesiac,'-',res),'OddB','0',dategroup,'3','-','draft'),
+			-- (concat(rok,'-',mesiac,'-',res),'OP','0',dategroup,'4','-','draft'),
+			-- (concat(rok,'-',mesiac,'-',res),'Prijm','0',dategroup,'5','-','draft');
+
+			ITERATE mojLoop;
+		end;
+		END IF;
+	LEAVE mojLoop;
+	END LOOP mojLoop;
+   COMMIT;
+END
+
+
+doma na macu
+BEGIN
+
+declare flag int default 1;
+
+	DECLARE exit handler for sqlexception
+	BEGIN
+		set flag = 0;
+        set res = -1;
+		ROLLBACK;
+		-- exit procedure;
+	END;
+
+	-- DECLARE exit handler for sqlwarning
+	-- BEGIN
+		-- set flag = 0;
+       -- set res = -2;
+		-- ROLLBACK;
+		-- exit procedure;
+	-- END;
+
+	
+	SET res = 0;
+	SET @freeDays = (SELECT data FROM is_settings WHERE name='free_days');
+	-- select @freeDays as fDays;
+   START TRANSACTION;
+	mojLoop:LOOP
+		SET res = res + 1;
+		
+		set @wDay = dayofweek(concat(rok,'-',mesiac,'-',res));
+		
+		-- call debug_msg(true,concat('wday: ',@wDay));
+		-- SELECT @wDay as 'wDay';
+		
+	
+		
+		-- call debug_msg(true,concat('freedays: ',freeDays));
+		set @den = concat(res,'.',mesiac);
+		-- select @den as 'den';
+		set @free = FIND_IN_SET(@den,@freeDays);
+		-- select @free as 'free';
+		
+		-- call debug_msg(true,concat('free: ',@free));
+		
+		IF (res <= days AND flag=1) THEN
+		begin
+			set @datum = concat(rok,'-',mesiac,'-',res);
+			-- select @datum as 'datum';
+			
+			IF ((@wDay = 1 OR @wDay = 7) OR @free>0) THEN
+				begin
+			-- select concat ('volno ',@free) as 'podmienka';
+			
+				INSERT INTO is_sluzby_dk (datum,typ,tyzden,user_id,date_group,ordering,comment,state,clinic) VALUES 
+				(@datum,'Odd1','konz','0',dategroup,'1','-','setup',klinika),
+				(@datum,'Odd2','konz','0',dategroup,'2','-','setup',klinika),
+				(@datum,'OupA1','konz','0',dategroup,'3','-','setup',klinika),
+				(@datum,'OupA2','konz','0',dategroup,'4','-','setup',klinika),
+				(@datum,'OupB1','konz','0',dategroup,'5','-','setup',klinika),
+				(@datum,'Expe','konz','0',dategroup,'6','-','setup',klinika);
+				
+				end;
+			ELSE
+				begin
+				-- select concat ('norm ',@free) as 'podmienka';
+				INSERT INTO is_sluzby_dk (datum,typ,tyzden,user_id,date_group,ordering,comment,state,clinic) VALUES 
+				(@datum,'Odd','konz','0',dategroup,'1','-','setup',klinika),
+				(@datum,'OupA','konz','0',dategroup,'2','-','setup',klinika),
+				(@datum,'OupB','konz','0',dategroup,'3','-','setup',klinika),
+				(@datum,'Expe','konz','0',dategroup,'4','-','setup',klinika);
+				end;
+			END IF;
+			ITERATE mojLoop;
+		end;
+		END IF;
+	LEAVE mojLoop;
+	END LOOP mojLoop;
+   COMMIT;
+END
+
