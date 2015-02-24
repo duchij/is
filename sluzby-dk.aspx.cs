@@ -125,6 +125,22 @@ public partial class sluzby2 : System.Web.UI.Page
     //    return result;
     //}
 
+    protected string getShiftState()
+    {
+        int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue);
+        int rok = Convert.ToInt32(this.rok_cb.SelectedValue);
+
+        int dateGroup = x2.makeDateGroup(rok, mesiac);
+
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("SELECT [state] FROM [is_sluzby_dk] WHERE [date_group]='{0}' AND [clinic]='{1}' GROUP BY [state]", dateGroup, 4);
+
+        SortedList row = x2Mysql.getRow(sb.ToString());
+
+        return row["state"].ToString();
+
+    }
+
     protected void generateWeekStatus()
     {
         int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue);
@@ -451,6 +467,8 @@ public partial class sluzby2 : System.Web.UI.Page
 
         int userId = Convert.ToInt32(dl.SelectedValue);
 
+       
+
         int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue);
         int rok = Convert.ToInt32(this.rok_cb.SelectedValue);
 
@@ -459,7 +477,14 @@ public partial class sluzby2 : System.Web.UI.Page
         SortedList data = new SortedList();
         data.Add("datum", datum);
         data.Add("typ", dlId[0]);
-        data.Add("user_id", userId);
+        if (userId == 0)
+        {
+            data.Add("user_id", null);
+        }
+        else
+        {
+            data.Add("user_id", userId);
+        }
         data.Add("clinic", 4);
         //data.Add("clinic", 4);
         //data.Add("date_group", x2.makeDateGroup(rok, mesiac));
@@ -505,6 +530,7 @@ public partial class sluzby2 : System.Web.UI.Page
                 DropDownList dl = (DropDownList)cl;
 
                 dl.SelectedValue = userId;
+                dl.ToolTip = dl.SelectedItem.ToString(); 
             }
             else
             {
@@ -1223,7 +1249,9 @@ public partial class sluzby2 : System.Web.UI.Page
         StringBuilder sb = new StringBuilder();
         
 
-        sb.Append("SELECT [ms_item_id],[name] FROM [is_omega_doctors] WHERE [clinic]='4'  ORDER BY [name]");
+        sb.Append("SELECT [is_omega_doctors].[ms_item_id],[is_omega_doctors].[name],[is_clinics].[idf] AS [idf] FROM [is_omega_doctors] ");
+        sb.AppendLine("INNER JOIN [is_clinics] ON [is_clinics].[id] = [is_omega_doctors].[clinic]");
+        sb.AppendLine("WHERE [clinic]='4'  ORDER BY [name]");
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
 
@@ -1234,7 +1262,7 @@ public partial class sluzby2 : System.Web.UI.Page
         result.Add("0|-");
         for (int i = 1; i <= dataLn; i++)
         {
-            result.Add(table[i - 1]["ms_item_id"].ToString() + "|" + table[i - 1]["name"].ToString());
+            result.Add(table[i - 1]["ms_item_id"].ToString() + "|" + table[i - 1]["name"].ToString()+" ("+table[i-1]["idf"].ToString()+")");
         }
 
         return result;

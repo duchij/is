@@ -17,3 +17,8 @@ spravit cistenie db....
 select * from is_hlasko
 left join is_users on is_users.id = is_hlasko.creat_user
 where is_users.id is null
+
+pridanie kluca 
+
+ALTER TABLE `is_sluzby_dk`
+ADD FOREIGN KEY (`user_id`) REFERENCES `is_omega_doctors` (`ms_item_id`) ON DELETE SET NULL ON UPDATE CASCADE

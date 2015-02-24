@@ -26,7 +26,7 @@ public partial class helpers_synco : System.Web.UI.Page
         Dictionary<int, Hashtable> data = x2Mysql.getTable(sb.ToString());
 
         int dataCn = data.Count;
-
+        this.clinics_dl.Items.Add(new ListItem("", ""));
         for (int i=0; i<dataCn; i++)
         {
             this.clinics_dl.Items.Add(new ListItem(data[i]["full_name"].ToString(), data[i]["idf"].ToString()+"|"+data[i]["id"].ToString()));
@@ -51,14 +51,17 @@ public partial class helpers_synco : System.Web.UI.Page
     protected void doSyncFnc(object sender, EventArgs e)
     {
         string value = this.kvValue_txt.Text.ToString();
+        if (value.Length > 0)
+        {
 
-        StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("SELECT * FROM [st2_ms_kv] WHERE [key]='iesko' AND [value]='{0}'", value);
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("SELECT * FROM [st2_ms_kv] WHERE [key]='iesko' AND [value]='{0}'", value);
 
-        Dictionary<int, Hashtable> table = dbOmega.getTable(sb.ToString());
+            Dictionary<int, Hashtable> table = dbOmega.getTable(sb.ToString());
 
-        x2log.logData(table,"","omega kv lookup");
-        if (table.Count >0)this.syncData(table);
+            x2log.logData(table, "", "omega kv lookup");
+            if (table.Count > 0) this.syncData(table);
+        }
         
          
     }
