@@ -47,6 +47,12 @@
                 </div> 
             </div>
     <asp:Table ID="weekState_tbl" runat="server"></asp:Table>
+      <asp:PlaceHolder ID="iidk_pl" runat="server">
+                            <asp:Button ID="setup_btn" runat="server" Text="" />
+                            <asp:Button ID="avaible_btn" runat="server" Text="" />
+                            <asp:CheckBox ID="edit_chk" runat="server" Text="Editovat..." AutoPostBack="true" />
+                        </asp:PlaceHolder>
+
  Počet dní v mesiaci: <asp:Label ID="days_lbl" runat="server" Text=""></asp:Label><hr />
                 <asp:Label ID="Label1" runat="server" Text="Víkend" CssClass="red box" Width="130"></asp:Label>
                 <asp:Label ID="Label2" runat="server" Text="Štátny sviatok" CssClass="yellow box" Width="130"></asp:Label>
@@ -55,8 +61,12 @@
                 </asp:Table>
                 <div class="row">
                     <div class="one whole padded">
+
+                        <asp:PlaceHolder ID="kdch_pl" runat="server">
                         <asp:Button ID="publish_btn" runat="server" Text="Sprístupniť všetkým" CssClass="green button" OnClick="publishOnFnc"  />
                             <asp:Button ID="unpublish_btn" runat="server" Text="Zblokovať prístup všetkým" CssClass="red button"  OnClick="publishOffFnc"/>
+                        </asp:PlaceHolder>
+                      
 
                         <%--<asp:Label ID="publish_lbl" runat="server" Text="Uvernejniť" CssClass="mojInline"></asp:Label>--%>
                         </div>

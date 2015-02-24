@@ -9,7 +9,14 @@
 <body>
     <form id="form1" runat="server">
     <div>
-    Sync:<asp:TextBox ID="kvValue_txt" runat="server"></asp:TextBox><asp:Button ID="sync_btn" runat="server" Text="Sync" OnClick="doSyncFnc" />
+   <h1>Sync users from omega:</h1>
+        <hr />
+        
+        <asp:DropDownList ID="clinics_dl" runat="server" OnSelectedIndexChanged="setClinicData" AutoPostBack="true"></asp:DropDownList>
+        Clinic_id:<asp:TextBox ID="clinic_id" runat="server" ReadOnly="true"></asp:TextBox>
+        Idf:<asp:TextBox ID="kvValue_txt" runat="server" ReadOnly="true"></asp:TextBox>
+        
+        <asp:Button ID="sync_btn" runat="server" Text="Sync" OnClick="doSyncFnc" />
     </div>
     </form>
 </body>

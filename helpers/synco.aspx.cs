@@ -14,6 +14,37 @@ public partial class helpers_synco : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        if (!IsPostBack) this.loadClinics();
+    }
+
+    protected void loadClinics()
+    {
+       // this.clinics_dl.Items.Clear();
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine("SELECT * FROM [is_clinics]");
+
+        Dictionary<int, Hashtable> data = x2Mysql.getTable(sb.ToString());
+
+        int dataCn = data.Count;
+
+        for (int i=0; i<dataCn; i++)
+        {
+            this.clinics_dl.Items.Add(new ListItem(data[i]["full_name"].ToString(), data[i]["idf"].ToString()+"|"+data[i]["id"].ToString()));
+        }
+
+
+
+    }
+
+    protected void setClinicData(object sender, EventArgs e)
+    {
+        DropDownList dl = (DropDownList)sender;
+
+        string[] tmp = dl.SelectedValue.ToString().Split('|');
+
+        this.kvValue_txt.Text = tmp[0];
+        this.clinic_id.Text = tmp[1];
+
 
     }
 
@@ -43,7 +74,7 @@ public partial class helpers_synco : System.Web.UI.Page
             int msViewId = Convert.ToInt32(table[i]["ms_id"]);
 
             sb.AppendLine("SELECT [views_data].[view_ms_id] AS [view_id], [views_data].[item_ms_id] AS [ms_item_id],"); 
-            sb.AppendLine("[t_resources].[item_name],[t_accounts].[account_login] AS [login] ");
+            sb.AppendLine("[t_resources].[item_name],[t_resources].[item_uuid] AS [item_uuid],[t_accounts].[account_login] AS [login] ");
             sb.AppendLine("FROM [st2_msp_views_data] AS [views_data] ");
             sb.AppendLine("LEFT JOIN [st2_msp_resources] AS [t_resources] ON [t_resources].[item_id] = [views_data].[item_ms_id] ");
             sb.AppendLine("LEFT JOIN [st2_accounts] AS [t_accounts] ON [t_accounts].[account_resource_id] = [views_data].[item_ms_id] ");
@@ -63,9 +94,11 @@ public partial class helpers_synco : System.Web.UI.Page
                     tmp["ms_item_id"] = res[row]["ms_item_id"];
                     tmp["full_name"] = res[row]["item_name"];
                     tmp["name"] = this.makeName(res[row]["item_name"].ToString().Trim());
-                    tmp["login"] = res[row]["login"];
-                    tmp["clinic"] = 4;
+                    tmp["ascii_name"] = x2_var.UTFtoASCII(this.makeName(res[row]["item_name"].ToString().Trim()));
 
+                    tmp["login"] = res[row]["login"];
+                    tmp["clinic"] = Convert.ToInt32(this.clinic_id.Text);
+                    tmp["item_uuid"] = res[row]["item_uuid"];
                     dataIns.Add(row, tmp);
 
                 }

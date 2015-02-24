@@ -1,0 +1,19 @@
+﻿ALTER TABLE `is_omega_doctors`
+	ADD COLUMN `item_uuid` CHAR(36) NOT NULL AFTER `ms_item_id`;
+
+ALTER TABLE `is_omega_doctors`
+	CHANGE COLUMN `item_uuid` `item_uuid` CHAR(36) NULL COLLATE 'utf8_slovak_ci' AFTER `ms_item_id`;
+
+	ALTER TABLE `is_omega_doctors`
+ADD `ascii_name` varchar(30) COLLATE 'ascii_general_ci' NOT NULL AFTER `name`,
+COMMENT='';
+
+ALTER TABLE `is_users`
+CHANGE `id` `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT FIRST,
+COMMENT='';
+
+spravit cistenie db....
+
+select * from is_hlasko
+left join is_users on is_users.id = is_hlasko.creat_user
+where is_users.id is null

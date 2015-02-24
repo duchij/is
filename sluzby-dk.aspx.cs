@@ -150,7 +150,8 @@ public partial class sluzby2 : System.Web.UI.Page
             Control tmpC = ctpl.FindControl("tempWeek_" + rWeek.ToString());
 
             HiddenField tempWeek = (HiddenField)tmpC;
-            
+
+           // SortedList weekStatus = new SortedList();
 
             if (week<3) 
             {
@@ -158,11 +159,14 @@ public partial class sluzby2 : System.Web.UI.Page
                 
                 headCell.Text = startDay.ToString()+". - "+endDay.ToString()+". "+mesiac.ToString()+". "+rok.ToString();
                 tempWeek.Value = startDay.ToString() + "_" + endDay.ToString();
+
+               // weekStatus["week_"+week.ToString()] = tempWeek.Value.ToString();
             }
             else
             {
                 headCell.Text = startDay.ToString() + ". - " + days.ToString() + ". " + mesiac.ToString() + ". " + rok.ToString();
                 tempWeek.Value = startDay.ToString() + "_" + days.ToString();
+               // weekStatus["week_" + week.ToString()] = tempWeek.Value.ToString();
             }
             headRow.Controls.Add(headCell);
 
@@ -212,11 +216,11 @@ public partial class sluzby2 : System.Web.UI.Page
 
                         if (row["tyzden"].ToString() == "konz")
                         {
-                            txtB.CssClass = "box green";
+                            txtB.CssClass = "info box";
                         }
                         else
                         {
-                            txtB.CssClass = "box pink";
+                            txtB.CssClass = "success box";
                         }
 
                     }
@@ -264,6 +268,9 @@ public partial class sluzby2 : System.Web.UI.Page
                 TableCell txtB = (TableCell)txtCl;
 
                 txtB.Text =week;
+
+                if (week == "prijm") txtB.CssClass = "success box";
+                if (week == "konz") txtB.CssClass = "info box";
             }
         }
 
@@ -369,6 +376,15 @@ public partial class sluzby2 : System.Web.UI.Page
 
     //}
 
+    protected Label makeDoctorText(string ID)
+    {
+        Label txtBox = new Label();
+        txtBox.ID = ID;
+        txtBox.Text = "-";
+        txtBox.EnableViewState = false;
+        return txtBox;
+    }
+
     protected DropDownList makeDoctorList(string ID, ArrayList doctors)
     {
         DropDownList dl = new DropDownList();
@@ -376,6 +392,7 @@ public partial class sluzby2 : System.Web.UI.Page
         dl.ID = ID;
         dl.SelectedIndexChanged += new EventHandler(dlItemChangedDK);
         dl.AutoPostBack = true;
+        dl.EnableViewState = false;
         ListItem[] item = new ListItem[doctors.Count];
 
         for (int doc = 0; doc < doctors.Count; doc++)
@@ -389,9 +406,46 @@ public partial class sluzby2 : System.Web.UI.Page
         return dl;
     }
 
+    protected TextBox makeCellComment(string ID)
+    {
+        TextBox comment_txt = new TextBox();
+        comment_txt.ID = ID;
+        comment_txt.AutoPostBack = true;
+        comment_txt.TextChanged += new EventHandler(commentChangedDK);
+        comment_txt.Text = "-";
+        comment_txt.BackColor = System.Drawing.Color.LightGray;
+
+        return comment_txt;
+    }
+
+    protected void commentChangedDK(object sender, EventArgs e)
+    {
+        TextBox txtB = (TextBox)sender;
+        string[] txtId = txtB.ID.ToString().Split('_');
+
+        string comment = txtB.Text.ToString();
+
+        int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue);
+        int rok = Convert.ToInt32(this.rok_cb.SelectedValue);
+
+        string datum = rok.ToString() + "-" + mesiac.ToString() + "-" + txtId[2].ToString();
+
+        SortedList data = new SortedList();
+        data.Add("datum", datum);
+        data.Add("typ", txtId[0]);
+        data.Add("comment", comment);
+        data.Add("clinic", 4);
+
+        SortedList res = x2Mysql.mysql_insert("is_sluzby_dk", data);
+
+
+    }
+
     protected void dlItemChangedDK(object sender, EventArgs e)
     {
         DropDownList dl = (DropDownList)sender;
+
+        dl.ToolTip = dl.SelectedItem.ToString();
 
         string[] dlId = dl.ID.ToString().Split('_');
 
@@ -406,6 +460,7 @@ public partial class sluzby2 : System.Web.UI.Page
         data.Add("datum", datum);
         data.Add("typ", dlId[0]);
         data.Add("user_id", userId);
+        data.Add("clinic", 4);
         //data.Add("clinic", 4);
         //data.Add("date_group", x2.makeDateGroup(rok, mesiac));
 
@@ -417,10 +472,16 @@ public partial class sluzby2 : System.Web.UI.Page
         int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue);
         int rok = Convert.ToInt32(this.rok_cb.SelectedValue);
 
+        Boolean chk_st = this.edit_chk.Checked;
+
+
+
         int dateGroup = x2.makeDateGroup(rok, mesiac);
 
         StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("SELECT * FROM [is_sluzby_dk] WHERE [date_group] ='{0}' AND [clinic]='{1}' ORDER BY [datum] ASC",dateGroup,4);
+        sb.AppendLine("SELECT [is_sluzby_dk].*, [is_omega_doctors].[name] FROM [is_sluzby_dk]");
+        sb.AppendLine("LEFT JOIN [is_omega_doctors] ON [is_omega_doctors].[ms_item_id] = [is_sluzby_dk].[user_id] ");
+        sb.AppendFormat("WHERE [is_sluzby_dk].[date_group] ='{0}' AND [is_sluzby_dk].[clinic]='{1}' ORDER BY [is_sluzby_dk].[datum] ASC",dateGroup,4);
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
 
@@ -436,15 +497,41 @@ public partial class sluzby2 : System.Web.UI.Page
             DateTime dt =Convert.ToDateTime(x2.UnixToMsDateTime(table[doc]["datum"].ToString()));
             string userId = table[doc]["user_id"].ToString();
 
-            Control cl = ctpl.FindControl(type + "_" + dt.Day.ToString());
-            DropDownList dl = (DropDownList)cl;
+            if (userId == "NULL") userId = "0";
 
-            dl.SelectedValue = userId;
+            if (chk_st)
+            {
+                Control cl = ctpl.FindControl(type + "_" + dt.Day.ToString());
+                DropDownList dl = (DropDownList)cl;
+
+                dl.SelectedValue = userId;
+            }
+            else
+            {
+                Control tcl = ctpl.FindControl(type + "_" + dt.Day.ToString());
+                Label txtDocName = (Label)tcl;
+
+               // this.shiftTable.Controls.Remove(dl);
+
+                txtDocName.Text = x2.getStr(table[doc]["name"].ToString());
+            }
+
+            
+
+            string comment = table[doc]["comment"].ToString();
+
+            Control tCl = ctpl.FindControl(type + "_" + "txt_" + dt.Day.ToString());
+            TextBox txtB = (TextBox)tCl;
+
+            txtB.Text = comment;
+
         }
     }
 
     protected void generateDKShiftTableForm()
     {
+        this.shiftTable.Controls.Clear();
+
         string mesiac = this.mesiac_cb.SelectedValue.ToString();
         string rok = this.rok_cb.SelectedValue.ToString();
         int daysInMonth = DateTime.DaysInMonth(Convert.ToInt32(rok), Convert.ToInt32(mesiac));
@@ -483,6 +570,7 @@ public partial class sluzby2 : System.Web.UI.Page
         shiftTable.Controls.Add(headRow);
 
         string[] freeDays = x2Sluzby.getFreeDays();
+        Boolean editSt = this.edit_chk.Checked;
 
         for (int row=0; row<daysInMonth; row++)
         {
@@ -516,8 +604,12 @@ public partial class sluzby2 : System.Web.UI.Page
                 {
                     TableCell konzCell = new TableCell();
                     konzCell.ID = "konzWeek_" + (row + 1).ToString();
+                    
                     string tmp = konzCell.Text.ToString().Trim();
                     if (tmp.Length == 0) konzCell.Text="konz";
+
+                    if (konzCell.Text.ToString() == "konz") konzCell.CssClass = "info box";
+                    if (konzCell.Text.ToString() == "prijm") konzCell.CssClass = "success box";
                         
 
                     tblRow.Controls.Add(konzCell);
@@ -531,34 +623,106 @@ public partial class sluzby2 : System.Web.UI.Page
 
                     if (cell==1)
                     {
-                        DropDownList dl = this.makeDoctorList("Odd1_"+(row+1).ToString(),doctors);
-                        dataCell.Controls.Add(dl);
-                        DropDownList dl1 = this.makeDoctorList("Odd2_" + (row + 1).ToString(), doctors);
-                        dataCell.Controls.Add(dl1);
+                        if (editSt)
+                        {
+                            DropDownList dl = this.makeDoctorList("Odd1_" + (row + 1).ToString(), doctors);
+                            dataCell.Controls.Add(dl);
+                        }
+                        else
+                        {
+                            Label txtDoc = this.makeDoctorText("Odd1_" + (row + 1).ToString());
+                            dataCell.Controls.Add(txtDoc);
+                        }
+
+                        TextBox txtB = this.makeCellComment("Odd1_txt_" + (row + 1).ToString());
+                        dataCell.Controls.Add(txtB);
+
+
+                        if (editSt)
+                        {
+                            DropDownList dl1 = this.makeDoctorList("Odd2_" + (row + 1).ToString(), doctors);
+                            dataCell.Controls.Add(dl1);
+                        }
+                        else
+                        {
+                            Label txtDoc = this.makeDoctorText("Odd2_" + (row + 1).ToString());
+                            dataCell.Controls.Add(txtDoc);
+                        }
+                        
+
+                        TextBox txtB1 = this.makeCellComment("Odd2_txt_" + (row + 1).ToString());
+                        dataCell.Controls.Add(txtB1);
 
                         tblRow.Controls.Add(dataCell);
 
                     }
                     if (cell == 2)
                     {
-                        DropDownList dl = this.makeDoctorList("OupA1_" + (row + 1).ToString(), doctors);
-                        dataCell.Controls.Add(dl);
-                        DropDownList dl1 = this.makeDoctorList("OupA2_" + (row + 1).ToString(), doctors);
-                        dataCell.Controls.Add(dl1);
+                        if (editSt)
+                        {
+                            DropDownList dl = this.makeDoctorList("OupA1_" + (row + 1).ToString(), doctors);
+                            dataCell.Controls.Add(dl);
+                        }
+                        else
+                        {
+                            Label txtDoc = this.makeDoctorText("OupA1_" + (row + 1).ToString());
+                            dataCell.Controls.Add(txtDoc);
+                        }
+                        
+
+                        TextBox txtB = this.makeCellComment("OupA1_txt_" + (row + 1).ToString());
+                        dataCell.Controls.Add(txtB);
+
+                        if (editSt)
+                        {
+                            DropDownList dl1 = this.makeDoctorList("OupA2_" + (row + 1).ToString(), doctors);
+                            dataCell.Controls.Add(dl1);
+                        }
+                        else
+                        {
+                            Label txtDoc = this.makeDoctorText("OupA2_" + (row + 1).ToString());
+                            dataCell.Controls.Add(txtDoc);
+                        }
+                        
+                        TextBox txtB1 = this.makeCellComment("OupA2_txt_" + (row + 1).ToString());
+                        dataCell.Controls.Add(txtB1);
 
                         tblRow.Controls.Add(dataCell);
                     }
                     if (cell == 3)
                     {
-                        DropDownList dl = this.makeDoctorList("OupB1_" + (row + 1).ToString(), doctors);
-                        dataCell.Controls.Add(dl);
+                        if (editSt)
+                        {
+                            DropDownList dl = this.makeDoctorList("OupB1_" + (row + 1).ToString(), doctors);
+                            dataCell.Controls.Add(dl);
+                        }
+                        else
+                        {
+                            Label txtDoc = this.makeDoctorText("OupB1_" + (row + 1).ToString());
+                            dataCell.Controls.Add(txtDoc);
+                        }
+
+                        TextBox txtB = this.makeCellComment("OupB1_txt_" + (row + 1).ToString());
+                        dataCell.Controls.Add(txtB);
                             
                         tblRow.Controls.Add(dataCell);
                     }
                     if (cell == 4)
                     {
-                        DropDownList dl = this.makeDoctorList("Expe_" + (row + 1).ToString(), doctors);
-                        dataCell.Controls.Add(dl);
+                        if (editSt)
+                        {
+                            DropDownList dl = this.makeDoctorList("Expe_" + (row + 1).ToString(), doctors);
+                            dataCell.Controls.Add(dl);
+                        }
+                        else
+                        {
+                            Label txtDoc = this.makeDoctorText("Expe_" + (row + 1).ToString());
+                            dataCell.Controls.Add(txtDoc);
+                        }
+                        
+
+                        TextBox txtB = this.makeCellComment("Expe_txt_" + (row + 1).ToString());
+                        dataCell.Controls.Add(txtB);
 
                         tblRow.Controls.Add(dataCell);
                     }
@@ -569,36 +733,107 @@ public partial class sluzby2 : System.Web.UI.Page
 
                     if (cell == 1)
                     {
+                        if (editSt)
+                        {
+                            DropDownList dl = this.makeDoctorList("Odd1_" + (row + 1).ToString(), doctors);
+                            dataCell.Controls.Add(dl);
+                        }
+                        else
+                        {
+                            Label txtDoc = this.makeDoctorText("Odd1_" + (row + 1).ToString());
+                            dataCell.Controls.Add(txtDoc);
+                        }
+                        
 
-                        DropDownList dl = this.makeDoctorList("Odd1_" + (row + 1).ToString(), doctors);
-                        dataCell.Controls.Add(dl);
-                        DropDownList dl1 = this.makeDoctorList("Odd2_" + (row + 1).ToString(), doctors);
-                        dataCell.Controls.Add(dl1);
+                        TextBox txtB = this.makeCellComment("Odd1_txt_" + (row + 1).ToString());
+                        dataCell.Controls.Add(txtB);
+
+                        if (editSt)
+                        {
+                            DropDownList dl1 = this.makeDoctorList("Odd2_" + (row + 1).ToString(), doctors);
+                            dataCell.Controls.Add(dl1);
+                        }
+                        else
+                        {
+                            Label txtDoc = this.makeDoctorText("Odd2_" + (row + 1).ToString());
+                            dataCell.Controls.Add(txtDoc);
+                        }
+                        
+
+                        TextBox txtB1 = this.makeCellComment("Odd2_txt_" + (row + 1).ToString());
+                        dataCell.Controls.Add(txtB1);
 
                         tblRow.Controls.Add(dataCell);
 
                     }
                     if (cell == 2)
                     {
-                        DropDownList dl = this.makeDoctorList("OupA1_" + (row + 1).ToString(), doctors);
-                        dataCell.Controls.Add(dl);
-                        DropDownList dl1 = this.makeDoctorList("OupA2_" + (row + 1).ToString(), doctors);
-                        dataCell.Controls.Add(dl1);
+                        if (editSt)
+                        {
+                            DropDownList dl = this.makeDoctorList("OupA1_" + (row + 1).ToString(), doctors);
+                            dataCell.Controls.Add(dl);
+                        }
+                        else
+                        {
+                            Label txtDoc = this.makeDoctorText("OupA1_" + (row + 1).ToString());
+                            dataCell.Controls.Add(txtDoc);
+                        }
+                        TextBox txtB = this.makeCellComment("OupA1_txt_" + (row + 1).ToString());
+                        dataCell.Controls.Add(txtB);
+
+                        if (editSt)
+                        {
+                            DropDownList dl1 = this.makeDoctorList("OupA2_" + (row + 1).ToString(), doctors);
+                            dataCell.Controls.Add(dl1);
+                        }
+                        else
+                        {
+                            Label txtDoc = this.makeDoctorText("OupA2_" + (row + 1).ToString());
+                            dataCell.Controls.Add(txtDoc);
+                        }
+                        
+
+                        TextBox txtB1 = this.makeCellComment("OupA2_txt_" + (row + 1).ToString());
+                        dataCell.Controls.Add(txtB1);
 
                         tblRow.Controls.Add(dataCell); ;
 
                     }
                     if (cell == 3)
                     {
-                        DropDownList dl = this.makeDoctorList("OupB1_" + (row + 1).ToString(), doctors);
-                        dataCell.Controls.Add(dl);
+                        if (editSt)
+                        {
+                            DropDownList dl = this.makeDoctorList("OupB1_" + (row + 1).ToString(), doctors);
+                            dataCell.Controls.Add(dl);
+                        }
+                        else
+                        {
+                            Label txtDoc = this.makeDoctorText("OupB1_" + (row + 1).ToString());
+                            dataCell.Controls.Add(txtDoc);
+                        }
+                        
+
+                        TextBox txtB = this.makeCellComment("OupB1_txt_" + (row + 1).ToString());
+                        dataCell.Controls.Add(txtB);
 
                         tblRow.Controls.Add(dataCell);
                     }
                     if (cell == 4)
                     {
-                        DropDownList dl = this.makeDoctorList("Expe_" + (row + 1).ToString(), doctors);
-                        dataCell.Controls.Add(dl);
+                        if (editSt)
+                        {
+                            DropDownList dl = this.makeDoctorList("Expe_" + (row + 1).ToString(), doctors);
+                            dataCell.Controls.Add(dl);
+                        }
+                        else
+                        {
+                            Label txtDoc = this.makeDoctorText("Expe_" + (row + 1).ToString());
+                            dataCell.Controls.Add(txtDoc);
+                        }
+                        
+
+                        TextBox txtB = this.makeCellComment("Expe_txt_" + (row + 1).ToString());
+                        dataCell.Controls.Add(txtB);
 
                         tblRow.Controls.Add(dataCell);
                     }
@@ -609,39 +844,91 @@ public partial class sluzby2 : System.Web.UI.Page
                     //dataCell.ID = "Odd1_" + (row + 1).ToString();
                     if (cell == 1)
                     {
-                        DropDownList dl = this.makeDoctorList("Odd_" + (row + 1).ToString(), doctors);
-                        dataCell.Controls.Add(dl);
+                        if (editSt)
+                        {
+                            DropDownList dl = this.makeDoctorList("Odd_" + (row + 1).ToString(), doctors);
+                            dataCell.Controls.Add(dl);
+                        }
+                        else
+                        {
+                            Label txtDoc = this.makeDoctorText("Odd_" + (row + 1).ToString());
+                            dataCell.Controls.Add(txtDoc);
+                        }
+                        
+
+                        TextBox txtB = this.makeCellComment("Odd_txt_" + (row + 1).ToString());
+                        dataCell.Controls.Add(txtB);
+
                         tblRow.Controls.Add(dataCell);
                     }
 
                     if (cell == 2)
                     {
-                        DropDownList dl = this.makeDoctorList("OupA_" + (row + 1).ToString(), doctors);
-                        dataCell.Controls.Add(dl);
+                        if (editSt)
+                        {
+                            DropDownList dl = this.makeDoctorList("OupA_" + (row + 1).ToString(), doctors);
+                            dataCell.Controls.Add(dl);
+                        }
+                        else
+                        {
+                            Label txtDoc = this.makeDoctorText("OupA_" + (row + 1).ToString());
+                            dataCell.Controls.Add(txtDoc);
+                        }
+                        
+
+                        TextBox txtB = this.makeCellComment("OupA_txt_" + (row + 1).ToString());
+                        dataCell.Controls.Add(txtB);
+
+
                         tblRow.Controls.Add(dataCell);
                     }
 
                     if (cell == 3)
                     {
-                        DropDownList dl = this.makeDoctorList("OupB_" + (row + 1).ToString(), doctors);
-                        dataCell.Controls.Add(dl);
+                        if (editSt)
+                        {
+                            DropDownList dl = this.makeDoctorList("OupB_" + (row + 1).ToString(), doctors);
+                            dataCell.Controls.Add(dl);
+                        }
+                        else
+                        {
+                            Label txtDoc = this.makeDoctorText("OupB_" + (row + 1).ToString());
+                            dataCell.Controls.Add(txtDoc);
+                        }
+
+                        TextBox txtB = this.makeCellComment("OupB_txt_" + (row + 1).ToString());
+                        dataCell.Controls.Add(txtB);
+
                         tblRow.Controls.Add(dataCell);
                     }
                     
                     if (cell == 4)
                     {
-                        DropDownList dl = this.makeDoctorList("Expe_" + (row + 1).ToString(), doctors);
-                        dataCell.Controls.Add(dl);
+                        if (editSt)
+                        {
+                            DropDownList dl = this.makeDoctorList("Expe_" + (row + 1).ToString(), doctors);
+                            dataCell.Controls.Add(dl);
+                        }
+                        else
+                        {
+                            Label txtDoc = this.makeDoctorText("Expe_" + (row + 1).ToString());
+                            dataCell.Controls.Add(txtDoc);
+                        }
+
+                        TextBox txtB = this.makeCellComment("Expe_txt_" + (row + 1).ToString());
+                        dataCell.Controls.Add(txtB);
+
+
                         tblRow.Controls.Add(dataCell);
                     }
                 }
             }
         }
 
-        if (!IsPostBack)
-        {
+        //if (!IsPostBack)
+        //{
             this.setShiftsDK();
-        }
+       // }
     }
 
     protected void loadSluzby()
@@ -934,6 +1221,8 @@ public partial class sluzby2 : System.Web.UI.Page
     protected ArrayList loadOmegaDoctors()
     {
         StringBuilder sb = new StringBuilder();
+        
+
         sb.Append("SELECT [ms_item_id],[name] FROM [is_omega_doctors] WHERE [clinic]='4'  ORDER BY [name]");
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
