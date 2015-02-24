@@ -18,7 +18,14 @@ select * from is_hlasko
 left join is_users on is_users.id = is_hlasko.creat_user
 where is_users.id is null
 
+--- spravil som doma na macu
+vytvorit v is_users stlpec omega_ms_item_id a dat na neho foreign key, bigint, null insigned a dat index 
+
+
 pridanie kluca 
 
 ALTER TABLE `is_sluzby_dk`
 ADD FOREIGN KEY (`user_id`) REFERENCES `is_omega_doctors` (`ms_item_id`) ON DELETE SET NULL ON UPDATE CASCADE
+
+LTER TABLE `is_users`
+ADD FOREIGN KEY (`omega_ms_item_id`) REFERENCES `is_omega_doctors` (`ms_item_id`) ON DELETE CASCADE ON UPDATE CASCADE

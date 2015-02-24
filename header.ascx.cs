@@ -20,6 +20,7 @@ public partial class header : System.Web.UI.UserControl
     public string deps = "";
     public string rights = "";
     public string wgroup = "";
+    public string gKlinika = "";
     //sluzbyclass mySluz = new sluzbyclass();
 
     protected void Page_Load(object sender, EventArgs e)
@@ -34,8 +35,12 @@ public partial class header : System.Web.UI.UserControl
         this.wgroup = Session["workgroup"].ToString();
         this.rights = Session["rights"].ToString();
         this.deps = Session["oddelenie"].ToString();
+        this.gKlinika = Session["klinika"].ToString().ToLower();
 
-        this.makeHeader();
+        if (this.gKlinika == "kdch")
+        {
+            this.makeHeader();
+        }
                
     }
 
