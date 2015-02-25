@@ -644,9 +644,6 @@ public partial class sluzby2 : System.Web.UI.Page
         int rok = Convert.ToInt32(this.rok_cb.SelectedValue);
 
         Boolean chk_st = this.edit_chk.Checked;
-
-
-
         int dateGroup = x2.makeDateGroup(rok, mesiac);
 
         StringBuilder sb = new StringBuilder();
@@ -694,9 +691,11 @@ public partial class sluzby2 : System.Web.UI.Page
                         }
                     }
 
-
-                    dl.SelectedValue = userId;
-                    dl.ToolTip = dl.SelectedItem.ToString();
+                    if (dl != null)
+                    {
+                        dl.SelectedValue = userId;
+                        dl.ToolTip = dl.SelectedItem.ToString();
+                    }
                 }
                 else
                 {
@@ -714,8 +713,10 @@ public partial class sluzby2 : System.Web.UI.Page
 
                 Control tCl = ctpl.FindControl(type + "_" + "txt_" + dt.Day.ToString());
                 TextBox txtB = (TextBox)tCl;
-
-                txtB.Text = comment;
+                if (txtB != null)
+                {
+                    txtB.Text = comment;
+                }
 
             }
 
