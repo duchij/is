@@ -41,7 +41,56 @@ public partial class header : System.Web.UI.UserControl
         {
             this.makeHeader();
         }
+
+        if (this.gKlinika =="2dk")
+        {
+            this.makeHeaderDK();
+        }
                
+    }
+
+    protected void makeHeaderDK()
+    {
+        DateTime dnes = DateTime.Today;
+        DateTime vcera = DateTime.Today.AddDays(-1);
+
+        string dnesStr = dnes.ToShortDateString();
+        string vceraStr = vcera.ToShortDateString();
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.Append("SELECT GROUP_CONCAT([t_s_dk].[typ] ORDER BY [t_s_dk].[ordering] SEPARATOR ';') AS [shift_type]");
+        sb.AppendLine(" GROUP_CONCAT(IFNULL[t_users].[name3],'-') ORDER BY [t_s_dk].[ordering] SEPARATOR ';') AS [doc_names]");
+        sb.AppendLine("FROM [is_sluzby_dk] AS [t_s_dk]");
+        sb.AppendLine("LEFT JOIN [is_users] AS [t_users] ON [t_users].[omega_ms_item_id] = [t_s_dk].[user_id]");
+        sb.AppendFormat("WHERE [datum] BETWEEN '{0}' AND '{1}'",my_x2.unixDate(dnes), my_x2.unixDate(vcera));
+        sb.AppendFormat("AND [t_s_dk].[clinic]='{0}' ORDER BY [t_s_dk].[datum] ASC",Session["klinika_id"]);
+
+        Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
+
+        if (table.Count > 0)
+        {
+            //this.oup_lbl.Text = docBefore[0].ToString() + "<br>" + comments[0].ToString();
+            //this.odda_lbl.Text = docBefore[1].ToString() + "<br>" + comments[1].ToString();
+            //this.oddb_lbl.Text = docBefore[2].ToString() + "<br>" + comments[2].ToString();
+            //this.op_lbl.Text = docBefore[3].ToString() + "<br>" + comments[3].ToString();
+            //this.trp_lbl.Text = docBefore[4].ToString() + "<br>" + comments[4].ToString();
+
+            //this.po_lbl.Text = table[1]["users_names"].ToString();
+
+            //date_lbl.Text = DateTime.Today.ToLongDateString();
+
+//            SELECT 
+//GROUP_CONCAT(`t_s_dk`.`typ` ORDER BY `t_s_dk`.`ordering` SEPARATOR ';') AS `shift_type`, 
+//GROUP_CONCAT(IFNULL(`t_users`.`name3`,'-') ORDER BY `t_s_dk`.`ordering` SEPARATOR ';') AS `doc_names`
+//FROM `is_sluzby_dk` AS `t_s_dk`
+//LEFT JOIN `is_users` AS `t_users` ON `t_users`.`omega_ms_item_id` = `t_s_dk`.`user_id`
+//WHERE `t_s_dk`.`datum`='2015-2-25' OR `t_s_dk`.`datum`='2015-2-24 23:59:00'
+//AND `t_s_dk`.`clinic`=4 
+//GROUP BY `t_s_dk`.`datum` 
+        }
+
+
     }
 
     protected void makeHeader()

@@ -35,33 +35,54 @@ public partial class sluzby2 : System.Web.UI.Page
         {
             Response.Redirect("error.html");
         }
+        this.msg_lbl.Text = "";
 
         this.gKlinika = Session["klinika"].ToString().ToLower();
-        
+
+        this.initLabels();
 
         this.rights = Session["rights"].ToString();
         this.wgroup = Session["workgroup"].ToString();
 
-        if ((this.rights == "admin" || this.rights == "poweruser") && this.wgroup=="doctor")
+        if (this.gKlinika =="kdch")
         {
-            this.publish_btn.Visible = true;
-            this.unpublish_btn.Visible = true;
-            
+            this.kdch_pl.Visible = true;
+
+            if ((this.rights == "admin" || this.rights == "poweruser") && this.wgroup == "doctor")
+            {
+                this.publish_btn.Visible = true;
+                this.unpublish_btn.Visible = true;
+
+            }
+            else
+            {
+                this.publish_btn.Visible = false;
+                this.unpublish_btn.Visible = false;
+            }
         }
-        else
+
+        if (this.gKlinika == "2dk")
         {
-            this.publish_btn.Visible = false;
-            this.unpublish_btn.Visible = false;
+            this.druhadk_pl.Visible = true;
+
+            if (this.rights == "poweruser")
+            {
+                this.setup_btn.Visible = true;
+                this.avaible_btn.Visible = true;
+                this.weekState_tbl.Visible = true;
+            }
+            else
+            {
+                this.weekState_tbl.Visible = false;
+                this.setup_btn.Visible = false;
+                this.avaible_btn.Visible = false;
+            }
         }
 
         if (IsPostBack == false)
         {
 
             this.setMonthYear();
-
-            
-
-
             if (this.gKlinika == "2dk" || this.gKlinika == "1dk")
             {
 
@@ -82,11 +103,7 @@ public partial class sluzby2 : System.Web.UI.Page
                 this.loadSluzby();
             }
 
-            //}
-            //else
-            //{
-            //    this.loadSluzby();
-            //}
+            
           
         }
         else
@@ -116,6 +133,16 @@ public partial class sluzby2 : System.Web.UI.Page
        // this.publish_cb.Checked = this.getShiftState();
     }
 
+    protected void initLabels()
+    {
+        if (this.gKlinika == "2dk")
+        {
+            this.setup_btn.Text = x2.setLabel("2dk_shifts_setup");
+            this.avaible_btn.Text = x2.setLabel("2dk_shifts_active");
+            this.editChk_lbl.Text = x2.setLabel("2dk_shifts_edit");
+        }
+    }
+
     protected void changeSluzba(object sender, EventArgs e)
     {
         this.loadSluzby();
@@ -129,6 +156,45 @@ public partial class sluzby2 : System.Web.UI.Page
 
         this.mesiac_cb.SelectedValue = mesiac.ToString();
         this.rok_cb.SelectedValue = rok.ToString();
+    }
+
+    protected void makeShiftsDraftDKFnc(object sender, EventArgs e)
+    {
+        StringBuilder sb = new StringBuilder();
+        int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue);
+        int rok = Convert.ToInt32(this.rok_cb.SelectedValue);
+
+        int dateGroup = x2.makeDateGroup(rok,mesiac);
+
+        sb.AppendFormat("UPDATE [is_sluzby_dk] SET [state]='draft' WHERE [state] ='setup' AND [date_group] ='{0}' AND [clinic]='{1}'", dateGroup,Session["klinika_id"]);
+
+        SortedList res = x2Mysql.execute(sb.ToString());
+
+        if (Convert.ToBoolean(res["status"]))
+        {
+            this.shiftTable.Visible = true;
+        }
+
+    }
+
+    protected void makeShiftsActiveDKFnc(object sender, EventArgs e)
+    {
+        StringBuilder sb = new StringBuilder();
+        int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue);
+        int rok = Convert.ToInt32(this.rok_cb.SelectedValue);
+
+        int dateGroup = x2.makeDateGroup(rok, mesiac);
+
+        sb.AppendFormat("UPDATE [is_sluzby_dk] SET [state]='active' WHERE [state] ='draft' AND [date_group] ='{0}' AND [clinic]='{1}'", dateGroup,Session["klinika_id"]);
+
+        SortedList res = x2Mysql.execute(sb.ToString());
+
+        if (Convert.ToBoolean(res["status"]))
+        {
+            this.edit_chk.Checked = false;
+            this.generateDKShiftTableForm();
+
+        }
     }
 
  
@@ -488,6 +554,25 @@ public partial class sluzby2 : System.Web.UI.Page
 
     }
 
+    protected string shiftAvaibalityDK(string typ, string datum)
+    {
+        string result = "";
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("SELECT [user_id] FROM [is_sluzby_dk] WHERE [typ]='{0}' AND [datum]='{1}' AND [clinic]='{2}'", typ, datum, Session["klinika_id"].ToString());
+
+        SortedList row = x2Mysql.getRow(sb.ToString());
+
+        string tmp = x2.getStr(row["user_id"].ToString());
+
+        if (tmp.Length > 0)
+        {
+            result = tmp;
+        }
+
+        return result;
+
+    }
+
     protected void dlItemChangedDK(object sender, EventArgs e)
     {
         DropDownList dl = (DropDownList)sender;
@@ -504,23 +589,53 @@ public partial class sluzby2 : System.Web.UI.Page
         int rok = Convert.ToInt32(this.rok_cb.SelectedValue);
 
         string datum = rok.ToString() + "-" + mesiac + "-" + dlId[1].ToString();
+        string shiftAv = this.shiftAvaibalityDK(dlId[0],datum);
 
-        SortedList data = new SortedList();
-        data.Add("datum", datum);
-        data.Add("typ", dlId[0]);
-        if (userId == 0)
+        if (shiftAv.Length == 0 || shiftAv == userId.ToString())
         {
-            data.Add("user_id", null);
+            SortedList data = new SortedList();
+            data.Add("datum", datum);
+            data.Add("typ", dlId[0]);
+            if (userId == 0)
+            {
+                data.Add("user_id", null);
+            }
+            else
+            {
+                data.Add("user_id", userId);
+            }
+            data.Add("clinic", 4);
+            //data.Add("clinic", 4);
+            //data.Add("date_group", x2.makeDateGroup(rok, mesiac));
+
+            SortedList res = x2Mysql.mysql_insert("is_sluzby_dk", data);
         }
         else
         {
-            data.Add("user_id", userId);
-        }
-        data.Add("clinic", 4);
-        //data.Add("clinic", 4);
-        //data.Add("date_group", x2.makeDateGroup(rok, mesiac));
+            this.msg_lbl.Text = "<h1>Sluzba je uz obsadena!!!!!</h1>";
 
-        SortedList res = x2Mysql.mysql_insert("is_sluzby_dk", data);
+            ArrayList doctors = this.loadOmegaDoctors();
+            dl.Items.Clear();
+
+            for (int doc = 0; doc<doctors.Count; doc++)
+            {
+                string[] docArr = doctors[doc].ToString().Split('|');
+                if (docArr[0] == shiftAv)
+                {
+                    dl.Items.Add(new ListItem(docArr[1], docArr[0]));
+                    dl.SelectedValue = shiftAv;
+                    dl.ToolTip = docArr[1].ToString();
+                    dl.Enabled = false;
+                    break;
+                }
+
+            }
+            
+
+
+        }
+
+        
     }
 
     protected void setShiftsDK()
@@ -537,52 +652,85 @@ public partial class sluzby2 : System.Web.UI.Page
         StringBuilder sb = new StringBuilder();
         sb.AppendLine("SELECT [is_sluzby_dk].*, [is_omega_doctors].[name] FROM [is_sluzby_dk]");
         sb.AppendLine("LEFT JOIN [is_omega_doctors] ON [is_omega_doctors].[ms_item_id] = [is_sluzby_dk].[user_id] ");
+        
         sb.AppendFormat("WHERE [is_sluzby_dk].[date_group] ='{0}' AND [is_sluzby_dk].[clinic]='{1}' ORDER BY [is_sluzby_dk].[datum] ASC",dateGroup,4);
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
 
         int tableCn = table.Count;
 
-        Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
-        ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
-
-        for (int doc = 0; doc < tableCn; doc++)
+        if (tableCn > 0 && table[0]["state"].ToString() !="setup" )
         {
-            string type = table[doc]["typ"].ToString();
+            Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+            ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
 
-            DateTime dt =Convert.ToDateTime(x2.UnixToMsDateTime(table[doc]["datum"].ToString()));
-            string userId = table[doc]["user_id"].ToString();
-
-            if (userId == "NULL") userId = "0";
-
-            if (chk_st)
+            for (int doc = 0; doc < tableCn; doc++)
             {
-                Control cl = ctpl.FindControl(type + "_" + dt.Day.ToString());
-                DropDownList dl = (DropDownList)cl;
+                string type = table[doc]["typ"].ToString();
 
-                dl.SelectedValue = userId;
-                dl.ToolTip = dl.SelectedItem.ToString(); 
+                DateTime dt = Convert.ToDateTime(x2.UnixToMsDateTime(table[doc]["datum"].ToString()));
+                string userId = table[doc]["user_id"].ToString();
+                string loggedUser = Session["omega_ms_item_id"].ToString();
+                if (userId == "NULL") userId = "0";
+
+                if (chk_st)
+                {
+                    Control cl = ctpl.FindControl(type + "_" + dt.Day.ToString());
+                    DropDownList dl = (DropDownList)cl;
+
+                    if (this.rights == "users")
+                    {
+                        if (userId != loggedUser && userId != "0")
+                        {
+                            dl.Enabled = false;
+                        }
+                        if (userId == "0" || userId == Session["omega_ms_item_id"].ToString())
+                        {
+
+                            ListItem data = dl.Items.FindByValue(Session["omega_ms_item_id"].ToString());
+                            dl.Items.Clear();
+                            dl.Items.Add(new ListItem("-", "0"));
+                            dl.Items.Add(data);
+                        }
+                    }
+
+
+                    dl.SelectedValue = userId;
+                    dl.ToolTip = dl.SelectedItem.ToString();
+                }
+                else
+                {
+                    Control tcl = ctpl.FindControl(type + "_" + dt.Day.ToString());
+                    Label txtDocName = (Label)tcl;
+
+                    // this.shiftTable.Controls.Remove(dl);
+
+                    txtDocName.Text = x2.getStr(table[doc]["name"].ToString());
+                }
+
+
+
+                string comment = table[doc]["comment"].ToString();
+
+                Control tCl = ctpl.FindControl(type + "_" + "txt_" + dt.Day.ToString());
+                TextBox txtB = (TextBox)tCl;
+
+                txtB.Text = comment;
+
             }
-            else
-            {
-                Control tcl = ctpl.FindControl(type + "_" + dt.Day.ToString());
-                Label txtDocName = (Label)tcl;
 
-               // this.shiftTable.Controls.Remove(dl);
-
-                txtDocName.Text = x2.getStr(table[doc]["name"].ToString());
-            }
-
-            
-
-            string comment = table[doc]["comment"].ToString();
-
-            Control tCl = ctpl.FindControl(type + "_" + "txt_" + dt.Day.ToString());
-            TextBox txtB = (TextBox)tCl;
-
-            txtB.Text = comment;
 
         }
+        else
+        {
+            if (table[0]["state"].ToString() == "setup")
+            {
+                this.msg_lbl.Text = Resources.Resource.shifts_not_done;
+                this.shiftTable.Visible = false;
+            }
+        }
+
+        
     }
 
     protected void generateDKShiftTableForm()
@@ -1282,7 +1430,7 @@ public partial class sluzby2 : System.Web.UI.Page
 
         sb.Append("SELECT [is_omega_doctors].[ms_item_id],[is_omega_doctors].[name],[is_clinics].[idf] AS [idf] FROM [is_omega_doctors] ");
         sb.AppendLine("INNER JOIN [is_clinics] ON [is_clinics].[id] = [is_omega_doctors].[clinic]");
-        sb.AppendLine("WHERE [clinic]='4'  ORDER BY [name]");
+        sb.AppendLine("WHERE [clinic]='4' ORDER BY [name]");
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
 
@@ -1291,9 +1439,21 @@ public partial class sluzby2 : System.Web.UI.Page
         ArrayList result = new ArrayList();
         //result.Add("-", "-");
         result.Add("0|-");
+
         for (int i = 1; i <= dataLn; i++)
         {
-            result.Add(table[i - 1]["ms_item_id"].ToString() + "|" + table[i - 1]["name"].ToString()+" ("+table[i-1]["idf"].ToString()+")");
+            //if (this.rights == "users")
+            //{
+            //    if (Session["omega_ms_item_id"] != null && Session["omega_ms_item_id"].ToString() == table[i - 1]["ms_item_id"].ToString())
+            //    {
+            //        result.Add(table[i - 1]["ms_item_id"].ToString() + "|" + table[i - 1]["name"].ToString() + " (" + table[i - 1]["idf"].ToString() + ")");
+            //    }
+            //}
+            //else
+            //{
+                result.Add(table[i - 1]["ms_item_id"].ToString() + "|" + table[i - 1]["name"].ToString() + " (" + table[i - 1]["idf"].ToString() + ")");
+            //}
+            
         }
 
         return result;

@@ -47,6 +47,14 @@ public partial class _Default : System.Web.UI.Page
         }
 
     }
+
+    protected Boolean personalNumber(string login)
+    {
+        int inOut;
+
+        return Int32.TryParse(login, out inOut);
+    }
+
     protected void Login1_Authenticate(object sender, AuthenticateEventArgs e)
     {
 
@@ -60,6 +68,12 @@ public partial class _Default : System.Web.UI.Page
         
         if (my_x2.isAlfaNum(userName))
         {
+            Boolean persNum = this.personalNumber(userName);
+
+            if (persNum)
+            {
+                userName = "d" + userName;
+            }
 
             data = db_obj.getUserPasswd(userName);
 
@@ -68,7 +82,13 @@ public partial class _Default : System.Web.UI.Page
 
                 g_pass = data["passwd"].ToString();
 
-                if (Login1.UserName == passwd && g_pass == "NULL" && data["name"].ToString() == passwd)
+                if (persNum)
+                {
+                    //g_pass = "d" + g_pass;
+                    passwd = "d" + passwd;
+                }
+
+                if (userName == passwd && g_pass == "NULL" && data["name"].ToString() == passwd)
                 {
 
                     x2log.logData(data,"","first user login");
@@ -85,6 +105,15 @@ public partial class _Default : System.Web.UI.Page
                     Session.Add("oddelenie", x2.getStr(data["deps_idf"].ToString()));
 
                     Session.Add("klinika_id", data["klinika"]);
+                    if (x2.getStr(data["omega_ms_item_id"].ToString()).Length > 0)
+                    {
+                        Session["omega_ms_item_id"] = x2.getStr(data["omega_ms_item_id"].ToString());
+                    }
+                    else
+                    {
+                        Session["omega_ms_item_id"] = null;
+                    }
+
                     Session.Add("oddelenie_id", x2.getStr(data["oddelenie"].ToString()));
 
                     Session.Add("pracdoba", x2.getStr(data["pracdoba"].ToString()));
@@ -134,11 +163,20 @@ public partial class _Default : System.Web.UI.Page
                     Session.Add("klinika_id", data["klinika"]);
                     Session.Add("oddelenie_id", x2.getStr(data["oddelenie"].ToString()));
                     
-                        Session.Add("titul_pred", x2.getStr(data["titul_pred"].ToString()));
+                    Session.Add("titul_pred", x2.getStr(data["titul_pred"].ToString()));
                     Session.Add("titul_za",  x2.getStr(data["titul_za"].ToString()));
 
                     Session.Add("zaradenie",  x2.getStr(data["zaradenie"].ToString()));
                     Session.Add("klinika_label", x2.getStr(data["klinika_label"].ToString()));
+
+                    if (x2.getStr(data["omega_ms_item_id"].ToString()).Length > 0)
+                    {
+                        Session["omega_ms_item_id"] = x2.getStr(data["omega_ms_item_id"].ToString());
+                    }
+                    else
+                    {
+                        Session["omega_ms_item_id"] = null;
+                    }
 
                     SortedList passPhrase = db_obj.getPassPhrase();
                     Session.Add("passphrase", passPhrase["data"].ToString());
