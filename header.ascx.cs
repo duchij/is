@@ -42,7 +42,7 @@ public partial class header : System.Web.UI.UserControl
             this.makeHeader();
         }
 
-        if (this.gKlinika =="2dk")
+        if (this.gKlinika == "2dk")
         {
             this.makeHeaderDK();
         }
@@ -59,21 +59,62 @@ public partial class header : System.Web.UI.UserControl
 
         StringBuilder sb = new StringBuilder();
 
-        sb.Append("SELECT GROUP_CONCAT([t_s_dk].[typ] ORDER BY [t_s_dk].[ordering] SEPARATOR ';') AS [shift_type]");
-        sb.AppendLine(" GROUP_CONCAT(IFNULL[t_users].[name3],'-') ORDER BY [t_s_dk].[ordering] SEPARATOR ';') AS [doc_names]");
+        sb.Append("SELECT GROUP_CONCAT([t_s_dk].[typ] ORDER BY [t_s_dk].[ordering] SEPARATOR ';') AS [shift_type],");
+        sb.AppendLine("GROUP_CONCAT(IFNULL([t_users].[name3],'-') ORDER BY [t_s_dk].[ordering] SEPARATOR ';') AS [doc_names],");
+        sb.AppendLine("GROUP_CONCAT([t_s_dk].[comment] ORDER BY [t_s_dk].[ordering] SEPARATOR '|') AS [doc_comments]");
         sb.AppendLine("FROM [is_sluzby_dk] AS [t_s_dk]");
         sb.AppendLine("LEFT JOIN [is_users] AS [t_users] ON [t_users].[omega_ms_item_id] = [t_s_dk].[user_id]");
-        sb.AppendFormat("WHERE [datum] BETWEEN '{0}' AND '{1}'",my_x2.unixDate(dnes), my_x2.unixDate(vcera));
-        sb.AppendFormat("AND [t_s_dk].[clinic]='{0}' ORDER BY [t_s_dk].[datum] ASC",Session["klinika_id"]);
+        sb.AppendFormat("WHERE [t_s_dk].[datum] ='{0}' OR [t_s_dk].[datum]='{1}'", my_x2.unixDate(dnes), my_x2.unixDate(vcera));
+        sb.AppendFormat("AND [t_s_dk].[clinic]='{0}' GROUP BY [t_s_dk].[datum] ORDER BY [t_s_dk].[datum] DESC", Session["klinika_id"]);
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
 
         if (table.Count > 0)
         {
-            //this.oup_lbl.Text = docBefore[0].ToString() + "<br>" + comments[0].ToString();
-            //this.odda_lbl.Text = docBefore[1].ToString() + "<br>" + comments[1].ToString();
-            //this.oddb_lbl.Text = docBefore[2].ToString() + "<br>" + comments[2].ToString();
-            //this.op_lbl.Text = docBefore[3].ToString() + "<br>" + comments[3].ToString();
+            string[] shiftType = table[0]["shift_type"].ToString().Split(';');
+            string[] docBefore = table[0]["doc_names"].ToString().Split(';');
+            string[] comments = table[0]["doc_comments"].ToString().Split('|');
+            this.head1_lbl.Text = "";
+            this.head2_lbl.Text = "";
+            this.head3_lbl.Text = "";
+            this.head4_lbl.Text = "";
+            this.head5_lbl.Text = "";
+
+            if (shiftType.Length == 6)
+            {
+                this.oup_lbl.Text = docBefore[0] + "(" + shiftType[0] + ") <br>" + comments[0];
+                this.oup_lbl.Text += "<br>" + docBefore[1] + "(" + shiftType[1] + ") <br>" + comments[1];
+
+                this.odda_lbl.Text = docBefore[2] + "(" + shiftType[2] + ") <br>" + comments[2];
+                this.odda_lbl.Text += "<br>" + docBefore[3] + "(" + shiftType[3] + ") <br>" + comments[3];
+
+                this.oddb_lbl.Text = docBefore[4] + "(" + shiftType[4] + ") <br>" + comments[4];
+
+                this.op_lbl.Text = docBefore[5] + "(" + shiftType[5] + ") <br>" + comments[5];
+
+                this.trp_lbl.Text = "...";
+            }
+
+            if (shiftType.Length == 5)
+            {
+                this.oup_lbl.Text = docBefore[0] + "(" + shiftType[0] + ") <br>" + comments[0];
+                //this.oup_lbl.Text += "<br>" + docBefore[1] + "(" + shiftType[1] + ") <br>" + comments[1];
+
+                this.odda_lbl.Text = docBefore[1] + "(" + shiftType[1] + ") <br>" + comments[1];
+               // this.odda_lbl.Text += "<br>" + docBefore[3] + "(" + shiftType[3] + ") <br>" + comments[3];
+
+                this.oddb_lbl.Text = docBefore[2] + "(" + shiftType[2] + ") <br>" + comments[2];
+
+                this.op_lbl.Text = docBefore[3] + "(" + shiftType[3] + ") <br>" + comments[3];
+
+                this.trp_lbl.Text = docBefore[4] + "(" + shiftType[4] + ") <br>" + comments[4];
+            }
+            
+            
+
+            this.po_lbl.Text = table[1]["doc_names"].ToString();
+
+            date_lbl.Text = DateTime.Today.ToLongDateString();
             //this.trp_lbl.Text = docBefore[4].ToString() + "<br>" + comments[4].ToString();
 
             //this.po_lbl.Text = table[1]["users_names"].ToString();

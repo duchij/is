@@ -579,6 +579,7 @@ public partial class vykaz2 : System.Web.UI.Page
             string[] typArr = typSluziebVykaz["data"].ToString().Split(',');
             string[] userData = userVykazData["data"].ToString().Split('|');
             int dataLn = typArr.Length;
+
             if (dataLn == userData.Length)
             {
                 for (int i = 0; i < dataLn; i++)
@@ -599,6 +600,7 @@ public partial class vykaz2 : System.Web.UI.Page
 
         if (result.Count == 0)
         {
+            result.Clear();
             StringBuilder sb = new StringBuilder();
             if (Session["pracdoba"].ToString().Length == 0)
             {
@@ -788,7 +790,7 @@ public partial class vykaz2 : System.Web.UI.Page
         prenosStr = prenosStr.Replace('.', ',');
         decimal prenos = Convert.ToDecimal(prenosStr);
 
-        this.rozdiel_lbl.Text = ((real+prenos)-pocetPracHod).ToString();
+        this.rozdiel_lbl.Text = (real-pocetPracHod).ToString();
         //this.
         this.saveData();
 
@@ -1013,12 +1015,12 @@ public partial class vykaz2 : System.Web.UI.Page
                         TextBox my_text_box2 = (TextBox)tbox2;
                         TextBox my_text_box3 = (TextBox)tbox3;
 
-                        if (dovolenky[i]["type"].ToString() == "do") { my_text_box.Text = "D"; my_text_box1.Text = "D"; }
-                        if (dovolenky[i]["type"].ToString() == "pn") { my_text_box.Text = "PN"; my_text_box1.Text = "PN"; }
-                        if (dovolenky[i]["type"].ToString() == "sk") {my_text_box.Text = "SK"; my_text_box1.Text = "SK"; }
-                        if (dovolenky[i]["type"].ToString() == "le") { my_text_box.Text = "SK"; my_text_box1.Text = "Le"; }
-                        my_text_box2.Text = "0";
-                        my_text_box3.Text = "0";
+                        if (dovolenky[i]["type"].ToString() == "do") { my_text_box.Text = "D"; my_text_box1.Text = "D"; my_text_box2.Text = "0"; my_text_box3.Text = "0"; }
+                        if (dovolenky[i]["type"].ToString() == "pn") { my_text_box.Text = "PN"; my_text_box1.Text = "PN"; my_text_box2.Text = "0"; my_text_box3.Text = "0"; }
+                        if (dovolenky[i]["type"].ToString() == "sk") { my_text_box.Text = "SK"; my_text_box1.Text = "SK"; my_text_box2.Text = "0"; my_text_box3.Text = "0"; }
+                        if (dovolenky[i]["type"].ToString() == "le") { my_text_box.Text = "SK"; my_text_box1.Text = "Le"; my_text_box2.Text = "0"; my_text_box3.Text = "0"; }
+
+                        
                     }
                 }
             }

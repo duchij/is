@@ -12,13 +12,53 @@ public partial class labels_labels : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        if (Session["tuisegumdrum"] == null)
+        {
+            Response.Redirect("error.html");
+        }
+        
         if (IsPostBack)
         { 
+
+
             string prefix = this.prefix_txt.Text.ToString().Trim();
             if (prefix.Length > 0)
             {
                 this._searchPrefix();
             }
+            else
+            {
+                this.loadClinicLabels();
+            }
+        }
+        else
+        {
+            this.loadClinics();
+        }
+    }
+
+    protected void loadClinicLabels()
+    {
+        string[] id = this.clinics_dl.SelectedValue.ToString().Split('|');
+        this.prefix_txt.Text = id[1].ToLower();
+
+        this._searchPrefix();
+    }
+
+    protected void loadClinics()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append("SELECT [id],[idf],[full_name] FROM [is_clinics]");
+
+        Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
+        
+        this.clinics_dl.Items.Add(new ListItem("-","0"));
+
+        int tableCn = table.Count;
+
+        for (int i=0; i<tableCn; i++)
+        {
+            this.clinics_dl.Items.Add(new ListItem(table[i]["full_name"].ToString(), table[i]["id"].ToString() + "|" + table[i]["idf"].ToString()));
         }
     }
 
@@ -129,15 +169,26 @@ public partial class labels_labels : System.Web.UI.Page
         SortedList data = new SortedList();
         data.Add("idf", this.labelIdf_txt.Text.ToString());
         data.Add("label", this.labelTxt_txt.Text.ToString());
-        data.Add("clinic", Session["klinika_id"].ToString());
 
-        SortedList res = x2Mysql.mysql_insert("is_labels", data);
-        if (Convert.ToBoolean(res["status"]))
+        string[] id = this.clinics_dl.SelectedValue.ToString().Split('|');
+        if (id[0] != "0")
         {
+            data.Add("clinic", id[0]);
 
-            this.clearFields();
-            this._searchPrefix();
+            SortedList res = x2Mysql.mysql_insert("is_labels", data);
+            if (Convert.ToBoolean(res["status"]))
+            {
+
+                this.clearFields();
+                this._searchPrefix();
+            }
         }
+        else
+        {
+            this.msg_lbl.Text = "Nie je vybrana klinika...";
+        }
+
+        
 
     }
 

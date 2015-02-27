@@ -17,10 +17,17 @@ public partial class hlasko : System.Web.UI.Page
     my_db x_db = new my_db();
     x2_var my_x2 = new x2_var();
     mysql_db x2MySQL = new mysql_db();
+    public string gKlinika;
 
     // protected System.Web.UI.HtmlControls.HtmlGenericControl hlavicka;
     protected void Page_Init(object sender, EventArgs e)
     {
+        this.gKlinika = Session["klinika"].ToString().ToLower();
+
+        if (this.gKlinika == "kdch")
+        {
+            this.kdch_pl.Visible = true;
+        }
         //hlavicka.Controls.Add(new LiteralControl("<script type='text/javascript' src='tinymce/jscripts/tiny_mce/tiny_mce.js'></script>"));
         // hlavicka.Controls.Add(new LiteralControl("<script type='text/javascript'>tinyMCE.init({mode : 'textareas',        force_br_newlines : true,        force_p_newlines : false});</script>"));
     }
@@ -33,39 +40,36 @@ public partial class hlasko : System.Web.UI.Page
         {
             Response.Redirect("error.html");
         }
-       // Page.Header.DataBind();
+        this.setLabels();   
         this.loadFile_fup.Attributes.Add("size", "50");
         this.msg_lbl.Text = "";
         this.hlasko_pl.Visible = true;
         this.kompl_work_time.Text = "";
-       // Response.AppendHeader("Refresh", 6000 + "; URL=hlasko.aspx");
 
-       // Session.Remove("newsToShow");
         if (IsPostBack == false)
         {
-            // Calendar1.SelectedDate = DateTime.Today;
-            this.setMyDate();
-            this.setShiftForDoctor(false,true);
-            this.loadHlasko();
-            this.setEPC_init();
-          //  this.setShiftForDoctor();
-
+            if (this.gKlinika == "kdch")
+            {
+                this.setMyDate();
+                this.setShiftForDoctor(false, true);
+                this.loadHlasko();
+                this.setEPC_init();
+            }
         }
         else
         {
-            //this.setMyDate();
-            // this.setEPC_init();
-            this.loadEPCData();
+            if (this.gKlinika == "kdch")
+            { 
+                this.loadEPCData();
+            }
         }
-
-        /*if (IsCallback)
-        {
-            this.msg_lbl1.Text="test";
-        }*/
-
-
-
     }
+
+    protected void setLabels()
+    {
+        this.hlasko_titel.Text = my_x2.setLabel(this.gKlinika + "_hlasko_titel");
+    }
+
     protected void setHlaskoVisibility(Boolean st)
     {
         this.showHlasko_cb.Checked = st;

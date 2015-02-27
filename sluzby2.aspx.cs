@@ -694,7 +694,7 @@ public partial class sluzby2 : System.Web.UI.Page
                     if (dl != null)
                     {
                         dl.SelectedValue = userId;
-                        dl.ToolTip = dl.SelectedItem.ToString();
+                        dl.ToolTip +="\r\n"+ dl.SelectedItem.ToString();
                     }
                 }
                 else
@@ -742,7 +742,7 @@ public partial class sluzby2 : System.Web.UI.Page
         string rok = this.rok_cb.SelectedValue.ToString();
         int daysInMonth = DateTime.DaysInMonth(Convert.ToInt32(rok), Convert.ToInt32(mesiac));
 
-        SortedList res = x2Mysql.getRow("SELECT * FROM [is_settings] WHERE [name] = 'dk_shift_doctors'");
+        SortedList res = x2Mysql.getRow("SELECT * FROM [is_settings] WHERE [name] = '2dk_shift_doctors'");
 
         string[] shifts = res["data"].ToString().Split(',');
         this.shiftType = shifts;
@@ -804,6 +804,7 @@ public partial class sluzby2 : System.Web.UI.Page
             string text = (row + 1).ToString();
             cellDate.Text = text + ". " + nazov;
 
+            string weekState = "konz";
             for (int cell=0; cell<colsNum; cell++)
             {
                 if (cell == 0)
@@ -817,7 +818,7 @@ public partial class sluzby2 : System.Web.UI.Page
                     if (konzCell.Text.ToString() == "konz") konzCell.CssClass = "info box";
                     if (konzCell.Text.ToString() == "prijm") konzCell.CssClass = "success box";
                         
-
+                    weekState = konzCell.Text.ToString();
                     tblRow.Controls.Add(konzCell);
                 }
 
@@ -832,11 +833,14 @@ public partial class sluzby2 : System.Web.UI.Page
                         if (editSt)
                         {
                             DropDownList dl = this.makeDoctorList("Odd1_" + (row + 1).ToString(), doctors);
+                            dl.ToolTip = "Ates.lek./24h:";
+                          
                             dataCell.Controls.Add(dl);
                         }
                         else
                         {
                             Label txtDoc = this.makeDoctorText("Odd1_" + (row + 1).ToString());
+                            txtDoc.ToolTip = "Ates.lek./24h.";
                             dataCell.Controls.Add(txtDoc);
                         }
 
@@ -847,11 +851,15 @@ public partial class sluzby2 : System.Web.UI.Page
                         if (editSt)
                         {
                             DropDownList dl1 = this.makeDoctorList("Odd2_" + (row + 1).ToString(), doctors);
+                            dl1.ToolTip = "Prijm.tyzdem 24h \r\n Konz.tyzden 8h";
                             dataCell.Controls.Add(dl1);
                         }
                         else
                         {
                             Label txtDoc = this.makeDoctorText("Odd2_" + (row + 1).ToString());
+
+                            
+
                             dataCell.Controls.Add(txtDoc);
                         }
                         
@@ -867,11 +875,13 @@ public partial class sluzby2 : System.Web.UI.Page
                         if (editSt)
                         {
                             DropDownList dl = this.makeDoctorList("OupA1_" + (row + 1).ToString(), doctors);
+                          
                             dataCell.Controls.Add(dl);
                         }
                         else
                         {
                             Label txtDoc = this.makeDoctorText("OupA1_" + (row + 1).ToString());
+                           
                             dataCell.Controls.Add(txtDoc);
                         }
                         
@@ -932,6 +942,10 @@ public partial class sluzby2 : System.Web.UI.Page
 
                         tblRow.Controls.Add(dataCell);
                     }
+                    if (cell ==5)
+                    {
+                        tblRow.Controls.Add(dataCell);
+                    }
                 }
                 if (jeSviatok != -1 && (dnesJe != 0 && dnesJe != 6)) //je sviatok
                 {
@@ -942,11 +956,14 @@ public partial class sluzby2 : System.Web.UI.Page
                         if (editSt)
                         {
                             DropDownList dl = this.makeDoctorList("Odd1_" + (row + 1).ToString(), doctors);
+                            dl.ToolTip = "Atest./24h";
+                            
                             dataCell.Controls.Add(dl);
                         }
                         else
                         {
                             Label txtDoc = this.makeDoctorText("Odd1_" + (row + 1).ToString());
+                            txtDoc.ToolTip = "Ates./24h";
                             dataCell.Controls.Add(txtDoc);
                         }
                         
@@ -957,11 +974,14 @@ public partial class sluzby2 : System.Web.UI.Page
                         if (editSt)
                         {
                             DropDownList dl1 = this.makeDoctorList("Odd2_" + (row + 1).ToString(), doctors);
+                            dl1.ToolTip = "Prijm.tyzden 24h \r\n Konz.tyzden 8h";
                             dataCell.Controls.Add(dl1);
                         }
                         else
                         {
                             Label txtDoc = this.makeDoctorText("Odd2_" + (row + 1).ToString());
+                           txtDoc.ToolTip = "Prijm.tyzden 24h \r\n Konz.tyzden 8h";
+                          
                             dataCell.Controls.Add(txtDoc);
                         }
                         
@@ -1041,6 +1061,11 @@ public partial class sluzby2 : System.Web.UI.Page
                         TextBox txtB = this.makeCellComment("Expe_txt_" + (row + 1).ToString());
                         dataCell.Controls.Add(txtB);
 
+                        tblRow.Controls.Add(dataCell);
+                    }
+
+                    if (cell == 5)
+                    {
                         tblRow.Controls.Add(dataCell);
                     }
                 }
@@ -1127,6 +1152,26 @@ public partial class sluzby2 : System.Web.UI.Page
 
                         tblRow.Controls.Add(dataCell);
                     }
+                    if (cell == 5)
+                    {
+                        tblRow.Controls.Add(dataCell);
+                        if (editSt)
+                        {
+                            DropDownList dl = this.makeDoctorList("KlAmb_" + (row + 1).ToString(), doctors);
+                            dataCell.Controls.Add(dl);
+                        }
+                        else
+                        {
+                            Label txtDoc = this.makeDoctorText("KlAmb_" + (row + 1).ToString());
+                            dataCell.Controls.Add(txtDoc);
+                        }
+
+                        TextBox txtB = this.makeCellComment("KlAmb_txt_" + (row + 1).ToString());
+                        dataCell.Controls.Add(txtB);
+
+
+                        tblRow.Controls.Add(dataCell);
+                    }
                 }
             }
         }
@@ -1154,7 +1199,7 @@ public partial class sluzby2 : System.Web.UI.Page
         string dateGroup = rok+mesiac;
         Session.Add("aktDateGroup", dateGroup);
 
-        SortedList res = x2Mysql.getRow("SELECT * FROM [is_settings] WHERE [name] = 'dk_shift_doctors'");
+        SortedList res = x2Mysql.getRow("SELECT * FROM [is_settings] WHERE [name] = 'kdch_shift_doctors'");
 
         // Boolean status = Convert.ToBoolean(res["status"].ToString());
 

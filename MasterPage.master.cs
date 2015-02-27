@@ -35,7 +35,7 @@ public partial class MasterPage : System.Web.UI.MasterPage
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        this.web_titel.Text = X2.setLabel("web_titel");
+        this.web_titel.Text = X2.setLabel(Session["klinika"].ToString().ToLower()+"_web_titel");
 
         this.current_user_lbl.Text = Session["fullname"].ToString();
         this.rights = Session["rights"].ToString();

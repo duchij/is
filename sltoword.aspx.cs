@@ -19,6 +19,7 @@ public partial class sltoword : System.Web.UI.Page
     public x2_var my_x2 = new x2_var();
     public mysql_db x2Mysql = new mysql_db();
     public string[] shiftType;
+    public string gKlinika;
 
 
     sluzbyclass x2Sluzby = new sluzbyclass();
@@ -30,12 +31,22 @@ public partial class sltoword : System.Web.UI.Page
             Response.Redirect("error.html");
         }
 
+        this.gKlinika = Session["klinika"].ToString().ToLower();
+        this.setLabels();
         
         this.mesiac_lbl.Text = CultureInfo.CurrentCulture.DateTimeFormat.MonthNames[Convert.ToInt32(Session["aktSluzMesiac"].ToString()) - 1];
         this.rok_lbl.Text = Session["aktSluzRok"].ToString();
         string mes  = CultureInfo.CurrentCulture.DateTimeFormat.MonthNames[Convert.ToInt32(Session["aktSluzMesiac"].ToString())-1];
-        this.loadSluzby();
-      
+
+        if (this.gKlinika == "kdch")
+        {
+            this.loadSluzby();
+        }
+
+        if (this.gKlinika == "2dk")
+        {
+            this.generate2DK();
+        }
 
         if (Session["toWord"].ToString() == "1")
         {
@@ -52,16 +63,206 @@ public partial class sltoword : System.Web.UI.Page
             Response.Write(stringWriter.ToString());
             Response.End();
         }
-        else
+       
+
+
+    }
+
+    protected void setLabels()
+    {
+        this.shiftPrintTitel_lbl.Text = my_x2.setLabel(this.gKlinika + "_shifts_print");
+        this.shift_sign.Text = my_x2.setLabel(this.gKlinika + "_shifts_sign");
+    }
+
+    protected void generate2DK()
+    {
+        this.shiftTable.Controls.Clear();
+        string mesiac = Session["aktSluzMesiac"].ToString();
+        string rok = Session["aktSluzRok"].ToString();
+
+        int daysMonth = DateTime.DaysInMonth(Convert.ToInt32(rok), Convert.ToInt32(mesiac));
+
+
+        string dateGroup = my_x2.makeDateGroup(Convert.ToInt32(rok), Convert.ToInt32(mesiac)).ToString();
+            
+
+        SortedList res = x2Mysql.getRow("SELECT * FROM [is_settings] WHERE [name] = '2dk_shift_doctors'");
+
+        // Boolean status = Convert.ToBoolean(res["status"].ToString());
+
+        string[] shifts = res["data"].ToString().Split(',');
+        this.shiftType = shifts;
+
+        int days = daysMonth;
+        int colsNum = this.shiftType.Length;
+
+        TableHeaderRow headRow = new TableHeaderRow();
+
+        TableHeaderCell headCell = new TableHeaderCell();
+        headCell.ID = "headCell_date";
+        headCell.Text = "<strong>Datum</strong>";
+        headCell.BorderWidth = 1;
+        headCell.Width = Unit.Pixel(100);
+
+        // headCell.Style
+        headRow.Controls.Add(headCell);
+
+        for (int head = 0; head < colsNum; head++)
         {
-            print_lbl.Visible = true;
-            print_lbl.Text ="<a href='' onClick='window.print(); '>Tlacit</a>";
-            back_lbl.Visible = true;
-            back_lbl.Text = "<a href='sluzby2.aspx' target='_self'>Naspat</a>";
+            TableHeaderCell headCell1 = new TableHeaderCell();
+            headCell1.ID = "headCell_" + head;
+            headCell1.Text = "<strong><center>" + shifts[head].ToString() + "</center></strong>";
+            headCell1.Width = Unit.Pixel(130);
+            headCell1.BorderWidth = 1;
+            // headCell1.
+            headRow.Controls.Add(headCell1);
+        }
+        /* TableHeaderCell headCellSave = new TableHeaderCell();
+         headCellSave.ID = "headCellSave_" + colsNum;
+         headCellSave.Text = "<strong>Ulozit</strong>";
+         headRow.Controls.Add(headCellSave);*/
+
+        shiftTable.Controls.Add(headRow);
+
+        string[] freeDays = x2Sluzby.getFreeDays();
+
+        for (int row=0; row<daysMonth; row++)
+        {
+            int rDen = row + 1;
+            TableRow riadok = new TableRow();
+            this.shiftTable.Controls.Add(riadok);
+
+            TableCell dateCell = new TableCell();
+            dateCell.BorderStyle = BorderStyle.Solid;
+            dateCell.BorderWidth = Unit.Pixel(1);
+            DateTime dt = Convert.ToDateTime(rDen+"."+mesiac+"."+rok);
+            dateCell.Text = dt.ToShortDateString();
+            riadok.Controls.Add(dateCell);
+
+            int dayOWeek = (int)dt.DayOfWeek;
+            int sviatok = Array.IndexOf(freeDays, rDen + "." + mesiac);
+            if (sviatok != -1 || (dayOWeek == 0 || dayOWeek == 6))
+            {
+                dateCell.BackColor = System.Drawing.Color.LightGray;
+            }
+
+
+            for (int col=0; col<colsNum; col++)
+            {
+
+                TableCell dataCell = new TableCell();
+                dataCell.ID = shifts[col] + "_" + rDen;
+                dataCell.BorderStyle = BorderStyle.Solid;
+                dataCell.BorderWidth = Unit.Pixel(1);
+
+                if (sviatok !=-1 || (dayOWeek == 0 || dayOWeek == 6))
+                {
+                    dataCell.BackColor = System.Drawing.Color.LightGray;
+                }
+
+                dataCell.ToolTip = shifts[col] + "_" + rDen;
+                riadok.Controls.Add(dataCell);
+            }
+        }
+        this.load2DKShifts(dateGroup);
+    }
+
+    protected void load2DKShifts(string dateGroup)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.AppendLine("SELECT [is_sluzby_dk].*, [is_omega_doctors].[name] FROM [is_sluzby_dk]");
+        sb.AppendLine("LEFT JOIN [is_omega_doctors] ON [is_omega_doctors].[ms_item_id] = [is_sluzby_dk].[user_id] ");
+
+        sb.AppendFormat("WHERE [is_sluzby_dk].[date_group] ='{0}' AND [is_sluzby_dk].[clinic]='{1}' ORDER BY [is_sluzby_dk].[datum] ASC", dateGroup, Session["klinika_id"]);
+
+        Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
+
+        int tableCn = table.Count;
+
+        for (int i=0; i< tableCn; i++)
+        {
+            DateTime dt = Convert.ToDateTime(my_x2.UnixToMsDateTime(table[i]["datum"].ToString()));
+
+            string type = table[i]["typ"].ToString();
+            string week = table[i]["tyzden"].ToString();
+            int day = dt.Day;
+
+            if (week == "konz" || week=="prijm")
+            {
+                Control cl = FindControl("Konz_" + day.ToString());
+                TableCell dataCell = (TableCell)cl;
+                dataCell.Text = "<center>"+week.ToUpper()+"</center>";
+            }
+
+            if (type.IndexOf("Odd")!= -1)
+            {
+                if (my_x2.getStr(table[i]["name"].ToString()) != "")
+                {
+                    Control cl = FindControl("Odd_" + day.ToString());
+                    TableCell dataCell = (TableCell)cl;
+                    Label textLbl = new Label();
+                    
+                    textLbl.Text = "<p>"+ my_x2.getStr(table[i]["name"].ToString()) + "<br> (" + table[i]["comment"] + ")</p>";
+                    dataCell.Controls.Add(textLbl);
+                }
+            }
+            if (type.IndexOf("OupA") != -1)
+            {
+                if (my_x2.getStr(table[i]["name"].ToString()) != "")
+                {
+                    Control cl = FindControl("OupA_" + day.ToString());
+                    TableCell dataCell = (TableCell)cl;
+                    Label textLbl = new Label();
+
+                    textLbl.Text = "<p>" + my_x2.getStr(table[i]["name"].ToString()) + "<br> (" + table[i]["comment"] + ")</p>";
+                    dataCell.Controls.Add(textLbl);
+                }
+            }
+            if (type.IndexOf("OupB") != -1)
+            {
+                if (my_x2.getStr(table[i]["name"].ToString()) != "")
+                {
+                    Control cl = FindControl("OupB_" + day.ToString());
+                    TableCell dataCell = (TableCell)cl;
+                    Label textLbl = new Label();
+
+                    textLbl.Text = "<p>" + my_x2.getStr(table[i]["name"].ToString()) + "<br> (" + table[i]["comment"] + ")</p>";
+                    dataCell.Controls.Add(textLbl);
+                }
+            }
+            if (type.IndexOf("Expe") != -1)
+            {
+                if (my_x2.getStr(table[i]["name"].ToString()) != "")
+                {
+                    Control cl = FindControl("Expe_" + day.ToString());
+                    TableCell dataCell = (TableCell)cl;
+                    Label textLbl = new Label();
+
+                    textLbl.Text = "<p>" + my_x2.getStr(table[i]["name"].ToString()) + "<br> (" + table[i]["comment"] + ")</p>";
+                    dataCell.Controls.Add(textLbl);
+                }
+            }
+            if (type.IndexOf("KlAmb") != -1)
+            {
+                if (my_x2.getStr(table[i]["name"].ToString()) != "")
+                {
+                    Control cl = FindControl("KlAmb_" + day.ToString());
+                    TableCell dataCell = (TableCell)cl;
+                    Label textLbl = new Label();
+
+                    textLbl.Text = "<p>" + my_x2.getStr(table[i]["name"].ToString()) + "<br> (" + table[i]["comment"] + ")</p>";
+                    dataCell.Controls.Add(textLbl);
+                }
+            }
 
         }
 
+
+
+
     }
+
 
     protected void loadSluzby()
     {

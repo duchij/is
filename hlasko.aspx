@@ -1,4 +1,5 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="hlasko.aspx.cs" Inherits="hlasko" MaintainScrollPositionOnPostback="true"  %>
+<%@ Register TagPrefix="druhadk_hlasko" TagName="dk_hlasko" Src="~/Controls/druhadk_hlasko.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
 </asp:Content>
@@ -7,12 +8,14 @@
    
 <asp:Label ID="msg_lbl" runat="server" Text=""></asp:Label>
 
-<h2>Hlásenie službieb KDCH, DOrK a KPU</h2>
+<h2><asp:Label ID="hlasko_titel" runat="server"></asp:Label></h2>
 <%-- <input type="button" id="testButton" value="test" onclick="test()"/>      --%>  
    
     
     
 <hr />
+    <asp:PlaceHolder ID="kdch_pl" runat="server" Visible="false">
+
 Prihlasený: <strong><asp:Label ID="user" runat="server" Text="Label" ForeColor="#990000"></asp:Label></strong><br />
 Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="Label" ForeColor="#990000"></asp:Label></strong><br />
                 <hr />
@@ -171,5 +174,21 @@ Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="
                     onclick="addInfo_btn_Click" CssClass="button asphalt" />
         </asp:PlaceHolder>
         </asp:PlaceHolder>
+        </asp:PlaceHolder> <%--KOniec KDCH placeholdera--%>
+
+    <%-- hlasko pre 2dk --%>
+    <asp:PlaceHolder ID="druhaDK_pl" runat="server">
+
+        <druhadk_hlasko:dk_hlasko runat="server"></druhadk_hlasko:dk_hlasko>
+
+
+
+
+       
+
+
+    </asp:PlaceHolder>
+
+
 </asp:Content>
 

@@ -19,12 +19,12 @@
 
     </style>
 </head>
-<body style="font-family:Arial CE; font-size:10px;">
+<body style="font-family:Arial CE; font-size:11px;">
     <form id="form1" runat="server">
 
 
     <div>
-    <h1><asp:Label ID="label3" runat="server" Text="<%$ Resources:Resource, slu_title %>"></asp:Label>, <asp:Label ID="mesiac_lbl" runat="server" Text="Label"></asp:Label>, <asp:Label
+    <h1><asp:Label ID="shiftPrintTitel_lbl" runat="server" Text=""></asp:Label>, <asp:Label ID="mesiac_lbl" runat="server" Text="Label"></asp:Label>, <asp:Label
         ID="rok_lbl" runat="server" Text="Label"></asp:Label>   </h1><hr />
         <asp:Label ID="msg_lbl" runat="server" Text=""></asp:Label>
        <%-- <table border="0" cellpadding="0" cellspacing="0" style="font-family:Arial CE;">
@@ -40,13 +40,15 @@
                 </table>--%>
          <div class="nonprint">
     <hr />
-    <asp:Label ID="print_lbl" runat="server" Text="" Visible="false" Font-Size="Large"></asp:Label> /
-    <asp:Label ID="back_lbl" runat="server" Text="" Visible="false" Font-Size="Large"></asp:Label>
-    </div>
+        <a href="javascript:window.print();" style="font-weight:bolder;font-size:x-large;" />
+         <asp:Label ID="print_lbl" runat="server" Text="<%$ Resources:Resource, print %>"></asp:Label> </a> &nbsp;
+        <asp:HyperLink ID="HyperLink1" runat="server" 
+        NavigateUrl="hlasko.aspx" Font-Bold="true" Font-Size="X-Large" Text="<%$ Resources:Resource, back %>"></asp:HyperLink></div> 
+        </div>
         <asp:Table ID="shiftTable" runat="server" BorderColor="Black" BorderWidth="1" cellpadding="0" cellspacing="0" >
         </asp:Table>   
         <br />
-        <asp:Label ID="label4" runat="server" Text="<%$ Resources:Resource, slu_primar %>"></asp:Label>
+        <asp:Label ID="shift_sign" runat="server" Text=""></asp:Label>
     </div>
    
     </form>
