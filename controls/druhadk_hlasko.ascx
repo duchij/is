@@ -1,10 +1,20 @@
-﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="druhadk_hlasko.ascx.cs" Inherits="controls_druhadk_hlasko" %>
-
+﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="druhadk_hlasko.ascx.cs" Inherits="controls_druhadk_hlasko" EnableViewState="true" %>
+<hr />
+Vytvoril:<asp:Label ID="creatUser_lbl" runat="server" Text="" Font-Bold="true"></asp:Label><br />
+    Posledná zmena:<asp:Label ID="lastUser_lbl" runat="server" Text="" Font-Bold="true"></asp:Label>
+<hr />
 <div class="row">
-    <div class="one third">
+    
+    <asp:Label ID="ctrl_msg_lbl" runat="server"></asp:Label>
+    
+    <div class="one half">
         <%--OnSelectionChanged="Calendar1_SelectionChanged"--%>
-         <asp:Calendar ID="Calendar1" runat="server" BackColor="White" 
-                            BorderColor="#999999" DayNameFormat="Shortest" 
+        Sluzba:
+        <asp:DropDownList ID="shiftType_dl" runat="server" AutoPostBack="true" OnSelectedIndexChanged="Calendar1_SelectionChanged"></asp:DropDownList>
+    </div>
+    <div class="one half">
+         <asp:Calendar ID="Calendar1" runat="server" BackColor="White" OnSelectionChanged="Calendar1_SelectionChanged"  CssClass="responsive" data-max="12"
+                            BorderColor="#999999" DayNameFormat="Shortest"  
                               ForeColor="Black" 
                              CellPadding="4" >
                         <SelectedDayStyle BackColor="#666666" Font-Bold="True" ForeColor="White" />
@@ -16,17 +26,26 @@
                         <DayHeaderStyle BackColor="#CCCCCC" Font-Bold="True" />
                         <TitleStyle BackColor="#999999" BorderColor="Black" Font-Bold="True" />
                         </asp:Calendar>
-    </div>
-    <div class="two tirds">
-        aktivity list
+    </div> 
+</div>
+    <div class="row">
+    
+   
+        <div class="success box">
+            <asp:Table ID="activity_tbl" runat="server"></asp:Table>
+            <asp:Label ID="kompl_work_time" runat="server" Text=""></asp:Label><br />
+            <asp:Button ID="generate_btn" runat="server" Text="Generuj hlasko" CssClass="button green" /> 
+        </div>
 
     </div>
-</div>
+
     <br />
 <div class="row">
         <asp:Label ID="epc_titel" runat="server" Text="<%$ Resources:Resource,epc_titel %>" CssClass="green"></asp:Label>
 </div>
+<div class="box blue">  
 <div class="row">
+    
       
             <div class="one fifth">
                 Dátum:
@@ -42,7 +61,7 @@
             </div>
              <div class="one fifth">
                  Oddelenie:
-                 <asp:DropDownList ID="DropDownList1" runat="server"></asp:DropDownList>
+                 <asp:DropDownList ID="clinicDep_dl" runat="server"></asp:DropDownList>
 
              </div>
             <div class="one fifth">
@@ -56,7 +75,8 @@
                     <asp:ListItem Value="urgent">Urgent</asp:ListItem>
                     </asp:DropDownList>
             </div> 
-</div>
+        </div>
+
 <div class="row">
         <div class="one half">
             
@@ -70,26 +90,37 @@
 </div>
 <div class="row">
         <asp:CheckBox ID="check_osirix" runat="server" Text=""/>  
-        <asp:Label ID="Label2" runat="server" Text="   Zobraz v OSIRIXe" CssClass="mojInline"></asp:Label>
+        <asp:Label ID="Label2" runat="server" Text="   RDG v Prehliadaci" CssClass="mojInline"></asp:Label>
        
 </div>
+
 <div class="row">
        <asp:PlaceHolder ID="fileupload_pl" runat="server" >
-           <div class="box blue align-left">
+          <%-- <div class="box blue align-left">--%>
                Externý súbor....<br />
                 <asp:FileUpload ID="loadFile_fup" runat="server"  Width="400" Height="36" size="40px" CssClass="duch" />
-               <asp:Button ID="upLoadFile_btn" runat="server" Text="Nahraj...Max.200MB" /> <br /><br />
+               <asp:Button ID="upLoadFile_btn" runat="server" Text="Nahraj...Max.200MB" OnClick="uploadData_fnc" /> <br /><br />
                <asp:Label ID="upLoadedFile_lbl" runat="server" Text="" CssClass="red"></asp:Label>
                <asp:HiddenField ID="lfId_hidden" runat="server" Value="0" />
-            </div>
+           <%-- </div>--%>
         </asp:PlaceHolder>
 </div>
 <div class="row">
     <div class="align-right">
-          <asp:Button ID="activitysave_btn" runat="server" Text="Pridaj do EPC"  CssClass="button asphalt"  />
+          <asp:Button ID="activitysave_btn" runat="server" Text="Pridaj do EPC" OnClick="saveActivity_fnc"  CssClass="button asphalt"  />
     </div>
 </div>
-          
+     </div> <%-- blue bx--%>
+<asp:TextBox ID="hlasenie" CssClass="dtextbox" runat="server"  Width="90%" Rows="30" Height="500" TextMode="MultiLine"> </asp:TextBox>
+<asp:Button ID="saveHlasko_btn" runat="server" Text="Ulož zmenu" OnClick="saveHlaskoFnc" CssClass="button green" />
+                
+               
+                <asp:Button ID="print_btn" runat="server" Text="Vytlač" CssClass="button blue" />
+                
+                <asp:Button ID="toWord_btn" runat="server" Text="Tlač/Word"  />
+                
+                <asp:Button ID="def_lock_btn" runat="server" Text="Uzavrieť a vytlačiť hlásko" 
+                    CssClass="button red" />          
        
 
 

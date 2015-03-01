@@ -1,0 +1,34 @@
+﻿ALTER TABLE `is_hlasko_epc`
+CHANGE `work_type` `work_type` varchar(10) COLLATE 'ascii_general_ci' NOT NULL AFTER `work_time`,
+ADD `work_place` varchar(10) COLLATE 'ascii_general_ci' NULL AFTER `work_type`,
+COMMENT='';
+
+ALTER TABLE `is_hlasko`
+ADD `clinic` bigint(20) unsigned NULL AFTER `last_user`,
+COMMENT='';
+
+update is_hlasko set clinic=3 where clinic is null;
+
+ALTER TABLE `is_hlasko`
+ADD UNIQUE `type_dat_hlas_clinic` (`type`, `dat_hlas`, `clinic`),
+DROP INDEX `type_dat_hlas`;
+
+ALTER TABLE `is_hlasko`
+CHANGE `type` `type` varchar(10) COLLATE 'utf8_slovak_ci' NOT NULL AFTER `id`,
+COMMENT='';
+
+ALTER TABLE `is_hlasko`
+ADD FOREIGN KEY (`clinic`) REFERENCES `is_clinics` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+pridaj do lfka user_id;
+
+ALTER TABLE `is_data_2`
+ADD FOREIGN KEY (`user_id`) REFERENCES `is_users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE `is_data_2`
+ADD `clinic_id` bigint(20) unsigned NULL AFTER `user_id`,
+COMMENT='';
+
+ALTER TABLE `is_data_2`
+ADD FOREIGN KEY (`clinic_id`) REFERENCES `is_clinics` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+

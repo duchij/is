@@ -22,6 +22,11 @@ public partial class hlasko : System.Web.UI.Page
     // protected System.Web.UI.HtmlControls.HtmlGenericControl hlavicka;
     protected void Page_Init(object sender, EventArgs e)
     {
+        if (Session["tuisegumdrum"] == null)
+        {
+            Response.Redirect("error.html");
+        }
+
         this.gKlinika = Session["klinika"].ToString().ToLower();
 
         if (this.gKlinika == "kdch")
@@ -36,10 +41,7 @@ public partial class hlasko : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
        
-        if (Session["tuisegumdrum"] == null)
-        {
-            Response.Redirect("error.html");
-        }
+        
         this.setLabels();   
         this.loadFile_fup.Attributes.Add("size", "50");
         this.msg_lbl.Text = "";
@@ -333,7 +335,7 @@ public partial class hlasko : System.Web.UI.Page
         data.Add("patient_name", this.patientname_txt.Text.ToString());
         data.Add("work_text", my_x2.EncryptString(this.activity_txt.Text.ToString(),Session["passphrase"].ToString()));
         data.Add("osirix", this.check_osirix.Checked);
-
+        data.Add("work_place", this.hlas_type.SelectedValue);
         if (this.lfId_hidden.Value.ToString() != "0")
         {
             data.Add("lf_id", this.lfId_hidden.Value.ToString());

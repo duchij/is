@@ -69,7 +69,7 @@ public partial class header : System.Web.UI.UserControl
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
 
-        if (table.Count > 0)
+        if (table.Count == 2)
         {
             string[] shiftType = table[0]["shift_type"].ToString().Split(';');
             string[] docBefore = table[0]["doc_names"].ToString().Split(';');
@@ -101,7 +101,7 @@ public partial class header : System.Web.UI.UserControl
                 //this.oup_lbl.Text += "<br>" + docBefore[1] + "(" + shiftType[1] + ") <br>" + comments[1];
 
                 this.odda_lbl.Text = docBefore[1] + "(" + shiftType[1] + ") <br>" + comments[1];
-               // this.odda_lbl.Text += "<br>" + docBefore[3] + "(" + shiftType[3] + ") <br>" + comments[3];
+                // this.odda_lbl.Text += "<br>" + docBefore[3] + "(" + shiftType[3] + ") <br>" + comments[3];
 
                 this.oddb_lbl.Text = docBefore[2] + "(" + shiftType[2] + ") <br>" + comments[2];
 
@@ -109,8 +109,8 @@ public partial class header : System.Web.UI.UserControl
 
                 this.trp_lbl.Text = docBefore[4] + "(" + shiftType[4] + ") <br>" + comments[4];
             }
-            
-            
+
+
 
             this.po_lbl.Text = table[1]["doc_names"].ToString();
 
@@ -121,14 +121,18 @@ public partial class header : System.Web.UI.UserControl
 
             //date_lbl.Text = DateTime.Today.ToLongDateString();
 
-//            SELECT 
-//GROUP_CONCAT(`t_s_dk`.`typ` ORDER BY `t_s_dk`.`ordering` SEPARATOR ';') AS `shift_type`, 
-//GROUP_CONCAT(IFNULL(`t_users`.`name3`,'-') ORDER BY `t_s_dk`.`ordering` SEPARATOR ';') AS `doc_names`
-//FROM `is_sluzby_dk` AS `t_s_dk`
-//LEFT JOIN `is_users` AS `t_users` ON `t_users`.`omega_ms_item_id` = `t_s_dk`.`user_id`
-//WHERE `t_s_dk`.`datum`='2015-2-25' OR `t_s_dk`.`datum`='2015-2-24 23:59:00'
-//AND `t_s_dk`.`clinic`=4 
-//GROUP BY `t_s_dk`.`datum` 
+            //            SELECT 
+            //GROUP_CONCAT(`t_s_dk`.`typ` ORDER BY `t_s_dk`.`ordering` SEPARATOR ';') AS `shift_type`, 
+            //GROUP_CONCAT(IFNULL(`t_users`.`name3`,'-') ORDER BY `t_s_dk`.`ordering` SEPARATOR ';') AS `doc_names`
+            //FROM `is_sluzby_dk` AS `t_s_dk`
+            //LEFT JOIN `is_users` AS `t_users` ON `t_users`.`omega_ms_item_id` = `t_s_dk`.`user_id`
+            //WHERE `t_s_dk`.`datum`='2015-2-25' OR `t_s_dk`.`datum`='2015-2-24 23:59:00'
+            //AND `t_s_dk`.`clinic`=4 
+            //GROUP BY `t_s_dk`.`datum` 
+        }
+        else
+        {
+            this.msg_lbl.Text = Resources.Resource.shifts_not_done; 
         }
 
 

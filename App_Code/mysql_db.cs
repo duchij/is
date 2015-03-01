@@ -504,12 +504,14 @@ public class mysql_db
         trans1 = my_con.BeginTransaction();
 
         cmd.Transaction = trans1;
-        cmd.CommandText = "INSERT INTO `is_data_2`(`file-name`,`file-size`,`file-type`,`file-content`) VALUES (?,?,?,?)";
+        cmd.CommandText = "INSERT INTO `is_data_2`(`file-name`,`file-size`,`file-type`,`file-content`, `user_id`) VALUES (?,?,?,?,?,?)";
 
         cmd.Parameters.Add("filename", OdbcType.Text).Value = lfData["file-name"].ToString();
         cmd.Parameters.Add("filesize", OdbcType.BigInt).Value = Convert.ToInt32(lfData["file-size"]);
         cmd.Parameters.Add("filetype", OdbcType.VarChar).Value = lfData["file-type"].ToString();
         cmd.Parameters.Add("filecontent", OdbcType.Binary).Value = data;
+        cmd.Parameters.Add("userid",OdbcType.BigInt).Value=Convert.ToInt32(lfData["user_id"]);
+        cmd.Parameters.Add("clinicid", OdbcType.BigInt).Value = Convert.ToInt32(lfData["clinic_id"]);
         cmd.CommandText.ToString();
         try
         {
