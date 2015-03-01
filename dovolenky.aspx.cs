@@ -17,6 +17,7 @@ public partial class dovolenky : System.Web.UI.Page
     //my_db x_db = new my_db();
     mysql_db x2Mysql = new mysql_db();
     x2_var my_x2 = new x2_var();
+
     log x2log = new log();
 
     public string rights = "";
