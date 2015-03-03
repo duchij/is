@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Text;
 using System.Globalization;
 using System.Collections;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Web;
@@ -12,11 +14,13 @@ using System.Web.UI.WebControls.WebParts;
 
 public partial class staze : System.Web.UI.Page
 {
-    x2_var my_x2 = new x2_var();
-    my_db x_db = new my_db();
+    x2_var x2 = new x2_var();
+    mysql_db x2Mysql = new mysql_db();
+    log x2log = new log();
     //string tabulka = "";
-    string user_rights = "";
-    string u_name = "";
+    public string rights = "";
+    public string wgroup = "";
+    public string gKlinika;
 
     protected void Page_Init(object sender, EventArgs e)
     {
@@ -30,484 +34,212 @@ public partial class staze : System.Web.UI.Page
         {
             Response.Redirect("error.html");
         }
+        this.msg_lbl.Text = "";
+        this.rights = Session["rights"].ToString();
+        this.wgroup = Session["workgroup"].ToString();
+        this.gKlinika = Session["klinika"].ToString().ToLower();
 
-        this.user_rights = Session["rights"].ToString();
-        this.u_name = Session["login"].ToString();
+        if (this.rights == "poweruser" || this.rights=="admin")
+        {
+            this.setState_pl.Visible = true;
+        }
 
-        if ((user_rights == "admin") || (user_rights == "poweruser") || (u_name == "jbabala") || (u_name == "bduchaj"))
-        {
-            Button1.Visible = true;
-            publish_ck.Visible = true;
-        }
-        else
-        {
-            Button1.Visible = false;
-            publish_ck.Visible = false;
-        }
 
 
         if (IsPostBack == false)
         {
-            DateTime akt_datum = DateTime.Today;
-
-            string mesiac = akt_datum.Month.ToString();
-            string rok = akt_datum.Year.ToString();
-            //vypis_lbl.Text = rok;
-            this.drawStaze(mesiac, rok);
+            this.setActDate();
+            this.drawTable();
         }
         else
         {
-            string rok = rok_cb.SelectedValue.ToString();
-            string mesiac = mesiac_cb.SelectedValue.ToString();
-            // this.drawTable(rok, mesiac);
-            this.drawStaze(mesiac, rok);
-
-            // Response.Cookies["mesiac"].Value = mesiac_cb.SelectedValue.ToString();
-            // Response.Cookies["rok"].Value = rok_cb.SelectedValue.ToString();
-            //vypis_lbl.Text = rok_cb.SelectedValue.ToString();
-            // this.drawStaze(Request.Cookies["mesiac"].Value.ToString(), Request.Cookies["rok"].Value.ToString());
-            //this.saveSluzby();
-            //vypis_lbl.Text = Session.Count.ToString();
-
+            this.drawTable();
         }
     }
 
-
-    private void drawTable(string rok, string mesiac)
+    protected void setActDate()
     {
+        DateTime dt = DateTime.Today;
 
-        int days = DateTime.DaysInMonth(Convert.ToInt32(rok), Convert.ToInt32(mesiac));
-        days_lbl.Text = days.ToString();
+        this.mesiac_cb.SelectedValue = dt.Month.ToString();
+        this.rok_cb.SelectedValue = dt.Year.ToString();
 
-        for (int i = 0; i < days; i++)
+    }
+
+
+    protected void drawTable()
+    {
+        this.stazeTable_tbl.Controls.Clear();
+
+        int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue);
+        int rok = Convert.ToInt32(this.rok_cb.SelectedValue);
+        int daysInMonth = DateTime.DaysInMonth(rok, mesiac);
+
+        SortedList res = x2Mysql.getRow("SELECT * FROM [is_settings] WHERE [name] = 'kdch_staze'");
+
+        string[] staze = res["data"].ToString().Split(',');
+
+        int colsNum = staze.Length;
+        string[] header = staze;
+
+       // ArrayList doctors = this.loadOmegaDoctors();
+
+        TableHeaderRow headRow = new TableHeaderRow();
+
+        TableHeaderCell headCell = new TableHeaderCell();
+        headCell.ID = "headCell_date";
+        headCell.Text = "<strong>Datum</strong>";
+        // headCell.Style
+        headRow.Controls.Add(headCell);
+
+        for (int head = 0; head < colsNum; head++)
+        {
+            TableHeaderCell headCell1 = new TableHeaderCell();
+            headCell1.ID = "headCell_" + head;
+            headCell1.Text = "<strong><center>" + x2.setLabel(header[head].ToString()) + "</center></strong>";
+            // headCell1.
+            headRow.Controls.Add(headCell1);
+        }
+        this.stazeTable_tbl.Controls.Add(headRow);
+        string[] freeDays = Session["freedays"].ToString().Split(',');
+
+        for (int row=0;row<daysInMonth; row++)
         {
             TableRow riadok = new TableRow();
-            Table1.Controls.Add(riadok);
-            for (int j = 0; j < 6; j++)
-            {
-                TableCell my_cell = new TableCell();
-                my_cell.BorderWidth = 1;
-                my_cell.BorderColor = System.Drawing.Color.FromArgb(0x990000);
-                TextBox my_text_box = new TextBox();
-                my_text_box.AutoPostBack = true;
-                my_text_box.BorderStyle = BorderStyle.None;
-                int den = i + 1;
-                DateTime my_date = new DateTime(Convert.ToInt32(rok), Convert.ToInt32(mesiac), den);
-                int dnesJe = (int)my_date.DayOfWeek;
-                string nazov = CultureInfo.CurrentCulture.DateTimeFormat.DayNames[dnesJe];
-                // pokus.Text += nazov;
+            this.stazeTable_tbl.Controls.Add(riadok);
+            int rDen = row + 1;
 
-                if ((nazov == "sobota") || (nazov == "nedeľa"))
+            DateTime dt = new DateTime(rok, mesiac, rDen);
+            Boolean vikend = false;
+            int dW = (int)dt.DayOfWeek;
+
+            if (dW == 6 || dW == 0) vikend = true;
+            int sviatok = Array.IndexOf(freeDays, rDen.ToString() + "." + mesiac.ToString());
+
+
+            for (int col=0; col<=colsNum; col++)
+            {
+                
+                if (col==0)
                 {
-                    my_text_box.BackColor = System.Drawing.Color.FromArgb(0x990000);
-                    my_text_box.ForeColor = System.Drawing.Color.Yellow;
+
+                    TableCell dateCell = new TableCell(); 
+                    dateCell.Text = dt.ToShortDateString();
+                    if (vikend) dateCell.CssClass = "box red";
+                    if (sviatok != -1) dateCell.CssClass = "box yellow";
+                   riadok.Controls.Add(dateCell);
                 }
                 else
                 {
-                    my_text_box.BackColor = System.Drawing.Color.White;
+                    TableCell dataCell = new TableCell();
+                    if (vikend) dataCell.CssClass = "box red";
+                    if (sviatok != -1) dataCell.CssClass = "box yellow";
+                    if (this.rights == "admin" || this.rights=="poweruser")
+                    {
+                        TextBox txtBox = new TextBox();
+                        txtBox.ID = header[col-1] + "_" + rDen.ToString();
+                        txtBox.TextMode = TextBoxMode.MultiLine;
+                        txtBox.AutoPostBack = true;
+                        txtBox.TextChanged += new EventHandler(changedText);
+                        txtBox.Wrap = false;
+                        txtBox.Rows = 2;
+                        dataCell.Controls.Add(txtBox);
+                    }
+                    else
+                    {
+                        Label textLbl = new Label();
+                        textLbl.ID = header[col-1] + "_" + rDen.ToString();
+                        dataCell.Controls.Add(textLbl);
+                    }
+                    riadok.Controls.Add(dataCell);
                 }
-
-                string[] freeDays = x_db.getFreeDays();
-
-                string mesDen = den.ToString() + "." + mesiac;
-
-                int rs_tmp = Array.IndexOf(freeDays, mesDen);
-
-                if ((rs_tmp != -1) && (nazov != "sobota") && (nazov != "nedeľa"))
-                {
-                    my_text_box.BackColor = System.Drawing.Color.Yellow;
-                    my_text_box.ForeColor = System.Drawing.Color.FromArgb(0x990000);
-                }
-
-                //my_text_box.TextChanged += new System.EventHandler(this.my_text_box_TextChanged);
-                my_text_box.ID = "textBox_" + i.ToString() + "_" + j.ToString();
-                my_text_box.Width = 100;
-
-                if ((user_rights == "admin") || (user_rights == "poweruser"))
-                {
-                    my_text_box.ReadOnly = false;
-                }
-                else
-                {
-                    my_text_box.ReadOnly = true;
-                }
-
-                my_cell.Controls.Add(my_text_box);
-
-                //form1.Controls.Add(my_text_box);
-                riadok.Controls.Add(my_cell);
             }
-
         }
+        this.loadStaze();
     }
 
-    protected void __drawStaze(SortedList data_info, string mesiac, string rok, int days)
+    protected void loadStaze()
     {
-        if (data_info["id"] != null)
-        {
-            Session.Add("akt_staz", data_info["id"].ToString());
+        int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue);
+        int rok = Convert.ToInt32(this.rok_cb.SelectedValue);
 
+        int dateGroup = x2.makeDateGroup(rok, mesiac);
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("SELECT [type],[datum],[text] FROM [is_staze_2] WHERE [date_group]='{0}' AND [clinic]='{1}' ORDER BY [datum]", dateGroup,Session["klinika_id"]);
 
-            String[][] data = my_x2.parseStaz(data_info["rozpis"].ToString());
-            //ArrayList my_list = new ArrayList();
+        Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
 
-            mesiac_cb.SelectedValue = data_info["mesiac"].ToString();
+        int tableCn = table.Count;
 
-            rok_cb.SelectedValue = data_info["rok"].ToString();
-
-            if (Convert.ToInt32(data_info["publish"]) == 1 && IsPostBack == false)
-            {
-
-                publish_ck.Checked = true;
-            }
-            if (Convert.ToInt32(data_info["publish"]) == 0 && IsPostBack == false)
-            {
-                publish_ck.Checked = false;
-            }
-
-
-            days_lbl.Text = DateTime.DaysInMonth(Convert.ToInt32(rok), Convert.ToInt32(mesiac)).ToString();
-
-            for (int i = 0; i < days; i++)
-            {
-                TableRow riadok = new TableRow();
-
-                Table1.Controls.Add(riadok);
-                for (int j = 0; j < data[i].Length; j++)
-                {
-                    TableCell my_cell = new TableCell();
-                    my_cell.BorderWidth = 1;
-                    my_cell.BorderColor = System.Drawing.Color.FromArgb(0x990000);
-                    TextBox my_text_box = new TextBox();
-                    my_text_box.BorderStyle = BorderStyle.None;
-
-                    my_text_box.ID = "textBox_" + i.ToString() + "_" + j.ToString();
-
-                    int den = i + 1;
-                    DateTime my_date = new DateTime(Convert.ToInt32(data_info["rok"].ToString()), Convert.ToInt32(data_info["mesiac"].ToString()), den);
-                    int dnesJe = (int)my_date.DayOfWeek;
-                    string nazov = CultureInfo.CurrentCulture.DateTimeFormat.DayNames[dnesJe];
-                    // pokus.Text += nazov;
-
-                    if ((nazov == "sobota") || (nazov == "nedeľa"))
-                    {
-                        my_text_box.BackColor = System.Drawing.Color.FromArgb(0x990000);
-                        my_text_box.ForeColor = System.Drawing.Color.Yellow;
-                    }
-                    else
-                    {
-                        my_text_box.BackColor = System.Drawing.Color.White;
-                    }
-
-                    string[] freeDays = x_db.getFreeDays();
-
-                    string mesDen = den.ToString() + "." + mesiac;
-
-                    int rs_tmp = Array.IndexOf(freeDays, mesDen);
-
-                    if ((rs_tmp != -1) && (nazov != "sobota") && (nazov != "nedeľa"))
-                    {
-                        my_text_box.BackColor = System.Drawing.Color.Yellow;
-                        my_text_box.ForeColor = System.Drawing.Color.FromArgb(0x990000);
-                    }
-
-
-                    my_text_box.Text = data[i][j];
-                    my_text_box.Width = 100;
-                    if ((user_rights == "admin") || (user_rights == "poweruser") || (u_name == "jbabala") || (u_name == "bduchaj"))
-                    {
-                        my_text_box.ReadOnly = false;
-                    }
-                    else
-                    {
-                        my_text_box.ReadOnly = true;
-                    }
-
-                    //my_text_box.ReadOnly = true;
-                    //my_cell.Text = "textBox_" + i.ToString() + "_" + j.ToString();
-
-                    my_cell.Controls.Add(my_text_box);
-
-                    //form1.Controls.Add(my_text_box);
-                    riadok.Controls.Add(my_cell);
-                }
-
-            }
-        }
-        else
-        {
-            days_lbl.Text = DateTime.DaysInMonth(Convert.ToInt32(rok), Convert.ToInt32(mesiac)).ToString();
-            mesiac_cb.SelectedValue = mesiac;
-            rok_cb.SelectedValue = rok;
-            // Response.Cookies["akt_sluzba"].Expires = DateTime.Now.AddDays(-1);
-            Session.Add("akt_staz", "0");
-            for (int i = 0; i < days; i++)
-            {
-                TableRow riadok = new TableRow();
-
-                Table1.Controls.Add(riadok);
-                for (int j = 0; j < 6; j++)
-                {
-                    TableCell my_cell = new TableCell();
-                    my_cell.BorderWidth = 1;
-                    my_cell.BorderColor = System.Drawing.Color.FromArgb(0x990000);
-                    TextBox my_text_box = new TextBox();
-                    my_text_box.BorderStyle = BorderStyle.None;
-
-
-                    my_text_box.ID = "textBox_" + i.ToString() + "_" + j.ToString();
-                    int den = i + 1;
-                    DateTime my_date = new DateTime(Convert.ToInt32(rok), Convert.ToInt32(mesiac), den);
-                    int dnesJe = (int)my_date.DayOfWeek;
-                    string nazov = CultureInfo.CurrentCulture.DateTimeFormat.DayNames[dnesJe];
-                    // pokus.Text += nazov;
-
-                    if ((nazov == "sobota") || (nazov == "nedeľa"))
-                    {
-                        my_text_box.BackColor = System.Drawing.Color.FromArgb(0x990000);
-                        my_text_box.ForeColor = System.Drawing.Color.Yellow;
-                    }
-                    else
-                    {
-                        my_text_box.BackColor = System.Drawing.Color.White;
-                    }
-
-                    string[] freeDays = x_db.getFreeDays();
-
-                    string mesDen = den.ToString() + "." + mesiac;
-
-                    int rs_tmp = Array.IndexOf(freeDays, mesDen);
-
-                    if ((rs_tmp != -1) && (nazov != "sobota") && (nazov != "nedeľa"))
-                    {
-                        my_text_box.BackColor = System.Drawing.Color.Yellow;
-                        my_text_box.ForeColor = System.Drawing.Color.FromArgb(0x990000);
-                    }
-
-
-                    if (j == 0)
-                    {
-
-                        my_text_box.Text = den.ToString();
-                    }
-                    else
-                    {
-                        my_text_box.Text = "-";
-                    }
-
-
-                    my_text_box.Width = 100;
-                    if ((user_rights == "admin") || (user_rights == "poweruser") || (u_name == "jbabala") || (u_name == "bduchaj"))
-                    {
-                        my_text_box.ReadOnly = false;
-                    }
-                    else
-                    {
-                        my_text_box.ReadOnly = true;
-                    }
-                    //my_text_box.ReadOnly = true;
-                    //my_cell.Text = "textBox_" + i.ToString() + "_" + j.ToString();
-
-                    my_cell.Controls.Add(my_text_box);
-
-
-                    //form1.Controls.Add(my_text_box); 
-                    riadok.Controls.Add(my_cell);
-                }
-                //Response.Write("<br>");
-
-            }
-        }
-    }
-
-
-
-
-    protected void drawStaze(string mesiac, string rok)
-    {
-        SortedList data_info = x_db.loadStazeMonthYear("is_staze", mesiac, rok);
-        int days = DateTime.DaysInMonth(Convert.ToInt32(rok), Convert.ToInt32(mesiac));
-        vypis_lbl.Text = data_info.Count.ToString();
-
-        string rights = Session["rights"].ToString();
-
-        if (data_info["rozpis"] != null)
-        {
-
-            if (((rights.IndexOf("users") != -1) || (rights.IndexOf("sestra") != -1)) && (data_info["publish"].ToString() == "0"))
-            {
-                if (u_name == "jbabala" || u_name == "bduchaj")
-                {
-                    this.__drawStaze(data_info, mesiac, rok, days);
-                }
-                else
-                {
-                    vypis_lbl.Text = "<font style='color:red'>Staze, ešte nie sú dokončené!</font> ";
-                }
-            }
-            else
-            {
-
-                this.__drawStaze(data_info, mesiac, rok, days);
-            }
-        }
-        else
-        {
-            this.__drawStaze(data_info, mesiac, rok, days);
-        }
-
-
-
-        /*LinkButton my_link_btn = new LinkButton();
-        my_link_btn.Text = "ulozit";
-        my_link_btn.PostBackUrl = "sluzby.aspx?mesiac=" + mesiac + "&rok=" + rok;
-        form1.Controls.Add(my_link_btn);*/
-
-    }
-
-    protected string getStaze()
-    {
-        int pocet_dni = Convert.ToInt32(days_lbl.Text);
-        string[] month = new string[pocet_dni];
-        string def = "";
-
-        ContentPlaceHolder ctpl = new ContentPlaceHolder();
         Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+        ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
 
-        ctpl = (ContentPlaceHolder)tmpControl;
-
-        for (int i = 0; i < pocet_dni; i++)
+        for (int row=0; row<tableCn; row++)
         {
-            for (int j = 0; j < 6; j++)
+            DateTime dt = Convert.ToDateTime(x2.UnixToMsDateTime(table[row]["datum"].ToString()));
+
+            int day = dt.Day;
+
+            string type = table[row]["type"].ToString();
+
+            if (this.rights == "admin" || this.rights=="poweruser")
             {
+                Control cl = ctpl.FindControl(type + "_" + day.ToString());
 
-                Control tbox = ctpl.FindControl("textBox_" + i.ToString() + "_" + j.ToString());
+                TextBox txtBox = (TextBox)cl;
 
-                if (tbox != null)
-                {
-                    TextBox my_box = (TextBox)tbox;
-                    string mtext = my_box.Text.ToString();
+                txtBox.Text = table[row]["text"].ToString();
 
-                    if (j == 0)
-                    {
-                        month[i] = month[i] + mtext;
-                    }
-                    else
-                    {
-                        month[i] = month[i] + "," + mtext;
-                    }
-                }
 
             }
+            else
+            {
+                Control cl = ctpl.FindControl(type + "_" + day.ToString());
 
+                Label txtBox = (Label)cl;
 
-
+                txtBox.Text = table[row]["text"].ToString() + "<br>"; 
+            }
 
 
         }
-        def = String.Join("\r", month);
-        return def;
     }
 
 
-
-
-    protected void saveStaze()
+    protected void changedText(object sender, EventArgs e)
     {
+        TextBox txtBox = (TextBox)sender;
+        string[] tId = txtBox.ID.ToString().Split('_');
+
         SortedList data = new SortedList();
+        data.Add("text", txtBox.Text.ToString());
+        data.Add("type", tId[0]);
 
-        if (Session["akt_staz"].ToString() != "0")
+        int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue);
+        int rok = Convert.ToInt32(this.rok_cb.SelectedValue);
+
+        int den = Convert.ToInt32(tId[1]);
+
+        int dateGroup = x2.makeDateGroup(rok, mesiac);
+        data.Add("date_group", dateGroup);
+        data.Add("datum", rok.ToString() + "-" + mesiac.ToString() + "-" + den.ToString());
+        data.Add("clinic", Session["klinika_id"]);
+
+        SortedList res = x2Mysql.mysql_insert("is_staze_2", data);
+
+        if (Convert.ToBoolean(res["status"]))
         {
-            //data.Add("id", Request.Cookies["akt_sluzba"].Value.ToString);
-            data.Add("rozpis", this.getStaze());
-
-            if (publish_ck.Checked == true)
-            {
-                data.Add("publish", "1");
-            }
-            else
-            {
-                data.Add("publish", "0");
-            }
-
-            string res = x_db.updateStaze("is_staze", data, Session["akt_staz"].ToString());
-
-            if (res == "ok")
-            {
-                vypis_lbl.Text = "Aktuálne staze boli update-tnuté....";
-            }
-            else
-            {
-                vypis_lbl.Text = "upNastala chyba: " + res + "  " + Session["akt_staz"].ToString();
-            }
-
+            this.drawTable();
+            this.loadStaze();
         }
         else
         {
-            data.Add("mesiac", mesiac_cb.SelectedValue.ToString());
-            data.Add("rok", rok_cb.SelectedValue.ToString());
-            data.Add("rozpis", this.getStaze().ToString());
-            if (publish_ck.Checked)
-            {
-                data.Add("publish", "1");
-            }
-            else
-            {
-                data.Add("publish", "0");
-            }
-
-            SortedList ins_data = x_db.insertStaze("is_staze", data);
-
-            if (ins_data["status"].ToString() == "ok")
-            {
-                Session.Add("akt_staz", ins_data["last_id"].ToString());
-                vypis_lbl.Text = "Aktuálne staze boli uložené v poriadku....." + Session["akt_staz"].ToString();
-            }
-            else if (ins_data["status"].ToString() == "error")
-            {
-                vypis_lbl.Text = "Nastala chyba:" + ins_data["message"].ToString();
-            }
+            x2log.logData(res, "error in app", "error in save staze");
+            this.msg_lbl.Text = res["msg"].ToString();
         }
 
 
 
     }
 
-    protected void Button1_Click(object sender, EventArgs e)
-    {
-        //this.drawStaze(mesiac_cb.SelectedValue.ToString(), rok_cb.SelectedValue.ToString());
-        this.saveStaze();
-        // tabulka = "pokus";
-        //Session.Add("moje", "lila");
-    }
-
-    protected void changeSluzba(object sender, EventArgs e)
-    {
-        Table1.Controls.Clear();
-
-        //vypis_lbl.Text = mesiac_cb.SelectedValue.ToString();
-        // Response.Cookies["rok"].Value = rok_cb.SelectedValue.ToString();
-        this.drawStaze(mesiac_cb.SelectedValue.ToString(), rok_cb.SelectedValue.ToString());
-    }
-
-
-
-    protected void toWord_btn_Click(object sender, EventArgs e)
-    {
-        Session.Add("staze_rok", rok_cb.SelectedValue.ToString());
-        Session.Add("staze_mesiac", mesiac_cb.SelectedValue.ToString());
-        Session.Add("staze_mes_naz", mesiac_cb.SelectedItem.ToString());
-        Session.Add("staze_print", "0");
-
-        Response.Redirect("stazeword.aspx");
-    }
-    protected void print_btn_Click(object sender, EventArgs e)
-    {
-        Session.Add("staze_rok", rok_cb.SelectedValue.ToString());
-        Session.Add("staze_mesiac", mesiac_cb.SelectedValue.ToString());
-        Session.Add("staze_mes_naz", mesiac_cb.SelectedItem.ToString());
-        Session.Add("staze_print", "1");
-
-        Response.Redirect("stazeword.aspx");
-    }
 }

@@ -33,7 +33,7 @@
 </head>
 <body>
     <form id="form1" runat="server">
-        <h1>Kompletný prehľad zadelenia pracovníkov KDCH....</h1>
+        <h1><asp:Label ID="dovkomplTitel_lbl" runat="server" Text=""></asp:Label></h1>
         <hr />
         <div class="nonprint">
     <asp:Label ID="msg_lbl" runat="server" Text=""></asp:Label>

@@ -48,7 +48,7 @@
             </div>
     
       <asp:PlaceHolder ID="druhadk_pl" runat="server" Visible ="false">
-          <asp:Table ID="weekState_tbl" runat="server"></asp:Table>
+          <asp:Table ID="weekState_tbl" runat="server" CssClass="responsive" data-max="14"></asp:Table>
                             <asp:Button ID="setup_btn" runat="server" Text="" OnClick="makeShiftsDraftDKFnc" CssClass="button green" />
                             <asp:Button ID="avaible_btn" runat="server" Text="" OnClick="makeShiftsActiveDKFnc"  CssClass="button blue"/>
                             <br /><div class="info box"><asp:CheckBox ID="edit_chk" runat="server" Text="" AutoPostBack="true" />&nbsp; <asp:Label ID="editChk_lbl" runat="server" Text=""></asp:Label></div><br />

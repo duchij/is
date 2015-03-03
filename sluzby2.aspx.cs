@@ -153,6 +153,7 @@ public partial class sluzby2 : System.Web.UI.Page
         if (this.gKlinika == "2dk")
         {
             this.generateDKShiftTableForm();
+            
             this.generateWeekStatus();
         }
         
@@ -266,6 +267,12 @@ public partial class sluzby2 : System.Web.UI.Page
     protected void generateWeekStatus()
     {
         this.weekState_tbl.Controls.Clear();
+        this.tempWeek_0.Value = "";
+        this.tempWeek_1.Value = "";
+        this.tempWeek_2.Value = "";
+        this.tempWeek_3.Value = "";
+        this.tempWeek_4.Value = "";
+        this.tempWeek_5.Value = "";
 
         int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue);
         int rok = Convert.ToInt32(this.rok_cb.SelectedValue);
@@ -294,28 +301,41 @@ public partial class sluzby2 : System.Web.UI.Page
             {
                 if (week ==0)
                 {
-                    int eTmp = startDay - 1;
-                    headCell.Text = "1. - " + eTmp.ToString() + ". " + mesiac.ToString() + ". " + rok.ToString();
-                    tempWeek.Value =  "1_" + eTmp.ToString();
+                    if (startDay > 1)
+                    {
+                        int eTmp = startDay - 1;
+                        headCell.Text = "1. - " + eTmp.ToString() + ". " + mesiac.ToString() + ". " + rok.ToString();
+                        tempWeek.Value = "1_" + eTmp.ToString();
+                    }
+                    else
+                    {
+                        headCell.Text = startDay.ToString() + ". - " + endDay.ToString() + ". " + mesiac.ToString() + ". " + rok.ToString();
+                        tempWeek.Value = startDay.ToString() + "_" + endDay.ToString();
+                        endDay = endDay + 7;
+                        startDay = startDay + 7;
+                    }
                 }
 
                if (week>0)
-               { 
-                   
+               {
+                   if (endDay > days) endDay = days; 
                    headCell.Text = startDay.ToString() + ". - " + endDay.ToString() + ". " + mesiac.ToString() + ". " + rok.ToString();
                    tempWeek.Value = startDay.ToString() + "_" + endDay.ToString();
                    endDay = endDay + 7;
+                  // if (endDay > days) endDay = days;
                    startDay = startDay + 7;
                
                }
             }
             if (week == 5)
             {
-
-                startDay = endDay -6;
-                //int lendDay = startDay + 6;
-                headCell.Text = startDay.ToString() + ". - " + days.ToString() + ". " + mesiac.ToString() + ". " + rok.ToString();
-                tempWeek.Value = startDay.ToString() + "_" + days.ToString();
+                if (startDay < days)
+                {
+                    startDay = endDay - 6;
+                    //int lendDay = startDay + 6;
+                    headCell.Text = startDay.ToString() + ". - " + days.ToString() + ". " + mesiac.ToString() + ". " + rok.ToString();
+                    tempWeek.Value = startDay.ToString() + "_" + days.ToString();
+                }
                // weekStatus["week_" + week.ToString()] = tempWeek.Value.ToString();
             }
             headRow.Controls.Add(headCell);
@@ -329,51 +349,55 @@ public partial class sluzby2 : System.Web.UI.Page
         {
             Control cl = ctpl.FindControl("tempWeek_"+week.ToString());
 
+           
             HiddenField tempData = (HiddenField)cl;
             string[] hdValue = tempData.Value.ToString().Split('_');
-        
-            string startD = rok.ToString()+"-"+mesiac.ToString()+"-"+hdValue[0];
-            string endD = rok.ToString()+"-"+mesiac.ToString()+"-"+hdValue[1];
-
-            TableCell cellData = new TableCell();
-
-            DropDownList dl = new DropDownList();
-            dl.ID = "week_"+(week+1).ToString()+"_dl";
-            dl.Items.Add(new ListItem("Konziliarny", "konz"));
-            dl.Items.Add(new ListItem("Prijmovy", "prijm"));
-
-            dl.SelectedIndexChanged += new EventHandler(setWeekStatus);
-            dl.AutoPostBack = true;
-            StringBuilder sb = new StringBuilder();
-
-            if (Convert.ToInt32(hdValue[0]) > 1 && week==0)
+            if (cl != null && hdValue.Length == 2)
             {
-                string wd1 = rok.ToString() + "-" + mesiac.ToString() + "-" + "1";
-                int toDay = Convert.ToInt32(hdValue[0]) - 1;
-                string wd2 = rok.ToString() + "-" + mesiac.ToString() + "-" + toDay.ToString();
-               // string zWeek = "";
-                sb.AppendFormat("SELECT [tyzden] FROM [is_sluzby_dk] WHERE [datum] BETWEEN '{0}' AND '{1}' GROUP BY [tyzden]", wd1, wd2);
+                string startD = rok.ToString() + "-" + mesiac.ToString() + "-" + hdValue[0];
+                string endD = rok.ToString() + "-" + mesiac.ToString() + "-" + hdValue[1];
 
-                SortedList row1 = x2Mysql.getRow(sb.ToString());
-                if (row1["status"] == null)
+                TableCell cellData = new TableCell();
+
+                DropDownList dl = new DropDownList();
+                dl.ID = "week_" + week.ToString() + "_dl";
+                dl.Items.Add(new ListItem("Konziliarny", "konz"));
+                dl.Items.Add(new ListItem("Prijmovy", "prijm"));
+
+                dl.SelectedIndexChanged += new EventHandler(setWeekStatus);
+                dl.AutoPostBack = true;
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("SELECT [tyzden] FROM [is_sluzby_dk] WHERE [datum] BETWEEN '{0}' AND '{1}' GROUP BY [tyzden]", startD, endD);
+
+                SortedList row = x2Mysql.getRow(sb.ToString());
+                if (row["status"] == null)
                 {
-                    if (row1.Count > 0)
+                    if (row.Count > 0)
                     {
-                        //dl.SelectedValue = row1["tyzden"].ToString();
+                        dl.SelectedValue = row["tyzden"].ToString();
 
-                        int start = 1;
-                        int end = toDay;
+                        if (row["tyzden"].ToString() == "konz")
+                        {
+                            dl.BackColor = System.Drawing.Color.FromArgb(0xd9edf7);
+                        }
+                        else
+                        {
+                            dl.BackColor = System.Drawing.Color.FromArgb(0xdff0d8);
+                        }
+
+                        int start = Convert.ToInt32(hdValue[0]);
+                        int end = Convert.ToInt32(hdValue[1]);
 
                         for (int iWeek = start; iWeek <= end; iWeek++)
                         {
                             Control txtCl = ctpl.FindControl("konzWeek_" + iWeek.ToString());
                             TableCell txtB = (TableCell)txtCl;
 
-                            txtB.Text = row1["tyzden"].ToString();
+                            txtB.Text = row["tyzden"].ToString();
 
-                            if (this.edit_chk.Checked == true) this.blockDayInShiftDK(rok, mesiac, iWeek, row1["tyzden"].ToString());
+                            if (this.edit_chk.Checked == true) this.blockDayInShiftDK(rok, mesiac, iWeek, row["tyzden"].ToString());
 
-                            if (row1["tyzden"].ToString() == "konz")
+                            if (row["tyzden"].ToString() == "konz")
                             {
                                 txtB.CssClass = "info box";
                             }
@@ -381,50 +405,12 @@ public partial class sluzby2 : System.Web.UI.Page
                             {
                                 txtB.CssClass = "success box";
                             }
-
                         }
                     }
                 }
-            
+                cellData.Controls.Add(dl);
+                riadok.Controls.Add(cellData);
             }
-
-            sb.Length = 0;
-            sb.AppendFormat("SELECT [tyzden] FROM [is_sluzby_dk] WHERE [datum] BETWEEN '{0}' AND '{1}' GROUP BY [tyzden]", startD, endD);
-
-            SortedList row = x2Mysql.getRow(sb.ToString());
-            if (row["status"] == null)
-            {
-                if (row.Count > 0)
-                {
-                    dl.SelectedValue = row["tyzden"].ToString();
-
-                    int start = Convert.ToInt32(hdValue[0]);
-                    int end = Convert.ToInt32(hdValue[1]);
-
-                    for (int iWeek = start; iWeek <= end; iWeek++)
-                    {
-                        Control txtCl = ctpl.FindControl("konzWeek_" + iWeek.ToString());
-                        TableCell txtB = (TableCell)txtCl;
-
-                        txtB.Text = row["tyzden"].ToString();
-
-                       if (this.edit_chk.Checked == true) this.blockDayInShiftDK(rok,mesiac,iWeek, row["tyzden"].ToString());
-
-                        if (row["tyzden"].ToString() == "konz")
-                        {
-                            txtB.CssClass = "info box";
-                        }
-                        else
-                        {
-                            txtB.CssClass = "success box";
-                        }
-
-                    }
-                }
-            }
-
-            cellData.Controls.Add(dl);
-            riadok.Controls.Add(cellData);
 
         }
 
@@ -538,7 +524,15 @@ public partial class sluzby2 : System.Web.UI.Page
         DropDownList dl = (DropDownList)sender;
         string[] id = dl.ID.ToString().Split('_');
 
-        string week = dl.SelectedValue;
+        string week = dl.SelectedValue.ToString();
+        if (week == "konz")
+        {
+            dl.BackColor = System.Drawing.Color.FromArgb(0xd9edf7);
+        }
+        else
+        {
+            dl.BackColor = System.Drawing.Color.FromArgb(0xdff0d8);
+        }
 
         Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
         ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
@@ -550,73 +544,31 @@ public partial class sluzby2 : System.Web.UI.Page
         
 
         string[] hdValue = tempData.Value.ToString().Split('_');
-        
-        string startD = rok.ToString()+"-"+mesiac.ToString()+"-"+hdValue[0];
-        string endD = rok.ToString()+"-"+mesiac.ToString()+"-"+hdValue[1];
-        StringBuilder sb = new StringBuilder();
-
-        if (id[1] == "1")
+        if (cl != null & hdValue.Length == 2)
         {
-            if (Convert.ToInt32(hdValue[0]) > 1)
+
+            string startD = rok.ToString() + "-" + mesiac.ToString() + "-" + hdValue[0];
+            string endD = rok.ToString() + "-" + mesiac.ToString() + "-" + hdValue[1];
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("UPDATE [is_sluzby_dk] SET [tyzden]='{0}' WHERE [datum] BETWEEN '{1}' AND '{2}' ", week, startD, endD);
+
+            SortedList res = x2Mysql.execute(sb.ToString());
+            if (Convert.ToBoolean(res["status"]))
             {
-                string wd1 = rok.ToString() + "-" + mesiac.ToString() + "-" + "1";
-                int toDay = Convert.ToInt32(hdValue[0]) - 1;
-                string wd2 = rok.ToString() + "-" + mesiac.ToString() + "-" + toDay.ToString();
-                string zWeek = "";
-                if (week == "konz")
+
+                int start = Convert.ToInt32(hdValue[0]);
+                int end = Convert.ToInt32(hdValue[1]);
+
+                for (int iWeek = start; iWeek <= end; iWeek++)
                 {
-                    zWeek = "prijm";
-                    sb.AppendFormat("UPDATE [is_sluzby_dk] SET [tyzden]='{0}' WHERE [datum] BETWEEN '{1}' AND '{2}' ", "prijm", wd1, wd2);
+                    Control txtCl = ctpl.FindControl("konzWeek_" + iWeek.ToString());
+                    TableCell txtB = (TableCell)txtCl;
+
+                    txtB.Text = week;
+
+                    if (week == "prijm") txtB.CssClass = "success box";
+                    if (week == "konz") txtB.CssClass = "info box";
                 }
-                else
-                {
-                    zWeek = "konz";
-                    sb.AppendFormat("UPDATE [is_sluzby_dk] SET [tyzden]='{0}' WHERE [datum] BETWEEN '{1}' AND '{2}' ", "konz", wd1, wd2);
-                }
-               
-                SortedList res1 = x2Mysql.execute(sb.ToString());
-                if (Convert.ToBoolean(res1["status"]))
-                {
-                   // int start = Convert.ToInt32(wd1);
-                   // int end = Convert.ToInt32(wd2);
-
-                    for (int iWeek = 1; iWeek <= toDay; iWeek++)
-                    {
-                        Control txtCl = ctpl.FindControl("konzWeek_" + iWeek.ToString());
-                        TableCell txtB = (TableCell)txtCl;
-
-                        txtB.Text = zWeek;
-
-                        if (zWeek == "prijm") txtB.CssClass = "success box";
-                        if (zWeek == "konz") txtB.CssClass = "info box";
-                    }
-                }
-
-            }
-        }
-
-        //if ()
-       
-        sb.Length = 0;
-        sb.AppendFormat("UPDATE [is_sluzby_dk] SET [tyzden]='{0}' WHERE [datum] BETWEEN '{1}' AND '{2}' ", week, startD, endD);
-        
-       
-
-        SortedList res = x2Mysql.execute(sb.ToString());
-        if (Convert.ToBoolean(res["status"]))
-        {
-            int start = Convert.ToInt32(hdValue[0]);
-            int end = Convert.ToInt32(hdValue[1]);
-
-            for (int iWeek = start; iWeek <= end; iWeek++)
-            {
-                Control txtCl = ctpl.FindControl("konzWeek_" + iWeek.ToString());
-                TableCell txtB = (TableCell)txtCl;
-
-                txtB.Text =week;
-
-                if (week == "prijm") txtB.CssClass = "success box";
-                if (week == "konz") txtB.CssClass = "info box";
             }
         }
 
@@ -889,6 +841,7 @@ public partial class sluzby2 : System.Web.UI.Page
 
         if (tableCn > 0 && table[0]["state"].ToString() !="setup" )
         {
+            this.shiftTable.Visible = true;
             Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
             ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
 
@@ -1022,7 +975,7 @@ public partial class sluzby2 : System.Web.UI.Page
          headCellSave.Text = "<strong>Ulozit</strong>";
          headRow.Controls.Add(headCellSave);*/
 
-        shiftTable.Controls.Add(headRow);
+        this.shiftTable.Controls.Add(headRow);
 
         string[] freeDays = Session["freedays"].ToString().Split(',');
         Boolean editSt = this.edit_chk.Checked;
@@ -1106,9 +1059,6 @@ public partial class sluzby2 : System.Web.UI.Page
                         else
                         {
                             Label txtDoc = this.makeDoctorText("Odd2_" + (row + 1).ToString());
-
-                            
-
                             dataCell.Controls.Add(txtDoc);
                         }
                         

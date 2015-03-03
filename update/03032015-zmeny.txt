@@ -1,0 +1,32 @@
+﻿CREATE TABLE `is_staze_2` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `datum` date NOT NULL,
+  `type` varchar(10) COLLATE 'ascii_general_ci' NOT NULL,
+  `text` text COLLATE 'utf8_slovak_ci' NULL,
+  `clinic` bigint unsigned NOT NULL
+) COMMENT='' ENGINE='InnoDB' COLLATE 'utf8_slovak_ci';
+
+ALTER TABLE `is_staze_2`
+ADD FOREIGN KEY (`clinic`) REFERENCES `is_clinics` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE `is_staze_2`
+ADD `public` enum('yes','no') COLLATE 'ascii_general_ci' NOT NULL DEFAULT 'no' AFTER `text`,
+ADD `created` timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP,
+COMMENT='';
+
+ALTER TABLE `is_staze_2`
+ADD UNIQUE `type_clinic_datum` (`type`, `clinic`, `datum`);
+
+ALTER TABLE `is_staze_2`
+CHANGE `created` `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP AFTER `clinic`,
+COMMENT='';
+
+INSERT INTO `is_settings` (`name`, `data`)
+VALUES ('kdch_staze', '3roc,4roc,5roc,6roc,Cudz');
+
+ALTER TABLE `is_staze_2`
+ADD `date_group` int NOT NULL AFTER `datum`,
+COMMENT='';
+
+ALTER TABLE `is_staze_2`
+ADD INDEX `date_group` (`date_group`);

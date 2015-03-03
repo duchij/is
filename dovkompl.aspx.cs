@@ -10,15 +10,162 @@ public partial class dovkompl : System.Web.UI.Page
 {
     mysql_db x2Mysql = new mysql_db();
     x2_var x2 = new x2_var();
+    public string gKlinika;
 
     protected void Page_Load(object sender, EventArgs e)
     {
         int mesiac = Convert.ToInt32(Session["dov_mesiac"]);
         int rok = Convert.ToInt32(Session["dov_rok"]);
-        this.init(rok,mesiac);
-        this.loadActivities(rok,mesiac);
-        this.loadShifts(rok, mesiac);
+
+        this.gKlinika = Session["klinika"].ToString().ToLower();
+
+        if (this.gKlinika == "kdch")
+        {
+            this.init(rok, mesiac);
+
+            this.loadActivities(rok, mesiac);
+            this.loadShifts(rok, mesiac);
+        }
+
+        if (this.gKlinika == "2dk")
+        {
+            DateTime dt = DateTime.Today;
+            this.dovkomplTitel_lbl.Text = x2.setLabel("2dk_dovkompl_titel") + ", " + dt.ToLongDateString();
+            this.init(rok, mesiac);
+            this.loadActivities(rok, mesiac);
+            this.loadShiftsDK(rok, mesiac);
+        }
+       
     }
+
+    protected void loadShiftsDK(int rok, int mesiac)
+    {
+        int dateGroup = x2.makeDateGroup(rok, mesiac);
+
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine("SELECT [datum], GROUP_CONCAT([typ] ORDER BY [ordering]) AS [type], ");
+        sb.AppendLine("GROUP_CONCAT(IFNULL([user_id],'0') ORDER BY [ordering]) AS [user_ids] FROM [is_sluzby_dk]");
+        sb.AppendFormat("WHERE [date_group] = '{0}' AND [state]='active' AND [clinic]='{1}' ",dateGroup,Session["klinika_id"]);
+        sb.AppendLine("GROUP BY [datum]");
+
+        Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
+
+        int tableCn = table.Count;
+        int days = DateTime.DaysInMonth(rok, mesiac);
+        if (tableCn > 0)
+        {
+            for (int row = 0; row < tableCn; row++)
+            {
+                string[] typArr = table[row]["type"].ToString().Split(',');
+                string[] idArr = table[row]["user_ids"].ToString().Split(',');
+
+                DateTime dt = Convert.ToDateTime(x2.UnixToMsDateTime(table[row]["datum"].ToString()));
+
+                int den = dt.Day;
+                int dayOfWeek = (int)dt.DayOfWeek;
+
+                int cnUsers = idArr.Length;
+                for (int i = 0; i < cnUsers; i++)
+                {
+                    if (idArr[i] != "0")
+                    {
+                        Control crtl = FindControl("stCell_" + den.ToString() + "_" + idArr[i]);
+                        TableCell stCell = (TableCell)crtl;
+                        switch (typArr[i])
+                        {
+                            case "OupA":
+                                stCell.BackColor = System.Drawing.Color.FromArgb(0xed7669);
+                                stCell.ToolTip += "Urgent (norm.den)" + "\r\n";
+                                break;
+                            case "OupA1":
+                                stCell.BackColor = System.Drawing.Color.FromArgb(0xed7669);
+                                stCell.ToolTip += "Urgent (sviatok/vikend)" + "\r\n";
+                                break;
+                            case "OupA2":
+                                stCell.BackColor = System.Drawing.Color.FromArgb(0xed7669);
+                                stCell.ToolTip += "Urgent (sviatok/vikend)" + "\r\n";
+                                break;
+                            case "OupB":
+                                stCell.BackColor = System.Drawing.Color.FromArgb(0xed7669);
+                                stCell.ToolTip += "Urgent (norm.den)" + "\r\n";
+                                break;
+                            case "OupB1":
+                                stCell.BackColor = System.Drawing.Color.FromArgb(0xed7669);
+                                stCell.ToolTip += "Urgent (sviatok/vikend)" + "\r\n";
+                                break;
+                            case "Odd":
+                                stCell.BackColor = System.Drawing.Color.FromArgb(0x5faee3);
+                                stCell.ToolTip += "Oddelenie (norm.den)" + "\r\n";
+                                break;
+                            case "Odd1":
+                                stCell.BackColor = System.Drawing.Color.FromArgb(0x5faee3);
+                                stCell.ToolTip += "Oddelenie (sviatok/vikend)" + "\r\n";
+                                break;
+                            case "Odd2":
+                                stCell.BackColor = System.Drawing.Color.FromArgb(0x5faee3);
+                                stCell.ToolTip += "Oddelenie (sviatok/vikend)" + "\r\n";
+                                break;
+                            case "OddB":
+                                stCell.BackColor = System.Drawing.Color.FromArgb(0x54d98c);
+                                stCell.ToolTip += "Oddelenie B" + "\r\n";
+                                break;
+                            case "Expe":
+                                stCell.BackColor = System.Drawing.Color.FromArgb(0x46627f);
+                                stCell.ToolTip += "Expektacne" + "\r\n";
+                                break;
+                            case "KlAmb":
+                                stCell.BackColor = System.Drawing.Color.FromArgb(0xb07cc6);
+                                stCell.ToolTip += "Klinicka ambulancia" + "\r\n";
+                                break;
+                        }
+                        string tmpStCell = stCell.Text.ToString();
+                        if (tmpStCell.Length > 0)
+                        {
+                            stCell.Text += "\r\n" + typArr[i];
+                        }
+                        else
+                        {
+                            stCell.Text = typArr[i];
+                        }
+                    }
+
+                    if (typArr[i] != "KlAmb")
+                    {
+                        if (dayOfWeek == 0 || dayOfWeek == 6)
+                        {
+
+                            Control crtl1 = FindControl("stCell_" + (den + 1).ToString() + "_" + idArr[i]);
+                            if (crtl1 != null)
+                            {
+                                TableCell stCell1 = (TableCell)crtl1;
+                                stCell1.BackColor = System.Drawing.Color.LightGray;
+                                stCell1.ToolTip += "Po sluzbe \r\n";
+                            }
+                            Control crtl2 = FindControl("stCell_" + (den + 2).ToString() + "_" + idArr[i]);
+                            if (crtl2 != null)
+                            {
+                                TableCell stCell2 = (TableCell)crtl2;
+                                stCell2.BackColor = System.Drawing.Color.LightGray;
+                                stCell2.ToolTip += "Po sluzbe \r\n";
+                            }
+                        }
+                        else
+                        {
+                            Control crtl3 = FindControl("stCell_" + (den + 1).ToString() + "_" + idArr[i]);
+                            if (crtl3 != null)
+                            {
+                                TableCell stCell3 = (TableCell)crtl3;
+                                stCell3.BackColor = System.Drawing.Color.LightGray;
+                                stCell3.ToolTip += "Po sluzbe \r\n";
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
 
     protected void loadShifts(int rok, int mesiac)
     {
@@ -134,7 +281,7 @@ public partial class dovkompl : System.Web.UI.Page
        // sb.AppendLine("INNER JOIN [is_dovolenky] ON [is_users].[id]=[is_dovolenky].[user_id] ");
         sb.AppendFormat("WHERE (MONTH([is_dovolenky].[od]) = '{0}' OR MONTH([is_dovolenky].[do]) = '{0}') ", mesiac);
         sb.AppendFormat("AND (YEAR([is_dovolenky].[od]) = '{0}' OR YEAR([is_dovolenky].[do]) = '{0}')", rok);
-        sb.AppendFormat("AND [is_dovolenky].[clinics]='{0}' ORDER BY [is_dovolenky].[do] ASC", 3);
+        sb.AppendFormat("AND [is_dovolenky].[clinics]='{0}' ORDER BY [is_dovolenky].[do] ASC",Session["klinika_id"]);
 
         Dictionary<int, Hashtable> data = x2Mysql.getTable(sb.ToString());
         int dataCn = data.Count;
@@ -262,8 +409,9 @@ public partial class dovkompl : System.Web.UI.Page
     {
         StringBuilder sb = new StringBuilder();
         sb.AppendLine("SELECT [id],[name],[name2],[name3],[titul_pred],[full_name],[titul_za] FROM [is_users] ");
-        sb.AppendLine("WHERE ([active] = 1 AND [klinika] = 3 AND [work_group]='doctor') ");
+        sb.AppendFormat("WHERE ([active] = 1 AND [klinika] = '{0}' AND [work_group]='doctor') ",Session["klinika_id"]);
         sb.AppendLine("AND [name] != 'admin' AND [name] != 'vtablet'");
+        //sb.AppendFormat("AND [klinika]='{0}'", this.gKlinika);
         sb.AppendLine("ORDER BY [name2] ASC");
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
