@@ -1,0 +1,3 @@
+﻿ALTER TABLE `is_labels`
+CHANGE `idf` `idf` varchar(50) COLLATE 'ascii_general_ci' NOT NULL AFTER `clinic`,
+COMMENT='';

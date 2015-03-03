@@ -123,6 +123,8 @@ public partial class _Default : System.Web.UI.Page
                     Session.Add("titul_pred", x2.getStr(data["titul_pred"].ToString()));
                     Session.Add("titul_za", x2.getStr(data["titul_za"].ToString()));
                     Session.Add("klinika_label", x2.getStr(data["klinika_label"].ToString()));
+                    string[] fd = x2Mysql.getFreeDays();
+                    Session.Add("freedays",String.Join(",",fd));
 
                     SortedList passPhrase = db_obj.getPassPhrase();
                     Session.Add("passphrase", passPhrase["data"].ToString());
@@ -168,6 +170,8 @@ public partial class _Default : System.Web.UI.Page
 
                     Session.Add("zaradenie",  x2.getStr(data["zaradenie"].ToString()));
                     Session.Add("klinika_label", x2.getStr(data["klinika_label"].ToString()));
+                    string[] fd = x2Mysql.getFreeDays();
+                    Session.Add("freedays", String.Join(",", fd));
 
                     if (x2.getStr(data["omega_ms_item_id"].ToString()).Length > 0)
                     {
@@ -189,19 +193,17 @@ public partial class _Default : System.Web.UI.Page
                     Response.Cookies["login"].Value = data["name"].ToString();
                     Response.Cookies["email"].Value = data["email"].ToString(); */
 
+                  
                     List<string> news = db_obj.getLastNews();
-
                     if (news.Count > 0)
                     {
                         Session["newsToShow"] = news[0];
                     }
 
-
                     if (data["name"].ToString() == "vtablet")
                     {
                         Response.Redirect("tabletview.aspx");
                     }
-
                 
 
                     if (Session["workgroup"].ToString() == "doctor")
@@ -216,7 +218,15 @@ public partial class _Default : System.Web.UI.Page
                         {
                             if (DateTime.Today < Convert.ToDateTime(poz_data["datum"].ToString()))
                             {
-                                Response.Redirect(@"poziadavky.aspx?a=1");
+                                if (Session["klinika"].ToString().ToLower() == "kdch")
+                                {
+                                    Response.Redirect(@"poziadavky.aspx?a=1");
+                                }
+                                else
+                                {
+                                    Response.Redirect(@"hlasko.aspx");
+                                }
+                               
                             }
                             else
                             {

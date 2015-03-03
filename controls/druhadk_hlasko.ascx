@@ -9,11 +9,9 @@ Vytvoril:<asp:Label ID="creatUser_lbl" runat="server" Text="" Font-Bold="true"><
     
     <div class="one half">
         <%--OnSelectionChanged="Calendar1_SelectionChanged"--%>
-        Sluzba:
+        Služba:
         <asp:DropDownList ID="shiftType_dl" runat="server" AutoPostBack="true" OnSelectedIndexChanged="Calendar1_SelectionChanged"></asp:DropDownList>
-    </div>
-    <div class="one half">
-         <asp:Calendar ID="Calendar1" runat="server" BackColor="White" OnSelectionChanged="Calendar1_SelectionChanged"  CssClass="responsive" data-max="12"
+    <asp:Calendar ID="Calendar1" runat="server" BackColor="White" OnSelectionChanged="Calendar1_SelectionChanged"  CssClass="responsive" data-max="12"
                             BorderColor="#999999" DayNameFormat="Shortest"  
                               ForeColor="Black" 
                              CellPadding="4" >
@@ -26,6 +24,13 @@ Vytvoril:<asp:Label ID="creatUser_lbl" runat="server" Text="" Font-Bold="true"><
                         <DayHeaderStyle BackColor="#CCCCCC" Font-Bold="True" />
                         <TitleStyle BackColor="#999999" BorderColor="Black" Font-Bold="True" />
                         </asp:Calendar>
+    
+    </div>
+    <div class="one half padded">
+        RDG v prehliadači....
+        <hr />
+        <asp:Table ID="osirix_tbl" runat="server"></asp:Table>
+         
     </div> 
 </div>
     <div class="row">
@@ -67,11 +72,12 @@ Vytvoril:<asp:Label ID="creatUser_lbl" runat="server" Text="" Font-Bold="true"><
             <div class="one fifth">
                 Typ:<asp:DropDownList ID="worktype_cb" runat="server">
                     <asp:ListItem Value="prijem">Príjem</asp:ListItem>
-                    <asp:ListItem Value="operac">Operácia/Asistencia/Výkon</asp:ListItem>
-                    <asp:ListItem Value="sledov">Sledovanie</asp:ListItem>
-                    <asp:ListItem Value="konzil">Konzílium</asp:ListItem>
+                    <asp:ListItem Value="operac">Vyhodnocovanie výsledkov</asp:ListItem>
+                    <asp:ListItem Value="sledov">Úprava liečby</asp:ListItem>
+                    <asp:ListItem Value="konzil">Konzultácia</asp:ListItem>
                     <asp:ListItem Value="vizita">Vizita</asp:ListItem>
                     <asp:ListItem Value="dekurz">Dekurzovanie</asp:ListItem>
+                    <asp:ListItem Value="dekurz">Konzílium</asp:ListItem>
                     <asp:ListItem Value="urgent">Urgent</asp:ListItem>
                     </asp:DropDownList>
             </div> 
@@ -115,7 +121,7 @@ Vytvoril:<asp:Label ID="creatUser_lbl" runat="server" Text="" Font-Bold="true"><
 <asp:Button ID="saveHlasko_btn" runat="server" Text="Ulož zmenu" OnClick="saveHlaskoFnc" CssClass="button green" />
                 
                
-                <asp:Button ID="print_btn" runat="server" Text="Vytlač" CssClass="button blue" />
+                <asp:Button ID="print_btn" runat="server" Text="Vytlač" CssClass="button blue" OnClick="printFnc" />
                 
                 <asp:Button ID="toWord_btn" runat="server" Text="Tlač/Word"  />
                 

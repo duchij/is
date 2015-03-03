@@ -42,44 +42,65 @@ public partial class hlasenia_print : System.Web.UI.Page
         DateTime datum = Convert.ToDateTime(Session["hlasko_date"]);
         sb.Length = 0;
        
-
-        sb.Append("SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],");
-        //sb.Append("[t_sluzb].[state] AS [state],");
-      //  sb.Append("GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [users_ids],");
-        sb.Append("GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names]");
-        // sb.Append("GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [comment],");
-      //  sb.Append("[t_sluzb].[date_group] AS [dategroup]");
-        sb.Append("FROM [is_sluzby_2] AS [t_sluzb]");
-        sb.Append("LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]");
-        sb.AppendFormat("WHERE [t_sluzb].[datum]='{0}'", my_x2.unixDate(datum));
-        sb.Append("GROUP BY [t_sluzb].[datum]");
-        //sb.Append("ORDER BY [t_sluzb].[datum] DESC");
+        if (Session["klinika"].ToString().ToLower() == "kdch")
+        { 
+            sb.Append("SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],");
+            sb.Append("GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names]");
+            sb.Append("FROM [is_sluzby_2] AS [t_sluzb]");
+            sb.Append("LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]");
+            sb.AppendFormat("WHERE [t_sluzb].[datum]='{0}'", my_x2.unixDate(datum));
+            sb.Append("GROUP BY [t_sluzb].[datum]");
+        }
+        if (Session["klinika"].ToString().ToLower() == "2dk")
+        {
+            sb.Append("SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],");
+            sb.Append("GROUP_CONCAT(IFNULL([t_users].[name3],'-') ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names]");
+            sb.Append("FROM [is_sluzby_dk] AS [t_sluzb]");
+            sb.Append("LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]");
+            sb.AppendFormat("WHERE [t_sluzb].[datum]='{0}'", my_x2.unixDate(datum));
+            sb.Append("GROUP BY [t_sluzb].[datum]");
+        }
+      
 
         row = x2MySql.getRow(sb.ToString());
 
        // SortedList lekari = this.getSluzbyByDen(Convert.ToInt32(Request["den"].ToString()));
         string[] names = row["users_names"].ToString().Split(';');
-        
-        this.oup_lbl.Text = names[0];
-        this.odda_lbl.Text = names[1];
-        this.oddb_lbl.Text = names[2];
-        this.op_lbl.Text = names[3];
+        string[] types = row["type1"].ToString().Split(';');
 
-        if (Convert.ToBoolean(Session["hlasko_toWord"]) == true)
+        int colsLn = names.Length;
+
+        TableRow riadok = new TableRow();
+        this.report_tbl.Controls.Add(riadok);
+
+        for (int col = 0; col < colsLn; col++ )
         {
-            Response.Clear();
-            Response.Buffer = true;
-            Response.ContentType = "application/msword";
-            Response.AddHeader("content-disposition", "attachment;filename=hlasko.doc");
-            Response.ContentEncoding = System.Text.Encoding.GetEncoding("windows-1250");
-            Response.Charset = "windows-1250";
-            StringWriter stringWriter = new StringWriter(); //System.IO namespace should be used
-            HtmlTextWriter htmlTextWriter = new HtmlTextWriter(stringWriter);
-
-            this.RenderControl(htmlTextWriter);
-            Response.Write(stringWriter.ToString());
-            Response.End();
+            TableCell dataCell = new TableCell();
+            dataCell.Text = "<strong>" + types[col] + "</strong>: " + names[col];
+            riadok.Controls.Add(dataCell);
         }
+
+
+            /*this.oup_lbl.Text = names[0];
+            this.odda_lbl.Text = names[1];
+            this.oddb_lbl.Text = names[2];
+            this.op_lbl.Text = names[3];*/
+
+            if (Convert.ToBoolean(Session["hlasko_toWord"]) == true)
+            {
+                Response.Clear();
+                Response.Buffer = true;
+                Response.ContentType = "application/msword";
+                Response.AddHeader("content-disposition", "attachment;filename=hlasko.doc");
+                Response.ContentEncoding = System.Text.Encoding.GetEncoding("windows-1250");
+                Response.Charset = "windows-1250";
+                StringWriter stringWriter = new StringWriter(); //System.IO namespace should be used
+                HtmlTextWriter htmlTextWriter = new HtmlTextWriter(stringWriter);
+
+                this.RenderControl(htmlTextWriter);
+                Response.Write(stringWriter.ToString());
+                Response.End();
+            }
 
         //if (Session["pdf"] == "print")
         //{

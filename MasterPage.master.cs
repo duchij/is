@@ -18,6 +18,7 @@ public partial class MasterPage : System.Web.UI.MasterPage
     public mysql_db x2Mysql = new mysql_db();
     public string rights="";
     public string wgroup = "";
+    public string gKlinika;
     
    /* public string PageName
     {
@@ -35,6 +36,7 @@ public partial class MasterPage : System.Web.UI.MasterPage
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        this.gKlinika = Session["klinika"].ToString().ToLower();
         this.web_titel.Text = X2.setLabel(Session["klinika"].ToString().ToLower()+"_web_titel");
 
         this.current_user_lbl.Text = Session["fullname"].ToString();
@@ -132,16 +134,29 @@ public partial class MasterPage : System.Web.UI.MasterPage
     {
         int dateGroup = X2.makeDateGroup(DateTime.Today.Year, DateTime.Today.Month);
         StringBuilder sb = new StringBuilder();
-        if (this.wgroup == "doctor")
+
+        if (this.gKlinika == "kdch")
         {
-            sb.AppendFormat("SELECT [datum] FROM [is_sluzby_2] WHERE [date_group] ='{0}' AND [user_id] = '{1}' AND [typ] != 'Prijm' ORDER BY [datum]", dateGroup, Session["user_id"]);
+            if (this.wgroup == "doctor")
+            {
+                sb.AppendFormat("SELECT [datum],[typ] FROM [is_sluzby_2] WHERE [date_group] ='{0}' AND [user_id] = '{1}' ORDER BY [datum]", dateGroup, Session["user_id"]);
+            }
+            else
+            {
+                sb.AppendFormat("SELECT [datum],[typ] FROM [is_sluzby_2_sestr] WHERE [date_group] ='{0}' AND [user_id] = '{1}' AND [deps]='{2}' ORDER BY [datum]", dateGroup, Session["user_id"], Session["oddelenie"]);
+            }
         }
-        else
+        if (this.gKlinika == "2dk")
         {
-            sb.AppendFormat("SELECT [datum],[typ] FROM [is_sluzby_2_sestr] WHERE [date_group] ='{0}' AND [user_id] = '{1}' AND [deps]='{2}' ORDER BY [datum]", dateGroup, Session["user_id"],Session["oddelenie"]);
+            if (this.wgroup == "doctor")
+            {
+                sb.AppendFormat("SELECT [datum],[typ] FROM [is_sluzby_dk] WHERE [date_group] ='{0}' AND [user_id] = '{1}' ORDER BY [datum]", dateGroup, Session["user_id"]);
+            }
         }
+        
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
+
         string[] shifts = new string[table.Count];
         if (table.Count > 0)
         {
@@ -150,11 +165,11 @@ public partial class MasterPage : System.Web.UI.MasterPage
             {
                 if (this.wgroup == "doctor")
                 {
-                    shifts[i] = X2.UnixToMsDateTime(table[i]["datum"].ToString()).ToString("d");
+                    shifts[i] = X2.UnixToMsDateTime(table[i]["datum"].ToString()).ToString("d.M") + " (" + table[i]["typ"].ToString() + ")";
                 }
                 else
                 {
-                    shifts[i] = X2.UnixToMsDateTime(table[i]["datum"].ToString()).ToString("d") + "(" + table[i]["typ"].ToString() + ")";
+                    shifts[i] = X2.UnixToMsDateTime(table[i]["datum"].ToString()).ToString("d.M") + " (" + table[i]["typ"].ToString() + ")";
                 }
             }
             this.currentShifts_lbl.Text = String.Join(", ",shifts);

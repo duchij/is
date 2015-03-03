@@ -6,6 +6,7 @@
               <li><asp:HyperLink ID="call_sp" runat="server" NavigateUrl="~/helpers/callsp.aspx">Call Stored Procedure</asp:HyperLink></li>
               <li><asp:HyperLink ID="call_consluz" runat="server" NavigateUrl="~/helpers/convsluz.aspx">Konvertor sluzieb</asp:HyperLink></li> 
              <li><asp:HyperLink ID="labels" runat="server" NavigateUrl="labels.aspx">Labels</asp:HyperLink></li> 
+              
         
         </ul>
   </asp:PlaceHolder>

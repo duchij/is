@@ -10,6 +10,7 @@ public partial class is_epc : System.Web.UI.Page
 {
     public mysql_db x2Mysql = new mysql_db();
     public x2_var x2 = new x2_var();
+    log x2log = new log();
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -42,7 +43,7 @@ public partial class is_epc : System.Web.UI.Page
 
         string mesStr = dateGroup.Substring(4, 2);
 
-        DateTime denPO = new DateTime(rok,mesiac,dni,7,0,0);
+        DateTime denPO = new DateTime(rok,mesiac,dni,7,59,0);
         denPO = denPO.AddDays(1);
         string zacDt = rok.ToString()+"-"+mesStr.ToString()+"-"+"01";
       //  string koncDt = rok.ToString()+"-"+mesStr.ToString()+"-"+dni.ToString();
@@ -54,17 +55,17 @@ public partial class is_epc : System.Web.UI.Page
         sb.AppendLine("FROM [is_hlasko_epc] AS [hlasko_epc]");
         sb.AppendLine("INNER JOIN [is_hlasko] AS [hlasko] ON [hlasko].[id] = [hlasko_epc].[hlasko_id]");
         sb.AppendFormat("WHERE [hlasko_epc].[user_id] = '{0}'",Convert.ToInt32(Session["user_id"]));
-        sb.AppendFormat("AND [hlasko].[dat_hlas] BETWEEN '{0} 00:00:00' AND '{1} 07:00:00' ORDER BY [hlasko_epc].[work_start] ASC",zacDt,koncDt);
+        sb.AppendFormat("AND [hlasko_epc].[work_start] BETWEEN '{0} 00:00:00' AND '{1} 07:59:00' ORDER BY [hlasko_epc].[work_start] ASC",zacDt,koncDt);
 
         Dictionary<int, SortedList> table = x2Mysql.getTableSL(sb.ToString());
-
+        //x2log.logData(table, "", "tabulka sluzieb");
 
 
         sb.Length = 0;
         sb.AppendLine("SELECT [hlasko].[dat_hlas] AS [datum],[hlasko].[type] AS [sluzba_typ],[hlasko_epc].[user_id], SUM([work_time]) AS [worktime]");
         sb.AppendLine("FROM [is_hlasko_epc] as [hlasko_epc]");
         sb.AppendLine("LEFT JOIN [is_hlasko] AS [hlasko] ON [hlasko].[id]=[hlasko_epc].[hlasko_id]");
-        sb.AppendFormat("WHERE [hlasko_epc].[work_start] BETWEEN '{0} 00:00:00' AND '{1} 07:00:00'", zacDt, koncDt);
+        sb.AppendFormat("WHERE [hlasko_epc].[work_start] BETWEEN '{0} 00:00:00' AND '{1} 07:59:00'", zacDt, koncDt);
         sb.AppendFormat("AND [user_id]='{0}'", Session["user_id"].ToString());
         sb.AppendLine("GROUP BY [hlasko_epc].[hlasko_id]");
         sb.AppendLine("ORDER BY [hlasko].[dat_hlas]");
@@ -184,7 +185,18 @@ public partial class is_epc : System.Web.UI.Page
         kompl.Style.Add("padding", "5px");
         kompl.Font.Bold = true;
         kompl.Text = "Služba: " + table[row]["typ_sluzby"].ToString() + " Dňa: " + x2.MSDate(table[row]["datum_hlasenia"].ToString());
-        int min = Convert.ToInt32(statDat[stat]["worktime"]);
+        int min = 0;
+
+        try
+        {
+            min = Convert.ToInt32(statDat[stat]["worktime"]);
+        }
+        catch (Exception e)
+        {
+            
+            min = 0;
+            x2log.logData(statDat, e.ToString(), "error in statDat");
+        }
 
         decimal celkHod = min / 60;
         

@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="is_epc.aspx.cs" Inherits="is_epc" Culture="sk-Sk" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="is_epc.aspx.cs" Inherits="is_epc" Culture="sk-SK" %>
 
 <!DOCTYPE html>
 

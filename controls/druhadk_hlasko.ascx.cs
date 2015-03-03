@@ -204,7 +204,7 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
             {
                 this.loadEPCData(true);
                 this.clearEpcData();
-               // this._generateHlasko();
+                this._generateHlasko();
 
                 this.loadFile_fup.Visible = true;
                 this.upLoadFile_btn.Visible = true;
@@ -254,7 +254,8 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
         {
             workType[i] = this.worktype_cb.Items[i].Text.ToString()+"<ul>||instr||</ul><br>";
             workIdf[i] = this.worktype_cb.Items[i].Value.ToString();
-            works.Add(workIdf[i],"");
+            
+            works[workIdf[i]]="";
         }
 
         int tableLn = table.Count;
@@ -292,7 +293,7 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
         this.hlasenie.Text = string.Join("", workType);
         //this.osirix_txt.Text = osirix;
 
-        //this.saveGenerated();
+        this.saveGenerated();
         //this.clearEpcData();
     }
 
@@ -302,7 +303,7 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
         //data.Add("dat_hlas", x2.unixDate(this.Calendar1.SelectedDate));
         data.Add("text", x2.EncryptString(this.hlasenie.Text.ToString(), Session["passphrase"].ToString()));
         data.Add("last_user", Session["user_id"].ToString());
-        data.Add("creat_user", 0);
+        //data.Add("creat_user", 0);
         //data.Add("type", this.shiftType_dl.SelectedValue.ToString());
         data.Add("status", "generated");
         data.Add("encrypt", "yes");
@@ -315,10 +316,6 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
         if (status == true)
         {
             this.loadHlasko();
-            //msg_lbl.Text = res;
-            //last_user.Text = my_last_user["full_name"].ToString();
-            //this.generateOsirix();
-
         }
         else
         {
@@ -416,12 +413,21 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
 
     }
 
+   // protected void shiftType_SelectionChanged(object)
+
     protected void Calendar1_SelectionChanged(object sender, EventArgs e)
     {
-        //this.setShiftTypes();
-        this.loadHlasko();
-        this.loadEPCData(false);
-        
+        if (sender.GetType() == typeof(Calendar))
+        {
+            this.setShiftTypes();
+            this.loadHlasko();
+            this.loadEPCData(false);
+        }
+        if (sender.GetType() == typeof(DropDownList))
+        {
+            this.loadHlasko();
+            this.loadEPCData(false);
+        }
     }
 
     protected void loadclinicDeps()
@@ -432,6 +438,7 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
         Dictionary<int, Hashtable> data = x2Mysql.getTable(sb.ToString());
 
         int dataCn = data.Count;
+        this.clinicDep_dl.Items.Add(new ListItem("Mimo kliniky", "mimo"));
 
         for (int i = 0; i < dataCn; i++)
         {
@@ -458,7 +465,7 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
 
         if (objId[0] == "editBtn")
         {
-            this.ctrl_msg_lbl.Text = objId[1] + "...." + objId[0];
+           // this.ctrl_msg_lbl.Text = objId[1] + "...." + objId[0];
             sb.Length = 0;
             sb.AppendFormat("SELECT * FROM [is_hlasko_epc] WHERE [id] = '{0}'", objId[1]);
             SortedList row = x2Mysql.getRow(sb.ToString());
@@ -522,6 +529,7 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
 
 
         this.activity_tbl.Controls.Clear();
+        this.osirix_tbl.Controls.Clear();
 
         this.activity_tbl.Visible = true;
         StringBuilder sb = new StringBuilder();
@@ -620,6 +628,17 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
             ch_osirix.Checked = Convert.ToBoolean(table[i]["osirix"]);
             ch_osirix.Enabled = false;
             osirixCell.Controls.Add(ch_osirix);
+
+            if (Convert.ToBoolean(table[i]["osirix"]))
+            {
+                TableRow osirixRow = new TableRow();
+                this.osirix_tbl.Controls.Add(osirixRow);
+
+                TableCell dataCell = new TableCell();
+                dataCell.Text = "<p class='align-center'><a class='blue button' href='http://10.10.2.49:3333/studyList?search=" + table[i]["patient_name"] + "' target='_blank' >" + table[i]["patient_name"].ToString().ToUpper() + "</a></p>";
+                osirixRow.Controls.Add(dataCell);
+            }
+
 
             riadok.Controls.Add(osirixCell);
 
@@ -737,6 +756,14 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
         result = Convert.ToInt32(res["workminutes"]);
 
         return result;
+    }
+
+    protected void printFnc(object sendet, EventArgs e)
+    {
+        this.saveData(false,true);
+        Session.Add("hlasko_date", this.Calendar1.SelectedDate);
+        Session.Add("hlasko_toWord", false);
+        Response.Redirect("print.aspx");
     }
 
 }

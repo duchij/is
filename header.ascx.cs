@@ -63,7 +63,7 @@ public partial class header : System.Web.UI.UserControl
         sb.AppendLine("GROUP_CONCAT(IFNULL([t_users].[name3],'-') ORDER BY [t_s_dk].[ordering] SEPARATOR ';') AS [doc_names],");
         sb.AppendLine("GROUP_CONCAT([t_s_dk].[comment] ORDER BY [t_s_dk].[ordering] SEPARATOR '|') AS [doc_comments]");
         sb.AppendLine("FROM [is_sluzby_dk] AS [t_s_dk]");
-        sb.AppendLine("LEFT JOIN [is_users] AS [t_users] ON [t_users].[omega_ms_item_id] = [t_s_dk].[user_id]");
+        sb.AppendLine("LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_s_dk].[user_id]");
         sb.AppendFormat("WHERE [t_s_dk].[datum] ='{0}' OR [t_s_dk].[datum]='{1}'", my_x2.unixDate(dnes), my_x2.unixDate(vcera));
         sb.AppendFormat("AND [t_s_dk].[clinic]='{0}' GROUP BY [t_s_dk].[datum] ORDER BY [t_s_dk].[datum] DESC", Session["klinika_id"]);
 

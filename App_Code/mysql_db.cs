@@ -720,7 +720,84 @@ public class mysql_db
     }
     
 
-    
+    public int fillDKShifts(int dategroup, int rok, int mesiac, int days, int clinic)
+    {
+        int result = 0;
+        //OdbcTransaction trans1 = null;
+        //my_con.Open();
+        //trans1 = my_con.BeginTransaction();
+
+        OdbcCommand cmd = new OdbcCommand();
+        cmd.Connection = my_con;
+        cmd.CommandType = CommandType.StoredProcedure;
+        cmd.CommandText = "{CALL FILL_DK_SHIFTS(?,?,?,?,?,@res)}";
+
+        OdbcParameter vstup = new OdbcParameter();
+        vstup.ParameterName = "dateGroup";
+        vstup.Direction = ParameterDirection.Input;
+        vstup.OdbcType = OdbcType.Int;
+        vstup.Value = dategroup;
+        cmd.Parameters.Add(vstup);
+
+        OdbcParameter vstup1 = new OdbcParameter();
+        vstup1.ParameterName = "days";
+        vstup1.Direction = ParameterDirection.Input;
+        vstup1.OdbcType = OdbcType.Int;
+        vstup1.Value = days;
+        cmd.Parameters.Add(vstup1);
+
+        OdbcParameter vstup2 = new OdbcParameter();
+        vstup2.ParameterName = "mesiac";
+        vstup2.Direction = ParameterDirection.Input;
+        vstup2.OdbcType = OdbcType.Int;
+        vstup2.Value = mesiac;
+        cmd.Parameters.Add(vstup2);
+
+        OdbcParameter vstup3 = new OdbcParameter();
+        vstup3.ParameterName = "rok";
+        vstup3.Direction = ParameterDirection.Input;
+        vstup3.OdbcType = OdbcType.Int;
+        vstup3.Value = rok;
+        cmd.Parameters.Add(vstup3);
+
+        OdbcParameter vstup4 = new OdbcParameter();
+        vstup4.ParameterName = "clinic";
+        vstup4.Direction = ParameterDirection.Input;
+        vstup4.OdbcType = OdbcType.Int;
+        vstup4.Value = clinic;
+        cmd.Parameters.Add(vstup4);
+
+        OdbcParameter vstup5 = new OdbcParameter();
+        vstup5.ParameterName = "res";
+        vstup5.Direction = ParameterDirection.Output;
+        vstup5.OdbcType = OdbcType.Int;
+        //vstup3.Value = 2015;
+        cmd.Parameters.Add(vstup5);
+
+        try
+        {
+            my_con.Open();
+            cmd.ExecuteNonQuery();
+            cmd.CommandText = "SELECT @res AS res ";
+
+            object value = cmd.ExecuteScalar();
+            int resTmp;
+
+            if (Int32.TryParse(value.ToString(),out resTmp) )
+            {
+                result = resTmp;
+            }
+
+            x2log.logData(value.ToString(), "", "fill_dk_result");
+        }
+        catch (Exception e)
+        {
+            x2log.logData(cmd.CommandText.ToString(), e.ToString(), "error in dk shifts");
+        }
+        my_con.Close();
+
+        return result;
+    }
 
     public SortedList getRow(string query)
     {
@@ -735,7 +812,7 @@ public class mysql_db
         try
         {
             OdbcCommand my_com = new OdbcCommand(this.parseQuery(query.ToString()), my_con);
-            //x2log.logData(this.parseQuery(query.ToString()),"","mysql getrow");
+            x2log.logData(this.parseQuery(query.ToString()),"","mysql getrow");
             OdbcDataReader reader = my_com.ExecuteReader();
            // result.Add("status", true);
 
@@ -882,7 +959,7 @@ public class mysql_db
         Dictionary<int, SortedList> result = new Dictionary<int, SortedList>();
 
         my_con.Open();
-
+        //x2log.logData(this.parseQuery(query.ToString()), "", "SQL from getTableSL");
         OdbcCommand my_com = new OdbcCommand(this.parseQuery(query.ToString()), my_con);
 
         OdbcDataReader reader = my_com.ExecuteReader();
