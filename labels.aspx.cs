@@ -22,6 +22,7 @@ public partial class labels_labels : System.Web.UI.Page
 
 
             string prefix = this.prefix_txt.Text.ToString().Trim();
+
             if (prefix.Length > 0)
             {
                 this._searchPrefix();
@@ -35,6 +36,14 @@ public partial class labels_labels : System.Web.UI.Page
         {
             this.loadClinics();
         }
+    }
+
+    protected void changePrefix(object sender, EventArgs e)
+    {
+        string[] id = this.clinics_dl.SelectedValue.ToString().Split('|');
+        this.prefix_txt.Text = id[1].ToLower();
+
+        this._searchPrefix();
     }
 
     protected void loadClinicLabels()

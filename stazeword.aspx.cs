@@ -2,6 +2,8 @@
 using System.IO;
 using System.Globalization;
 using System.Collections;
+using System.Collections.Generic;
+using System.Text;
 using System.Configuration;
 using System.Data;
 using System.Web;
@@ -13,8 +15,9 @@ using System.Web.UI.WebControls.WebParts;
 
 public partial class sltoword : System.Web.UI.Page
 {
-    my_db x_db = new my_db();
-    x2_var my_x2 = new x2_var();
+    mysql_db x2Mysql = new mysql_db();
+    x2_var x2 = new x2_var();
+    public string gKlinika;
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -22,23 +25,16 @@ public partial class sltoword : System.Web.UI.Page
         {
             Response.Redirect("error.html");
         }
+        this.gKlinika = Session["klinika"].ToString().ToLower();
+        this.setLabels();
 
-        string rok = Session["staze_rok"].ToString();
-        string mesiac = Session["staze_mesiac"].ToString();
-        string mes = Session["staze_mes_naz"].ToString();
-        mesiac_lbl.Text = Session["staze_mes_naz"].ToString();
-        rok_lbl.Text = rok;
-        this.drawTable(mesiac, rok);
-        if (Session["staze_print"] == "0")
+        this.drawTable();
+        if (Convert.ToBoolean(Session["st_to_word"]))
         {
             Response.Clear();
             Response.Buffer = true;
-
             Response.ContentType = "application/msword; charset=Windows-1250";
-
-           
-            Response.AddHeader("content-disposition", "attachment;filename=" + mes + ".doc");
-
+            Response.AddHeader("content-disposition", "attachment;filename=staze.doc");
             Response.ContentEncoding = System.Text.Encoding.GetEncoding("Windows-1250");
            	Response.Charset = "Windows-1250";
 
@@ -53,118 +49,141 @@ public partial class sltoword : System.Web.UI.Page
         else
         {
             print_lbl.Visible = true;
-            print_lbl.Text ="<a href='' onClick='window.print();'>Tlacit</a>";
+            print_lbl.Text ="<a href='javascript:window.print();'>"+Resources.Resource.print+"</a>";
             back_lbl.Visible = true;
-            back_lbl.Text = "<a href='sluzby.aspx' target='_self'>Naspat</a>";
+            back_lbl.Text = "<a href='javascript:window.history.back();' target='_self'>" + Resources.Resource.back + "</a>";
 
         }
-
-
-
-
-
-
     }
 
-    protected void drawTable(string mesiac, string rok)
+    protected void setLabels()
     {
-        SortedList data_info = x_db.loadStazeMonthYear("is_staze", mesiac, rok);
-        int days = DateTime.DaysInMonth(Convert.ToInt32(rok), Convert.ToInt32(mesiac));
-        //vypis_lbl.Text = data_info.Count.ToString();
+        DateTime dt = DateTime.Today;
 
+        this.printStaze_titel.Text = x2.setLabel(this.gKlinika+"_staze_titel")+", "+dt.ToLongDateString();
+        this.sign_lbl.Text = x2.setLabel(this.gKlinika + "_staze_sign");
+    }
 
+    protected void drawTable()
+    {
+        this.stazeTable_tbl.Controls.Clear();
 
-        String[][] data = my_x2.parseStaz(data_info["rozpis"].ToString());
-        //ArrayList my_list = new ArrayList();
+        int mesiac = Convert.ToInt32(Session["st_akt_month"]);
+        int rok = Convert.ToInt32(Session["st_akt_year"]);
 
+        int daysInMonth = DateTime.DaysInMonth(rok, mesiac);
+        string query = "SELECT * FROM [is_settings] WHERE [name] = '" + Session["klinika"].ToString().ToLower() + "_staze'";
 
+        SortedList res = x2Mysql.getRow(query);
+        string[] staze = res["data"].ToString().Split(',');
 
+        int colsNum = staze.Length;
+        string[] header = staze;
 
+        // ArrayList doctors = this.loadOmegaDoctors();
 
-       // days_lbl.Text = DateTime.DaysInMonth(Convert.ToInt32(rok), Convert.ToInt32(mesiac)).ToString();
+        TableHeaderRow headRow = new TableHeaderRow();
 
-        for (int i = 0; i < days; i++)
+        TableHeaderCell headCell = new TableHeaderCell();
+        headCell.ID = "headCell_date";
+        headCell.BorderStyle = BorderStyle.Solid;
+        headCell.BorderWidth = Unit.Pixel(1);
+        headCell.Text = "<strong>Datum</strong>";
+        // headCell.Style
+        headRow.Controls.Add(headCell);
+
+        for (int head = 0; head < colsNum; head++)
+        {
+            TableHeaderCell headCell1 = new TableHeaderCell();
+            headCell1.BorderStyle = BorderStyle.Solid;
+            headCell1.BorderWidth = Unit.Pixel(1);
+            headCell1.ID = "headCell_" + head;
+            headCell1.Text = "<strong><center>" + x2.setLabel(header[head].ToString()) + "</center></strong>";
+            // headCell1.
+            headRow.Controls.Add(headCell1);
+        }
+        this.stazeTable_tbl.Controls.Add(headRow);
+
+        string[] freeDays = Session["freedays"].ToString().Split(',');
+
+        for (int row = 0; row < daysInMonth; row++)
         {
             TableRow riadok = new TableRow();
+            this.stazeTable_tbl.Controls.Add(riadok);
+            int rDen = row + 1;
 
-            Table1.Controls.Add(riadok);
-            for (int j = 0; j < data[i].Length; j++)
+            DateTime dt = new DateTime(rok, mesiac, rDen);
+            Boolean vikend = false;
+            int dW = (int)dt.DayOfWeek;
+
+            if (dW == 6 || dW == 0) vikend = true;
+            int sviatok = Array.IndexOf(freeDays, rDen.ToString() + "." + mesiac.ToString());
+
+
+            for (int col = 0; col <= colsNum; col++)
             {
-                TableCell my_cell = new TableCell();
-                //TextBox my_text_box = new TextBox();
 
-
-                my_cell.ID = "cellBox_" + i.ToString() + "_" + j.ToString();
-
-               
-
-                int den = i + 1;
-                DateTime my_date = new DateTime(Convert.ToInt32(data_info["rok"].ToString()), Convert.ToInt32(data_info["mesiac"].ToString()), den);
-                int dnesJe = (int)my_date.DayOfWeek;
-
-               
-
-                string nazov = CultureInfo.CurrentCulture.DateTimeFormat.DayNames[dnesJe];
-                // pokus.Text += nazov;
-
-                if ((nazov == "sobota") || (nazov == "nedeľa"))
+                if (col == 0)
                 {
-                    my_cell.BackColor = System.Drawing.Color.FromArgb(0xcc3300);
-                }
-                else 
-                {
-                    my_cell.BackColor = System.Drawing.Color.White;
-                }
 
-                string[] freeDays = x_db.getFreeDays();
-
-                string mesDen = den.ToString() + "." + mesiac;
-
-                int rs_tmp = Array.IndexOf(freeDays, mesDen);
-
-                if ((rs_tmp != -1) && (nazov != "sobota") && (nazov != "nedeľa"))
-                {
-                    my_cell.BackColor = System.Drawing.Color.FromArgb(0xcc3300);
-                }
-
-                my_cell.BorderColor = System.Drawing.Color.Black;
-                my_cell.BorderWidth = 1;
-                my_cell.Text = "<div style='font-size:11px;'>"+data[i][j]+"</div>";
-                if (j == 0)
-                {
-                    my_cell.Text = "<div style='font-size:11px;'>" + data[i][j] + "." + nazov + "</div>";
+                    TableCell dateCell = new TableCell();
+                    dateCell.Text = dt.ToShortDateString();
+                    dateCell.BorderStyle = BorderStyle.Solid;
+                    dateCell.BorderWidth = Unit.Pixel(1);
+                    
+                    if (vikend) dateCell.BackColor = System.Drawing.Color.LightGray;
+                    if (sviatok != -1) dateCell.BackColor = System.Drawing.Color.LightGray;
+                    riadok.Controls.Add(dateCell);
                 }
                 else
                 {
-                    my_cell.Text = "<div style='font-size:11px;'>" + data[i][j] + "</div>";
+                    TableCell dataCell = new TableCell();
+                    dataCell.BorderStyle = BorderStyle.Solid;
+                    dataCell.BorderWidth = Unit.Pixel(1);
+                    if (vikend) dataCell.BackColor = System.Drawing.Color.LightGray;
+                    if (sviatok != -1) dataCell.BackColor = System.Drawing.Color.LightGray;
+                   
+                    Label textLbl = new Label();
+                    textLbl.ID = header[col - 1] + "_" + rDen.ToString();
+                    dataCell.Controls.Add(textLbl);
+                    
+                    riadok.Controls.Add(dataCell);
                 }
-
-                if (j == 0)
-                {
-                    my_cell.Width = 80;
-                }
-                else if (j == 1)
-                {
-                    my_cell.Width = 160;
-                }
-                else
-                {
-                    my_cell.Width = 130;
-                }
-                
-                //my_text_box.ReadOnly = true;
-                
-
-                //my_text_box.ReadOnly = true;
-                //my_cell.Text = "textBox_" + i.ToString() + "_" + j.ToString();
-
-                //my_cell.Controls.Add(my_text_box);
-
-                //form1.Controls.Add(my_text_box);
-                riadok.Controls.Add(my_cell);
             }
+        }
+        this.loadStaze();
+    }
+
+    protected void loadStaze()
+    {
+        int mesiac = Convert.ToInt32(Session["st_akt_month"]);
+        int rok = Convert.ToInt32(Session["st_akt_year"]);
+
+        int dateGroup = x2.makeDateGroup(rok, mesiac);
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("SELECT [type],[datum],[text] FROM [is_staze_2] WHERE [date_group]='{0}' AND [clinic]='{1}' ORDER BY [datum]", dateGroup, Session["klinika_id"]);
+
+        Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
+
+        int tableCn = table.Count;
+
+       // Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+        //ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
+
+        for (int row = 0; row < tableCn; row++)
+        {
+            DateTime dt = Convert.ToDateTime(x2.UnixToMsDateTime(table[row]["datum"].ToString()));
+
+            int day = dt.Day;
+
+            string type = table[row]["type"].ToString();
+            Control cl = FindControl(type + "_" + day.ToString());
+            Label txtBox = (Label)cl;
+            txtBox.Text = table[row]["text"].ToString();
+         
 
 
         }
     }
+
 }

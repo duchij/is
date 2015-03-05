@@ -10,12 +10,11 @@
 <body>
     <form id="form1" runat="server">
     <div>
-        <h2>Zmena hesla do is.kdch.sk:</h2>
-                <hr />
-         <asp:Label ID="info_lbl" runat="server" Text="Label" Visible="False"></asp:Label><br /><br />
-        <asp:PlaceHolder ID="changePassw" runat="server">
-          
-                
+        <h2>Zmena hesla do systému....</h2>
+        <hr />
+            <asp:Label ID="info_lbl" runat="server" Text="Label" Visible="False"></asp:Label><br /><br />
+            <asp:PlaceHolder ID="changePassw" runat="server">
+                      
                 
                 <table border="0">
                 <tr><td>Nové heslo:</td><td><asp:TextBox ID="passwd1" runat="server" TextMode="Password">

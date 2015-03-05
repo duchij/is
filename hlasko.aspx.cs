@@ -190,6 +190,8 @@ public partial class hlasko : System.Web.UI.Page
                 dataFile.Add("file-name", this.loadFile_fup.FileName.ToString());
                 dataFile.Add("file-size", this.loadFile_fup.PostedFile.InputStream.Length);
                 dataFile.Add("file-type", fileEx);
+                dataFile.Add("user_id", Session["user_id"]);
+                dataFile.Add("clinic_id", Session["klinika_id"]);
                 // dataFile.Add("file-content", Convert.ToBase64String(dataB));
 
                 if (this.lfId_hidden.Value.ToString() == "0")
@@ -888,7 +890,7 @@ public partial class hlasko : System.Web.UI.Page
         data.Add("dat_hlas", my_x2.unixDate(this.Calendar1.SelectedDate));
         data.Add("text", my_x2.EncryptString(hlasenie.Text.ToString(),Session["passphrase"].ToString()));
         data.Add("last_user", Session["user_id"].ToString());
-        data.Add("creat_user", 0);
+        data.Add("creat_user", 1);
         data.Add("type", this.hlas_type.SelectedValue.ToString());
         data.Add("encrypt","yes");
         if (uzavri == true)

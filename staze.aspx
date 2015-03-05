@@ -8,7 +8,7 @@
     <div class="row">
         <div class="one half">
                 Mesiac:<asp:DropDownList ID="mesiac_cb" runat="server" 
-                        AutoPostBack="True" >
+                        AutoPostBack="True" OnSelectedIndexChanged="changeStazeFnc" >
                         <asp:ListItem Value="1">Január</asp:ListItem>
                         <asp:ListItem Value="2">Február</asp:ListItem>
                         <asp:ListItem Value="3">Marec</asp:ListItem>
@@ -25,7 +25,7 @@
             </div>
         <div class="one half" >
                     Rok: 
-                <asp:DropDownList ID="rok_cb" runat="server" AutoPostBack="True" >
+                <asp:DropDownList ID="rok_cb" runat="server" AutoPostBack="True" OnSelectedIndexChanged="changeStazeFnc" >
                     <asp:ListItem Value="2010">Rok 2010</asp:ListItem>
                     <asp:ListItem Value="2011">Rok 2011</asp:ListItem>
                     <asp:ListItem Value="2012">Rok 2012</asp:ListItem>
@@ -43,17 +43,17 @@
     </div>
     <div class="row">       
     
-                <asp:Table ID="stazeTable_tbl" runat="server" CssClass="responsive" data-max="15"></asp:Table>
+               <p> <asp:Table ID="stazeTable_tbl" runat="server" CssClass="responsive" data-max="15"></asp:Table></p>
    </div>    
     <div class="row">
         <asp:PlaceHolder ID="setState_pl" runat="server" Visible="false">
-                <asp:Button ID="publish_btn" runat="server" Text="Sprístupniť všetkým" CssClass="green button"  />
-                            <asp:Button ID="unpublish_btn" runat="server" Text="Zblokovať prístup všetkým" CssClass="red button"/>
+                <asp:Button ID="publish_btn" runat="server" Text="Sprístupniť všetkým" CssClass="green button" OnClick="publishFnc"  />
+                <asp:Button ID="unpublish_btn" runat="server" Text="Zblokovať prístup všetkým" CssClass="red button" OnClick="publishFnc"/>
         </asp:PlaceHolder>        
-                <asp:Button ID="toWord_btn" runat="server" Text="do Wordu" />
+                <asp:Button ID="word_btn" runat="server" Text="do Wordu" OnClick="printFnc" />
                 
-               <asp:Button ID="print_btn" runat="server" Text="Tlačiť" />
-               <asp:Label ID="vypis_lbl" runat="server" Text="" ></asp:Label>
+               <asp:Button ID="print_btn" runat="server" Text="Tlačiť" OnClick="printFnc"/>
+              <%-- <asp:Label ID="vypis_lbl" runat="server" Text="" ></asp:Label>--%>
         </div>
 </asp:Content>
 

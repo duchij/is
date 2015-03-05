@@ -171,9 +171,8 @@ public partial class sltoword : System.Web.UI.Page
     {
         StringBuilder sb = new StringBuilder();
 
-        sb.AppendLine("SELECT [is_sluzby_dk].*, [is_omega_doctors].[name] FROM [is_sluzby_dk]");
-        sb.AppendLine("LEFT JOIN [is_omega_doctors] ON [is_omega_doctors].[ms_item_id] = [is_sluzby_dk].[user_id] ");
-
+        sb.AppendLine("SELECT [is_sluzby_dk].*, [is_users].[name3] AS [name] FROM [is_sluzby_dk]");
+        sb.AppendLine("LEFT JOIN [is_users] ON [is_users].[id] = [is_sluzby_dk].[user_id] ");
         sb.AppendFormat("WHERE [is_sluzby_dk].[date_group] ='{0}' AND [is_sluzby_dk].[clinic]='{1}' ORDER BY [is_sluzby_dk].[datum] ASC", dateGroup, Session["klinika_id"]);
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());

@@ -298,7 +298,7 @@ public partial class _Default : System.Web.UI.Page
         {
             for (int i = 0; i < filesToDelete.Count; i++)
             {
-                if (File.Exists(@Server.MapPath("App_Data") + @"\" + filesToDelete[i])) ;
+                if (File.Exists(@Server.MapPath("App_Data") + @"\" + filesToDelete[i])) 
                 {
                     File.Delete(@Server.MapPath("App_Data") + @"\" + filesToDelete[i]);
                 }

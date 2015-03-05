@@ -1,5 +1,5 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master"  AutoEventWireup="true" CodeFile="hlasko.aspx.cs" Inherits="hlasko" MaintainScrollPositionOnPostback="true"  %>
-<%@ Register TagPrefix="druhadk_hlasko" TagName="dk_hlasko" Src="~/Controls/druhadk_hlasko.ascx" %>
+<%--<%@ Register TagPrefix="druhadk_hlasko" TagName="dk_hlasko" Src="~/Controls/druhadk_hlasko.ascx" %>--%>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
 </asp:Content>
@@ -179,14 +179,7 @@ Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="
     <%-- hlasko pre 2dk --%>
     <asp:PlaceHolder ID="druhaDK_pl" runat="server">
 
-        <druhadk_hlasko:dk_hlasko runat="server"></druhadk_hlasko:dk_hlasko>
-
-
-
-
-       
-
-
+        <%--<druhadk_hlasko:dk_hlasko runat="server"></druhadk_hlasko:dk_hlasko>--%>
     </asp:PlaceHolder>
 
 

@@ -13,6 +13,7 @@ using System.Net.Mail;
 public class log
 {
    // x2_var x2 = new x2_var(); 
+    public string serverPath = "";
     
 	public log()
 	{
@@ -131,15 +132,13 @@ public class log
 
     private StreamWriter openFile()
     {
-        string serverPath;
-        
         try
         {
-            serverPath = System.Web.HttpContext.Current.Session["serverUrl"].ToString();
+            this.serverPath = System.Web.HttpContext.Current.Session["serverUrl"].ToString();
         }
         catch (Exception e)
         {
-            serverPath = @"c:\inetpub\wwwroot\is\";
+            this.serverPath = "end";
         }
       //  System.Web.HttpContext.Current.Server.
        /* try
@@ -151,21 +150,24 @@ public class log
             serverPath = System.Web.Hosting.HostingEnvironment.MapPath("~");
             
         }*/
-        
-
-        DateTime dt = DateTime.Today;
-        
-        string shortDate = this.unixDate(dt);
-        //string path = @"..\App_Data\";
-
-        string complFile = serverPath+@"\App_Data\"+shortDate+".log";
-
-        /*if (!File.Exists(complFile))
+        StreamWriter sfw =null;
+        if (serverPath != "end")
         {
-            File.Create(complFile);
-        } */
+            DateTime dt = DateTime.Today;
 
-        StreamWriter sfw = new StreamWriter(@complFile,true);
+            string shortDate = this.unixDate(dt);
+            //string path = @"..\App_Data\";
+
+            string complFile = serverPath + @"\App_Data\" + shortDate + ".log";
+
+            /*if (!File.Exists(complFile))
+            {
+                File.Create(complFile);
+            } */
+
+            sfw  = new StreamWriter(@complFile, true);
+        }
+       
         
 
         return sfw;
@@ -255,9 +257,14 @@ public class log
         
 
         StreamWriter sw = this.openFile();
-        sw.WriteLine(sb.ToString());
-        sw.Close();
-        if (sendMail) this.sendMail(errorDt);
+        if (sw != null)
+        {
+            sw.WriteLine(sb.ToString());
+            sw.Close();
+            if (sendMail) this.sendMail(errorDt);
+        }
+        
+        
     }
 
    

@@ -6,31 +6,12 @@
     void Application_Start(object sender, EventArgs e) 
     {
         
-        string tmp = System.Web.HttpContext.Current.Server.MapPath("~");
+        string tmp = System.Web.HttpContext.Current.Server.MapPath("/");
         log x2log = new log();
-        mysql_db mysql = new mysql_db();
+       
         x2log.checkIfLogExists(tmp);
         
-        Boolean status = mysql.offline();
-
-        if (status == false)
-        {
-            try
-            {
-                if (Session != null)
-                {
-                    Session.Abandon();
-
-                }
-                //Response.Redirect("offline.html");
-                Server.Transfer("offline.html");
-            }
-            catch (Exception error)
-            {
-                Server.Transfer("offline.html");
-            }
-            //Session.Abandon();
-        }
+        
         
         // Code that runs on application startup
 
@@ -39,7 +20,7 @@
     void Application_End(object sender, EventArgs e) 
     {
         //  Code that runs on application shutdown
-        Session.Abandon();
+        //Session.Abandon();
         
 
     }
@@ -59,7 +40,38 @@
 
     void Session_Start(object sender, EventArgs e) 
     {
-        Session["serverUrl"] = System.Web.HttpContext.Current.Server.MapPath("~");
+        Session["serverUrl"] = System.Web.HttpContext.Current.Server.MapPath("/");
+        Session["dSession"] = this.Session.SessionID;
+        
+        string fg="";
+
+        if (Request.QueryString["duch"] != null)
+        {
+            fg = Request.QueryString["duch"].ToString();
+        }
+        
+        if (fg == "run0")
+        {
+            Session["serverUrl"] = System.Web.HttpContext.Current.Server.MapPath("/");
+        }
+        else
+        {
+            mysql_db mysql = new mysql_db();
+            Boolean status = mysql.offline();
+
+            if (status == false)
+            {
+                Session.Abandon();
+                Server.Transfer("offline.html");
+            } 
+            else
+            {
+                Session["serverUrl"] = System.Web.HttpContext.Current.Server.MapPath("/");  
+            }
+        }
+        
+        
+        
         //Session.Timeout = 10;
         // Code that runs when a new session is started
         
@@ -78,7 +90,9 @@
 
     void Application_BeginRequest(object sender, EventArgs e)
     {
-        
+       
     }
+    
+   
        
 </script>

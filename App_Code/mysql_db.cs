@@ -504,7 +504,7 @@ public class mysql_db
         trans1 = my_con.BeginTransaction();
 
         cmd.Transaction = trans1;
-        cmd.CommandText = "INSERT INTO `is_data_2`(`file-name`,`file-size`,`file-type`,`file-content`, `user_id`) VALUES (?,?,?,?,?,?)";
+        cmd.CommandText = "INSERT INTO `is_data_2`(`file-name`,`file-size`,`file-type`,`file-content`, `user_id`, `clinic_id`) VALUES (?,?,?,?,?,?)";
 
         cmd.Parameters.Add("filename", OdbcType.Text).Value = lfData["file-name"].ToString();
         cmd.Parameters.Add("filesize", OdbcType.BigInt).Value = Convert.ToInt32(lfData["file-size"]);

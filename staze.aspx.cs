@@ -44,16 +44,61 @@ public partial class staze : System.Web.UI.Page
             this.setState_pl.Visible = true;
         }
 
+        
 
-
+        
         if (IsPostBack == false)
         {
             this.setActDate();
-            this.drawTable();
+
+            int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue);
+            int rok = Convert.ToInt32(this.rok_cb.SelectedValue);
+
+            string state = this.getState(x2.makeDateGroup(rok, mesiac));
+
+            if (this.rights == "admin" || this.rights=="poweruser")
+            {
+                this.drawTable();
+            }
+            else if (this.rights == "users" && state=="yes")
+            {
+                this.drawTable();
+            }
+            else if (this.rights == "users" && state == "no")
+            {
+                this.word_btn.Visible = false;
+                this.print_btn.Visible = false;
+                this.msg_lbl.Text = Resources.Resource.staze_not_done;
+            }
+
+            
         }
         else
         {
-            this.drawTable();
+            int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue);
+            int rok = Convert.ToInt32(this.rok_cb.SelectedValue);
+
+            string state = this.getState(x2.makeDateGroup(rok, mesiac));
+
+            if (this.rights == "admin" || this.rights == "poweruser" || Session["login"].ToString() == "jbabala")
+            {
+                this.word_btn.Visible = true;
+                this.print_btn.Visible = true;
+                this.drawTable();
+            }
+            else if (this.rights == "users" && state == "yes")
+            {
+                this.word_btn.Visible = true;
+                this.print_btn.Visible = true;
+                this.drawTable();
+            }
+            else if (this.rights == "users" && state == "no")
+            {
+                this.stazeTable_tbl.Controls.Clear();
+                this.word_btn.Visible = false;
+                this.print_btn.Visible = false;
+                this.msg_lbl.Text = Resources.Resource.staze_not_done;
+            }
         }
     }
 
@@ -66,6 +111,52 @@ public partial class staze : System.Web.UI.Page
 
     }
 
+    protected void changeStazeFnc(object sender, EventArgs e)
+    {
+        int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue);
+        int rok = Convert.ToInt32(this.rok_cb.SelectedValue);
+
+        string state = this.getState(x2.makeDateGroup(rok, mesiac));
+        if (state == "yes")
+        {
+            this.drawTable();
+            this.loadStaze();
+        }
+        
+    }
+
+    protected string getState(int dateGrp)
+    {
+        string result="no";
+        StringBuilder sb = new StringBuilder();
+
+        sb.AppendFormat("SELECT [public] FROM [is_staze_2] WHERE [date_group]='{0}' GROUP BY [public]", dateGrp);
+
+        SortedList res = x2Mysql.getRow(sb.ToString());
+        if (res.Count > 0)
+        {
+            if (res["status"] == null)
+            {
+                result = res["public"].ToString();
+            }
+            else
+            {
+                x2log.logData(res, "error", "error in getting state of staze");
+
+            }
+        }
+        else
+        {
+            this.stazeTable_tbl.Controls.Clear();
+            this.msg_lbl.Text = Resources.Resource.staze_not_done;
+        }
+
+        
+
+        return result;
+
+    }
+
 
     protected void drawTable()
     {
@@ -73,6 +164,9 @@ public partial class staze : System.Web.UI.Page
 
         int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue);
         int rok = Convert.ToInt32(this.rok_cb.SelectedValue);
+
+
+
         int daysInMonth = DateTime.DaysInMonth(rok, mesiac);
 
         SortedList res = x2Mysql.getRow("SELECT * FROM [is_settings] WHERE [name] = 'kdch_staze'");
@@ -237,9 +331,57 @@ public partial class staze : System.Web.UI.Page
             x2log.logData(res, "error in app", "error in save staze");
             this.msg_lbl.Text = res["msg"].ToString();
         }
+    }
+
+    protected void publishFnc(object sender, EventArgs e)
+    {
+        Button btn = (Button)sender;
+        string id = btn.ID.ToString();
+
+        int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue);
+        int rok = Convert.ToInt32(this.rok_cb.SelectedValue);
+        int dateGrp = x2.makeDateGroup(rok, mesiac);
+
+        StringBuilder sb = new StringBuilder();
+
+        if (id == "publish_btn")
+        {
+
+            sb.AppendFormat("UPDATE [is_staze_2] SET [public]='yes' WHERE [date_group]='{0}'", dateGrp);
+        }
+        if (id == "unpublish_btn")
+        {
+            sb.AppendFormat("UPDATE [is_staze_2] SET [public]='no' WHERE [date_group]='{0}'", dateGrp);
+        }
+
+        SortedList res = x2Mysql.execute(sb.ToString());
+
+        if (!Convert.ToBoolean(res["status"]))
+        {
+            x2log.logData(res, "error", "error in setting staze");
+        }
 
 
+    }
 
+    protected void printFnc(object sender, EventArgs e)
+    {
+        Session.Add("st_akt_month", this.mesiac_cb.SelectedValue);
+        Session.Add("st_akt_year", this.rok_cb.SelectedValue);
+
+        Button btn = (Button)sender;
+        string id = btn.ID.ToString();
+
+        if (id == "word_btn")
+        {
+            Session.Add("st_to_word", true);
+        }
+        else
+        {
+            Session.Add("st_to_word", false);
+        }
+
+        Response.Redirect("stazeword.aspx");
     }
 
 }

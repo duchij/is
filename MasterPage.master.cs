@@ -91,9 +91,6 @@ public partial class MasterPage : System.Web.UI.MasterPage
     protected void log_out_Click(object sender, EventArgs e)
     {
         Session.Abandon();
-        //Session.Clear();
-       // Response.Cookies["tuisegumdrum"].Expires = DateTime.Now.AddDays(-1);
-        //Response.Cookies.Clear();
         Response.Redirect("Default.aspx");
     }
 

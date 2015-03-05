@@ -5,36 +5,23 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1250">
-    <title>IS - to Word</title>
-    <link href="http://is.kdch.sk/css/style.css" rel="stylesheet" type="text/css" />
-<link href="http://is.kdch.sk/css/print.css" rel="stylesheet" type="text/css" media="print"/>
+    <title>Print staze</title>
+    <link href="css/style.css" rel="stylesheet" type="text/css" />
+    <link href="css/print.css" rel="stylesheet" type="text/css" media="print"/>
 </head>
 <body style="font-family:Arial CE;">
-    <form id="form1" runat="server">
-    <div>
-    <h1><asp:Label ID="label3" runat="server" Text="<%$ Resources:Resource, odd_staze %>"></asp:Label>, <asp:Label ID="mesiac_lbl" runat="server" Text="Label"></asp:Label>, <asp:Label
-        ID="rok_lbl" runat="server" Text="Label"></asp:Label>   </h1><hr />
-        <table border="0" cellpadding="0" cellspacing="0" style="font-family:Arial CE;">
-                <tr>
-                    <td width="80" align="center"><b><asp:Label ID="label1" runat="server" Text="<%$ Resources:Resource, staze_den %>"></asp:Label></b></td>
-                    <td width="160" align="center"><b><asp:Label runat="server" Text="<%$ Resources:Resource, staze_3 %>"></asp:Label></b></td>
-                    <td width="130" align="center"><b><asp:Label ID="Label5" runat="server" Text="<%$ Resources:Resource, staze_4 %>"></asp:Label></b></td>
-                    <td width="130" align="center"><b><asp:Label ID="Label6" runat="server" Text="<%$ Resources:Resource, staze_5 %>"></asp:Label></b></td>
-                    <td width="130" align="center"><b><asp:Label ID="label2" runat="server" Text="<%$ Resources:Resource, staze_6 %>"></asp:Label></b></td>
-                    <td width="130" align="center"><b><asp:Label ID="Label7" runat="server" Text="<%$ Resources:Resource, staze_note %>"></asp:Label></b></td>
-                
-                </tr>
-                </table>
-        <asp:Table ID="Table1" runat="server" BorderColor="Black" BorderWidth="1" cellpadding="0" cellspacing="0" Font-Size="Small">
-        </asp:Table>   
-        <br />
-        <asp:Label ID="label4" runat="server" Text="<%$ Resources:Resource, kdch_prednosta %>"></asp:Label>
-    </div>
-    <div class="nonprint">
+<form id="form1" runat="server">
+    <h1><asp:Label ID ="printStaze_titel" runat="server" Text="titel...."></asp:Label></h1>
     <hr />
-    <asp:Label ID="print_lbl" runat="server" Text="" Visible="false"></asp:Label> 
-    <asp:Label ID="back_lbl" runat="server" Text="" Visible="false"></asp:Label>
+    
+    <div class="nonprint">
+        <hr />
+        <asp:Label ID="print_lbl" runat="server" Text="" Font-Size="X-Large"></asp:Label> /
+        <asp:Label ID="back_lbl" runat="server" Text=""  Font-Size="X-Large"></asp:Label>
     </div>
-    </form>
+    <asp:Table ID="stazeTable_tbl" runat="server" Width="100%"></asp:Table>
+    <hr />
+    <asp:Label ID="sign_lbl" runat="server"></asp:Label>
+</form>
 </body>
 </html>

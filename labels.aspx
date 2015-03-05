@@ -6,7 +6,7 @@
     <asp:Label ID="msg_lbl" runat="server" Text=""></asp:Label>
     <h1>Popisky......</h1>
     <hr />
-    <asp:DropDownList ID="clinics_dl" runat="server" AutoPostBack="true"></asp:DropDownList>
+    <asp:DropDownList ID="clinics_dl" runat="server" AutoPostBack="true" OnSelectedIndexChanged="changePrefix" ></asp:DropDownList>
     Prefix skupiny (napr. nazov_):<asp:TextBox ID="prefix_txt" runat="server"></asp:TextBox><asp:Button ID="search_btn" runat="server" Text="Hladaj" OnClick="searchPrefixFnc" />
     <hr />
     <asp:Table ID="listTable_tbl" runat="server"></asp:Table>
