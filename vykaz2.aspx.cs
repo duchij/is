@@ -26,9 +26,12 @@ public partial class vykaz2 : System.Web.UI.Page
     public string rights;
 
     public SortedList gData = new SortedList();
+    public string gKlinika;
 
     protected void Page_Init(object sender, EventArgs e)
     {
+        this.gKlinika = Session["klinika"].ToString().ToLower();
+        if (this.gKlinika == "2dk") this.setVykazTypesforDK();
         if (IsPostBack)
         {
             //this.msg_lbl.Text = ViewState["head_tbox_4"].ToString();
@@ -185,7 +188,15 @@ public partial class vykaz2 : System.Web.UI.Page
         }
         else
         {
-            this.generateVykaz(mesiac, rok,writeText);
+            if (this.gKlinika == "kdch")
+            {
+                this.generateVykaz(mesiac, rok, writeText);
+            }
+            if (this.gKlinika == "2dk")
+            {
+                this.generateVykazDK(mesiac, rok, writeText);
+            }
+            
         }
 
         //this._calcData();
@@ -568,6 +579,341 @@ public partial class vykaz2 : System.Web.UI.Page
         this.fillEpcData(mesiac, rok, Session["user_id"].ToString());
     }
 
+    protected void generateVykazDK(int mesiac, int rok, Boolean writeText)
+    {
+        this.vykaz_tbl.Controls.Clear();
+
+        string mesStr = mesiac.ToString();
+        if (mesStr.Length == 1)
+        {
+            mesStr = "0" + mesStr;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.Append("SELECT * FROM [is_settings]  WHERE [name]='vykaz_doctors'");
+
+        SortedList row = x2Mysql.getRow(sb.ToString());
+        this.vykazHeader = row["data"].ToString().Split(',');
+
+        int cols = this.vykazHeader.Length;
+        TableHeaderRow headerRow = new TableHeaderRow();
+
+        TableHeaderCell headCellDate = new TableHeaderCell();
+        headCellDate.ID = "datum_cell";
+        headCellDate.Text = "Datum";
+        headerRow.Controls.Add(headCellDate);
+
+        this.vykaz_tbl.Controls.Add(headerRow);
+
+        for (int col = 0; col < cols; col++)
+        {
+            TableHeaderCell headCell = new TableHeaderCell();
+            headCell.ID = "headCell_" + col.ToString();
+
+            Label headLabel = new Label();
+            headLabel.ID = this.vykazHeader[col] + "_lbl<br>";
+            headLabel.Font.Size = FontUnit.Point(8);
+            headLabel.Text = this.vykazHeader[col];
+
+            headCell.Controls.Add(headLabel);
+
+            TextBox tBox = new TextBox();
+            tBox.ID = "head_tbox_" + col.ToString();
+            tBox.Text = "";
+            headCell.Controls.Add(tBox);
+
+
+            headerRow.Controls.Add(headCell);
+        }
+
+        int dniMes = DateTime.DaysInMonth(rok, mesiac);
+        string[] sviatky = Session["freedays"].ToString().Split(',');
+
+        Dictionary<int, Hashtable> docShifts = this.getShiftsDK(rok, mesiac);
+
+        this.setVykazTypesforDK();
+
+        SortedList vykazVypis = (SortedList)Session["2dk_typy_hodin"];
+
+        for (int den = 0; den < dniMes; den++)
+        {
+            // 
+            DateTime my_date = new DateTime(rok, mesiac, den + 1);
+            int dnesJe = (int)my_date.DayOfWeek;
+            Boolean vikend = false;
+            if (dnesJe == 6 || dnesJe == 0) vikend = true;
+
+            string dentmp = (den + 1).ToString() + "." + mesiac.ToString();
+
+            int res = Array.IndexOf(sviatky, dentmp);
+            Boolean sviatok = (res != -1) ? true : false;
+
+            string[] rowdata = (vikend)?vykazVypis["ExDay"].ToString().Split(','):vykazVypis["normDen"].ToString().Split(',');
+
+            this.makeRow(den, cols, rowdata, rok, mesiac, sviatok, false, true);
+
+        }
+
+        this.fillShiftsForDK(docShifts);
+               
+    }
+
+    protected void fillShiftsForDK(Dictionary<int, Hashtable> data)
+    {
+        int dataCn = data.Count;
+
+        for (int row=0; row<dataCn; row++)
+        {
+            DateTime dt = Convert.ToDateTime(my_x2.UnixToMsDateTime(data[row]["datum"].ToString()));
+
+            int dw = (int)dt.DayOfWeek;
+            Boolean vikend = false;
+            if (dw == 6 || dw == 0) vikend = true;
+
+            string[] freeD = Session["freedays"].ToString().Split(',');
+            int res = Array.IndexOf(freeD,dt.Day.ToString()+"."+dt.Month.ToString());
+            Boolean sviatok = (res != -1) ? true : false;
+
+            string week = data[row]["tyzden"].ToString();
+            string typ = data[row]["typ"].ToString();
+            if (typ != "KlAmb") this.calcRowDK(sviatok, vikend, week, typ, dt);
+
+        }
+
+    }
+
+    protected void setVykazTypesforDK()
+    {
+        if (Session["2dk_typy_hodin"] == null)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("SELECT [data],[name] FROM [is_settings] WHERE [name]='2dk_typ_vykaz'");
+
+            SortedList res = x2Mysql.getRow(sb.ToString());
+
+            string[] lines = res["data"].ToString().Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+
+            int linesCn = lines.Length;
+
+            SortedList vykazTypes = new SortedList();
+
+            for (int i = 0; i < linesCn; i++)
+            {
+                string[] tmp = lines[i].Split('|');
+                vykazTypes.Add(tmp[0], tmp[1]);
+
+            }
+            Session.Add("2dk_typy_hodin", vykazTypes);
+        }
+    }
+
+    protected void calcRowDK(Boolean sviatok, Boolean vikend, string week, string typ, DateTime dt)
+    {
+        Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+        ContentPlaceHolder  ctpl = (ContentPlaceHolder)tmpControl;
+        int day = dt.Day;
+        int row = day - 1;
+
+        SortedList vykazVypis = (SortedList)Session["2dk_typy_hodin"];
+
+        DateTime dtOneAfter = dt.AddDays(1);
+
+        string zacDt = my_x2.unixDate(dt);
+        string koncDt = my_x2.unixDate(dtOneAfter);
+
+        int cols = this.vykazHeader.Length;
+
+        string endHour = "";
+        Boolean epcYes = false;
+
+        int daysAfter = 0;
+
+        string[] rowData = new string[cols];
+
+        string[] day1 = new string[cols];
+        string[] day2 = new string[cols];
+        
+        if (typ == "Odd1")
+        {
+            rowData = vykazVypis["Odd1_vik"].ToString().Split(',');
+            endHour = "07:00:00";
+            epcYes = true;
+            daysAfter = 2;
+            day1 = vykazVypis["ExDay"].ToString().Split(',');
+            day2 = vykazVypis["ExDay"].ToString().Split(',');
+        }
+
+        if (typ == "Odd2")
+        {
+            rowData = (week == "konz") ? vykazVypis["Odd2_8h"].ToString().Split(',') : vykazVypis["Odd1"].ToString().Split(',');
+            if (week=="prijm") endHour="07:00:00";
+            epcYes = (week == "konz") ? false : true; 
+            if (week=="prijm")
+            {
+                daysAfter = 2;
+                day1 = vykazVypis["ExDay"].ToString().Split(',');
+                day2 = vykazVypis["ExDay"].ToString().Split(',');
+            }
+        }
+
+        if (typ == "Odd")
+        {
+            rowData = vykazVypis["Odd_norm"].ToString().Split(',');
+            endHour = "07:00:00";
+            epcYes =true;
+            daysAfter = 1;
+            day1 = vykazVypis["ExDay"].ToString().Split(',');
+        }
+
+        if (typ == "OupA")
+        {
+            rowData = vykazVypis["OupA_normden"].ToString().Split(',');
+            
+        }
+        if (typ == "OupB")
+        {
+            rowData = vykazVypis["OupB_normden"].ToString().Split(',');
+            epcYes = true;
+            daysAfter = 1;
+            day1 = vykazVypis["OupB_normden_po"].ToString().Split(',');
+
+        }
+        if (typ == "Expe")
+        {
+            rowData = (vikend) ? vykazVypis["Expe_vik"].ToString().Split(',') : vykazVypis["Expe_normden"].ToString().Split(',');
+            endHour = (vikend) ? "08:00:00" : "07:00:00";
+            epcYes = true;
+            if (!vikend)
+            {
+                daysAfter = 1;
+                day1 = vykazVypis["Expe_normden_po"].ToString().Split(',');
+            }
+        }
+        if (typ == "OupA1" || typ=="OupA2")
+        {
+            rowData = vykazVypis["OupA12_vik"].ToString().Split(',');
+        }
+
+        if (typ == "OupB1")
+        {
+            rowData = vykazVypis["OupB1_vik"].ToString().Split(',');
+            epcYes = true;
+            daysAfter = 1;
+            day1 = vykazVypis["OupB1_vik_po"].ToString().Split(',');
+        }
+
+        for (int tt = 0; tt < cols; tt++)
+        {
+            Control crtl = ctpl.FindControl("textBox_" + row.ToString() + "_" + tt.ToString());
+            TextBox txtB = (TextBox)crtl;
+            txtB.Text = rowData[tt].ToString();
+            txtB.BackColor = System.Drawing.Color.LightGray;
+            txtB.Font.Bold = true;
+        }
+
+        if (epcYes)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine("SELECT [hlasko].[dat_hlas] AS [datum],[hlasko].[type] AS [sluzba_typ],[hlasko_epc].[user_id], SUM([hlasko_epc].[work_time]) AS [worktime], SUM([hlasko_epc].[work_night]) AS [worknight]");
+            sb.AppendLine("FROM [is_hlasko_epc] as [hlasko_epc]");
+            sb.AppendLine("LEFT JOIN [is_hlasko] AS [hlasko] ON [hlasko].[id]=[hlasko_epc].[hlasko_id]");
+            sb.AppendFormat("WHERE [hlasko_epc].[work_start] BETWEEN '{0} 00:00:00' AND '{1} {2}'", zacDt, koncDt, endHour);
+            sb.AppendFormat("AND [user_id]='{0}'", Session["user_id"]);
+            sb.AppendLine("GROUP BY [hlasko_epc].[hlasko_id]");
+            sb.AppendLine("ORDER BY [hlasko_epc].[work_start] ASC");
+
+            Dictionary<int, Hashtable> epc = x2Mysql.getTable(sb.ToString());
+            x2log.logData(epc, "", "epc_data");
+
+            for (int dd = 0; dd < epc.Count; dd++)
+            {
+
+                Control nightbox = ctpl.FindControl("textBox_" + day.ToString() + "_5");
+                TextBox nightTBOX = (TextBox)nightbox;
+                decimal night_work = Convert.ToDecimal(epc[dd]["worknight"]);
+
+                nightTBOX.Text = (Math.Round(night_work / 60, 1)).ToString();
+
+
+                int aktivna = Convert.ToInt32(epc[dd]["worktime"]);
+                decimal hodiny = aktivna / 60;
+                decimal neaktivna = 12 - hodiny;
+
+                if (neaktivna < 0)
+                {
+                    hodiny = 12;
+                    neaktivna = 0;
+                }
+
+                if (vikend || sviatok)
+                {
+                    Control tbox1 = ctpl.FindControl("textBox_" + day.ToString() + "_9");
+                    TextBox mTBox1 = (TextBox)tbox1;
+                    Control tbox2 = ctpl.FindControl("textBox_" + day.ToString() + "_11");
+                    TextBox mTBox2 = (TextBox)tbox2;
+
+                    Control hodTmp = ctpl.FindControl("textBox_" + day.ToString() + "_4");
+                    TextBox zucHodTxt = (TextBox)hodTmp;
+
+                    Control mzvyhTmp = ctpl.FindControl("textBox_" + day.ToString() + "_7");
+                    TextBox mzvyhTxt = (TextBox)mzvyhTmp;
+
+                    Control mzvyhTmpSv = ctpl.FindControl("textBox_" + day.ToString() + "_6");
+                    TextBox mzvyhTxtSv = (TextBox)mzvyhTmpSv;
+
+                    decimal zuctHodinyFLOAT = Convert.ToDecimal(zucHodTxt.Text.ToString(), CultureInfo.InvariantCulture.NumberFormat);
+                    decimal defZuc = zuctHodinyFLOAT + hodiny;
+                    mzvyhTxt.Text = defZuc.ToString();
+                    mzvyhTxtSv.Text = defZuc.ToString();
+
+                    mTBox1.Text = hodiny.ToString();
+                    mTBox2.Text = neaktivna.ToString();
+                }
+                else
+                {
+                    Control tbox1 = ctpl.FindControl("textBox_" + day.ToString() + "_8");
+                    TextBox mTBox1 = (TextBox)tbox1;
+                    Control tbox2 = ctpl.FindControl("textBox_" + day.ToString() + "_10");
+                    TextBox mTBox2 = (TextBox)tbox2;
+
+                    mTBox1.Text = hodiny.ToString();
+                    mTBox2.Text = neaktivna.ToString();
+                }
+            }
+        }
+
+        if (daysAfter >0)
+        {
+            for (int eDay= 0; eDay<daysAfter; eDay++)
+            {
+                day = dt.AddDays(eDay+1).Day;
+                row = day - 1;
+                if (eDay == 0)
+                {
+                    rowData = day1;
+                }
+                else
+                {
+                    rowData = day2;
+                }
+
+                for (int tt = 0; tt < cols; tt++)
+                {
+                    Control crtl = ctpl.FindControl("textBox_" + row.ToString() + "_" + tt.ToString());
+                    TextBox txtB = (TextBox)crtl;
+                    txtB.Text = rowData[tt].ToString();
+                    //txtB.BackColor = System.Drawing.Color.LightGray;
+                    //txtB.Font.Bold = true;
+                }
+
+
+            }
+        }
+        
+    }
+
+
+
     protected SortedList getUserVykazData()
     {
         SortedList result = new SortedList();
@@ -697,6 +1043,23 @@ public partial class vykaz2 : System.Web.UI.Page
             }
             dat.Length = 0;
         }
+        return result;
+    }
+
+    protected Dictionary<int, Hashtable> getShiftsDK(int rok, int mesiac)
+    {
+        
+        string mesStr = mesiac.ToString();
+        if (mesStr.Length == 1)
+        {
+            mesStr = "0" + mesStr;
+        }
+
+        StringBuilder query = new StringBuilder();
+        int dateGroup = my_x2.makeDateGroup(rok, mesiac);
+        query.AppendFormat("SELECT [datum],[typ],[tyzden] FROM [is_sluzby_dk] WHERE [user_id] = '{0}' AND [date_group]='{1}' ORDER BY [datum] ASC", Session["user_id"].ToString(), dateGroup);
+        Dictionary<int, Hashtable> result = x2Mysql.getTable(query.ToString());
+
         return result;
     }
 

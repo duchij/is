@@ -27,10 +27,18 @@ public class user: my_db
 
    
 
-    public DataSet getAllUsersList()
+    public DataSet getAllUsersList(int clinic)
     {
-
-        string query = "SELECT [id],[full_name],[name],[prava] FROM [is_users]";
+        StringBuilder sb = new StringBuilder();
+        if (clinic == 0)
+        {
+            sb.Append("SELECT [id],[full_name],[name],[prava] FROM [is_users]");
+        }
+        else
+        {
+            sb.AppendFormat("SELECT [id],[full_name],[name],[prava] FROM [is_users] WHERE [klinika] ='{0}'",clinic);
+        }
+        string query = sb.ToString();
         my_con.Open();
 
         OdbcDataAdapter da = new OdbcDataAdapter(this.parseQuery(query), my_con);

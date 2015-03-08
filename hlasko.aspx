@@ -1,5 +1,5 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master"  AutoEventWireup="true" CodeFile="hlasko.aspx.cs" Inherits="hlasko" MaintainScrollPositionOnPostback="true"  %>
-<%--<%@ Register TagPrefix="druhadk_hlasko" TagName="dk_hlasko" Src="~/Controls/druhadk_hlasko.ascx" %>--%>
+<%@ Register TagPrefix="druhadk_hlasko" TagName="dk_hlasko" Src="~/Controls/druhadk_hlasko.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
 </asp:Content>
@@ -23,8 +23,7 @@ Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="
                <div class="row">
                <div class="one half">
                     <asp:DropDownList ID="hlas_type" runat="server"  
-                        AutoPostBack="True" OnSelectedIndexChanged="Calendar1_SelectionChanged" 
-                        ontextchanged="hlas_type_SelectedIndexChanged">
+                        AutoPostBack="True" OnSelectedIndexChanged="Calendar1_SelectionChanged">
                         <asp:ListItem Value="OUP">OÚP</asp:ListItem>
                         <asp:ListItem Value="A">Oddelenie A</asp:ListItem>
                         <asp:ListItem Value="B">Oddelenie B</asp:ListItem>
@@ -33,18 +32,17 @@ Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="
                     </div>
                     <div class="one half">
                     <asp:Calendar ID="Calendar1" runat="server" BackColor="White"  CssClass="responsive" data-max="15"
-                            BorderColor="#999999" DayNameFormat="Shortest" 
+                            BorderColor="#d9edf7" DayNameFormat="Short"
                               ForeColor="Black" 
-                            OnSelectionChanged="Calendar1_SelectionChanged" CellPadding="4" 
-                            >
-                        <SelectedDayStyle BackColor="#666666" Font-Bold="True" ForeColor="White" />
-                        <SelectorStyle BackColor="#CCCCCC" />
-                        <WeekendDayStyle BackColor="#FFFFCC" />
-                        <TodayDayStyle BackColor="#CCCCCC" ForeColor="Black" />
+                            OnSelectionChanged="Calendar1_SelectionChanged" CellPadding="4" >
+                        <SelectedDayStyle BackColor="#46627f" Font-Bold="True" ForeColor="White" />
+                        <SelectorStyle BackColor="#46627f" />
+                        <WeekendDayStyle BackColor="#dff0d8" />
+                        <TodayDayStyle BackColor="#f0e6f4" ForeColor="black" />
                         <OtherMonthDayStyle ForeColor="#808080" />
                         <NextPrevStyle VerticalAlign="Bottom" />
-                        <DayHeaderStyle BackColor="#CCCCCC" Font-Bold="True" />
-                        <TitleStyle BackColor="#999999" BorderColor="Black" Font-Bold="True" />
+                        <DayHeaderStyle BackColor="#ffe5c7" Font-Bold="True" />
+                        <TitleStyle BackColor="#d9edf7" BorderColor="Black" Font-Bold="True" />
                         </asp:Calendar>
                     </div>
                     </div>
@@ -177,9 +175,9 @@ Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="
         </asp:PlaceHolder> <%--KOniec KDCH placeholdera--%>
 
     <%-- hlasko pre 2dk --%>
-    <asp:PlaceHolder ID="druhaDK_pl" runat="server">
+    <asp:PlaceHolder ID="druhaDK_pl" runat="server" Visible ="false">
 
-        <%--<druhadk_hlasko:dk_hlasko runat="server"></druhadk_hlasko:dk_hlasko>--%>
+        <druhadk_hlasko:dk_hlasko runat="server"></druhadk_hlasko:dk_hlasko>
     </asp:PlaceHolder>
 
 

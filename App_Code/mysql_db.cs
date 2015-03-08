@@ -684,6 +684,47 @@ public class mysql_db
 
     }
 
+    public SortedList executeArr(string[] queries)
+    {
+        SortedList result = new SortedList();
+        OdbcTransaction trans1 = null;
+        my_con.Open();
+        trans1 = my_con.BeginTransaction();
+        string loging = "";
+        
+        OdbcCommand cmdtrans = new OdbcCommand();
+        cmdtrans.Connection = my_con;
+        cmdtrans.Transaction = trans1;
+        try
+        {
+            for (int q = 0; q < queries.Length; q++ )
+            {
+                loging += queries[q] + "<br>";
+                loging += ".......................................<br>";
+                //x2log.logData(queries[q], "", "mysql executeArr");
+                cmdtrans.CommandText = queries[q];
+                cmdtrans.ExecuteNonQuery();
+            }
+                
+            trans1.Commit();
+            result.Add("status", true);
+            result.Add("loging", loging);
+        }
+        catch (Exception e)
+        {
+            loging += "ERROR:" + e.ToString() + "<br>";
+            trans1.Rollback();
+            result.Add("status", false);
+            result.Add("msg", e.ToString());
+            result.Add("log", loging);
+            //result.Add("query", query);
+            x2log.logData(result, e.ToString(), "error wrong sql in executeArr()");
+        }
+        my_con.Close();
+
+        return result;
+    }
+
     public SortedList execute(string query)
     {
         query = this.parseQuery(query);

@@ -12,17 +12,17 @@ Vytvoril:<asp:Label ID="creatUser_lbl" runat="server" Text="" Font-Bold="true"><
         Služba:
         <asp:DropDownList ID="shiftType_dl" runat="server" AutoPostBack="true" OnSelectedIndexChanged="Calendar1_SelectionChanged"></asp:DropDownList>
     <asp:Calendar ID="Calendar1" runat="server" BackColor="White" OnSelectionChanged="Calendar1_SelectionChanged"  CssClass="responsive" data-max="12"
-                            BorderColor="#999999" DayNameFormat="Shortest"  
+                            BorderColor="#d9edf7" DayNameFormat="Shortest"  
                               ForeColor="Black" 
                              CellPadding="4" >
-                        <SelectedDayStyle BackColor="#666666" Font-Bold="True" ForeColor="White" />
-                        <SelectorStyle BackColor="#CCCCCC" />
-                        <WeekendDayStyle BackColor="#FFFFCC" />
-                        <TodayDayStyle BackColor="#CCCCCC" ForeColor="Black" />
+                        <SelectedDayStyle BackColor="#46627f" Font-Bold="True" ForeColor="White" />
+                        <SelectorStyle BackColor="#46627f" />
+                        <WeekendDayStyle BackColor="#dff0d8" />
+                        <TodayDayStyle BackColor="#f0e6f4" ForeColor="black" />
                         <OtherMonthDayStyle ForeColor="#808080" />
                         <NextPrevStyle VerticalAlign="Bottom" />
-                        <DayHeaderStyle BackColor="#CCCCCC" Font-Bold="True" />
-                        <TitleStyle BackColor="#999999" BorderColor="Black" Font-Bold="True" />
+                        <DayHeaderStyle BackColor="#ffe5c7" Font-Bold="True" />
+                        <TitleStyle BackColor="#d9edf7" BorderColor="Black" Font-Bold="True" />
                         </asp:Calendar>
     
     </div>
@@ -72,12 +72,12 @@ Vytvoril:<asp:Label ID="creatUser_lbl" runat="server" Text="" Font-Bold="true"><
             <div class="one fifth">
                 Typ:<asp:DropDownList ID="worktype_cb" runat="server">
                     <asp:ListItem Value="prijem">Príjem</asp:ListItem>
-                    <asp:ListItem Value="operac">Vyhodnocovanie výsledkov</asp:ListItem>
-                    <asp:ListItem Value="sledov">Úprava liečby</asp:ListItem>
-                    <asp:ListItem Value="konzil">Konzultácia</asp:ListItem>
+                    <asp:ListItem Value="vyhodV">Vyhodnocovanie výsledkov</asp:ListItem>
+                    <asp:ListItem Value="upravL">Úprava liečby</asp:ListItem>
+                    <asp:ListItem Value="konzul">Konzultácia</asp:ListItem>
                     <asp:ListItem Value="vizita">Vizita</asp:ListItem>
                     <asp:ListItem Value="dekurz">Dekurzovanie</asp:ListItem>
-                    <asp:ListItem Value="dekurz">Konzílium</asp:ListItem>
+                    <asp:ListItem Value="konzil">Konzílium</asp:ListItem>
                     <asp:ListItem Value="urgent">Urgent</asp:ListItem>
                     </asp:DropDownList>
             </div> 

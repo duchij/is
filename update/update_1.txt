@@ -1,0 +1,9 @@
+﻿ALTER TABLE `is_users`
+CHANGE `prava` `prava` enum('admin','sadmin','poweruser','users') COLLATE 'ascii_general_ci' NULL AFTER `passwd`,
+COMMENT='';
+--nextquery--
+ALTER TABLE `is_clinics`
+CHANGE `adrress` `address` text COLLATE 'utf8_slovak_ci' NULL AFTER `full_name`,
+COMMENT='';
+--nextquery--
+INSERT INTO `is_settings` (`name`, `data`) VALUES ('2dk_typ_vykaz', 'normDen|7,12:30,13:00,15,7.5,0,0,0,0,0,0,0,0\r\nOdd_norm|7,12:30,13:00,19,11.5,5,0,0,5,0,7,0,0\r\nOdd1_vik|7,12:30,13:30,19,11.5,5,16.5,0,0,5,0,7,0,0\r\nOdd2_8h|7,12:30,13:30,15,7.5,5,7.5,0,0,0,0,0,0,0\r\nOupA12_vik|8,12:30,13:00,20,11.5,0,11.5,0,0,0,0,0,0,0\r\nOupA_normden|7,12:30,13:00,19,11.5,0,0,0,0,0,0	,0,0\r\nOupB_normden|16.30,23:30,00:00,7,15.5,0,0,0,5,0,7,0,0\r\nOupB_normden_po|0,0,0,7,0,0,0,0,0,0,0,0,0\r\nOupB1_vik|20.00,23:30,00:00,8,11.5,0,0,0,5,0,7,0,0\r\nOupB1_vik_po|0,0,0,8,0,0,0,0,0,0,0,0,0\r\nExpe_normden|15,23:30,00:00,0,15.5,0,0,0,5,0,7,0,0\r\nExpe_normden_po|0,0,0,7,0,0,0,0,0,0,0,0,0\r\nExpe_vik|8,12:30,13:00,19,11.5,0,11.5,11.5,0,5,0,7,0,0\r\nExDay|0,0,0,0,0,0,0,0,0,0,0,0,0');

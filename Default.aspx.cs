@@ -218,7 +218,7 @@ public partial class _Default : System.Web.UI.Page
                         {
                             if (DateTime.Today < Convert.ToDateTime(poz_data["datum"].ToString()))
                             {
-                                if (Session["klinika"].ToString().ToLower() == "kdch")
+                                if (Session["klinika"].ToString().ToLower() == "kdch" && Session["login"].ToString()!="admin")
                                 {
                                     Response.Redirect(@"poziadavky.aspx?a=1");
                                 }

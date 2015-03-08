@@ -409,7 +409,7 @@ public partial class dovkompl : System.Web.UI.Page
     {
         StringBuilder sb = new StringBuilder();
         sb.AppendLine("SELECT [id],[name],[name2],[name3],[titul_pred],[full_name],[titul_za] FROM [is_users] ");
-        sb.AppendFormat("WHERE ([active] = 1 AND [klinika] = '{0}' AND [work_group]='doctor') ",Session["klinika_id"]);
+        sb.AppendFormat("WHERE ([active]='1' AND [klinika] = '{0}' AND [work_group]='doctor') ",Session["klinika_id"]);
         sb.AppendLine("AND [name] != 'admin' AND [name] != 'vtablet'");
         //sb.AppendFormat("AND [klinika]='{0}'", this.gKlinika);
         sb.AppendLine("ORDER BY [name2] ASC");

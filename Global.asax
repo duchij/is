@@ -10,7 +10,14 @@
         log x2log = new log();
        
         x2log.checkIfLogExists(tmp);
+
+        mysql_db mysql = new mysql_db();
+        Boolean status = mysql.offline();
         
+       
+        
+        
+        //Session["webstatus"] = "run";
         
         
         // Code that runs on application startup
@@ -41,7 +48,8 @@
     void Session_Start(object sender, EventArgs e) 
     {
         Session["serverUrl"] = System.Web.HttpContext.Current.Server.MapPath("/");
-        Session["dSession"] = this.Session.SessionID;
+        Session["webstatus"] = "run";
+        //Session["dSession"] = this.Session.SessionID;
         
         string fg="";
 
@@ -53,20 +61,30 @@
         if (fg == "run0")
         {
             Session["serverUrl"] = System.Web.HttpContext.Current.Server.MapPath("/");
+            Session["webstatus"] = "run";
         }
         else
         {
             mysql_db mysql = new mysql_db();
             Boolean status = mysql.offline();
-
             if (status == false)
             {
+                //if (System.IO.File.Exists(System.Web.HttpContext.Current.Server.MapPath("/") + @"\app_offline.ina"))
+                //{
+                //    System.IO.File.Move(System.Web.HttpContext.Current.Server.MapPath("/") + @"\app_offline.ina", System.Web.HttpContext.Current.Server.MapPath("/") + @"\app_offline.htm");
+                //}
                 Session.Abandon();
                 Server.Transfer("offline.html");
             } 
             else
             {
-                Session["serverUrl"] = System.Web.HttpContext.Current.Server.MapPath("/");  
+                if (System.IO.File.Exists(System.Web.HttpContext.Current.Server.MapPath("/") + @"\app_offline.htm"))
+                {
+                    System.IO.File.Move(System.Web.HttpContext.Current.Server.MapPath("/") + @"\app_offline.htm", System.Web.HttpContext.Current.Server.MapPath("/") + @"\app_offline.ina");  
+                }
+                
+                Session["serverUrl"] = System.Web.HttpContext.Current.Server.MapPath("/"); 
+                Session["webstatus"] = "run"; 
             }
         }
         
@@ -86,6 +104,11 @@
         // is set to InProc in the Web.config file. If session mode is set to StateServer 
         // or SQLServer, the event is not raised.
 
+    }
+    
+    void Application_EndRequest(object sender, EventArgs e)
+    {
+     
     }
 
     void Application_BeginRequest(object sender, EventArgs e)

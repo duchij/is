@@ -33,6 +33,11 @@ public partial class hlasko : System.Web.UI.Page
         {
             this.kdch_pl.Visible = true;
         }
+
+        if (this.gKlinika == "2dk")
+        {
+            this.druhaDK_pl.Visible = true;
+        }
         //hlavicka.Controls.Add(new LiteralControl("<script type='text/javascript' src='tinymce/jscripts/tiny_mce/tiny_mce.js'></script>"));
         // hlavicka.Controls.Add(new LiteralControl("<script type='text/javascript'>tinyMCE.init({mode : 'textareas',        force_br_newlines : true,        force_p_newlines : false});</script>"));
     }
@@ -90,7 +95,7 @@ public partial class hlasko : System.Web.UI.Page
 
     protected void setShiftForDoctor(Boolean hlaskoSt, Boolean setShift)
     {
-        DateTime dt = this.Calendar1.SelectedDate;
+        DateTime dt = Convert.ToDateTime(this.Calendar1.SelectedDate);
 
         StringBuilder sb = new StringBuilder();
         sb.AppendFormat("SELECT [typ] FROM [is_sluzby_2] WHERE [user_id] = '{0}' AND [datum]='{1}' AND [typ]!='prijm'", Session["user_id"].ToString(), my_x2.unixDate(dt).ToString());
@@ -857,6 +862,7 @@ public partial class hlasko : System.Web.UI.Page
             newData.Add("creat_user", Session["user_id"].ToString());
             newData.Add("last_user", Session["user_id"].ToString());
             newData.Add("encrypt","yes");
+            newData.Add("clinic", Session["klinika_id"]);
             SortedList res = x2MySQL.mysql_insert("is_hlasko", newData);
 
             Boolean status = Convert.ToBoolean(res["status"]);
@@ -890,9 +896,10 @@ public partial class hlasko : System.Web.UI.Page
         data.Add("dat_hlas", my_x2.unixDate(this.Calendar1.SelectedDate));
         data.Add("text", my_x2.EncryptString(hlasenie.Text.ToString(),Session["passphrase"].ToString()));
         data.Add("last_user", Session["user_id"].ToString());
-        data.Add("creat_user", 1);
+        data.Add("creat_user", 0);
         data.Add("type", this.hlas_type.SelectedValue.ToString());
         data.Add("encrypt","yes");
+        data.Add("clinic", Session["klinika_id"]);
         if (uzavri == true)
         {
             data.Add("uzavri", "1");
@@ -929,6 +936,7 @@ public partial class hlasko : System.Web.UI.Page
         data.Add("type", this.hlas_type.SelectedValue.ToString());
         data.Add("status", "generated");
         data.Add("encrypt","yes");
+        data.Add("clinic", Session["klinika_id"]);
         //if (uzavri == true)
         //{
         //    data.Add("uzavri", "1");
@@ -961,11 +969,11 @@ public partial class hlasko : System.Web.UI.Page
         SortedList data = new SortedList();
         SortedList my_last_user = new SortedList();
         data.Add("text", my_x2.EncryptString(my_dodatok,Session["passphrase"].ToString()));
-        data.Add("last_user", 0);
+        data.Add("last_user", Session["user_id"]);
         data.Add("dat_hlas", my_x2.unixDate(this.Calendar1.SelectedDate));
         data.Add("creat_user", 0);
         data.Add("type", this.hlas_type.SelectedValue.ToString());
-
+        data.Add("clinic", Session["klinika_id"]);
         SortedList res = x2MySQL.mysql_insert("is_hlasko", data);
         my_last_user = x_db.getUserInfoByID(Session["user_id"].ToString());
 

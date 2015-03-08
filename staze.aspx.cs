@@ -34,12 +34,16 @@ public partial class staze : System.Web.UI.Page
         {
             Response.Redirect("error.html");
         }
+
+       
+
         this.msg_lbl.Text = "";
         this.rights = Session["rights"].ToString();
         this.wgroup = Session["workgroup"].ToString();
         this.gKlinika = Session["klinika"].ToString().ToLower();
+        this.setLabels();
 
-        if (this.rights == "poweruser" || this.rights=="admin")
+        if (this.rights == "poweruser" || this.rights=="admin" || this.rights=="sadmin")
         {
             this.setState_pl.Visible = true;
         }
@@ -56,7 +60,7 @@ public partial class staze : System.Web.UI.Page
 
             string state = this.getState(x2.makeDateGroup(rok, mesiac));
 
-            if (this.rights == "admin" || this.rights=="poweruser")
+            if (this.rights == "admin" || this.rights=="poweruser" || this.rights=="sadmin")
             {
                 this.drawTable();
             }
@@ -80,7 +84,7 @@ public partial class staze : System.Web.UI.Page
 
             string state = this.getState(x2.makeDateGroup(rok, mesiac));
 
-            if (this.rights == "admin" || this.rights == "poweruser" || Session["login"].ToString() == "jbabala")
+            if (this.rights.IndexOf("admin")!=-1 || this.rights == "poweruser" || Session["login"].ToString() == "jbabala" )
             {
                 this.word_btn.Visible = true;
                 this.print_btn.Visible = true;
@@ -100,6 +104,11 @@ public partial class staze : System.Web.UI.Page
                 this.msg_lbl.Text = Resources.Resource.staze_not_done;
             }
         }
+    }
+
+    protected void setLabels()
+    {
+        this.staze_titel_lbl.Text = x2.setLabel(this.gKlinika + "_staze_titel");
     }
 
     protected void setActDate()
@@ -169,7 +178,7 @@ public partial class staze : System.Web.UI.Page
 
         int daysInMonth = DateTime.DaysInMonth(rok, mesiac);
 
-        SortedList res = x2Mysql.getRow("SELECT * FROM [is_settings] WHERE [name] = 'kdch_staze'");
+        SortedList res = x2Mysql.getRow("SELECT * FROM [is_settings] WHERE [name] = '"+this.gKlinika+"_staze'");
 
         string[] staze = res["data"].ToString().Split(',');
 
@@ -228,7 +237,7 @@ public partial class staze : System.Web.UI.Page
                     TableCell dataCell = new TableCell();
                     if (vikend) dataCell.CssClass = "box red";
                     if (sviatok != -1) dataCell.CssClass = "box yellow";
-                    if (this.rights == "admin" || this.rights=="poweruser")
+                    if (this.rights.IndexOf("admin")!=-1 || this.rights=="poweruser")
                     {
                         TextBox txtBox = new TextBox();
                         txtBox.ID = header[col-1] + "_" + rDen.ToString();
@@ -276,7 +285,7 @@ public partial class staze : System.Web.UI.Page
 
             string type = table[row]["type"].ToString();
 
-            if (this.rights == "admin" || this.rights=="poweruser")
+            if (this.rights.IndexOf("admin")!=-1 || this.rights=="poweruser")
             {
                 Control cl = ctpl.FindControl(type + "_" + day.ToString());
 

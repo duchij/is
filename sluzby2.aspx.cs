@@ -48,7 +48,7 @@ public partial class sluzby2 : System.Web.UI.Page
         {
             this.kdch_pl.Visible = true;
 
-            if ((this.rights == "admin" || this.rights == "poweruser") && this.wgroup == "doctor")
+            if ((this.rights == "admin" || this.rights == "poweruser" || this.rights=="sadmin") && this.wgroup == "doctor")
             {
                 this.publish_btn.Visible = true;
                 this.unpublish_btn.Visible = true;
@@ -65,7 +65,7 @@ public partial class sluzby2 : System.Web.UI.Page
         {
             this.druhadk_pl.Visible = true;
 
-            if (this.rights == "poweruser")
+            if (this.rights == "poweruser" || this.rights=="sadmin")
             {
                 this.setup_btn.Visible = true;
                 this.avaible_btn.Visible = true;
@@ -596,7 +596,7 @@ public partial class sluzby2 : System.Web.UI.Page
         }
         else
         {
-            if (this.rights == "admin" || this.rights == "poweruser")
+            if (this.rights == "admin" || this.rights == "poweruser" || this.rights=="sadmin")
             {
                 this.shiftState_lbl.Text = Resources.Resource.shifts_see_all;
             }
@@ -625,7 +625,7 @@ public partial class sluzby2 : System.Web.UI.Page
         }
         else
         {
-            if (this.rights == "admin" || this.rights == "poweruser")
+            if (this.rights == "admin" || this.rights == "poweruser" || this.rights=="sadmin")
             {
                 this.shiftState_lbl.Text = Resources.Resource.shifts_see_limited;
             }
@@ -1408,7 +1408,7 @@ public partial class sluzby2 : System.Web.UI.Page
         
         StringBuilder sb = new StringBuilder();
 
-        if ((this.rights == "admin" || this.rights == "poweruser") && this.wgroup=="doctor")
+        if ((this.rights == "admin" || this.rights == "poweruser" || this.rights=="sadmin") && this.wgroup=="doctor")
         {
 
             sb.Append("SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],");
@@ -1444,7 +1444,7 @@ public partial class sluzby2 : System.Web.UI.Page
 
         if (table.Count == daysMonth)
         {
-            if (this.rights == "admin" || this.rights == "poweruser")
+            if (this.rights == "admin" || this.rights == "poweruser" || this.rights=="sadmin")
             {
                 string state = table[0]["state"].ToString();
                 
@@ -1536,7 +1536,7 @@ public partial class sluzby2 : System.Web.UI.Page
                     //  {
 
 
-                    if ((this.rights == "admin" || this.rights == "poweruser") && this.wgroup=="doctor")
+                    if ((this.rights == "admin" || this.rights == "poweruser" || this.rights=="sadmin") && this.wgroup=="doctor")
                     {
                         DropDownList doctors_lb = new DropDownList();
                         doctors_lb.ID = "ddl_" + row.ToString() + "_" + cols.ToString();
@@ -1604,12 +1604,12 @@ public partial class sluzby2 : System.Web.UI.Page
         {
             if (table.Count == 0)
             {
-                if (this.rights != "admin" || this.rights != "poweruser")
+                if (this.rights != "admin" || this.rights != "poweruser" || this.rights!="sadmin")
                 {
                     this.msg_lbl.Text = Resources.Resource.shifts_not_done;
                    // this.publish_cb.Visible = false;
                 }
-                if ((this.rights == "admin" || this.rights == "poweruser") && this.wgroup=="doctor")
+                if ((this.rights == "admin" || this.rights == "poweruser" || this.rights=="sadmin") && this.wgroup=="doctor")
                 {
                     int daysTmp = x2Mysql.fillDocShifts(Convert.ToInt32(dateGroup), Convert.ToInt32(daysMonth), Convert.ToInt32(mesiac), Convert.ToInt32(rok));
                     this.shiftTable.Controls.Clear();
@@ -1682,7 +1682,7 @@ public partial class sluzby2 : System.Web.UI.Page
         sb.Append("SELECT [is_users].[name3] AS [name], [is_users].[id] AS [users_id], [is_clinics].[idf] AS [idf] ");
         sb.AppendLine("FROM [is_users]");
         sb.AppendLine("INNER JOIN [is_clinics] ON [is_clinics].[id] = [is_users].[klinika]");
-        sb.AppendFormat("WHERE [is_users].[klinika]='{0}' ORDER BY [is_users].[name3]", Session["klinika_id"]);
+        sb.AppendFormat("WHERE [is_users].[klinika]='{0}' OR [is_users].[klinika]=5 ORDER BY [is_users].[name3]", Session["klinika_id"]);
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
 
@@ -1706,7 +1706,7 @@ public partial class sluzby2 : System.Web.UI.Page
     protected ArrayList loadDoctors()
     {
         StringBuilder sb = new StringBuilder();
-        sb.Append("SELECT [id],[name3] FROM [is_users] WHERE ([work_group]='doctor') AND [active] = 1  ORDER BY [name2]");
+        sb.Append("SELECT [id],[name3] FROM [is_users] WHERE ([work_group]='doctor') AND [active]='1'  ORDER BY [name2]");
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
 

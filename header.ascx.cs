@@ -56,7 +56,7 @@ public partial class header : System.Web.UI.UserControl
 
         string dnesStr = dnes.ToShortDateString();
         string vceraStr = vcera.ToShortDateString();
-
+        this.date_lbl.Text = DateTime.Today.ToLongDateString();
         StringBuilder sb = new StringBuilder();
 
         sb.Append("SELECT GROUP_CONCAT([t_s_dk].[typ] ORDER BY [t_s_dk].[ordering] SEPARATOR ';') AS [shift_type],");
@@ -114,7 +114,7 @@ public partial class header : System.Web.UI.UserControl
 
             this.po_lbl.Text = table[1]["doc_names"].ToString();
 
-            date_lbl.Text = DateTime.Today.ToLongDateString();
+            
             //this.trp_lbl.Text = docBefore[4].ToString() + "<br>" + comments[4].ToString();
 
             //this.po_lbl.Text = table[1]["users_names"].ToString();
@@ -148,6 +148,7 @@ public partial class header : System.Web.UI.UserControl
         string vceraStr = vcera.ToShortDateString();
 
         StringBuilder sb = new StringBuilder();
+        this.date_lbl.Text = DateTime.Today.ToLongDateString();
         if (this.wgroup == "doctor" || this.wgroup == "op" || this.wgroup == "other")
         {
 

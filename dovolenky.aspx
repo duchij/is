@@ -156,16 +156,16 @@
 
                 <h2 class="green">OD:</h2>
                 <asp:Calendar ID="dovOd_user" runat="server" BackColor="White"
-                    BorderColor="#999999" CellPadding="4" DayNameFormat="Shortest"
+                    BorderColor="#d9edf7" CellPadding="4" DayNameFormat="Shortest"
                     ForeColor="Black" CssClass="responsive" data-max="15">
-                    <SelectedDayStyle BackColor="#666666" Font-Bold="True" ForeColor="White" />
-                    <SelectorStyle BackColor="#CCCCCC" />
-                    <WeekendDayStyle BackColor="#FFFFCC" />
-                    <TodayDayStyle BackColor="#CCCCCC" ForeColor="Black" />
-                    <OtherMonthDayStyle ForeColor="#808080" />
-                    <NextPrevStyle VerticalAlign="Bottom" />
-                    <DayHeaderStyle BackColor="#CCCCCC" Font-Bold="True" />
-                    <TitleStyle BackColor="#999999" Font-Bold="True" BorderColor="Black" />
+                    <SelectedDayStyle BackColor="#46627f" Font-Bold="True" ForeColor="White" />
+                        <SelectorStyle BackColor="#46627f" />
+                        <WeekendDayStyle BackColor="#dff0d8" />
+                        <TodayDayStyle BackColor="#f0e6f4" ForeColor="black" />
+                        <OtherMonthDayStyle ForeColor="#808080" />
+                        <NextPrevStyle VerticalAlign="Bottom" />
+                        <DayHeaderStyle BackColor="#ffe5c7" Font-Bold="True" />
+                        <TitleStyle BackColor="#d9edf7" BorderColor="Black" Font-Bold="True" />
                 </asp:Calendar>
             </div>
 
@@ -174,16 +174,16 @@
                 <h2 class="green">DO:</h2>
 
                 <asp:Calendar ID="dovDo_user" runat="server" BackColor="White"
-                    BorderColor="#999999" CellPadding="4" DayNameFormat="Shortest"
+                    BorderColor="#d9edf7" CellPadding="4" DayNameFormat="Shortest"
                     ForeColor="Black" CssClass="responsive" data-max="15">
-                    <SelectedDayStyle BackColor="#666666" Font-Bold="True" ForeColor="White" />
-                    <SelectorStyle BackColor="#CCCCCC" />
-                    <WeekendDayStyle BackColor="#FFFFCC" />
-                    <TodayDayStyle BackColor="#CCCCCC" ForeColor="Black" />
-                    <OtherMonthDayStyle ForeColor="#808080" />
-                    <NextPrevStyle VerticalAlign="Bottom" />
-                    <DayHeaderStyle BackColor="#CCCCCC" Font-Bold="True" />
-                    <TitleStyle BackColor="#999999" Font-Bold="True" BorderColor="Black" />
+                     <SelectedDayStyle BackColor="#46627f" Font-Bold="True" ForeColor="White" />
+                        <SelectorStyle BackColor="#46627f" />
+                        <WeekendDayStyle BackColor="#dff0d8" />
+                        <TodayDayStyle BackColor="#f0e6f4" ForeColor="black" />
+                        <OtherMonthDayStyle ForeColor="#808080" />
+                        <NextPrevStyle VerticalAlign="Bottom" />
+                        <DayHeaderStyle BackColor="#ffe5c7" Font-Bold="True" />
+                        <TitleStyle BackColor="#d9edf7" BorderColor="Black" Font-Bold="True" />
                 </asp:Calendar>
             </div>
         </div>

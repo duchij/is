@@ -1,0 +1,3 @@
+﻿ALTER TABLE `is_users`
+CHANGE `prava` `prava` enum('admin','sadmin','poweruser','users') COLLATE 'ascii_general_ci' NULL AFTER `passwd`,
+COMMENT='';

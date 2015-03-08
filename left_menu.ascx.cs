@@ -11,6 +11,8 @@ using System.Web.UI.WebControls.WebParts;
 
 public partial class left_menu : System.Web.UI.UserControl
 {
+    public EventHandler setStateButton;
+
     protected void Page_Load(object sender, EventArgs e)
     {
        
@@ -27,30 +29,41 @@ public partial class left_menu : System.Web.UI.UserControl
             this.admin.Visible = true;
             this.sestra.Visible = true;
         }
+        if (rights == "sadmin")
+        {
+            this.doctors.Visible = true;
+            this.admin.Visible = true;
+            this.sestra.Visible = true;
+            this.sadmin_menu.Visible = true;
+        }
+       
 
         if (wgroup == "op")
         {
             this.operacky.Visible = true;
         }
-       
-
-        if ((wgroup == "doctor" || wgroup=="other") && rights!="admin" )
+        else if ((wgroup == "doctor" || wgroup=="other") && (rights.IndexOf("admin")==-1))
         {
             this.doctors.Visible = true;
             this.admin.Visible = false;
             this.sestra.Visible = false;
         }
-        
-        if (wgroup == "nurse" || wgroup =="assistent") 
+        else if (wgroup == "nurse" || wgroup =="assistent") 
         {
             this.doctors.Visible = false;
             this.admin.Visible = false;
             this.sestra.Visible = true;
         }
+    }
 
+    protected void setState(object sender, EventArgs e)
+    {
+        if (setStateButton!=null)
+        {
+            setStateButton(sender, e);
+        }
+       
         
-
-        
-
+        //this.offline_btn.Click += new EventHandler(duchmaster.webState_click);
     }
 }

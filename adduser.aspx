@@ -21,7 +21,7 @@
                              <asp:BoundField DataField="id" HeaderText="id">
                                  <HeaderStyle HorizontalAlign="Left" />
                              </asp:BoundField>
-                             <asp:BoundField DataField="full_name" HeaderText="Cele meno">
+                             <asp:BoundField DataField="full_name" HeaderText="Celé meno">
                                  <HeaderStyle HorizontalAlign="Left" />
                              </asp:BoundField>
                              <asp:BoundField DataField="name" HeaderText="login">

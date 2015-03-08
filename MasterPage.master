@@ -40,6 +40,34 @@
    <%-- <link href="css/style.css" rel="stylesheet" type="text/css" />--%>
     <script type="text/javascript" src="tinymce/js/tinymce/tinymce.min.js"></script>
     <script type="text/javascript">
+
+        function ieskoClosing() {
+            if (netscape != undefined)
+            {
+                var answer = confirm("Naozaj zavriet okno ?");
+                if (answer) {
+                    netscape.security.PrivilegeManager.enablePrivilege('UniversalBrowserWrite');
+                    window.close();
+                }
+                else {
+                    stop;
+                }
+            }
+            else
+            {
+                var answer = confirm("Naozaj zavriet okno ?");
+                if (answer)
+                {
+                    window.close();
+                }
+                else {
+                    stop;
+                }
+            }
+            
+        }
+
+
         tinymce.init({
         selector: ".dtextbox",
         //theme:"advanced",
@@ -73,7 +101,7 @@
 
 <body>
     <form id="form1" runat="server">
- 
+        <asp:Label ID="master_lbl" runat="server" Text=""></asp:Label>
      <div class="container">
      
         <nav class="nav hide-on-desktop blue responsive" data-max="15" role="navigation" title="Mobile">

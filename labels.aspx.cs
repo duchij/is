@@ -9,6 +9,7 @@ using System.Web.UI.WebControls;
 public partial class labels_labels : System.Web.UI.Page
 {
     mysql_db x2Mysql = new mysql_db();
+    public string rights;
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -16,13 +17,10 @@ public partial class labels_labels : System.Web.UI.Page
         {
             Response.Redirect("error.html");
         }
-        
+        this.rights = Session["rights"].ToString().ToLower();
         if (IsPostBack)
         { 
-
-
             string prefix = this.prefix_txt.Text.ToString().Trim();
-
             if (prefix.Length > 0)
             {
                 this._searchPrefix();
@@ -57,7 +55,17 @@ public partial class labels_labels : System.Web.UI.Page
     protected void loadClinics()
     {
         StringBuilder sb = new StringBuilder();
-        sb.Append("SELECT [id],[idf],[full_name] FROM [is_clinics]");
+
+        if (this.rights == "admin")
+        {
+            sb.Append("SELECT [id],[idf],[full_name] FROM [is_clinics]");
+        }
+        else
+        {
+            sb.AppendFormat("SELECT [id],[idf],[full_name] FROM [is_clinics] WHERE [id]='{0}'", Session["klinika_id"]);
+        }
+
+        
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
         
@@ -146,6 +154,7 @@ public partial class labels_labels : System.Web.UI.Page
         Button delBtn = (Button)sender;
         StringBuilder sb = new StringBuilder();
         string[] tmp = delBtn.ID.ToString().Split('_');
+
         if (tmp[0] == "deleteLabel")
         {
             sb.AppendFormat("DELETE FROM [is_labels] WHERE [id]='{0}'", tmp[1]);
@@ -159,9 +168,19 @@ public partial class labels_labels : System.Web.UI.Page
         }
         if (tmp[0] == "saveLabel")
         {
+            Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+            ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
+
+            Control cl1 = ctpl.FindControl("labelIdf_" + tmp[1]);
+            Label lbl = (Label)cl1;
+
+            Control cl2 = ctpl.FindControl("tboxLabel_" + tmp[1]);
+            TextBox txt = (TextBox)cl2;
+
+
             SortedList data = new SortedList();
-            data.Add("idf", this.labelIdf_txt.Text.ToString());
-            data.Add("label", this.labelTxt_txt.Text.ToString());
+            data.Add("idf", lbl.Text.ToString());
+            data.Add("label", txt.Text.ToString());
 
             SortedList res1 = x2Mysql.mysql_update("is_labels", data, tmp[1]);
             if (Convert.ToBoolean(res1["statu"]))

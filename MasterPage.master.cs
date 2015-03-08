@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Collections;
 using System.Text;
@@ -11,16 +12,20 @@ using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 using System.Web.UI.HtmlControls;
 
+//public delegate void setWebState (object sender,System.EventArgs e);
+
 public partial class MasterPage : System.Web.UI.MasterPage
 {
+    //public event setWebState doSetWebState;
+
     public x2_var X2 = new x2_var();
     public my_db oldDb = new my_db();
     public mysql_db x2Mysql = new mysql_db();
     public string rights="";
     public string wgroup = "";
     public string gKlinika;
-    
-   /* public string PageName
+
+    /* public string PageName
     {
        get
         {
@@ -31,11 +36,16 @@ public partial class MasterPage : System.Web.UI.MasterPage
             lblpageName.Text = value;
         }
     }*/
+    //protected virtual void _setEx(object sender,EventArgs e)
+   // {
+       // doSetWebState(sender, e);
+    //}
 
     
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        
         this.gKlinika = Session["klinika"].ToString().ToLower();
         this.web_titel.Text = X2.setLabel(Session["klinika"].ToString().ToLower()+"_web_titel");
 
@@ -83,15 +93,66 @@ public partial class MasterPage : System.Web.UI.MasterPage
 
     protected void Page_Init(object sender, EventArgs e)
     {
+        left_menu.setStateButton += new EventHandler(stateIt);
         this.info_plh.Visible = false;
+        
+    }
+
+    protected void stateIt(object sender, EventArgs e)
+    {
+        Button btn = (Button)sender;
+        string id = btn.ID.ToString();
+
+        if (id == "offline_btn")
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("UPDATE [is_settings] SET [data]='false' WHERE [name]='webstatus'");
+
+            x2Mysql.execute(sb.ToString());
+            string serverUrl = Session["serverUrl"].ToString();
+
+            if (File.Exists(serverUrl+ @"\app_offline.ina"))
+            {
+                try
+                {
+                    File.Move(serverUrl + @"\app_offline.ina", serverUrl + @"\app_offline.htm");
+                    Session.Abandon();
+                }
+                catch (Exception exc)
+                {
+                    Session.Abandon();
+                }
+                
+            }
+        }
+
+        if (id == "online_btn")
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("UPDATE [is_settings] SET [data]='true' WHERE [name]='webstatus'");
+            x2Mysql.execute(sb.ToString());
+            //string serverUrl = Session["serverUrl"].ToString();
+
+            /*if (File.Exists(serverUrl + @"\app_offline.htm"))
+            {
+                File.Move(serverUrl + @"\app_offline.htm", serverUrl + @"\app_offline.ina");
+            }*/
+
+
+        }
     }
 
 
 
     protected void log_out_Click(object sender, EventArgs e)
     {
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine("<script language=javascript>");
+        sb.AppendLine("var myWin = window.open('','_parent','');");
+        sb.AppendLine("myWin.close();</script>");
         Session.Abandon();
         Response.Redirect("Default.aspx");
+        //Page.ClientScript.RegisterStartupScript(this.GetType(), "close", sb.ToString());
     }
 
     protected void showInfoMessage()

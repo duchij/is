@@ -18,6 +18,7 @@ public partial class adduser : System.Web.UI.Page
     x2_var my_x2 = new x2_var();
     mysql_db x2MySql = new mysql_db();
     public string[] vykazHeader;
+    public string rights;
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -27,12 +28,12 @@ public partial class adduser : System.Web.UI.Page
         }
         this.msg_lbl.Text = "";
         //string rights = Request.Cookies["rights"].Value.ToString();
-        string rights = Session["rights"].ToString();
+        this.rights = Session["rights"].ToString();
 
         SortedList akt_user_info = x_db.getUserInfoByID(Session["user_id"].ToString());
 
 
-        if (rights == "users"  || rights == "poweruser")
+        if (this.rights == "users"  || this.rights == "poweruser")
         {
             this.adminsectionPlace.Visible = false;
             login_txt.ReadOnly = true;
@@ -44,7 +45,7 @@ public partial class adduser : System.Web.UI.Page
            
         }
 
-        if (rights == "admin")
+        if (this.rights == "admin" || this.rights=="sadmin")
         {
             this.name_txt.AutoPostBack = true;
             //AutoPostBack="true" OnTextChanged="createLoginFnc"
@@ -63,6 +64,8 @@ public partial class adduser : System.Web.UI.Page
                 this.passwd_txt.ReadOnly = false;
                 this.klinika_txt.Text = "";
                 this.loadData();
+                this.loadClinics();
+                this.__loadDeps();
             }
             else
             {
@@ -123,12 +126,7 @@ public partial class adduser : System.Web.UI.Page
             }
         }
 
-        if (!IsPostBack)
-        {
-            this.loadClinics();
-            this.__loadDeps();
-        }
-
+        
         this.generateVykazSettings();
 
     }
@@ -137,7 +135,17 @@ public partial class adduser : System.Web.UI.Page
     {
         this.clinics_dl.Items.Clear();
         StringBuilder sb = new StringBuilder();
-        sb.AppendLine("SELECT [id],[full_name] FROM [is_clinics] ORDER BY [idf]");
+
+        if (this.rights == "admin")
+        {
+            sb.AppendLine("SELECT [id],[full_name] FROM [is_clinics] ORDER BY [idf]");
+        }
+        if (this.rights == "sadmin")
+        {
+            sb.AppendFormat("SELECT [id],[full_name] FROM [is_clinics] WHERE [idf]='{0}'",Session["klinika"].ToString().ToLower());
+        }
+
+        
 
         Dictionary<int, Hashtable> table = x2MySql.getTable(sb.ToString());
 
@@ -185,7 +193,17 @@ public partial class adduser : System.Web.UI.Page
 
     protected void loadData()
     {
-        this.users_gv.DataSource = x_db.getAllUsersList();
+        if (this.rights == "admin")
+        {
+            this.users_gv.DataSource = x_db.getAllUsersList(0);
+        }
+        if (this.rights == "sadmin")
+        {
+            int clinic = Convert.ToInt32(Session["klinika_id"]);
+            this.users_gv.DataSource = x_db.getAllUsersList(clinic);
+        }
+
+        
         this.users_gv.DataBind();
     }
 

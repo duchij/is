@@ -1,15 +1,26 @@
-﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="left_menu.ascx.cs" Inherits="left_menu" %>
-
+﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="left_menu.ascx.cs" Inherits="left_menu"  %>
+<%--<%@ Reference Control="~/MasterPage.master" %>--%>
  <asp:PlaceHolder ID="dev_pl" runat="server" Visible="false">
     Vyvojar
         <ul>
               <li><asp:HyperLink ID="call_sp" runat="server" NavigateUrl="~/helpers/callsp.aspx">Call Stored Procedure</asp:HyperLink></li>
               <li><asp:HyperLink ID="call_consluz" runat="server" NavigateUrl="~/helpers/convsluz.aspx">Konvertor sluzieb</asp:HyperLink></li> 
              <li><asp:HyperLink ID="labels" runat="server" NavigateUrl="labels.aspx">Labels</asp:HyperLink></li> 
-              
-        
+            <li><asp:HyperLink ID="update" runat="server" NavigateUrl="~/helpers/update.aspx">Labels</asp:HyperLink></li> 
+            <li><asp:Button ID="offline_btn" runat="server" Text="Set Web Offline" CssClass="button red" OnClick="setState" /></li>
+        <li><asp:Button ID="online_btn" runat="server" Text="Set Web Online" CssClass="button green"  OnClick="setState"/></li>
         </ul>
   </asp:PlaceHolder>
+
+<asp:PlaceHolder ID="sadmin_menu" runat="server" Visible="false">
+    <div class="alert box">
+    <h3>SubAdmin</h3>
+        </div>
+    <ul>
+        <li><asp:HyperLink ID="HyperLink1" runat="server" NavigateUrl="labels.aspx">Labels</asp:HyperLink></li>
+    </ul>
+
+</asp:PlaceHolder>
 
  <asp:PlaceHolder ID="operacky" runat="server"  Visible="false">
         <h3>Operacky</h3>

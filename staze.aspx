@@ -4,7 +4,7 @@
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
    <asp:Label ID="msg_lbl" runat="server" Text=""></asp:Label>
-<h2> Plán stáží</h2><hr />
+<h2><asp:Label ID="staze_titel_lbl" runat="server" Text="Staze"></asp:Label></h2><hr />
     <div class="row">
         <div class="one half">
                 Mesiac:<asp:DropDownList ID="mesiac_cb" runat="server" 

@@ -22,17 +22,25 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
 
         if (!IsPostBack)
         {
-            this.setMyDate();
-            this.setShiftTypes();
-            this.loadclinicDeps();
-            this.setEPC_init();
-            this.loadHlasko();
-            this.loadEPCData(false);
+            if (Session["klinika"].ToString().ToLower()=="2dk")
+            {
+                this.setMyDate();
+                this.setShiftTypes();
+                this.loadclinicDeps();
+                this.setEPC_init();
+                this.loadHlasko();
+                this.loadEPCData(false);
+            }
+            
             
         }
         else
         {
-            this.loadEPCData(false);
+            if (Session["klinika"].ToString().ToLower() == "2dk")
+            {
+                this.loadEPCData(false);
+            }
+            
             //this.loadHlasko();
         }
 
@@ -184,6 +192,7 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
         data.Add("work_text", x2.EncryptString(this.activity_txt.Text.ToString(), Session["passphrase"].ToString()));
         data.Add("osirix", this.check_osirix.Checked);
         data.Add("work_place", this.clinicDep_dl.SelectedValue);
+
         if (this.lfId_hidden.Value.ToString() != "0")
         {
             data.Add("lf_id", this.lfId_hidden.Value.ToString());
@@ -438,13 +447,13 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
         Dictionary<int, Hashtable> data = x2Mysql.getTable(sb.ToString());
 
         int dataCn = data.Count;
-        this.clinicDep_dl.Items.Add(new ListItem("Mimo kliniky", "mimo"));
+        
 
         for (int i = 0; i < dataCn; i++)
         {
             this.clinicDep_dl.Items.Add(new ListItem(data[i]["label"].ToString(),data[i]["idf"].ToString()));
         }
-
+        //this.clinicDep_dl.Items.Add(new ListItem("Mimo kliniky", "mimo"));
     }
 
     protected void clickEPC_fnc(object sender, EventArgs e)
