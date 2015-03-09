@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Text;
 using System.Collections;
 using System.Configuration;
 using System.Data;
@@ -14,6 +16,7 @@ public partial class opprogram : System.Web.UI.Page
 
     my_db x_db = new my_db();
     x2_var my_x2 = new x2_var();
+    mysql_db x2Mysql = new mysql_db();
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -50,15 +53,25 @@ public partial class opprogram : System.Web.UI.Page
 
     }
 
-    public void saveFile(SortedList data)
+    public void saveFile(string id)
     {
-        /*string url = "http://WWW.MySite/MyFile.js";
-        string strResponse = "";
-        HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
-        HttpWebResponse response = (HttpWebResponse)req.GetResponse();
-        StreamReader stIn = new StreamReader(response.GetResponseStream());
-        strResponse = stIn.ReadToEnd();
-        stIn.Close();*/
+        SortedList data = x2Mysql.getRow("SELECT * FROM [is_opprogram] WHERE [id]='" + id + "'");
+
+        string str = data["kratka_sprava"].ToString() + "\r\n";
+        str +=data["cela_sprava"].ToString()+"\r\n";
+        str += data["datum_txt"].ToString() + "\r\n";
+        str += data["user"].ToString() + "\r\n";
+        str += data["datum"].ToString() + "\r\n";
+
+        byte[] datato64 = Encoding.UTF8.GetBytes(str);
+        string txt64 = Convert.ToBase64String(datato64);
+
+        StreamWriter sw = new StreamWriter(Session["serverUrl"].ToString() + @"\App_Data\op.op",false);
+        sw.Write(txt64);
+        sw.Close();
+
+
+        
     }
 
 
@@ -87,13 +100,16 @@ public partial class opprogram : System.Web.UI.Page
             data.Add("user", Session["user_id"].ToString());
             data.Add("datum", my_x2.unixDate(new DateTime(__dnes.Year, __dnes.Month, __dnes.Day)));
 
-
+            
 
 
             data = x_db.saveOpProgram(data);
 
             if (data["status"].ToString() == "ok")
             {
+                this.saveFile(data["last_id"].ToString());
+
+
                 Response.Redirect("opprogram.aspx");
             }
             else
@@ -108,6 +124,7 @@ public partial class opprogram : System.Web.UI.Page
             data.Add("cela_sprava", _op);
 
             x_db.update_row("is_opprogram", data, id.ToString());
+            this.saveFile(id.ToString());
             Response.Redirect("opprogram.aspx");
         }
 

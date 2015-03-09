@@ -900,7 +900,7 @@ public partial class sluzby2 : System.Web.UI.Page
 
                     // this.shiftTable.Controls.Remove(dl);
 
-                    txtDocName.Text = x2.getStr(table[doc]["name"].ToString());
+                    txtDocName.Text = "<p>"+x2.getStr(table[doc]["name"].ToString())+"</p>";
                 }
 
 
@@ -908,7 +908,7 @@ public partial class sluzby2 : System.Web.UI.Page
                 string comment = table[doc]["comment"].ToString().Trim();
                 Control tCl = ctpl.FindControl(type + "_" + "txt_" + dt.Day.ToString());
                 TextBox txtB = (TextBox)tCl;
-                if ((comment.Length == 0 || comment=="_") && this.edit_chk.Checked == false)
+                if ((comment.Length == 0 || comment=="-") && this.edit_chk.Checked == false)
                 {
                     txtB.Visible = false;
                 }
