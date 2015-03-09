@@ -395,7 +395,11 @@ public partial class sluzby2 : System.Web.UI.Page
 
                             txtB.Text = row["tyzden"].ToString();
 
-                            if (this.edit_chk.Checked == true) this.blockDayInShiftDK(rok, mesiac, iWeek, row["tyzden"].ToString());
+                            if (this.rights!="poweruser" && this.rights.IndexOf("admin")==-1)
+                            {
+                                if (this.edit_chk.Checked == true) this.blockDayInShiftDK(rok, mesiac, iWeek, row["tyzden"].ToString());
+                            }
+                                
 
                             if (row["tyzden"].ToString() == "konz")
                             {
@@ -774,8 +778,13 @@ public partial class sluzby2 : System.Web.UI.Page
         int rok = Convert.ToInt32(this.rok_cb.SelectedValue);
 
         string datum = rok.ToString() + "-" + mesiac + "-" + dlId[1].ToString();
+        string shiftAv = "";
 
-        string shiftAv = this.shiftAvaibalityDK(dlId[0],datum);
+        if (this.rights.IndexOf("admin") == -1 && this.rights !="poweruser" )
+        {
+            shiftAv = this.shiftAvaibalityDK(dlId[0],datum);
+        }
+        
 
         if (shiftAv.Length == 0 || shiftAv == userId.ToString())
         {
@@ -790,7 +799,7 @@ public partial class sluzby2 : System.Web.UI.Page
             {
                 data.Add("user_id", userId);
             }
-            data.Add("clinic", 4);
+            data.Add("clinic", Session["klinika_id"]);
             //data.Add("clinic", 4);
             //data.Add("date_group", x2.makeDateGroup(rok, mesiac));
 
@@ -896,14 +905,23 @@ public partial class sluzby2 : System.Web.UI.Page
 
 
 
-                string comment = table[doc]["comment"].ToString();
-
+                string comment = table[doc]["comment"].ToString().Trim();
                 Control tCl = ctpl.FindControl(type + "_" + "txt_" + dt.Day.ToString());
                 TextBox txtB = (TextBox)tCl;
-                if (txtB != null)
+                if ((comment.Length == 0 || comment=="_") && this.edit_chk.Checked == false)
                 {
-                    txtB.Text = comment;
+                    txtB.Visible = false;
                 }
+                else 
+                {
+                    if (txtB != null)
+                    {
+                        txtB.Visible = true;
+                        txtB.Text = comment;
+                    }
+                }
+               
+               
 
             }
 
@@ -1671,32 +1689,43 @@ public partial class sluzby2 : System.Web.UI.Page
 
     protected ArrayList loadOmegaDoctors()
     {
-        StringBuilder sb = new StringBuilder();
-        
-        /*tc deaktivacia omegy ID budeme tahat
-         * s tabulky is_users.... preto druhy sql
-        sb.Append("SELECT [is_omega_doctors].[ms_item_id],[is_omega_doctors].[name],[is_clinics].[idf] AS [idf] FROM [is_omega_doctors] ");
-        sb.AppendLine("INNER JOIN [is_clinics] ON [is_clinics].[id] = [is_omega_doctors].[clinic]");
-        sb.AppendLine("WHERE [clinic]='4' ORDER BY [name]");*/
-
-        sb.Append("SELECT [is_users].[name3] AS [name], [is_users].[id] AS [users_id], [is_clinics].[idf] AS [idf] ");
-        sb.AppendLine("FROM [is_users]");
-        sb.AppendLine("INNER JOIN [is_clinics] ON [is_clinics].[id] = [is_users].[klinika]");
-        sb.AppendFormat("WHERE [is_users].[klinika]='{0}' OR [is_users].[klinika]=5 ORDER BY [is_users].[name3]", Session["klinika_id"]);
-
-        Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
-
-        int dataLn = table.Count;
 
         ArrayList result = new ArrayList();
-        //result.Add("-", "-");
-        result.Add("0|-");
 
-        for (int i = 1; i <= dataLn; i++)
+        if (Session["active_doctors"] != null)
         {
-            
-           //result.Add(table[i - 1]["ms_item_id"].ToString() + "|" + table[i - 1]["name"].ToString() + " (" + table[i - 1]["idf"].ToString() + ")");
-            result.Add(table[i - 1]["users_id"].ToString() + "|" + table[i - 1]["name"].ToString() + " (" + table[i - 1]["idf"].ToString() + ")");
+            result = (ArrayList)Session["active_doctors"];
+        }
+        else
+        {
+            StringBuilder sb = new StringBuilder();
+
+            /*tc deaktivacia omegy ID budeme tahat
+             * s tabulky is_users.... preto druhy sql
+            sb.Append("SELECT [is_omega_doctors].[ms_item_id],[is_omega_doctors].[name],[is_clinics].[idf] AS [idf] FROM [is_omega_doctors] ");
+            sb.AppendLine("INNER JOIN [is_clinics] ON [is_clinics].[id] = [is_omega_doctors].[clinic]");
+            sb.AppendLine("WHERE [clinic]='4' ORDER BY [name]");*/
+
+            sb.Append("SELECT [is_users].[name3] AS [name], [is_users].[id] AS [users_id], [is_clinics].[idf] AS [idf] ");
+            sb.AppendLine("FROM [is_users]");
+            sb.AppendLine("INNER JOIN [is_clinics] ON [is_clinics].[id] = [is_users].[klinika]");
+            sb.AppendFormat("WHERE [is_users].[klinika]='{0}' OR [is_users].[klinika]=5 ORDER BY [is_users].[name3]", Session["klinika_id"]);
+
+            Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
+            int dataLn = table.Count;
+
+
+            //result.Add("-", "-");
+            result.Add("0|-");
+
+            for (int i = 1; i <= dataLn; i++)
+            {
+
+                //result.Add(table[i - 1]["ms_item_id"].ToString() + "|" + table[i - 1]["name"].ToString() + " (" + table[i - 1]["idf"].ToString() + ")");
+                result.Add(table[i - 1]["users_id"].ToString() + "|" + table[i - 1]["name"].ToString() + " (" + table[i - 1]["idf"].ToString() + ")");
+            }
+
+            Session["active_doctors"] = result;
         }
 
         return result;

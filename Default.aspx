@@ -17,7 +17,7 @@
 	 
 	   <script src="gdw/js/libs/modernizr-2.6.2.min.js"></script>
         <title></title>
-    <link rel="icon" type="image/png" href="http://is.kdch.sk/kdch.png" />   
+    <link rel="icon" type="image/png" href="img/logo.png" />   
       <!-- jQuery-->
 	  
 	    <!-- framework css --><!--[if gt IE 9]><!-->

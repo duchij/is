@@ -30,6 +30,11 @@ public partial class vykaz2 : System.Web.UI.Page
 
     protected void Page_Init(object sender, EventArgs e)
     {
+        if (Session["tuisegumdrum"] == null)
+        {
+            Response.Redirect("error.html");
+        }
+
         this.gKlinika = Session["klinika"].ToString().ToLower();
         if (this.gKlinika == "2dk") this.setVykazTypesforDK();
         if (IsPostBack)
@@ -44,10 +49,7 @@ public partial class vykaz2 : System.Web.UI.Page
     {
         
 
-        if (Session["tuisegumdrum"] == null)
-        {
-            Response.Redirect("error.html");
-        }
+       
         if (Session["pracdoba"].ToString().Trim().Length == 0 || Session["tyzdoba"].ToString().Trim().Length == 0 || Session["osobcisl"].ToString().Trim().Length == 0)
         {
 
@@ -654,6 +656,7 @@ public partial class vykaz2 : System.Web.UI.Page
         }
 
         this.fillShiftsForDK(docShifts);
+        this.fillInVacations(mesiac,rok,Session["user_id"].ToString());
                
     }
 

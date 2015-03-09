@@ -24,7 +24,7 @@ public partial class opprogram : System.Web.UI.Page
             Response.Redirect("error.html");
         }
 
-        full_text.ImageGalleryPath = "img/";
+        //full_text.ImageGalleryPath = "img/";
 
 
         if (!IsPostBack)
@@ -48,6 +48,17 @@ public partial class opprogram : System.Web.UI.Page
             news_gv.DataBind();
         }
 
+    }
+
+    public void saveFile(SortedList data)
+    {
+        /*string url = "http://WWW.MySite/MyFile.js";
+        string strResponse = "";
+        HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+        HttpWebResponse response = (HttpWebResponse)req.GetResponse();
+        StreamReader stIn = new StreamReader(response.GetResponseStream());
+        strResponse = stIn.ReadToEnd();
+        stIn.Close();*/
     }
 
 
@@ -75,6 +86,10 @@ public partial class opprogram : System.Web.UI.Page
             data.Add("datum_txt", DateTime.Today.ToShortDateString());
             data.Add("user", Session["user_id"].ToString());
             data.Add("datum", my_x2.unixDate(new DateTime(__dnes.Year, __dnes.Month, __dnes.Day)));
+
+
+
+
             data = x_db.saveOpProgram(data);
 
             if (data["status"].ToString() == "ok")

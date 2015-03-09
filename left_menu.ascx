@@ -6,7 +6,7 @@
               <li><asp:HyperLink ID="call_sp" runat="server" NavigateUrl="~/helpers/callsp.aspx">Call Stored Procedure</asp:HyperLink></li>
               <li><asp:HyperLink ID="call_consluz" runat="server" NavigateUrl="~/helpers/convsluz.aspx">Konvertor sluzieb</asp:HyperLink></li> 
              <li><asp:HyperLink ID="labels" runat="server" NavigateUrl="labels.aspx">Labels</asp:HyperLink></li> 
-            <li><asp:HyperLink ID="update" runat="server" NavigateUrl="~/helpers/update.aspx">Labels</asp:HyperLink></li> 
+            <li><asp:HyperLink ID="update" runat="server" NavigateUrl="~/helpers/update.aspx">UPDATE</asp:HyperLink></li> 
             <li><asp:Button ID="offline_btn" runat="server" Text="Set Web Offline" CssClass="button red" OnClick="setState" /></li>
         <li><asp:Button ID="online_btn" runat="server" Text="Set Web Online" CssClass="button green"  OnClick="setState"/></li>
         </ul>

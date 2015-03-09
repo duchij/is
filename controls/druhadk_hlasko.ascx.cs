@@ -27,6 +27,7 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
                 this.setMyDate();
                 this.setShiftTypes();
                 this.loadclinicDeps();
+                this.setShiftForDoctor();
                 this.setEPC_init();
                 this.loadHlasko();
                 this.loadEPCData(false);
@@ -62,6 +63,27 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
         }
 
     }
+
+    protected void setShiftForDoctor()
+    {
+        DateTime dt = Convert.ToDateTime(this.Calendar1.SelectedDate);
+
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("SELECT [typ] FROM [is_sluzby_dk] WHERE [user_id] = '{0}' AND [datum]='{1}' AND [typ]!='KlAmb'", Session["user_id"].ToString(), x2.unixDate(dt).ToString());
+
+        SortedList row = x2Mysql.getRow(sb.ToString());
+
+        if (row.Count > 0)
+        {
+            string type = row["typ"].ToString();
+
+            this.shiftType_dl.SelectedValue = type;
+            
+        }
+       
+    }
+
+
     protected int calcAfter19()
     {
         int result = 0;
@@ -360,6 +382,8 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
             if (Convert.ToBoolean(result["status"]))
             {
                 Session["akt_hlasenie"] = Convert.ToInt32(result["last_id"]);
+                this.creatUser_lbl.Text = Session["user_id"].ToString();
+                this.lastUser_lbl.Text = Session["user_id"].ToString();
             }
             else
             {
