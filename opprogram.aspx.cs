@@ -66,7 +66,7 @@ public partial class opprogram : System.Web.UI.Page
         byte[] datato64 = Encoding.UTF8.GetBytes(str);
         string txt64 = Convert.ToBase64String(datato64);
 
-        StreamWriter sw = new StreamWriter(Session["serverUrl"].ToString() + @"\App_Data\op.op",false);
+        StreamWriter sw = new StreamWriter(Session["serverUrl"].ToString() + @"\img\op.txt",false);
         sw.Write(txt64);
         sw.Close();
 
