@@ -19,6 +19,7 @@ public partial class adduser : System.Web.UI.Page
     mysql_db x2MySql = new mysql_db();
     public string[] vykazHeader;
     public string rights;
+    public string gKlinika;
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -26,6 +27,9 @@ public partial class adduser : System.Web.UI.Page
         {
             Response.Redirect("error.html");
         }
+
+        this.gKlinika = Session["klinika"].ToString().ToLower();
+        
         this.msg_lbl.Text = "";
         //string rights = Request.Cookies["rights"].Value.ToString();
         this.rights = Session["rights"].ToString();
@@ -127,7 +131,16 @@ public partial class adduser : System.Web.UI.Page
         }
 
         
-        this.generateVykazSettings();
+        if (this.gKlinika == "kdch")
+        {
+            this.generateVykazSettings();
+        }
+
+        if (this.gKlinika == "2dk")
+        {
+            this.generateVykazSettingsforDK();
+        }
+            
 
     }
 
@@ -167,6 +180,12 @@ public partial class adduser : System.Web.UI.Page
     {
         this.__loadDeps(); 
 
+    }
+
+    protected void generateVykazSettingsDK()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("SELECT [name],[data] FROM [is_settings] WHERE [name]='2dk_typ_vykaz'");
     }
 
     protected void __loadDeps()
@@ -531,7 +550,7 @@ public partial class adduser : System.Web.UI.Page
 
     protected void listSearchByNameFnc(string name)
     {
-        this.users_gv.DataSource = x_db.searchUsersByName(name);
+        this.users_gv.DataSource = x_db.searchUsersByName(name, Session["klinika_id"].ToString());
         this.users_gv.DataBind();
     }
     protected string[] getVykazTyp()

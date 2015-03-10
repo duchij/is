@@ -49,12 +49,12 @@ public class user: my_db
         return ds;
     }
 
-    public DataSet searchUsersByName(string name)
+    public DataSet searchUsersByName(string name,string klinika_id)
     {
-        string query = "SELECT * FROM `is_users` WHERE `full_name` LIKE '%{0}%'";
+        string query = "SELECT [id],[full_name],[name],[prava] FROM [is_users] WHERE [full_name] LIKE '%{0}%' AND [klinika]='{1}'";
 
         StringBuilder sb = new StringBuilder();
-        sb.AppendFormat(query, name);
+        sb.AppendFormat(this.parseQuery(query.ToString()), name, klinika_id);
         my_con.Open();
 
         OdbcDataAdapter da = new OdbcDataAdapter(sb.ToString(), my_con);
