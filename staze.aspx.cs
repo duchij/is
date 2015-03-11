@@ -45,7 +45,12 @@ public partial class staze : System.Web.UI.Page
 
         if (this.rights == "poweruser" || this.rights=="admin" || this.rights=="sadmin")
         {
+            this.edit_box_pl.Visible = true;
             this.setState_pl.Visible = true;
+        }
+        else
+        {
+            this.edit_box_pl.Visible = false;
         }
 
         
@@ -60,7 +65,7 @@ public partial class staze : System.Web.UI.Page
 
             string state = this.getState(x2.makeDateGroup(rok, mesiac));
 
-            if (this.rights == "admin" || this.rights=="poweruser" || this.rights=="sadmin")
+            if (this.rights.IndexOf("admin") != -1 || this.rights=="poweruser")
             {
                 this.drawTable();
             }
@@ -237,7 +242,7 @@ public partial class staze : System.Web.UI.Page
                     TableCell dataCell = new TableCell();
                     if (vikend) dataCell.CssClass = "box red";
                     if (sviatok != -1) dataCell.CssClass = "box yellow";
-                    if (this.rights.IndexOf("admin")!=-1 || this.rights=="poweruser")
+                    if ((this.rights.IndexOf("admin")!=-1 || this.rights=="poweruser" || Session["login"].ToString() == "jbabala") && this.edit_chk.Checked)
                     {
                         TextBox txtBox = new TextBox();
                         txtBox.ID = header[col-1] + "_" + rDen.ToString();
@@ -285,7 +290,7 @@ public partial class staze : System.Web.UI.Page
 
             string type = table[row]["type"].ToString();
 
-            if (this.rights.IndexOf("admin")!=-1 || this.rights=="poweruser")
+            if ((this.rights.IndexOf("admin") != -1 || this.rights == "poweruser" || Session["login"].ToString() == "jbabala") && this.edit_chk.Checked)
             {
                 Control cl = ctpl.FindControl(type + "_" + day.ToString());
 

@@ -438,4 +438,7 @@
   <data name="staze_not_done" xml:space="preserve">
     <value>&lt;h1&gt;Stáže nie sú ešte dostupné!!!!!&lt;/h1&gt;</value>
   </data>
+  <data name="staze_edit" xml:space="preserve">
+    <value>Editačný režim.....</value>
+  </data>
 </root>

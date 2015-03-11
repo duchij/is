@@ -41,8 +41,21 @@
                 <asp:Label ID="vikend_lbl" runat="server" Text="Víkend" CssClass="red box"></asp:Label>
                 <asp:Label ID="stat_lbl" runat="server" Text="Štátny sviatok" CssClass="yellow box"></asp:Label>
     </div>
-    <div class="row">       
-    
+    <br />
+    <asp:PlaceHolder ID="edit_box_pl" runat="server">
+    <div class="row"> 
+        <div class="success box">
+        <asp:CheckBox ID="edit_chk" runat="server" AutoPostBack="true" Checked="true" />&nbsp;&nbsp;&nbsp;<asp:Label ID="edit_lbl" runat="server" Text="<%$ Resources:Resource,staze_edit %>"></asp:Label>
+        </div>
+            <div class="info box">Na vyznačenie textu v rámikoch možete použiť zakladné html značky 
+        &lt;b&gt;<b>tučné</b>&lt;/b&gt;, &lt;em&gt;<em>kurzíva</em>&lt;/em&gt;, &lt;u&gt;<u>podčiarknuté</u>&lt;/u&gt; do týchto uzavriete Vami vybraný text. 
+                Na prezeranie výsledného stavu môže prepínať pomocou kvačky <strong>Editačný režim</strong>
+        </div>
+    </div>
+    </asp:PlaceHolder>
+    <div class="row">
+              
+   
                <p> <asp:Table ID="stazeTable_tbl" runat="server" CssClass="responsive" data-max="15"></asp:Table></p>
    </div>    
     <div class="row">

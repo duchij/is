@@ -138,7 +138,7 @@ public partial class adduser : System.Web.UI.Page
 
         if (this.gKlinika == "2dk")
         {
-            this.generateVykazSettingsforDK();
+            this.generateVykazSettingsDK();
         }
             
 
