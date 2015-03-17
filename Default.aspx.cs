@@ -144,6 +144,7 @@ public partial class _Default : System.Web.UI.Page
 
                 if (l_pass == g_pass)
                 {
+
                     e.Authenticated = true;
                     x2log.logData(data, "", "user login:"+data["full_name"]);
                     this.deleteFilesPerDays();
@@ -170,6 +171,13 @@ public partial class _Default : System.Web.UI.Page
 
                     Session.Add("zaradenie",  x2.getStr(data["zaradenie"].ToString()));
                     Session.Add("klinika_label", x2.getStr(data["klinika_label"].ToString()));
+
+                    if (data["name"].ToString() == "sklad")
+                    {
+                        Response.Redirect("sklad/hladanie.aspx");
+                    }
+
+
                     string[] fd = x2Mysql.getFreeDays();
                     Session.Add("freedays", String.Join(",", fd));
 
