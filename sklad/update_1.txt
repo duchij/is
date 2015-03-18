@@ -1,0 +1,11 @@
+﻿ALTER TABLE `ean_kody`
+ADD UNIQUE `ean1_tovar_id` (`ean1`, `tovar_id`),
+DROP INDEX `ean1`;
+
+ALTER TABLE `ean_kody`
+CHANGE `id` `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST,
+COMMENT='';
+
+ALTER TABLE `ean_kody`
+CHANGE `sukl_kod` `sukl_kod` varchar(30) COLLATE 'ascii_general_ci' NULL AFTER `id`,
+COMMENT='';

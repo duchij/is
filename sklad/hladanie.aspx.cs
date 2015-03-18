@@ -18,10 +18,19 @@ public partial class sklad_hladanie : System.Web.UI.Page
             Response.Redirect("error.html");
         }*/
 
-       // this.tovarDetail_pl.Visible = false;
+       // 
+
+        if (!IsPostBack)
+        {
+            this.tovarDetail_pl.Visible = false;
+        }
+        else
+        {
+            this._searchFnc();
+        }
     }
 
-    protected void searchFnc(object sender, EventArgs e)
+    protected void _searchFnc()
     {
         string searchIn = this.searchIn_dl.SelectedValue.ToString();
         string phrase = this.phrase_txt.Text.ToString();
@@ -30,13 +39,35 @@ public partial class sklad_hladanie : System.Web.UI.Page
         {
             case "nazov":
                 this.searchInNazov(phrase);
+                break;
+
+            case "sukl":
+                this.searchInSukl(phrase);
             break;
         }
-
-
     }
 
+    protected void searchFnc(object sender, EventArgs e)
+    {
+        this._searchFnc(); 
+    }
 
+    protected void searchInSukl(string sukl)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        string suklComp = sukl.ToString().Trim();
+        string sukl_let = sukl.Substring(0,1);
+
+        string sukl_num = sukl.Substring(1,sukl.Length-1);
+
+        sb.AppendFormat("SELECT SELECT [nazov],[sukl_let],[sukl_num],[id] FROM [tovar] WHERE [sukl_let]='{0}' AND [sukl_num]='{1}'", sukl_let,sukl_num);
+        this.msg_lbl.Text = sb.ToString();
+        
+        Dictionary<int, Hashtable> table = x2sklad.getTable(sb.ToString());
+
+        this.generateSearchTableNazov(table);
+    }
     protected void searchInNazov(string phrase)
     {
         StringBuilder sb = new StringBuilder();
@@ -62,7 +93,7 @@ public partial class sklad_hladanie : System.Web.UI.Page
         }
 
         sb.AppendFormat("SELECT [nazov],[sukl_let],[sukl_num],[id] FROM [tovar] WHERE [nazov] LIKE {0}", finalPartQuery);
-        this.msg_lbl.Text = sb.ToString();
+       // this.msg_lbl.Text = sb.ToString();
         Dictionary<int, Hashtable> table = x2sklad.getTable(sb.ToString());
 
         this.generateSearchTableNazov(table);
@@ -73,6 +104,7 @@ public partial class sklad_hladanie : System.Web.UI.Page
     protected void generateSearchTableNazov(Dictionary<int, Hashtable> data)
     {
         int dataCn = data.Count;
+        this.resultTitle_lbl.Text="Pocet najdenych: "+dataCn.ToString();
 
         for (int i=0;i<dataCn;i++)
         {
@@ -80,6 +112,10 @@ public partial class sklad_hladanie : System.Web.UI.Page
             this.result_tbl.Controls.Add(riadok);
 
             TableCell nazovCell = new TableCell();
+
+
+
+
             nazovCell.Text = data[i]["nazov"].ToString();
             riadok.Controls.Add(nazovCell);
 
@@ -108,19 +144,44 @@ public partial class sklad_hladanie : System.Web.UI.Page
         string[] idArr = btn.ID.ToString().Split('_');
 
         StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("SELECT [nazov],[sukl_let],[sukl_num] WHERE [id]='{0}'", idArr[1]);
+        sb.AppendFormat("SELECT [nazov],[sukl_let],[sukl_num],[id] FROM [tovar] WHERE [id]='{0}'", idArr[1]);
 
-        this.msg_lbl.Text = sb.ToString();
+        //this.msg_lbl.Text = sb.ToString();
 
         SortedList row = x2sklad.getRow(sb.ToString());
         
         if (row["status"] == null)
         {
+            
+            this.result_tbl.Controls.Clear();
             this.tovarDetail_pl.Visible = true;
             this.nazov_lbl.Text = row["nazov"].ToString();
             this.sukl_lbl.Text = row["sukl_let"].ToString() + "" + row["sukl_num"];
+            this.tovarId_hf.Value = row["id"].ToString();
+        }
+    }
+
+    protected void saveEanTovarFnc(object sender, EventArgs e)
+    {
+        SortedList data = new SortedList();
+        data["ean1"] = this.ean1_txt.Text.ToString();
+        data["ean2"] = this.ean2_txt.Text.ToString();
+        data["ean3"] = this.ean3_txt.Text.ToString();
+        data["ean4"] = this.ean4_txt.Text.ToString();
+        data["tovar_id"] = this.tovarId_hf.Value.ToString();
+        data["sukl_kod"] = this.sukl_lbl.Text.ToString();
+
+        SortedList res = x2sklad.mysql_insert("ean_kody", data);
+        if (Convert.ToBoolean(res["status"]))
+        {
+            this.msg_lbl.Text = "Eany ulozene v poriadku....";
+        }
+        else
+        {
+            this.msg_lbl.Text = res["msg"].ToString();
         }
 
+        this.tovarDetail_pl.Visible = false;
 
 
     }

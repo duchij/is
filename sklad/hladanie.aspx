@@ -21,6 +21,7 @@
         <asp:TextBox ID="phrase_txt" runat="server" Width="200px"></asp:TextBox>
         <asp:Button ID="search_btn" runat="server" Text="Hladaj" OnClick="searchFnc" />
         <hr />
+        <h3><asp:Label ID="resultTitle_lbl" runat="server" Text=""></asp:Label></h3>
         <asp:Table ID="result_tbl" runat="server"></asp:Table>
 
         <asp:PlaceHolder ID="tovarDetail_pl" runat="server" Visible="true" >
@@ -28,35 +29,37 @@
                 <tr>
                     <td>Nazov tovaru:</td><td>
                         <asp:Label ID="nazov_lbl" runat="server" Text=""></asp:Label> </td>
+
+                    <asp:HiddenField ID="tovarId_hf" runat="server" Value="" />
                 </tr>
                 <tr>
                     <td>Sukl kod:</td>
                     <td>
-                    <asp:Label ID="sukl_lbl" runat="server" Text="Label"></asp:Label></td>
+                    <asp:Label ID="sukl_lbl" runat="server" Text=""></asp:Label></td>
                 </tr>
                 <tr>
                     <td>Ean 1</td>
-                    <td><asp:TextBox ID="ean1_txt" runat="server"></asp:TextBox></td>
+                    <td><asp:TextBox ID="ean1_txt" runat="server" Width="200px"></asp:TextBox></td>
                     
                 </tr>
                  <tr>
                     <td>Ean 2</td>
-                    <td><asp:TextBox ID="ean2_txt" runat="server"></asp:TextBox></td>
+                    <td><asp:TextBox ID="ean2_txt" runat="server" Width="200px"></asp:TextBox></td>
                     
                 </tr>
 
                  <tr>
                     <td>Ean 3</td>
-                    <td><asp:TextBox ID="ean3_txt" runat="server"></asp:TextBox></td>
+                    <td><asp:TextBox ID="ean3_txt" runat="server" Width="200px"></asp:TextBox></td>
                     
                 </tr>
                 <tr>
                     <td>Ean 4</td>
-                    <td><asp:TextBox ID="ean4_txt" runat="server"></asp:TextBox></td>
+                    <td><asp:TextBox ID="ean4_txt" runat="server" Width="200px"></asp:TextBox></td>
                     
                 </tr>
                 <tr>
-                    <td colspan="2"><asp:Button ID="saveDetail_btn" runat="server" Text="Uloz tovar" /></td>
+                    <td colspan="2"><asp:Button ID="saveDetail_btn" runat="server" Text="Uloz tovar" OnClick="saveEanTovarFnc" /></td>
                 </tr>
 
 
