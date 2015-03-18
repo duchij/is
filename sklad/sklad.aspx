@@ -27,7 +27,8 @@
         <asp:PlaceHolder ID="tovarDetail_pl" runat="server" Visible="true" >
             <table>
                 <tr>
-                    <td>Nazov tovaru:</td><td>
+                    <td>Nazov tovaru:</td>
+                    <td>
                         <asp:Label ID="nazov_lbl" runat="server" Text=""></asp:Label> </td>
 
                     <asp:HiddenField ID="tovarId_hf" runat="server" Value="" />
@@ -42,6 +43,7 @@
                     <td><asp:TextBox ID="ean1_txt" runat="server" Width="200px" OnTextChanged="ean_txt_TextChanged" AutoPostBack="true"></asp:TextBox></td>
                     
                 </tr>
+                
                  <tr>
                     <td>Ean 2</td>
                     <td><asp:TextBox ID="ean2_txt" runat="server" Width="200px" OnTextChanged="ean_txt_TextChanged" AutoPostBack="true"></asp:TextBox></td>
@@ -58,6 +60,16 @@
                     <td><asp:TextBox ID="ean4_txt" runat="server" Width="200px" OnTextChanged="ean_txt_TextChanged" AutoPostBack="true"></asp:TextBox></td>
                     
                 </tr>
+                <tr>
+                    <td>EAN V</td>
+                    <td><asp:TextBox ID="eanGen_txt" runat="server" ReadOnly="true"></asp:TextBox></td>
+                </tr>
+                <tr>
+                    <td>Expiracia</td>
+                    <td><asp:TextBox ID="expiry_txt" runat="server" ReadOnly="true"></asp:TextBox></td>
+                </tr>
+
+
                 <tr>
                     <td colspan="2"><asp:Button ID="saveDetail_btn" runat="server" Text="Uloz tovar" OnClick="saveEanTovarFnc" /></td>
                 </tr>

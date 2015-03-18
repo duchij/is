@@ -8,3 +8,10 @@ DROP INDEX `ean1_tovar_id`;
 ALTER TABLE `ean_kody`
 ADD `created` timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP,
 COMMENT='';
+
+vytvor nove polie eanv a expiracia a potom
+
+ALTER TABLE `ean_kody`
+CHANGE `eanv` `eanv` varchar(16) COLLATE 'ascii_general_ci' NULL COMMENT 'vyparsovany ean z gs1-128' AFTER `ean4`,
+CHANGE `expiracia` `expiracia` varchar(10) COLLATE 'ascii_general_ci' NULL AFTER `eanv`,
+COMMENT='';

@@ -10,7 +10,8 @@ using System.Text.RegularExpressions;
 public partial class sklad_hladanie : System.Web.UI.Page
 {
 
-    public sklad_db x2sklad = new sklad_db();
+    private sklad_db x2sklad = new sklad_db();
+    private x2_var x2 = new x2_var();
     
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -166,9 +167,6 @@ public partial class sklad_hladanie : System.Web.UI.Page
             sb.AppendFormat("SELECT * FROM [ean_kody] WHERE [tovar_id] = '{0}'", row["id"]);
             SortedList eans = x2sklad.getRow(sb.ToString());
 
-
-
-
             this.result_tbl.Controls.Clear();
             this.tovarDetail_pl.Visible = true;
             this.nazov_lbl.Text = row["nazov"].ToString();
@@ -177,12 +175,14 @@ public partial class sklad_hladanie : System.Web.UI.Page
 
             this.phrase_txt.Text = "";
 
-            if (eans["status"] == null)
+            if (eans["status"] == null && eans.Count >0)
             {
-                this.ean1_txt.Text = eans["ean1"].ToString();
-                this.ean2_txt.Text = eans["ean2"].ToString();
-                this.ean3_txt.Text = eans["ean3"].ToString();
-                this.ean4_txt.Text = eans["ean4"].ToString();
+                this.ean1_txt.Text = x2.getStr(eans["ean1"].ToString());
+                this.ean2_txt.Text = x2.getStr(eans["ean2"].ToString());
+                this.ean3_txt.Text = x2.getStr(eans["ean3"].ToString());
+                this.ean4_txt.Text = x2.getStr(eans["ean4"].ToString());
+                this.eanGen_txt.Text = x2.getStr(eans["eanv"].ToString());
+                this.expiry_txt.Text = x2.getStr(eans["expiracia"].ToString());
 
             }
 
@@ -207,6 +207,8 @@ public partial class sklad_hladanie : System.Web.UI.Page
         data["ean4"] = this.ean4_txt.Text.ToString();
         data["tovar_id"] = this.tovarId_hf.Value.ToString();
         data["sukl_kod"] = this.sukl_lbl.Text.ToString();
+        data["eanv"] = this.eanGen_txt.Text.ToString().Trim();
+        data["expiracia"] = this.expiry_txt.Text.ToString().Trim();
 
         SortedList res = x2sklad.mysql_insert("ean_kody", data);
         if (Convert.ToBoolean(res["status"]))
@@ -284,37 +286,85 @@ public partial class sklad_hladanie : System.Web.UI.Page
 
     protected void ean_txt_TextChanged(object sender, EventArgs e)
     {
+        TextBox tbox = (TextBox)sender;
+
+        string tBoxId = tbox.ID.ToString();
+
         string ean = "";
         string expiration = "";
-        string lot = "";
+        //string lot = "";
         TextBox txt = (TextBox)sender;
         txt.Text = this.replaceDiac(txt.Text.ToString());
 
-        string txtToParse = txt.Text.ToString();
+        string txtToParse = txt.Text.ToString().Trim();
 
-        Regex myReg = new Regex(@"^[0-9_]*$");
+        Regex myReg = new Regex(@"^[0-9]*$");
 
-        if (myReg.IsMatch(txtToParse))
+        string startCode = txtToParse.Substring(0, 2);
+
+        if (myReg.IsMatch(txtToParse) && (startCode == "01" || startCode=="17"))
         {
-            string startCode = txtToParse.Substring(0, 2);
-
-            if (startCode == "01" || startCode == "02")
+            if (tBoxId == "ean1_txt")
             {
-                ean = txtToParse.Substring(3, 14);
-
-                string code2 = ean.Substring(15, 2);
-                
-                if (code2 == "17")
+                if (startCode == "01")
                 {
-                    expiration = txtToParse.Substring(17,);
+                    if (txtToParse.Substring(2, 1) == "0")
+                    {
+                        ean = txtToParse.Substring(3, 13);
+                    }
+                    else
+                    {
+                        ean = txtToParse.Substring(2, 14);
+                    }
+
+                    if (txtToParse.Length >= 24)
+                    {
+                        string code2 = txtToParse.Substring(16, 2);
+
+                        if (code2 == "17")
+                        {
+                            expiration = txtToParse.Substring(18, 6);
+                        }
+                    }
                 }
 
+                if (ean.Length == 0)
+                {
+                    ean = txtToParse;
+                }
+            }
 
+            if (tBoxId == "ean2_txt")
+            {
+                if (startCode == "17")
+                {
+                    expiration = txtToParse.Substring(2, 6);
+                }
+            }
+        
 
+            if (tBoxId =="ean1_txt")
+            {
+                this.eanGen_txt.Text = ean;
+            }
+        
+
+            if (expiration.Length == 6)
+            {
+                string year = expiration.Substring(0, 2);
+                string month = expiration.Substring(2, 2);
+                string day = expiration.Substring(4, 2);
+                if (day == "00") day = "31";
+                this.expiry_txt.Text = "20" + year + "-" + month + "-" + day;
             }
         }
+        else
+        {
+            if (tBoxId == "ean1_txt") this.eanGen_txt.Text = txtToParse;
+        }
 
-
+           
+        
 
         //+ľščťžýáíé
 
