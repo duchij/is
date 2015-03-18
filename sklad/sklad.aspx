@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="hladanie.aspx.cs" Inherits="sklad_hladanie" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="sklad.aspx.cs" Inherits="sklad_hladanie" %>
 
 <!DOCTYPE html>
 
@@ -39,23 +39,23 @@
                 </tr>
                 <tr>
                     <td>Ean 1</td>
-                    <td><asp:TextBox ID="ean1_txt" runat="server" Width="200px"></asp:TextBox></td>
+                    <td><asp:TextBox ID="ean1_txt" runat="server" Width="200px" OnTextChanged="ean_txt_TextChanged" AutoPostBack="true"></asp:TextBox></td>
                     
                 </tr>
                  <tr>
                     <td>Ean 2</td>
-                    <td><asp:TextBox ID="ean2_txt" runat="server" Width="200px"></asp:TextBox></td>
+                    <td><asp:TextBox ID="ean2_txt" runat="server" Width="200px" OnTextChanged="ean_txt_TextChanged" AutoPostBack="true"></asp:TextBox></td>
                     
                 </tr>
 
                  <tr>
                     <td>Ean 3</td>
-                    <td><asp:TextBox ID="ean3_txt" runat="server" Width="200px"></asp:TextBox></td>
+                    <td><asp:TextBox ID="ean3_txt" runat="server" Width="200px" OnTextChanged="ean_txt_TextChanged" AutoPostBack="true"></asp:TextBox></td>
                     
                 </tr>
                 <tr>
                     <td>Ean 4</td>
-                    <td><asp:TextBox ID="ean4_txt" runat="server" Width="200px"></asp:TextBox></td>
+                    <td><asp:TextBox ID="ean4_txt" runat="server" Width="200px" OnTextChanged="ean_txt_TextChanged" AutoPostBack="true"></asp:TextBox></td>
                     
                 </tr>
                 <tr>

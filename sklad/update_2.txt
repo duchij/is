@@ -1,0 +1,10 @@
+﻿ALTER TABLE `ean_kody`
+ADD INDEX `ean1` (`ean1`),
+ADD INDEX `ean2` (`ean2`),
+ADD INDEX `ean3` (`ean3`),
+ADD INDEX `ean4` (`ean4`),
+DROP INDEX `ean1_tovar_id`;
+
+ALTER TABLE `ean_kody`
+ADD `created` timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP,
+COMMENT='';
