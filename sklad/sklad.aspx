@@ -64,9 +64,17 @@
                     <td>EAN V</td>
                     <td><asp:TextBox ID="eanGen_txt" runat="server" ReadOnly="true"></asp:TextBox></td>
                 </tr>
+                 <tr>
+                    <td>EAN 1_128</td>
+                    <td><asp:TextBox ID="ean128_txt" runat="server" ReadOnly="true"></asp:TextBox></td>
+                </tr>
                 <tr>
                     <td>Expiracia</td>
                     <td><asp:TextBox ID="expiry_txt" runat="server" ReadOnly="true"></asp:TextBox></td>
+                </tr>
+                <tr>
+                    <td>LOT</td>
+                    <td><asp:TextBox ID="lot_txt" runat="server" ReadOnly="true"></asp:TextBox></td>
                 </tr>
 
 
@@ -81,5 +89,7 @@
         </asp:PlaceHolder>
     </div>
     </form>
+    <script src="../js/jquery-1.11.2.min.js" type="text/javascript"></script>
+    <script src="../js/sklad.js" type="text/javascript"></script>
 </body>
 </html>
