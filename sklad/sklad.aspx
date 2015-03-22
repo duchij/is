@@ -40,7 +40,7 @@
                 </tr>
                 <tr>
                     <td>Ean 1</td>
-                    <td><asp:TextBox ID="ean1_txt" runat="server" Width="200px" OnTextChanged="ean_txt_TextChanged" AutoPostBack="true"></asp:TextBox></td>
+                    <td><asp:TextBox ID="ean1_txt" runat="server" Width="200px" OnTextChanged="ean_txt_TextChanged" AutoPostBack="true"></asp:TextBox><asp:Label ID="ean1_info" runat="server" Text="" ForeColor="red"></asp:Label></td>
                     
                 </tr>
                 
@@ -62,7 +62,7 @@
                 </tr>
                 <tr>
                     <td>EAN V</td>
-                    <td><asp:TextBox ID="eanGen_txt" runat="server" ReadOnly="true"></asp:TextBox></td>
+                    <td><asp:TextBox ID="eanGen_txt" runat="server" ReadOnly="true"></asp:TextBox><asp:Label ID="ean13_msg" runat="server" Text="" ForeColor="red"></asp:Label></td>
                 </tr>
                  <tr>
                     <td>EAN 1_128</td>
@@ -90,6 +90,6 @@
     </div>
     </form>
     <script src="../js/jquery-1.11.2.min.js" type="text/javascript"></script>
-    <script src="../js/sklad.js" type="text/javascript"></script>
+    <%--<script src="../js/sklad.js" type="text/javascript"></script>--%>
 </body>
 </html>

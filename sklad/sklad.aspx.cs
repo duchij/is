@@ -305,6 +305,12 @@ public partial class sklad_hladanie : System.Web.UI.Page
 
         string txtToParse = txt.Text.ToString().Trim();
 
+        if (txtToParse.Length >49)
+        {
+            this.ean1_txt.Text = txtToParse.Substring(0, 50);
+            this.ean1_info.Text = "Pozor specifikacia ean128 dovoluje maximalne dlzku 48, bude len 48 znakov akceptovanych....";
+        }
+
         Regex myReg = new Regex(@"^[0-9]*$");
 
         string startCode = txtToParse.Substring(0, 2);
@@ -325,7 +331,14 @@ public partial class sklad_hladanie : System.Web.UI.Page
             }
             
         }
+        string control = this.eanGen_txt.Text.ToString();
 
+        if (control.Length > 14)
+        {
+            this.ean13_msg.Text = "Pozor kod je vacsi ako 14 a a bude akceptovanych len 14 znakov";
+            this.eanGen_txt.Text = control.Substring(0, 14);
+            
+        }
         tbox.Focus(); 
         
 
