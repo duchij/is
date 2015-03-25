@@ -11,6 +11,7 @@ public partial class helpers_synco : System.Web.UI.Page
     omegadb dbOmega = new omegadb();
     log x2log = new log();
     mysql_db x2Mysql = new mysql_db();
+    x2_var x2 = new x2_var();
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -90,19 +91,26 @@ public partial class helpers_synco : System.Web.UI.Page
 
             if (resCnt >0 )
             {
+                int _rw = 0;
                 for (int row=0; row<resCnt; row++)
                 {
-                    Hashtable tmp = new Hashtable();
-                    tmp.Add("view_id",res[row]["view_id"]);
-                    tmp["ms_item_id"] = res[row]["ms_item_id"];
-                    tmp["full_name"] = res[row]["item_name"];
-                    tmp["name"] = this.makeName(res[row]["item_name"].ToString().Trim());
-                    tmp["ascii_name"] = x2_var.UTFtoASCII(this.makeName(res[row]["item_name"].ToString().Trim()));
+                    // string msId = x2.getStr()
+                    string login = x2.getStr(res[row]["login"].ToString());
 
-                    tmp["login"] = res[row]["login"];
-                    tmp["clinic"] = Convert.ToInt32(this.clinic_id.Text);
-                    tmp["item_uuid"] = res[row]["item_uuid"];
-                    dataIns.Add(row, tmp);
+                    if (login.Length > 0)
+                    {
+                        Hashtable tmp = new Hashtable();
+                        tmp.Add("view_id", res[row]["view_id"]);
+                        tmp["ms_item_id"] = res[row]["ms_item_id"];
+                        tmp["full_name"] = res[row]["item_name"];
+                        tmp["name"] = this.makeName(res[row]["item_name"].ToString().Trim());
+                        tmp["ascii_name"] = x2_var.UTFtoASCII(this.makeName(res[row]["item_name"].ToString().Trim()));
+                        tmp["login"] = login;
+                        tmp["clinic"] = Convert.ToInt32(this.clinic_id.Text);
+                        tmp["item_uuid"] = res[row]["item_uuid"];
+                        dataIns.Add(_rw, tmp);
+                        _rw++;
+                    }
 
                 }
 

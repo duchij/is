@@ -276,7 +276,7 @@ public partial class sltoword : System.Web.UI.Page
        
         string dateGroup = Session["aktDateGroup"].ToString();
 
-        SortedList res = x2Mysql.getRow("SELECT * FROM [is_settings] WHERE [name] = 'shift_doctors'");
+        SortedList res = x2Mysql.getRow("SELECT * FROM [is_settings] WHERE [name] = 'kdch_shift_doctors'");
 
         // Boolean status = Convert.ToBoolean(res["status"].ToString());
 

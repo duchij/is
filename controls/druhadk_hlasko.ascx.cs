@@ -55,11 +55,11 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
         int hour = now.Hour;
         if (hour >= 9)
         {
-            Calendar1.SelectedDate = DateTime.Today;
+            this.Calendar1.SelectedDate = DateTime.Today;
         }
         else
         {
-            Calendar1.SelectedDate = DateTime.Today.AddDays(-1);
+            this.Calendar1.SelectedDate = DateTime.Today.AddDays(-1);
         }
 
     }
@@ -382,8 +382,8 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
             if (Convert.ToBoolean(result["status"]))
             {
                 Session["akt_hlasenie"] = Convert.ToInt32(result["last_id"]);
-                this.creatUser_lbl.Text = Session["user_id"].ToString();
-                this.lastUser_lbl.Text = Session["user_id"].ToString();
+                this.creatUser_lbl.Text = Session["fullname"].ToString();
+                this.lastUser_lbl.Text = Session["fullname"].ToString();
             }
             else
             {

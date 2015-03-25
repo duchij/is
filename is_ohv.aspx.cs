@@ -10,9 +10,17 @@ public partial class is_ohv : System.Web.UI.Page
 {
     mysql_db x2Mysql = new mysql_db();
     x2_var x2 = new x2_var();
+    string gKlinika;
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        if (Session["tuisegumdrum"] == null)
+        {
+            Response.Redirect("error.html");
+        }
+
+        this.gKlinika = Session["klinika"].ToString().ToLower();
+
         if (!IsPostBack)
         {
             this.init();
@@ -43,8 +51,17 @@ public partial class is_ohv : System.Web.UI.Page
         {
             this.clgroup_dl.Items.Add(new ListItem(table[i]["odbkod"].ToString()+" - "+table[i]["text"].ToString(), table[i]["odbkod"].ToString()));
         }
-
-        this.clgroup_dl.SelectedValue = "107";
+        switch (gKlinika)
+        {
+            case "kdch":
+                this.clgroup_dl.SelectedValue = "107";
+                break;
+            case "2dk":
+                this.clgroup_dl.SelectedValue = "007";
+                break;
+        }
+        
+        
     }
 
     protected void loadCodes(Boolean all)

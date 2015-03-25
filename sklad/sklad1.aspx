@@ -1,14 +1,16 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="sklad.aspx.cs" Inherits="sklad_hladanie" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="sklad1.aspx.cs" Inherits="sklad_hladanie" %>
 
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
+    <link rel="stylesheet" href="../css/sklad.css" />
     <title>Sklad hladanie</title>
 </head>
 <body>
     <form id="form1" runat="server">
-    <div>
+    <div id="content">
+        <div id="left_panel">
         <h1>Hladanie v sklade</h1>
         <asp:Label ID="msg_lbl" runat="server" Text=""></asp:Label>
         <hr />
@@ -18,7 +20,7 @@
                 <asp:ListItem Value="ean">Podla eanu</asp:ListItem>
 
         </asp:DropDownList>
-        <asp:TextBox ID="phrase_txt" runat="server" Width="200px"></asp:TextBox>
+        <asp:TextBox ID="phrase_txt" runat="server" Width="200px" AutoPostBack="true" OnTextChanged="parseSearchPhrase_fnc"></asp:TextBox>
         <asp:Button ID="search_btn" runat="server" Text="Hladaj" OnClick="searchFnc" />
         <hr />
         <h3><asp:Label ID="resultTitle_lbl" runat="server" Text=""></asp:Label></h3>
@@ -87,6 +89,31 @@
             </table>
 
         </asp:PlaceHolder>
+            </div>
+
+        <div id="right_panel">
+
+            <h1>Zoznam nahodenych tovarov</h1>
+            <asp:GridView ID="goodslist_gv" runat="server"  BackColor="White" BorderColor="#DEDFDE" BorderStyle="None" BorderWidth="1px" CellPadding="4" EnableModelValidation="True" ForeColor="Black" GridLines="Vertical" AllowPaging="True"  AutoGenerateColumns="False" OnPageIndexChanging="goodslist_gv_PageIndexChanging" OnSelectedIndexChanging="goodslist_gv_SelectedIndexChanging" >
+                <AlternatingRowStyle BackColor="White" />
+                <FooterStyle BackColor="#CCCC99" />
+                <HeaderStyle BackColor="#6B696B" Font-Bold="True" ForeColor="White" />
+                <PagerStyle BackColor="#F7F7DE" ForeColor="Black" HorizontalAlign="Right" />
+                <RowStyle BackColor="#F7F7DE" />
+                <SelectedRowStyle BackColor="#CE5D5A" Font-Bold="True" ForeColor="White" />
+                <Columns>
+
+                    <asp:CommandField EditText="Edituj" ShowSelectButton="True" SelectText="Vyber" />
+                    <asp:BoundField DataField="tovar_id" HeaderText="tovarId" />
+                    <asp:BoundField DataField="sukl_kod" HeaderText="SUKL kod" />
+                    <asp:BoundField DataField="nazov" HeaderText="Nazov" />
+                    <asp:BoundField DataField="eanv" HeaderText="EAN" />
+
+                </Columns>
+
+            </asp:GridView>
+        </div>
+
     </div>
     </form>
     <script src="../js/jquery-1.11.2.min.js" type="text/javascript"></script>

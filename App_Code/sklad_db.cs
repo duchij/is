@@ -351,4 +351,25 @@ public class sklad_db
 
     }
 
+    public DataSet getTovarData(string query)
+    {
+        DataSet ds = new DataSet();
+        my_con.Open();
+
+        try
+        {
+            OdbcDataAdapter da = new OdbcDataAdapter(this.parseQuery(query), my_con);
+            x2log.logData(this.parseQuery(query), "", "datatset query");
+            da.Fill(ds);
+        }
+        catch (Exception ex)
+        {
+            x2log.logData(this.parseQuery(query), ex.ToString(), "error dataset fill");
+        }
+        
+        my_con.Close();
+
+        return ds;
+    }
+
 }

@@ -404,6 +404,7 @@ public partial class sluzby2 : System.Web.UI.Page
                             if (row["tyzden"].ToString() == "konz")
                             {
                                 txtB.CssClass = "info box";
+                                
                             }
                             else
                             {
@@ -1037,6 +1038,7 @@ public partial class sluzby2 : System.Web.UI.Page
 
                     if (konzCell.Text.ToString() == "konz") konzCell.CssClass = "info box";
                     if (konzCell.Text.ToString() == "prijm") konzCell.CssClass = "success box";
+                   
                         
                     weekState = konzCell.Text.ToString();
                     tblRow.Controls.Add(konzCell);
@@ -1046,7 +1048,11 @@ public partial class sluzby2 : System.Web.UI.Page
                 TableCell dataCell = new TableCell();
                 if ((dnesJe == 0 || dnesJe == 6) && jeSviatok == -1) //vikend
                 {
+                   
+
                     dataCell.CssClass = "box red";
+
+                    
 
                     if (cell==1)
                     {
@@ -1709,7 +1715,7 @@ public partial class sluzby2 : System.Web.UI.Page
             sb.Append("SELECT [is_users].[name3] AS [name], [is_users].[id] AS [users_id], [is_clinics].[idf] AS [idf] ");
             sb.AppendLine("FROM [is_users]");
             sb.AppendLine("INNER JOIN [is_clinics] ON [is_clinics].[id] = [is_users].[klinika]");
-            sb.AppendFormat("WHERE [is_users].[klinika]='{0}' OR [is_users].[klinika]=5 ORDER BY [is_users].[name3]", Session["klinika_id"]);
+            sb.AppendFormat("WHERE [is_users].[klinika]='{0}' OR [is_users].[klinika]=5 OR [is_users].[klinika]=6 ORDER BY [is_users].[name3]", Session["klinika_id"]);
 
             Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
             int dataLn = table.Count;

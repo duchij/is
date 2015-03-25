@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Text.RegularExpressions;
+using System.Data;
 
 public partial class sklad_hladanie : System.Web.UI.Page
 {
@@ -25,10 +26,12 @@ public partial class sklad_hladanie : System.Web.UI.Page
         if (!IsPostBack)
         {
             this.tovarDetail_pl.Visible = false;
+            this.loadGridViewData();
         }
         else
         {
             this._searchFnc();
+            this.loadGridViewData();
         }
     }
 
@@ -51,12 +54,51 @@ public partial class sklad_hladanie : System.Web.UI.Page
                 case "sukl":
                     this.searchInSukl(phrase);
                     break;
+                case "ean":
+                    this.searchInEan(phrase);
+                    break;
             }
         }
         else
         {
             this.tovarDetail_pl.Visible = true;
         }
+    
+    }
+
+    protected void searchInEan(string ean)
+    {
+        this.tovarDetail_pl.Visible = true;
+        StringBuilder sb = new StringBuilder();
+
+        sb.Append("SELECT [ean_kody].*, [tovar].[nazov]");
+        sb.AppendLine("FROM [ean_kody]");
+        sb.AppendLine("LEFT JOIN [tovar] ON [tovar].[id] = [ean_kody].[tovar_id]");
+        sb.AppendFormat("WHERE [ean_kody].[eanv] ='{0}'",ean);
+
+        SortedList row = x2sklad.getRow(sb.ToString());
+
+        if (row["status"] == null && row.Count >0)
+        {
+            
+
+            this.nazov_lbl.Text = row["nazov"].ToString();
+            this.sukl_lbl.Text = row["sukl_kod"].ToString();
+            this.tovarId_hf.Value = row["tovar_id"].ToString();
+
+
+            this.ean1_txt.Text = x2.getStr(row["ean1"].ToString());
+            this.ean2_txt.Text = x2.getStr(row["ean2"].ToString());
+            this.ean3_txt.Text = x2.getStr(row["ean3"].ToString());
+            this.ean4_txt.Text = x2.getStr(row["ean4"].ToString());
+            this.eanGen_txt.Text = x2.getStr(row["eanv"].ToString());
+            this.expiry_txt.Text = x2.getStr(row["expiracia"].ToString());
+            this.ean128_txt.Text = x2.getStr(row["ean1_128"].ToString());
+            this.lot_txt.Text = x2.getStr(row["lot"].ToString());
+        }
+
+
+        //string suklComp = sukl.ToString().Trim();
     }
 
     protected void searchFnc(object sender, EventArgs e)
@@ -239,9 +281,10 @@ public partial class sklad_hladanie : System.Web.UI.Page
 
     protected string replaceDiac(string eanIn)
     {
-        //string result = "";
-
-        string original = eanIn;
+        string result = "";
+        result = eanIn.Replace("ˇ", "+");
+        result = eanIn.Replace("´", "+");
+       /* string original = eanIn;
 
         string firstL = "";
         string lastL = "";
@@ -286,9 +329,9 @@ public partial class sklad_hladanie : System.Web.UI.Page
         ean = ean.Replace("ý", "7");
         ean = ean.Replace("á", "8");
         ean = ean.Replace("í", "9");
-        ean = ean.Replace("é", "0");
+        ean = ean.Replace("é", "0");*/
 
-        return firstL+ean+lastL;
+        return result;
     }
 
     protected void ean_txt_TextChanged(object sender, EventArgs e)
@@ -420,4 +463,51 @@ public partial class sklad_hladanie : System.Web.UI.Page
             this.expiry_txt.Text = "20" + year + "-" + month + "-" + day;
         }
     }
+
+    protected void loadGridViewData()
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.Append("SELECT [ean_kody].[tovar_id],[ean_kody].[sukl_kod],[ean_kody].[eanv],");
+        sb.AppendLine("[tovar].[nazov] FROM [ean_kody]");
+        sb.AppendLine("LEFT JOIN [tovar] ON [tovar].[id] = [ean_kody].[tovar_id]");
+        sb.AppendLine("ORDER BY [ean_kody].[created]");
+
+        System.Data.DataSet ds = x2sklad.getTovarData(sb.ToString());
+       
+        if (ds.Tables.Count > 0)
+        {
+            this.goodslist_gv.DataSource = ds;
+
+            this.goodslist_gv.DataBind();
+        }
+    }
+    protected void goodslist_gv_PageIndexChanging(object sender, GridViewPageEventArgs e)
+    {
+       //this.clearFields();
+        this.goodslist_gv.PageIndex = e.NewPageIndex;
+        this.goodslist_gv.DataBind();
+        this.tovarDetail_pl.Visible = false;
+    }
+
+    protected void goodslist_gv_SelectedIndexChanging(object sender, GridViewSelectEventArgs e)
+    {
+        string ean = this.goodslist_gv.Rows[e.NewSelectedIndex].Cells[4].Text.ToString();
+        this.msg_lbl.Text = ean;
+        this.searchIn_dl.SelectedValue = "ean";
+        this.phrase_txt.Text = ean;
+
+        this._searchFnc();
+
+    }
+
+    protected void parseSearchPhrase_fnc(object sender, EventArgs e)
+    {
+        TextBox pTBox = (TextBox)sender;
+        string phrase = pTBox.Text.ToString();
+
+
+
+    }
+
 }

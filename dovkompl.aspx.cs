@@ -70,63 +70,69 @@ public partial class dovkompl : System.Web.UI.Page
                     if (idArr[i] != "0")
                     {
                         Control crtl = FindControl("stCell_" + den.ToString() + "_" + idArr[i]);
-                        TableCell stCell = (TableCell)crtl;
-                        switch (typArr[i])
+                        if (crtl != null)
                         {
-                            case "OupA":
-                                stCell.BackColor = System.Drawing.Color.FromArgb(0xed7669);
-                                stCell.ToolTip += "Urgent (norm.den)" + "\r\n";
-                                break;
-                            case "OupA1":
-                                stCell.BackColor = System.Drawing.Color.FromArgb(0xed7669);
-                                stCell.ToolTip += "Urgent (sviatok/vikend)" + "\r\n";
-                                break;
-                            case "OupA2":
-                                stCell.BackColor = System.Drawing.Color.FromArgb(0xed7669);
-                                stCell.ToolTip += "Urgent (sviatok/vikend)" + "\r\n";
-                                break;
-                            case "OupB":
-                                stCell.BackColor = System.Drawing.Color.FromArgb(0xed7669);
-                                stCell.ToolTip += "Urgent (norm.den)" + "\r\n";
-                                break;
-                            case "OupB1":
-                                stCell.BackColor = System.Drawing.Color.FromArgb(0xed7669);
-                                stCell.ToolTip += "Urgent (sviatok/vikend)" + "\r\n";
-                                break;
-                            case "Odd":
-                                stCell.BackColor = System.Drawing.Color.FromArgb(0x5faee3);
-                                stCell.ToolTip += "Oddelenie (norm.den)" + "\r\n";
-                                break;
-                            case "Odd1":
-                                stCell.BackColor = System.Drawing.Color.FromArgb(0x5faee3);
-                                stCell.ToolTip += "Oddelenie (sviatok/vikend)" + "\r\n";
-                                break;
-                            case "Odd2":
-                                stCell.BackColor = System.Drawing.Color.FromArgb(0x5faee3);
-                                stCell.ToolTip += "Oddelenie (sviatok/vikend)" + "\r\n";
-                                break;
-                            case "OddB":
-                                stCell.BackColor = System.Drawing.Color.FromArgb(0x54d98c);
-                                stCell.ToolTip += "Oddelenie B" + "\r\n";
-                                break;
-                            case "Expe":
-                                stCell.BackColor = System.Drawing.Color.FromArgb(0x46627f);
-                                stCell.ToolTip += "Expektacne" + "\r\n";
-                                break;
-                            case "KlAmb":
-                                stCell.BackColor = System.Drawing.Color.FromArgb(0xb07cc6);
-                                stCell.ToolTip += "Klinicka ambulancia" + "\r\n";
-                                break;
+                            TableCell stCell = (TableCell)crtl;
+
+                            switch (typArr[i])
+                            {
+                                case "OupA":
+                                    stCell.BackColor = System.Drawing.Color.FromArgb(0xed7669);
+                                    stCell.ToolTip += "Urgent (norm.den)" + "\r\n";
+                                    break;
+                                case "OupA1":
+                                    stCell.BackColor = System.Drawing.Color.FromArgb(0xed7669);
+                                    stCell.ToolTip += "Urgent (sviatok/vikend)" + "\r\n";
+                                    break;
+                                case "OupA2":
+                                    stCell.BackColor = System.Drawing.Color.FromArgb(0xed7669);
+                                    stCell.ToolTip += "Urgent (sviatok/vikend)" + "\r\n";
+                                    break;
+                                case "OupB":
+                                    stCell.BackColor = System.Drawing.Color.FromArgb(0xed7669);
+                                    stCell.ToolTip += "Urgent (norm.den)" + "\r\n";
+                                    break;
+                                case "OupB1":
+                                    stCell.BackColor = System.Drawing.Color.FromArgb(0xed7669);
+                                    stCell.ToolTip += "Urgent (sviatok/vikend)" + "\r\n";
+                                    break;
+                                case "Odd":
+                                    stCell.BackColor = System.Drawing.Color.FromArgb(0x5faee3);
+                                    stCell.ToolTip += "Oddelenie (norm.den)" + "\r\n";
+                                    break;
+                                case "Odd1":
+                                    stCell.BackColor = System.Drawing.Color.FromArgb(0x5faee3);
+                                    stCell.ToolTip += "Oddelenie (sviatok/vikend)" + "\r\n";
+                                    break;
+                                case "Odd2":
+                                    stCell.BackColor = System.Drawing.Color.FromArgb(0x5faee3);
+                                    stCell.ToolTip += "Oddelenie (sviatok/vikend)" + "\r\n";
+                                    break;
+                                case "OddB":
+                                    stCell.BackColor = System.Drawing.Color.FromArgb(0x54d98c);
+                                    stCell.ToolTip += "Oddelenie B" + "\r\n";
+                                    break;
+                                case "Expe":
+                                    stCell.BackColor = System.Drawing.Color.FromArgb(0x46627f);
+                                    stCell.ToolTip += "Expektacne" + "\r\n";
+                                    break;
+                                case "KlAmb":
+                                    stCell.BackColor = System.Drawing.Color.FromArgb(0xb07cc6);
+                                    stCell.ToolTip += "Klinicka ambulancia" + "\r\n";
+                                    break;
+                            }
+                            string tmpStCell = stCell.Text.ToString();
+                            if (tmpStCell.Length > 0)
+                            {
+                                stCell.Text += "\r\n" + typArr[i];
+                            }
+                            else
+                            {
+                                stCell.Text = typArr[i];
+                            }
                         }
-                        string tmpStCell = stCell.Text.ToString();
-                        if (tmpStCell.Length > 0)
-                        {
-                            stCell.Text += "\r\n" + typArr[i];
-                        }
-                        else
-                        {
-                            stCell.Text = typArr[i];
-                        }
+
+                        
                     }
 
                     if (typArr[i] != "KlAmb")
