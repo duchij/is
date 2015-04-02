@@ -233,7 +233,7 @@ public partial class vykaz2 : System.Web.UI.Page
         {
             TableHeaderCell headCell = new TableHeaderCell();
             headCell.ID = "headCell_" + col.ToString();
-
+            headCell.BackColor = System.Drawing.Color.Gold;
             Label headLabel = new Label();
             headLabel.ID = this.vykazHeader[col] + "_lbl<br>";
             headLabel.Font.Size = FontUnit.Point(8);
@@ -244,6 +244,7 @@ public partial class vykaz2 : System.Web.UI.Page
             TextBox tBox = new TextBox();
             tBox.ID = "head_tbox_" + col.ToString();
             tBox.Text = "";
+           
             headCell.Controls.Add(tBox);
 
 
@@ -444,7 +445,7 @@ public partial class vykaz2 : System.Web.UI.Page
         {
             TableHeaderCell headCell = new TableHeaderCell();
             headCell.ID = "headCell_" + col.ToString();
-
+            headCell.BackColor = System.Drawing.Color.Gold;
             Label headLabel = new Label();
             headLabel.ID = this.vykazHeader[col] + "_lbl<br>";
             headLabel.Font.Size = FontUnit.Point(8);
@@ -455,6 +456,7 @@ public partial class vykaz2 : System.Web.UI.Page
             TextBox tBox = new TextBox();
             tBox.ID = "head_tbox_" + col.ToString();
             tBox.Text = "";
+            
             headCell.Controls.Add(tBox);
 
 
@@ -610,7 +612,7 @@ public partial class vykaz2 : System.Web.UI.Page
         {
             TableHeaderCell headCell = new TableHeaderCell();
             headCell.ID = "headCell_" + col.ToString();
-
+            headCell.BackColor = System.Drawing.Color.Gold;
             Label headLabel = new Label();
             headLabel.ID = this.vykazHeader[col] + "_lbl<br>";
             headLabel.Font.Size = FontUnit.Point(8);
