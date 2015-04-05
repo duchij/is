@@ -1,0 +1,3 @@
+﻿ALTER TABLE `is_osirix`
+CHANGE `odd` `odd` varchar(10) COLLATE 'ascii_general_ci' NOT NULL AFTER `poznamka`,
+COMMENT='';

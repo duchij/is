@@ -29,9 +29,9 @@
                 Oddelenie
 
                 <asp:DropDownList ID="odd_dl" runat="server">
-                        <asp:ListItem Value="MSV">Dievčatá</asp:ListItem>
+                       <%-- <asp:ListItem Value="MSV">Dievčatá</asp:ListItem>
                         <asp:ListItem Value="KOJ">Kojenci</asp:ListItem>
-                        <asp:ListItem Value="VD">Chlapci</asp:ListItem>
+                        <asp:ListItem Value="VD">Chlapci</asp:ListItem>--%>
                 </asp:DropDownList>  
                    
                 

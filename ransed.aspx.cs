@@ -22,11 +22,33 @@ public partial class ransed : System.Web.UI.Page
         {
             Response.Redirect("error.html");
         }
+        this.msg_lbl.Text = "";
 
         if (IsPostBack == false)
         {
+            this.loadDeps();
             this.setMyDate();
+
+
             this.loadData();
+        }
+
+    }
+
+    protected void loadDeps()
+    {
+        string query = my_x2.sprintf("SELECT * FROM [is_deps] WHERE [clinic_id]='{0}'", new string[] {Session["klinika_id"].ToString()});
+        Dictionary<int,Hashtable> table = x2db.getTable(query);
+
+        int tableCn = table.Count;
+
+        if (tableCn > 0)
+        {
+            for (int i = 0; i < tableCn; i++)
+            {
+                this.odd_dl.Items.Add(new ListItem(table[i]["label"].ToString(), table[i]["idf"].ToString()));
+
+            }
         }
 
     }
@@ -171,23 +193,35 @@ public partial class ransed : System.Web.UI.Page
     {
         SortedList data = new SortedList();
 
-        data["name"] = this.name_txt.Text.ToString();
+        data["name"] = x2_var.UTFtoASCII(this.name_txt.Text.ToString());
         data["poznamka"] = this.note_txt.Text.ToString();
         data["odd"] = this.odd_dl.SelectedValue.ToString();
         data["date"] = my_x2.unixDate(this.Calendar1.SelectedDate);
 
-        SortedList res = x2db.mysql_insert("is_osirix", data);
-
-        bool status = Convert.ToBoolean(res["status"].ToString());
-
-        if (status == false)
+        if (data["name"].ToString().Length > 0)
         {
-            this.alert("Chyba: " + res["msg"].ToString());
+            SortedList res = x2db.mysql_insert("is_osirix", data);
+
+            //SortedList res = x2db.mysql_insert("is_osirix", data);
+
+            bool status = Convert.ToBoolean(res["status"].ToString());
+
+            if (status == false)
+            {
+                this.alert("Chyba: " + res["msg"].ToString());
+            }
+            else
+            {
+                this.loadData();
+            }
+
         }
         else
         {
-            this.loadData();
+            this.msg_lbl.Text= "Meno nemoze byt prazdne....";
         }
+
+       
 
     }
 

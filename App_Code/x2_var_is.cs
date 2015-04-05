@@ -50,6 +50,15 @@ public class x2_var
         return result;
     }
 
+    public string sprintf(string str, string[] args)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.AppendFormat(str, args);
+
+        return sb.ToString();
+    }
+
     public int makeDateGroup(int rok, int mesiac)
     {
         int result = 0;
