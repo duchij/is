@@ -7,7 +7,7 @@
 
  <h2> Ranné sedenie</h2><hr />
         <div class="row">
-            <div class="one half"></h2>
+            <div class="one half">
                 <asp:Calendar ID="Calendar1" runat="server" BackColor="White" BorderColor="#999999" DayNameFormat="Shortest" 
                           ForeColor="Black" CssClass="responsive" data-max="15" 
         Height="180px" Width="200px" OnSelectionChanged="date_changed_fnc" 
@@ -27,11 +27,13 @@
                 Priezvisko: <asp:TextBox ID="name_txt" runat="server"></asp:TextBox> 
                 Poznámka:<asp:TextBox ID="note_txt" runat="server"></asp:TextBox>
                 Oddelenie
+
                 <asp:DropDownList ID="odd_dl" runat="server">
-                        <asp:ListItem Value="MSV">Dievčatá</asp:ListItem>
+                       <%-- <asp:ListItem Value="MSV">Dievčatá</asp:ListItem>
                         <asp:ListItem Value="KOJ">Kojenci</asp:ListItem>
-                        <asp:ListItem Value="VD">Chlapci</asp:ListItem>
-                </asp:DropDownList>    
+                        <asp:ListItem Value="VD">Chlapci</asp:ListItem>--%>
+                </asp:DropDownList>  
+                   
                 
                 <asp:Button ID="pacient_add_btn" runat="server" Text="Pridaj" OnClick="add_patient_click_fnc" CssClass="button green" />
             </div>
