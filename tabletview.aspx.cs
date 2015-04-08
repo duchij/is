@@ -217,7 +217,7 @@ public partial class tabletview : System.Web.UI.Page
     protected void saveData(string id, string text)
     {
         SortedList data = new SortedList();
-        data["osirix"] = text;
+        data["osirix"] = x2_var.UTFtoASCII(text);
         string res = x_db.update_row("is_hlasko", data, id);
         if (res != "ok")
         {

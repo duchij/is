@@ -85,7 +85,8 @@
         force_br_newlines : true,
         forced_root_block : '',
         autosave_retention: "30m",
-        language:'sk'
+        language: 'sk',
+        height:"400px"
 
      });
  </script>

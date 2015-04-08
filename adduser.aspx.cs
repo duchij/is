@@ -65,7 +65,7 @@ public partial class adduser : System.Web.UI.Page
                 this.titul_pred.Text = "";
                 this.titul_za.Text = "";
                 this.zaradenie_txt.Text = "";
-                this.passwd_txt.ReadOnly = false;
+                //this.passwd_txt.ReadOnly = false;
                 this.klinika_txt.Text = "";
                 this.loadData();
                 this.loadClinics();
@@ -87,12 +87,12 @@ public partial class adduser : System.Web.UI.Page
                 }
             }
 
-            uprav_btn.Visible = false;
+            uprav_btn.Visible = true;
             send_btn.Visible = true;
             rights_cb.Visible = true;
             rights_lbl.Visible = true;
         }
-        else
+        else 
         {
             if (!IsPostBack)
             {                                           
@@ -428,12 +428,28 @@ public partial class adduser : System.Web.UI.Page
         data.Add("titul_za", this.titul_za.Text.ToString().Trim());
         data.Add("zaradenie", this.zaradenie_txt.Text.ToString().Trim());
         data.Add("klinika_label", this.klinika_txt.Text.ToString().Trim());
+
+         
+
         /*data.Add("klinika", this.clinics_dl.SelectedValue);
         data.Add("oddelenie", this.oddelenie_dl.SelectedValue);*/
 
         // string res = x_db.update_row("is_users", data, Session["user_id"].ToString());
+        string userId = "";
 
-        SortedList res = x2MySql.mysql_update("is_users", data, Session["user_id"].ToString());
+        if (this.rights == "admin" || this.rights == "sadmin")
+        {
+            userId = this.users_gv.SelectedRow.Cells[1].Text.ToString();
+           
+        }
+        else
+        {
+            userId = Session["user_id"].ToString();
+        }
+      
+
+
+        SortedList res = x2MySql.mysql_update("is_users", data,userId);
 
         if (Convert.ToBoolean(res["status"]))
         {
@@ -450,6 +466,36 @@ public partial class adduser : System.Web.UI.Page
         this.clearFields();
         this.users_gv.PageIndex = e.NewPageIndex;
         this.users_gv.DataBind();
+    }
+
+    protected void resetPasswd_fnc(object sender, EventArgs e)
+    {
+        string userId = "";
+
+        if (this.rights == "admin" || this.rights == "sadmin")
+        {
+            userId = this.users_gv.SelectedRow.Cells[1].Text.ToString();
+
+        }
+        else
+        {
+            userId = Session["user_id"].ToString();
+        }
+
+        string sql = my_x2.sprintf("UPDATE [is_users] SET [passwd]=NULL WHERE [id]='{0}'", new string[] { userId });
+
+        SortedList res = x2MySql.execute(sql);
+        if (Convert.ToBoolean(res["status"]))
+        {
+            this.passwd_txt.Text = "";
+        }
+        else
+        {
+            this.msg_lbl.Text = "Chyba: " + res["msg"].ToString();
+        }
+
+        
+
     }
 
     protected void clearFields()

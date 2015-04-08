@@ -123,6 +123,8 @@ public partial class _Default : System.Web.UI.Page
                     Session.Add("titul_pred", x2.getStr(data["titul_pred"].ToString()));
                     Session.Add("titul_za", x2.getStr(data["titul_za"].ToString()));
                     Session.Add("klinika_label", x2.getStr(data["klinika_label"].ToString()));
+                    Session.Add("zaradenie", x2.getStr(data["zaradenie"].ToString()));
+
                     string[] fd = x2Mysql.getFreeDays();
                     Session.Add("freedays",String.Join(",",fd));
 
@@ -147,7 +149,9 @@ public partial class _Default : System.Web.UI.Page
 
                     e.Authenticated = true;
                     x2log.logData(data, "", "user login:"+data["full_name"]);
+
                     this.deleteFilesPerDays();
+                    
                     Session.Add("tuisegumdrum", "activado");
                     Session.Add("user_id", data["id"].ToString());
                     Session.Add("rights", data["prava"].ToString());

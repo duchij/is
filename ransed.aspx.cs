@@ -105,9 +105,10 @@ public partial class ransed : System.Web.UI.Page
         {
             
             meno_lnk.ID = "sluzba";
-            if (str[i].ToString().Trim().Length > 0)
+            string name = my_x2.getStr(str[i].ToString());
+            if (name.Length > 0)
             {
-                sb.AppendFormat("<p><a class='blue button' href='http://10.10.2.49:3333/studyList?search={0}' target='_blank'>{0}</a></p>", str[i].ToString());
+                sb.AppendFormat("<p><a class='blue button' href='http://10.10.2.49:3333/studyList?search={0}' target='_blank'>{0}</a></p>", name);
             }
         }
         //sb.AppendLine("</ul>");

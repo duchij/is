@@ -192,7 +192,7 @@ public partial class hlasko : System.Web.UI.Page
                 string fileEx = System.IO.Path.GetExtension(this.loadFile_fup.FileName);
                 byte[] dataB =  new byte[this.loadFile_fup.PostedFile.InputStream.Length];
                 this.loadFile_fup.PostedFile.InputStream.Read(dataB,0,this.loadFile_fup.PostedFile.ContentLength);
-                dataFile.Add("file-name", this.loadFile_fup.FileName.ToString());
+                dataFile.Add("file-name", x2_var.UTFtoASCII(this.loadFile_fup.FileName.ToString()));
                 dataFile.Add("file-size", this.loadFile_fup.PostedFile.InputStream.Length);
                 dataFile.Add("file-type", fileEx);
                 dataFile.Add("user_id", Session["user_id"]);
