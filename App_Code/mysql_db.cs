@@ -525,6 +525,7 @@ public class mysql_db
         catch (Exception ex)
         {
             x2log.logData(cmd.CommandText.ToString(), ex.ToString(), "error wrong sql in lfInsertData()");
+            x2log.logData(lfData, "chyba vystup lf data", "error in lfinsert");
             result.Add("status",false);
             result.Add("msg",ex.ToString());
             cmd.Transaction.Rollback();
@@ -724,6 +725,12 @@ public class mysql_db
 
         return result;
     }
+    
+    /// <summary>
+    /// Vykona sql nonquery napr.DELETE alebo UPDATE 
+    /// </summary>
+    /// <param name="query">formatovany SQL retazec</param>
+    /// <returns>SortedList, status, msg, query</returns>
 
     public SortedList execute(string query)
     {

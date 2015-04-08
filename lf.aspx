@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="lf.aspx.cs" Inherits="lf" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="lf.aspx.cs" Inherits="lf" Culture="sk-SK" %>
 
 <!DOCTYPE html>
 
@@ -9,7 +9,7 @@
 <body>
     <form id="form1" runat="server">
     <div>
-    
+       <asp:Image ID="lfImage" ImageUrl=""; runat="server" />
     </div>
     </form>
 </body>

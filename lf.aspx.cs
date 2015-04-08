@@ -13,8 +13,36 @@ public partial class lf : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        int id = Convert.ToInt32(Request.QueryString["id"]);
-        this.downloadFile(id);
+        
+        if (Context.Request.QueryString["id"] != null)
+        {
+            int id = Convert.ToInt32(Request.QueryString["id"]);
+            SortedList picData = x2Mysql.getLfData2(id);
+            Boolean show = false;
+
+            switch (picData["file-type"].ToString().ToLower())
+            {
+                case ".jpg":
+                    show = true;
+                    break;
+                case ".png":
+                    show = true;
+                    break;
+                case ".tiff":
+                    show = true;
+                    break;
+                    
+            }
+            if (show)
+            {
+                this.lfImage.ImageUrl = "controls/lf_view.ashx?id=" + id;
+            }
+            else
+            {
+                this.downloadFile(id);
+            }
+        }
+        //
     }
 
     protected void downloadFile(int id)

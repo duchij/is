@@ -69,6 +69,12 @@ $(document).ready(function () {
     //    alert("lolo");
     //});
 
+    $("input[id$=delPasswdBtn").click(function (e) {
+        //alert("lal");
+        $("input[id$=passwd_txt").val("");
+
+    });
+
     $("select[id$=_worktype_cb]").change(function (e) {
 
         var selectedValue = $("select[id$=_worktype_cb]").val();

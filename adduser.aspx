@@ -43,8 +43,8 @@
                     <table class="responsive" data-max="15">
                      <tr>
                         <td class="blue">Heslo:</td>
-                        <td><asp:TextBox ID="passwd_txt" runat="server" Width="300px"></asp:TextBox></td>
-                    
+                        <td><asp:TextBox ID="passwd_txt" runat="server" Width="200px" ReadOnly="true"></asp:TextBox><asp:Button ID="reset_btn" runat="server" Text="Zmaz heslo" OnClick="resetPasswd_fnc" ></asp:Button></td>
+                     
                     </tr>
                      <tr>
                         <td class="blue">Aktivny:</td>
