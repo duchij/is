@@ -230,9 +230,4 @@ public partial class ransed : System.Web.UI.Page
     {
         Response.Write("<script>alert('" + message + "');</script>");
     }
-
-
-
-
-
 }

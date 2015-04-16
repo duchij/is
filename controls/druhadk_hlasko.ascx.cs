@@ -452,9 +452,11 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
     {
         if (sender.GetType() == typeof(Calendar))
         {
+
             this.setShiftTypes();
             this.loadHlasko();
             this.loadEPCData(false);
+            this.setEPC_init();
         }
         if (sender.GetType() == typeof(DropDownList))
         {
