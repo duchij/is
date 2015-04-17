@@ -53,7 +53,7 @@
                 <asp:Label ID="Label1" runat="server" Text="Víkend" CssClass="red box" Width="130"></asp:Label>
                 <asp:Label ID="Label2" runat="server" Text="Štátny sviatok" CssClass="yellow box" Width="130"></asp:Label>
     <asp:Label ID="shiftState_lbl" runat="server" Text=""></asp:Label>            
-    <asp:Table ID="shiftTable" runat="server" EnableViewState="true" CssClass="responsive" data-max="14">                 
+    <asp:Table ID="shiftTable" runat="server" EnableViewState="false" CssClass="responsive" data-max="14">                 
                 </asp:Table>
                 <div class="row">
                     <div class="one whole padded">

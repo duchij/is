@@ -52,12 +52,14 @@ public partial class sluzby2 : System.Web.UI.Page
             {
                 this.publish_btn.Visible = true;
                 this.unpublish_btn.Visible = true;
+                this.edit_chk.Visible = true;
 
             }
             else
             {
                 this.publish_btn.Visible = false;
                 this.unpublish_btn.Visible = false;
+                this.edit_chk.Visible = false;
             }
         }
 
@@ -131,15 +133,7 @@ public partial class sluzby2 : System.Web.UI.Page
             if (this.gKlinika == "kdch")
             {
                 //this.shiftTable.Controls.Clear();
-                string type = this.getShiftStateKDCH();
-                if (type == "active")
-                {
-                    this.edit_chk.Checked = false;
-                }
-                else
-                {
-                    this.edit_chk.Checked = true;
-                }
+                
                 this.loadSluzby();
             }
             //}
@@ -174,6 +168,16 @@ public partial class sluzby2 : System.Web.UI.Page
         if (this.gKlinika == "kdch")
         {
             this.shiftTable.Controls.Clear();
+            string type = this.getShiftStateKDCH();
+            if (type == "active")
+            {
+                this.edit_chk.Checked = false;
+            }
+            else
+            {
+                this.edit_chk.Checked = true;
+            }
+
             this.loadSluzby();
         }
 

@@ -39,9 +39,9 @@ public partial class sluzby2_sestr : System.Web.UI.Page
         this.deps = Session["oddelenie"].ToString();
         this.rights = Session["rights"].ToString();
 
-        if (this.rights == "admin" || this.rights == "poweruser")
+        if (this.rights.IndexOf("admin") != -1 || this.rights == "poweruser")
         {
-            this.editShiftView_pl.Visible = false;
+            this.editShiftView_pl.Visible = true;
             this.publish_btn.Visible = true;
             this.unpublish_btn.Visible = true;
         }
