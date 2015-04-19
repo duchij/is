@@ -20,21 +20,19 @@
       
        <h1 class="pink box"> Pacienti so služby:</h1><hr />
             <asp:Calendar ID="Calendar1" runat="server" BackColor="White" 
-                BorderColor="#999999" DayNameFormat="Shortest" 
+                BorderColor="#d9edf7" DayNameFormat="Shortest" 
                 ForeColor="Black" 
-          Height="180px" Width="200px" 
+          
                 onselectionchanged="Calendar1_SelectionChanged" 
           WeekendDayStyle-HorizontalAlign="Center" CellPadding="4" CssClass="responsive" data-max="15">
-                <SelectedDayStyle BackColor="#666666" Font-Bold="True" ForeColor="White" />
-                <SelectorStyle BackColor="#CCCCCC" />
-
-<WeekendDayStyle HorizontalAlign="Center" BackColor="#FFFFCC"></WeekendDayStyle>
-
-                <TodayDayStyle BackColor="#CCCCCC" ForeColor="Black" />
-                <OtherMonthDayStyle ForeColor="#808080" />
-                <NextPrevStyle VerticalAlign="Bottom" />
-                <DayHeaderStyle BackColor="#CCCCCC" Font-Bold="True"  />
-                <TitleStyle BackColor="#999999" Font-Bold="True" BorderColor="Black" />
+                <SelectedDayStyle BackColor="#46627f" Font-Bold="True" ForeColor="White" />
+                        <SelectorStyle BackColor="#46627f" />
+                        <WeekendDayStyle BackColor="#dff0d8" />
+                        <TodayDayStyle BackColor="#f0e6f4" ForeColor="black" />
+                        <OtherMonthDayStyle ForeColor="#808080" />
+                        <NextPrevStyle VerticalAlign="Bottom" />
+                        <DayHeaderStyle BackColor="#ffe5c7" Font-Bold="True" />
+                        <TitleStyle BackColor="#d9edf7" BorderColor="Black" Font-Bold="True" />
             </asp:Calendar>
            <hr />
             <asp:PlaceHolder ID="hlasenie" runat="server">
@@ -45,22 +43,25 @@
                   <h1 class="turquoise box"> RDG diagnostika:</h1><hr />
                   <div class="align-center">
                     <asp:Calendar ID="Calendar2" runat="server" BackColor="White" 
-                        BorderColor="#999999" CellPadding="4" 
+                        BorderColor="#46627f" CellPadding="4" 
                         DayNameFormat="Shortest" 
-                        ForeColor="Black" Height="180px" Width="200px" 
+                        ForeColor="Black" 
                           OnSelectionChanged="Calendar2_SelectionChanged" CssClass="responsive" data-max="15">
-                        <SelectedDayStyle BackColor="#666666" Font-Bold="True" ForeColor="White" />
-                        <SelectorStyle BackColor="#CCCCCC" />
-                        <WeekendDayStyle BackColor="#FFFFCC" />
-                        <TodayDayStyle BackColor="#CCCCCC" ForeColor="Black" />
+                        <SelectedDayStyle BackColor="#46627f" Font-Bold="True" ForeColor="White" />
+                        <SelectorStyle BackColor="#46627f" />
+                        <WeekendDayStyle BackColor="#dff0d8" />
+                        <TodayDayStyle BackColor="#f0e6f4" ForeColor="black" />
                         <OtherMonthDayStyle ForeColor="#808080" />
                         <NextPrevStyle VerticalAlign="Bottom" />
-                        <DayHeaderStyle BackColor="#CCCCCC" Font-Bold="True"  />
-                        <TitleStyle BackColor="#999999" BorderColor="Black" 
-                            Font-Bold="True"   />
+                        <DayHeaderStyle BackColor="#ffe5c7" Font-Bold="True" />
+                        <TitleStyle BackColor="#d9edf7" BorderColor="Black" Font-Bold="True" />
                     </asp:Calendar>
                   </div>
                 <br />  
+                <hr />
+      <asp:Table ID="depsRdg_tbl" runat="server"></asp:Table>
+                <hr />
+
                <div class="green box"> <h2><asp:Label ID="kojenci_title" runat="server" Text="Kojenci" ></asp:Label></h2></div>
                
                <asp:Table ID="kojenci_tbl" runat="server" BackColor="#FFAD10" Width="100%">
