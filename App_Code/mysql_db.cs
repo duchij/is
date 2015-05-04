@@ -107,7 +107,7 @@ public class mysql_db
         foreach (DictionaryEntry tmp in data)
         {
             //cols = cols + tmp.Key + ",";
-            if (tmp.Value.ToString() == "NULL")
+            if (tmp.Value.ToString() == "NULL" || tmp.Value.ToString().Trim().Length == 0)
             {
                 strArr[i] = "[" + tmp.Key.ToString() + "]=NULL";
             }

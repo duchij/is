@@ -9,6 +9,9 @@
             <li><asp:HyperLink ID="update" runat="server" NavigateUrl="~/helpers/update.aspx">UPDATE</asp:HyperLink></li> 
             <li><asp:Button ID="offline_btn" runat="server" Text="Set Web Offline" CssClass="button red" OnClick="setState" /></li>
         <li><asp:Button ID="online_btn" runat="server" Text="Set Web Online" CssClass="button green"  OnClick="setState"/></li>
+
+             <li><asp:HyperLink ID="newUser" runat="server" NavigateUrl="is_user.aspx">!!!! newUser</asp:HyperLink></li>
+
         </ul>
   </asp:PlaceHolder>
 

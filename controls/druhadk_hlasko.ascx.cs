@@ -407,7 +407,7 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
 
         this.hl_datum_cb.Items.Clear();
 
-        ListItem[] datum = new ListItem[3];
+        ListItem[] datum = new ListItem[3]; 
 
         DateTime now = Convert.ToDateTime(this.Calendar1.SelectedDate);
         int hour = now.Hour;
@@ -452,9 +452,11 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
     {
         if (sender.GetType() == typeof(Calendar))
         {
+
             this.setShiftTypes();
             this.loadHlasko();
             this.loadEPCData(false);
+            this.setEPC_init();
         }
         if (sender.GetType() == typeof(DropDownList))
         {

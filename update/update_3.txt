@@ -1,0 +1,17 @@
+﻿ALTER TABLE `is_osirix`
+ADD `clinic` bigint unsigned NULL AFTER `odd`,
+COMMENT='';
+--nextquery--
+ALTER TABLE `is_osirix`
+ADD UNIQUE `name_odd_clinic` (`name`(100), `odd`(1), `clinic`),
+DROP INDEX `name_odd`;
+--nextquery--
+ALTER TABLE `is_osirix`
+ADD FOREIGN KEY (`clinic`) REFERENCES `is_clinics` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+--nextquery--
+ALTER TABLE `is_osirix`
+ADD UNIQUE `name_odd_clinic` (`name`(100), `odd`(4), `clinic`),
+DROP INDEX `name_odd_clinic`;
+--nextquery--
+update is_osirix set clinic=3 where clinic is null
+

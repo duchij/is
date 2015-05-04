@@ -52,12 +52,14 @@ public partial class sluzby2 : System.Web.UI.Page
             {
                 this.publish_btn.Visible = true;
                 this.unpublish_btn.Visible = true;
+                this.edit_chk.Visible = true;
 
             }
             else
             {
                 this.publish_btn.Visible = false;
                 this.unpublish_btn.Visible = false;
+                this.edit_chk.Visible = false;
             }
         }
 
@@ -100,6 +102,16 @@ public partial class sluzby2 : System.Web.UI.Page
             }
             if (gKlinika == "kdch")
             {
+                string type = this.getShiftStateKDCH();
+                if (type == "active")
+                {
+                    this.edit_chk.Checked = false;
+                }
+                else
+                {
+                    this.edit_chk.Checked = true;
+                }
+
                 this.loadSluzby();
             }
 
@@ -120,7 +132,8 @@ public partial class sluzby2 : System.Web.UI.Page
             }
             if (this.gKlinika == "kdch")
             {
-                this.shiftTable.Controls.Clear();
+                //this.shiftTable.Controls.Clear();
+                
                 this.loadSluzby();
             }
             //}
@@ -141,12 +154,30 @@ public partial class sluzby2 : System.Web.UI.Page
             this.avaible_btn.Text = x2.setLabel("2dk_shifts_active");
             this.editChk_lbl.Text = x2.setLabel("2dk_shifts_edit");
         }
+        if (this.gKlinika == "kdch")
+        {
+            //this.setup_btn.Text = x2.setLabel("2dk_shifts_setup");
+            //this.avaible_btn.Text = x2.setLabel("2dk_shifts_active");
+            this.editChk_lbl.Text = "Editovat";
+        }
+        
     }
 
     protected void changeSluzba(object sender, EventArgs e)
     {
         if (this.gKlinika == "kdch")
         {
+            this.shiftTable.Controls.Clear();
+            string type = this.getShiftStateKDCH();
+            if (type == "active")
+            {
+                this.edit_chk.Checked = false;
+            }
+            else
+            {
+                this.edit_chk.Checked = true;
+            }
+
             this.loadSluzby();
         }
 
@@ -241,7 +272,23 @@ public partial class sluzby2 : System.Web.UI.Page
         int dateGroup = x2.makeDateGroup(rok, mesiac);
 
         StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("SELECT [state] FROM [is_sluzby_dk] WHERE [date_group]='{0}' AND [clinic]='{1}' GROUP BY [state]", dateGroup, 4);
+        sb.AppendFormat("SELECT [state] FROM [is_sluzby_dk] WHERE [date_group]='{0}' AND [clinic]='{1}' GROUP BY [state]", dateGroup, Session["klinika_id"]);
+
+        SortedList row = x2Mysql.getRow(sb.ToString());
+
+        return row["state"].ToString();
+
+    }
+
+    protected string getShiftStateKDCH()
+    {
+        int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue);
+        int rok = Convert.ToInt32(this.rok_cb.SelectedValue);
+
+        int dateGroup = x2.makeDateGroup(rok, mesiac);
+
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("SELECT [state] FROM [is_sluzby_2] WHERE [date_group]='{0}' GROUP BY [state]", dateGroup);
 
         SortedList row = x2Mysql.getRow(sb.ToString());
 
@@ -1408,7 +1455,7 @@ public partial class sluzby2 : System.Web.UI.Page
     protected void loadSluzby()
     {
 
-        this.shiftTable.Controls.Clear();
+        //this.shiftTable.Controls.Clear();
         string mesiac = this.mesiac_cb.SelectedValue.ToString();
         string rok = this.rok_cb.SelectedValue.ToString();
 
@@ -1560,7 +1607,7 @@ public partial class sluzby2 : System.Web.UI.Page
                     //  {
 
 
-                    if ((this.rights == "admin" || this.rights == "poweruser" || this.rights=="sadmin") && this.wgroup=="doctor")
+                    if ((this.rights == "admin" || this.rights == "poweruser" || this.rights=="sadmin") && this.wgroup=="doctor" && this.edit_chk.Checked == true)
                     {
                         DropDownList doctors_lb = new DropDownList();
                         doctors_lb.ID = "ddl_" + row.ToString() + "_" + cols.ToString();

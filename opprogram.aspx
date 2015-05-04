@@ -50,5 +50,6 @@
                  <asp:TextBox ID="full_text" CssClass="dtextbox" runat="server"  Width="90%" Rows="30" Height="500" TextMode="MultiLine"> </asp:TextBox>            
     
     <asp:Button ID="save_btn" runat="server" Text="<%$ Resources:Resource, is_news_button_save %>" OnClick="saveMessage_Click" />
+    <asp:Button ID="printButton_btn" runat="server" Text="<%$ Resources:Resource, print %>" />
 </asp:Content>
 

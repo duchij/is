@@ -51,14 +51,15 @@
           <asp:Table ID="weekState_tbl" runat="server" CssClass="responsive" data-max="14"></asp:Table>
                             <asp:Button ID="setup_btn" runat="server" Text="" OnClick="makeShiftsDraftDKFnc" CssClass="button green" />
                             <asp:Button ID="avaible_btn" runat="server" Text="" OnClick="makeShiftsActiveDKFnc"  CssClass="button blue"/>
-                            <br /><div class="info box"><asp:CheckBox ID="edit_chk" runat="server" Text="" AutoPostBack="true" />&nbsp; <asp:Label ID="editChk_lbl" runat="server" Text=""></asp:Label></div><br />
-                        </asp:PlaceHolder>
-
+                            
+                       
+           </asp:PlaceHolder>
+  <div class="info box"><asp:CheckBox ID="edit_chk" runat="server" Text="" AutoPostBack="true" />&nbsp; <asp:Label ID="editChk_lbl" runat="server" Text=""></asp:Label></div>
  Počet dní v mesiaci: <asp:Label ID="days_lbl" runat="server" Text=""></asp:Label><hr />
                 <asp:Label ID="Label1" runat="server" Text="Víkend" CssClass="red box" Width="130"></asp:Label>
                 <asp:Label ID="Label2" runat="server" Text="Štátny sviatok" CssClass="yellow box" Width="130"></asp:Label>
                 <asp:Label ID="shiftState_lbl" runat="server" Text=""></asp:Label>
-                <asp:Table ID="shiftTable" runat="server" EnableViewState="true" CssClass="responsive" data-max="14">                 
+                <asp:Table ID="shiftTable" runat="server" EnableViewState="false" CssClass="responsive" data-max="14">                 
                 </asp:Table>
                 <div class="row">
                     <div class="one whole padded">
@@ -66,6 +67,8 @@
                         <asp:PlaceHolder ID="kdch_pl" runat="server" Visible="false">
                         <asp:Button ID="publish_btn" runat="server" Text="Sprístupniť všetkým" CssClass="green button" OnClick="publishOnFnc"  />
                             <asp:Button ID="unpublish_btn" runat="server" Text="Zblokovať prístup všetkým" CssClass="red button"  OnClick="publishOffFnc"/>
+                            
+                            
                         </asp:PlaceHolder>
                       
 

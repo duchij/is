@@ -30,7 +30,8 @@ public partial class tabletview : System.Web.UI.Page
         if (IsPostBack == false)
         {
           this.setMyDate();
-          this.loadPostData();
+          this.setDepsView();
+          //this.loadPostData();
           //  this.loadData();
         }
         else
@@ -52,6 +53,34 @@ public partial class tabletview : System.Web.UI.Page
         this.loadChlapciData();
     }
 
+    protected void setDepsView()
+    {
+        string sql = my_x2.sprintf("SELECT [idf],[label] FROM [is_deps] WHERE [clinic_id]='{0}'", new string[] {Session["klinika_id"].ToString()});
+        Dictionary<int, Hashtable> data = x2db.getTable(sql);
+
+        int dataCn = data.Count;
+
+       
+        for (int i=0; i<dataCn; i++)
+        {
+            TableRow riadok = new TableRow();
+
+            TableCell cellDep = new TableCell();
+            riadok.Controls.Add(cellDep);
+            cellDep.ID = data[i]["idf"].ToString();
+            Label title = new Label();
+            title.Text = "<h3>"+data[i]["label"].ToString()+"</h3>";
+            cellDep.Controls.Add(title);
+           
+
+            this.depsRdg_tbl.Controls.Add(riadok);
+        }
+           
+       
+        
+
+    }
+
     protected void loadSluzby()
     {
 
@@ -63,7 +92,7 @@ public partial class tabletview : System.Web.UI.Page
         sb.AppendFormat("SELECT GROUP_CONCAT([osirix] SEPARATOR ' ') AS [osirix] FROM [is_hlasko] WHERE [dat_hlas] = '{0}'", my_x2.unixDate(datum));
         SortedList result = x2db.getRow(sb.ToString());
 
-        string osirix = result["osirix"].ToString().Trim();
+        string osirix = my_x2.getStr(result["osirix"].ToString());
 
         string tmp = osirix.Replace((char)13,' ');
 

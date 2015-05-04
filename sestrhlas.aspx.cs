@@ -39,26 +39,10 @@ public partial class sestrhlas : System.Web.UI.Page
 
         if (IsPostBack == false)
         {
-            Calendar1.SelectedDate = DateTime.Today;
-
-            
-            //if (deps == "MSV")
-            //{
-            //    deps_dl.Items.Add(new ListItem("MSV", "msv"));
-            //}
-            //if (deps == "VD")
-            //{
-            //    deps_dl.Items.Add(new ListItem("Velke deti", "vd"));
-            //}
-
-            //if ((this.rights == "admin") || (this.rights == "poweruser"))
-            //{
-            //    deps_dl.Items.Add(new ListItem("MSV", "msv"));
-            //    deps_dl.Items.Add(new ListItem("Velke deti", "vd"));
-
-            //}
+            this.Calendar1.SelectedDate = DateTime.Today;
 
             this.loadDeps();
+            
             if (Session["oddelenie"].ToString().Length > 0)
             {
                 this.deps_dl.SelectedValue = Session["oddelenie"].ToString();
@@ -103,9 +87,13 @@ public partial class sestrhlas : System.Web.UI.Page
         this.hlasenie.Text = "";
         this.msg_lbl.Text = "";
         SortedList akt_user_info = x_db.getUserInfoByID(Session["user_id"].ToString());
-        user.Text = akt_user_info["full_name"].ToString();
+        this.user.Text = akt_user_info["full_name"].ToString();
 
         SortedList data = x_db.getSestrHlasko(Calendar1.SelectedDate, deps_dl.SelectedValue.ToString(), predZad_cb.SelectedValue.ToString(), hlasenie.Text.ToString(), Session["user_id"].ToString(), this.time_cb.SelectedValue.ToString());
+        //string query1 = x2.sprintf("SELECT * FROM [is_hlasko_sestry] WHERE [dat_hlas] = '{0}' AND [oddelenie] = '{1}' AND [lokalita] = '{2}' AND [cas]='{3}'");
+        StringBuilder sb = new StringBuilder();
+
+
 
         if (Convert.ToInt32(data["id"]) != 0)
         {

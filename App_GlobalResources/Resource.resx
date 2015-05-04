@@ -441,4 +441,10 @@
   <data name="staze_edit" xml:space="preserve">
     <value>Editačný režim.....</value>
   </data>
+  <data name="sys_insert" xml:space="preserve">
+    <value>Nové informarácie boli uložené.</value>
+  </data>
+  <data name="sys_update" xml:space="preserve">
+    <value>Informácie boli úspešne update-nuté</value>
+  </data>
 </root>
