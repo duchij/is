@@ -412,8 +412,8 @@ public partial class adduser : System.Web.UI.Page
     }
     protected void uprav_btn_Click(object sender, EventArgs e)
     {
-        string meno = name_txt.Text.ToString();
-        string email = email_txt.Text.ToString();
+        string meno = this.name_txt.Text.ToString();
+        string email = this.email_txt.Text.ToString();
 
         SortedList data = new SortedList();
 

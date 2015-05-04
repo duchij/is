@@ -1203,7 +1203,7 @@ public partial class vykaz2 : System.Web.UI.Page
         int dni = DateTime.DaysInMonth(rok, mesiac);
         SortedList res = x2Mysql.calcNightWork(Convert.ToInt32(id), mesiac, rok, dni);
 
-        if (Convert.ToBoolean(res["status"]))
+        if (Convert .ToBoolean(res["status"]))
         {
 
             string[] freeDays = x_db.getFreeDays();
@@ -1236,76 +1236,171 @@ public partial class vykaz2 : System.Web.UI.Page
             {
                 DateTime dt = Convert.ToDateTime(my_x2.MSDate(table[i]["datum"].ToString()));
 
-                int den = dt.Day;
-                Control nightbox = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_5");
-                TextBox nightTBOX = (TextBox)nightbox;
-                decimal night_work = Convert.ToDecimal(table[i]["worknight"]);
-                
-                nightTBOX.Text = (Math.Round(night_work/60,1)).ToString();
-
-                string mesDen = den.ToString() + "." + mesiac.ToString();
-
-                //int epc_tmp = Array.IndexOf(epcDate, dtTmp);
-
-                int rs_tmp = Array.IndexOf(freeDays, mesDen);
-                Boolean sviatok = false;
-
-                if (Array.IndexOf(freeDays, mesDen) != -1)
+                if (dt.Month == mesiac)
                 {
-                    sviatok = true;
-                }
 
-                int vikInt = (int)dt.DayOfWeek;
-                Boolean vikend = false;
-                if (vikInt == 0 || vikInt == 6)
-                {
-                    vikend = true;
-                }
+                    int den = dt.Day;
+                    Control nightbox = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_5");
 
-                int aktivna = Convert.ToInt32(table[i]["worktime"]);
-                decimal hodiny = aktivna / 60;
-                decimal neaktivna = 12 - hodiny;
+                    TextBox nightTBOX = (TextBox)nightbox;
 
-                if (neaktivna < 0)
-                {
-                    hodiny = 12;
-                    neaktivna = 0;
-                }
+                    decimal night_work = Convert.ToDecimal(table[i]["worknight"]); ;
 
-                if (vikend || sviatok)
-                {
-                    Control tbox1 = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_9");
-                    TextBox mTBox1 = (TextBox)tbox1;
-                    Control tbox2 = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_11");
-                    TextBox mTBox2 = (TextBox)tbox2;
 
-                    Control hodTmp = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_4");
-                    TextBox zucHodTxt = (TextBox)hodTmp;
 
-                    Control mzvyhTmp = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_7");
-                    TextBox mzvyhTxt = (TextBox)mzvyhTmp;
+                    nightTBOX.Text = (Math.Round(night_work / 60, 1)).ToString();
 
-                    Control mzvyhTmpSv = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_6");
-                    TextBox mzvyhTxtSv = (TextBox)mzvyhTmpSv;
 
-                    decimal zuctHodinyFLOAT = Convert.ToDecimal(zucHodTxt.Text.ToString(),CultureInfo.InvariantCulture.NumberFormat);
-                    decimal defZuc = zuctHodinyFLOAT + hodiny;
-                    mzvyhTxt.Text = defZuc.ToString();
-                    mzvyhTxtSv.Text = defZuc.ToString();
 
-                    mTBox1.Text = hodiny.ToString();
-                    mTBox2.Text = neaktivna.ToString();
+                    string mesDen = den.ToString() + "." + mesiac.ToString();
+
+                    //int epc_tmp = Array.IndexOf(epcDate, dtTmp);
+
+                    int rs_tmp = Array.IndexOf(freeDays, mesDen);
+                    Boolean sviatok = false;
+
+                    if (Array.IndexOf(freeDays, mesDen) != -1)
+                    {
+                        sviatok = true;
+                    }
+
+                    int vikInt = (int)dt.DayOfWeek;
+                    Boolean vikend = false;
+                    if (vikInt == 0 || vikInt == 6)
+                    {
+                        vikend = true;
+                    }
+
+                    int aktivna = Convert.ToInt32(table[i]["worktime"]);
+                    decimal hodiny = aktivna / 60;
+                    decimal neaktivna = 12 - hodiny;
+
+                    if (neaktivna < 0)
+                    {
+                        hodiny = 12;
+                        neaktivna = 0;
+                    }
+
+                    if (vikend || sviatok)
+                    {
+                        Control tbox1 = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_9");
+                        TextBox mTBox1 = (TextBox)tbox1;
+                        Control tbox2 = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_11");
+                        TextBox mTBox2 = (TextBox)tbox2;
+
+                        Control hodTmp = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_4");
+                        TextBox zucHodTxt = (TextBox)hodTmp;
+
+                        Control mzvyhTmp = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_7");
+                        TextBox mzvyhTxt = (TextBox)mzvyhTmp;
+
+                        Control mzvyhTmpSv = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_6");
+                        TextBox mzvyhTxtSv = (TextBox)mzvyhTmpSv;
+
+                        decimal zuctHodinyFLOAT = Convert.ToDecimal(zucHodTxt.Text.ToString(), CultureInfo.InvariantCulture.NumberFormat);
+                        decimal defZuc = zuctHodinyFLOAT + hodiny;
+                        mzvyhTxt.Text = defZuc.ToString();
+                        mzvyhTxtSv.Text = defZuc.ToString();
+
+                        mTBox1.Text = hodiny.ToString();
+                        mTBox2.Text = neaktivna.ToString();
+                    }
+                    else
+                    {
+                        Control tbox1 = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_8");
+                        TextBox mTBox1 = (TextBox)tbox1;
+                        Control tbox2 = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_10");
+                        TextBox mTBox2 = (TextBox)tbox2;
+
+                        mTBox1.Text = hodiny.ToString();
+                        mTBox2.Text = neaktivna.ToString();
+                    }
                 }
                 else
                 {
-                    Control tbox1 = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_8");
-                    TextBox mTBox1 = (TextBox)tbox1;
-                    Control tbox2 = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_10");
-                    TextBox mTBox2 = (TextBox)tbox2;
+                    int den = dni;
+                    Control nightbox = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_5");
 
-                    mTBox1.Text = hodiny.ToString();
-                    mTBox2.Text = neaktivna.ToString();
+                    TextBox nightTBOX = (TextBox)nightbox;
+
+                    decimal night_work = Convert.ToDecimal(table[i]["worknight"]); ;
+
+                    decimal tmpNW = 0;
+
+                    try{
+
+                        tmpNW = Convert.ToDecimal(nightTBOX.Text.ToString());
+                    }
+                    catch (Exception ex)
+                    {
+                        tmpNW = 0;
+                    }
+                    nightTBOX.Text = (tmpNW + night_work).ToString();
+                    string mesDen = den.ToString() + "." + mesiac.ToString();
+
+                    //int epc_tmp = Array.IndexOf(epcDate, dtTmp);
+
+                    int rs_tmp = Array.IndexOf(freeDays, mesDen);
+                    Boolean sviatok = false;
+
+                    if (Array.IndexOf(freeDays, mesDen) != -1)
+                    {
+                        sviatok = true;
+                    }
+
+                    int vikInt = (int)dt.DayOfWeek;
+                    Boolean vikend = false;
+                    if (vikInt == 0 || vikInt == 6)
+                    {
+                        vikend = true;
+                    }
+
+                    int aktivna = Convert.ToInt32(table[i]["worktime"]);
+                    decimal hodiny = aktivna / 60;
+                    decimal neaktivna = 12 - hodiny;
+
+                    if (neaktivna < 0)
+                    {
+                        hodiny = 12;
+                        neaktivna = 0;
+                    }
+
+                    if (vikend || sviatok)
+                    {
+                        Control tbox1 = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_9");
+                        TextBox mTBox1 = (TextBox)tbox1;
+                        Control tbox2 = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_11");
+                        TextBox mTBox2 = (TextBox)tbox2;
+
+                        Control hodTmp = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_4");
+                        TextBox zucHodTxt = (TextBox)hodTmp;
+
+                        Control mzvyhTmp = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_7");
+                        TextBox mzvyhTxt = (TextBox)mzvyhTmp;
+
+                        Control mzvyhTmpSv = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_6");
+                        TextBox mzvyhTxtSv = (TextBox)mzvyhTmpSv;
+
+                        decimal zuctHodinyFLOAT = Convert.ToDecimal(zucHodTxt.Text.ToString(), CultureInfo.InvariantCulture.NumberFormat);
+                        decimal defZuc = zuctHodinyFLOAT + hodiny;
+                        mzvyhTxt.Text = defZuc.ToString();
+                        mzvyhTxtSv.Text = defZuc.ToString();
+
+                        mTBox1.Text = hodiny.ToString();
+                        mTBox2.Text = neaktivna.ToString();
+                    }
+                    else
+                    {
+                        Control tbox1 = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_8");
+                        TextBox mTBox1 = (TextBox)tbox1;
+                        Control tbox2 = ctpl.FindControl("textBox_" + (den - 1).ToString() + "_10");
+                        TextBox mTBox2 = (TextBox)tbox2;
+
+                        mTBox1.Text = hodiny.ToString();
+                        mTBox2.Text = neaktivna.ToString();
+                    }
                 }
+
             }
         }
         else
