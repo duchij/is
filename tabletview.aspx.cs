@@ -10,9 +10,10 @@ using System.Web.UI.WebControls;
 
 public partial class tabletview : System.Web.UI.Page
 {
-   my_db x_db = new my_db();
-    x2_var my_x2 = new x2_var();
-    mysql_db x2db = new mysql_db();
+        my_db x_db = new my_db();
+        x2_var my_x2 = new x2_var();
+        mysql_db x2db = new mysql_db();
+        string gKlinika = ""; 
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -21,32 +22,83 @@ public partial class tabletview : System.Web.UI.Page
         {
             Response.Redirect("error.html");
         }
-
+        this.gKlinika = Session["klinika"].ToString().ToLower();
 
        /* this.kojenci_diag_btn.Enabled = false;
         this.OddB_diag_btn.Enabled = false;
         this.Pohotovost_diag_btn.Enabled = false;*/
 
-        if (IsPostBack == false)
+        if (!IsPostBack)
         {
           this.setMyDate();
           this.setDepsView();
+          this.loadShifts();
           //this.loadPostData();
           //  this.loadData();
         }
         else
         {
             this.setMyDate();
-            this.loadPostData();
+            this.setDepsView();
+            this.loadShifts();
+            //this.loadPostData();
             
           // this.setData();
         }
 
     }
 
+    protected void loadShifts()
+    {
+        if (this.gKlinika=="2dk")
+        {
+            this.loadDKOsirixData();
+        }
+        if (this.gKlinika == "kdch")
+        {
+            this.loadSluzbyKDCH();
+        }
+        
+    }
+
+    protected void loadDKOsirixData()
+    {
+        this.osirixShift_tbl.Controls.Clear();
+        StringBuilder sb = new StringBuilder();
+        sb.Append("SELECT [patient_name] AS [name] FROM [is_hlasko_epc] AS [hlasko_epc]");
+        sb.AppendLine("INNER JOIN [is_hlasko] AS [hlasko] ON [hlasko].[id] = [hlasko_epc].[hlasko_id] ");
+        sb.AppendFormat("WHERE [hlasko].[dat_hlas]='{0}'",my_x2.unixDate(this.Calendar1.SelectedDate));
+        sb.AppendFormat("AND [hlasko].[clinic]='{0}'", Session["klinika_id"]);
+
+        Dictionary<int, Hashtable> data = x2db.getTable(sb.ToString());
+
+        int dataCn = data.Count;
+
+        for (int i=0;i<dataCn;i++)
+        {
+            TableRow riadok = new TableRow();
+            this.osirixShift_tbl.Controls.Add(riadok);
+            TableCell dataCell = new TableCell();
+            dataCell.HorizontalAlign = HorizontalAlign.Center;
+
+            HyperLink osirixLn = new HyperLink();
+            osirixLn.Text = data[i]["name"].ToString();
+            osirixLn.CssClass = "large green button align-center";
+            osirixLn.NavigateUrl = Resources.Resource.osirix_url + data[i]["name"];
+           
+            dataCell.Controls.Add(osirixLn);
+
+            riadok.Controls.Add(dataCell);
+        }
+
+
+       // string query = my_x2.sprintf(" WHERE [osirix]=true AND ");
+
+    }
+
     protected void loadPostData()
     {
-        this.loadSluzby();
+        //this.loadSluzby();
 
         this.loadKojenciData();
         this.loadDievcataData();
@@ -55,6 +107,8 @@ public partial class tabletview : System.Web.UI.Page
 
     protected void setDepsView()
     {
+        //this.depsRdg_tbl.Controls.Clear();
+
         string sql = my_x2.sprintf("SELECT [idf],[label] FROM [is_deps] WHERE [clinic_id]='{0}'", new string[] {Session["klinika_id"].ToString()});
         Dictionary<int, Hashtable> data = x2db.getTable(sql);
 
@@ -67,24 +121,161 @@ public partial class tabletview : System.Web.UI.Page
 
             TableCell cellDep = new TableCell();
             riadok.Controls.Add(cellDep);
-            cellDep.ID = data[i]["idf"].ToString();
-            Label title = new Label();
-            title.Text = "<h3>"+data[i]["label"].ToString()+"</h3>";
-            cellDep.Controls.Add(title);
-           
+            cellDep.ID = "adding|"+data[i]["idf"].ToString();
 
+            Label title = new Label();
+            title.Text = "<h1>"+data[i]["label"].ToString()+"</h1>";
+            cellDep.Controls.Add(title);
             this.depsRdg_tbl.Controls.Add(riadok);
+
+            TableRow riadokData = new TableRow();
+
+            TableCell cellData = new TableCell();
+
+            Label name_lbl = new Label();
+            name_lbl.Text = "Meno:";
+            cellData.Controls.Add(name_lbl);
+
+            TextBox name_txt = new TextBox();
+            name_txt.ID = "name|"+data[i]["idf"].ToString();
+            cellData.Controls.Add(name_txt);
+
+            Label note_lbl = new Label();
+            note_lbl.Text = "Poznamka:";
+            cellData.Controls.Add(note_lbl);
+
+            TextBox note_txt = new TextBox();
+            note_txt.ID = "note|" + data[i]["idf"].ToString(); ;
+            cellData.Controls.Add(note_txt);
+
+            Button add_btn = new Button();
+            add_btn.Text = "Pridaj";
+            add_btn.ID = "addBtn|" + data[i]["idf"].ToString();
+            add_btn.Click += new EventHandler(addPatientFnc);
+            cellData.Controls.Add(add_btn);
+
+            riadokData.Controls.Add(cellData);
+
+            this.depsRdg_tbl.Controls.Add(riadokData);
+
+            TableRow riadokOsirix = new TableRow();
+            riadokOsirix.ID = "osirix|" + data[i]["idf"];
+            this.depsRdg_tbl.Controls.Add(riadokOsirix);
+
+            this.loadOsirixData(data[i]["idf"].ToString(), riadokOsirix);
+
         }
-           
-       
-        
+    }
+
+    protected void loadOsirixData(string dep, TableRow riadokOsirix)
+    {
+        DateTime datum = this.Calendar2.SelectedDate;
+
+        string query = my_x2.sprintf("SELECT * FROM [is_osirix] WHERE [date]='{0}' AND [odd]='{1}' AND [clinic]='{2}'", new string[] { my_x2.unixDate(datum), dep, Session["klinika_id"].ToString() });
+
+        Dictionary<int,Hashtable> data = x2db.getTable(query);
+
+        int dataCn = data.Count;
+
+        for (int i=0; i<dataCn; i++)
+        {
+            TableCell dataCell = new TableCell();
+            dataCell.ID = "osirixCell_" + data[i]["odd"].ToString() + "_" + data[i]["item_id"].ToString();
+
+            HyperLink osirixLink = new HyperLink();
+            osirixLink.Text = data[i]["name"].ToString();
+            osirixLink.CssClass = "button blue large";
+            osirixLink.NavigateUrl = Resources.Resource.osirix_url + data[i]["name"].ToString();
+            osirixLink.Target = "_blank";
+            dataCell.Controls.Add(osirixLink);
+
+            Label osirixComment = new Label();
+            osirixComment.Text = "&nbsp;&nbsp;&nbsp;" + data[i]["poznamka"].ToString() + "&nbsp;&nbsp;&nbsp;";
+            dataCell.Controls.Add(osirixComment);
+
+            Button delLink = new Button();
+            delLink.ID = "del_" + data[i]["item_id"].ToString();
+            //delLink.Click += new EventHandler();
+            delLink.Text = Resources.Resource.delete;
+            delLink.CssClass = "red button";
+
+            dataCell.Controls.Add(delLink);
+
+            riadokOsirix.Controls.Add(dataCell);
+        }
+
 
     }
 
-    protected void loadSluzby()
+    protected void addPatientFnc(object sender, EventArgs e)
     {
+        Button addBtn = (Button)sender;
+        string[] idArr = addBtn.ID.ToString().Split('|');
 
-        this.hlasenie.Controls.Clear();
+        Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+        ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
+
+        SortedList data = new SortedList();
+
+        TextBox name_txt = (TextBox)ctpl.FindControl("name|" + idArr[1]);
+        
+
+        this.msg_lbl.Text = name_txt.Text.ToString();
+
+        TextBox note_txt = (TextBox)ctpl.FindControl("note|" + idArr[1]);
+        
+
+        data.Add("name", name_txt.Text);
+        data.Add("poznamka", note_txt.Text);
+        data.Add("odd", idArr[1]);
+        data.Add("clinic", Session["klinika_id"]);
+
+        DateTime datum = this.Calendar2.SelectedDate;
+        data.Add("date", my_x2.unixDate(datum));
+
+        SortedList res = x2db.mysql_insert("is_osirix",data);
+
+        if (Convert.ToBoolean(res["status"]))
+        {
+            TableRow riadokOsirix = (TableRow)ctpl.FindControl("osirix_" + idArr[1]);
+
+            TableCell dataCell = new TableCell();
+            dataCell.ID = "osirixCell_" + idArr[1] + "_" + res["last_id"].ToString();
+
+            HyperLink osirixLink = new HyperLink();
+            osirixLink.Text = name_txt.Text.ToString();
+            osirixLink.CssClass = "large button blue";
+            osirixLink.NavigateUrl = Resources.Resource.osirix_url + name_txt.Text.ToString();
+            osirixLink.Target = "_blank";
+            dataCell.Controls.Add(osirixLink);
+
+            Label osirixComment = new Label();
+            osirixComment.Text = "&nbsp;&nbsp;&nbsp;" + note_txt.Text.ToString() + "&nbsp;&nbsp;&nbsp;";
+            dataCell.Controls.Add(osirixComment);
+
+            Button delLink = new Button();
+            delLink.ID = "del_" + res["last_id"].ToString();
+            //delLink.Click += new EventHandler();
+            delLink.Text =Resources.Resource.delete;
+            delLink.CssClass = "red button";
+
+            dataCell.Controls.Add(delLink);
+
+            riadokOsirix.Controls.Add(dataCell);
+
+        }
+        else
+        {
+            this.msg_lbl.Text = res["msg"].ToString();
+        }
+    }
+    
+   
+
+
+    protected void loadSluzbyKDCH()
+    {
+        this.osirixShift_tbl.Controls.Clear();
 
         DateTime datum = this.Calendar1.SelectedDate;
 
@@ -102,16 +293,19 @@ public partial class tabletview : System.Web.UI.Page
         {
             if (str[i].Trim().Length > 0)
             {
+                TableRow riadok = new TableRow();
+                this.osirixShift_tbl.Controls.Add(riadok);
+                TableCell dataCell = new TableCell();
+                dataCell.HorizontalAlign = HorizontalAlign.Center;
+
                 HyperLink meno_lnk = new HyperLink();
-                meno_lnk.ID = "sluzba_" + i.ToString();
                 meno_lnk.Text = str[i].ToUpper();
-                meno_lnk.NavigateUrl = "http://10.10.2.49:3333/studyList?search=" + str[i];
+                meno_lnk.NavigateUrl = Resources.Resource.osirix_url + str[i];
                 meno_lnk.Target = "_blank";
-                meno_lnk.CssClass = "large button blue align-center";
+                meno_lnk.CssClass = "large button green align-center";
 
-
-
-                this.hlasenie.Controls.Add(meno_lnk);
+                dataCell.Controls.Add(meno_lnk);
+                riadok.Controls.Add(dataCell);
             }
         }
 
@@ -233,14 +427,16 @@ public partial class tabletview : System.Web.UI.Page
 
     protected void Calendar1_SelectionChanged(object sender, EventArgs e)
     {
-        this.loadSluzby();
+        //this.loadSluzby();
+        this.loadShifts();
     }
 
     protected void Calendar2_SelectionChanged(object sender, EventArgs e)
     {
-        this.loadKojenciData();
-        this.loadDievcataData();
-        this.loadChlapciData();
+        this.setDepsView();
+        //this.loadKojenciData();
+        //this.loadDievcataData();
+        //this.loadChlapciData();
     }
 
     protected void saveData(string id, string text)

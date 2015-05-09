@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="is_user.aspx.cs" Inherits="is_user" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="is_user.aspx.cs" Inherits="is_user" EnableViewState="true" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
 </asp:Content>
@@ -9,14 +9,15 @@
     <asp:PlaceHolder ID="admin_plh" runat="server">
 
         <div class="row">
+            <h1 class="red">Administrator</h1>
             <div class="one half">
-                <div class="row"><asp:TextBox ID="search_txt" runat="server"></asp:TextBox>
-                        <asp:Button ID="search_btn" runat="server" Text="Hľadaj" OnClick="searchByNameFnc" />
+                <div class="row">Časť mena: <asp:TextBox ID="search_txt" runat="server" Width="200px" CssClass="inline" ToolTip="Zadaj časť priezviska s diakritikou"></asp:TextBox>
+                        <asp:Button ID="search_btn" runat="server" Text="Hľadaj" OnClick="searchByNameFnc" CssClass="blue button" />
                 </div>
                 <asp:GridView ID="users_gv" runat="server" data-max="15" CssClass="responsive" AllowPaging="True" 
                     OnPageIndexChanging="users_gv_PageIndexChanging" 
                     OnSelectedIndexChanging="users_gv_SelectedIndexChanging"
-                    CaptionAlign="Left" Caption="Zoznam užívateľov" AutoGenerateColumns="False" EnableModelValidation="True" SelectedRowStyle-BackColor="#66FF33">
+                    CaptionAlign="Left" AutoGenerateColumns="False" EnableModelValidation="True" SelectedRowStyle-BackColor="#66FF33">
                          <Columns>
                              <asp:CommandField ShowSelectButton="True" />
                              <asp:BoundField DataField="id" HeaderText="id">
@@ -39,25 +40,48 @@
             </div>
             <div class="one half">
                 <asp:HiddenField ID="selectedUser_hf" runat="server" Value="0" />
+                 <p class="red"> !!! Po zadaní mena a priezviska v nastaveniach užívateľa a opustení textového rámika sa automaticky vegenerujú login a rôzne údaje v admin sekcii, prosím skontrolujte ich.</p>
                 <table>
                     <tr>
                         <td>
-                        Heslo: <asp:TextBox ID="passwd_txt" runat="server"></asp:TextBox>
+                        Heslo: <asp:TextBox ID="passwd_txt" runat="server" ReadOnly="true"></asp:TextBox>
+                            <asp:Button ID="resetpasswd_btn" OnClick="resetPasswordFnc" Text="Reset password" CssClass="red button" runat="server" />
                         </td>
                     </tr>
                     <tr>
                         <td>
-                        Aktívny: <asp:TextBox ID="active_txt" runat="server"></asp:TextBox>
+                        Aktívny: <asp:DropDownList ID="active_dl" runat="server">
+                                     <asp:ListItem Value="1">Aktívny</asp:ListItem>
+                                     <asp:ListItem Value="0">Zablokovaný</asp:ListItem>
+                            </asp:DropDownList>
                         </td>
                     </tr>
+
                     <tr>
                         <td>
-                        Login: <asp:TextBox ID="login_txt" runat="server"></asp:TextBox>
+                        Name2: <asp:TextBox ID="name2_txt" runat="server"></asp:TextBox>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                        Name3: <asp:TextBox ID="name3_txt" runat="server"></asp:TextBox>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                        Login: <asp:TextBox ID="login_txt" runat="server" AutoPostBack="true" OnTextChanged="checkLoginValidtyFnc"></asp:TextBox>
+                            <p>V prípade zadania osobného čísla prosím vložte pred neho d. Napr.dxxxxx. Inak nebude užívateľ nájdený<br />
+                                Login može obsahovať len písmená, čísla a podtrhovátko. 
+
+                            </p>
                         </td>
                     </tr>
                     <tr>
                         <td>
                         Práva:<asp:DropDownList ID="rights_cb" runat="server">
+                                 <asp:ListItem Value=""></asp:ListItem>
                                 <asp:ListItem Value="admin">Admin</asp:ListItem>
                                 <asp:ListItem Value="sadmin">SubAdmin</asp:ListItem>
                                 <asp:ListItem Value="poweruser">PowerUser</asp:ListItem>
@@ -71,6 +95,7 @@
                     <tr>
                         <td>
                         Zaradenie:<asp:DropDownList ID="workgroup_dl" runat="server">
+                                    <asp:ListItem Value=""></asp:ListItem>
                                     <asp:ListItem Value="doctor">Lekár</asp:ListItem>
                                     <asp:ListItem Value="nurse">Sestra</asp:ListItem>
                                     <asp:ListItem Value="assistent">Asistent</asp:ListItem>
@@ -85,7 +110,7 @@
                      <tr>
                         <td>
                            <%-- OnSelectedIndexChanged="loadDeps" AutoPostBack="true"--%>
-                        Klinika:<asp:DropDownList ID="clinics_dl" runat="server" >
+                        Klinika:<asp:DropDownList ID="clinics_dl" runat="server" AutoPostBack="true" OnSelectedIndexChanged="loadDeps">
                                 </asp:DropDownList>
                         </td>
                     </tr>
@@ -102,13 +127,16 @@
     <hr />
     <asp:PlaceHolder ID="user_plh" runat="server">
         <div class="row">
+            <h1 class="green">Nastavenia užívateľa</h1>
             <div class="one half">
                  <table>
                     <tr>
                         <td>Titul pred menom:<asp:TextBox ID="titul_pred" runat="server"></asp:TextBox></td>
                     </tr>
                      <tr>
-                        <td>Meno a priezvisko:<asp:TextBox ID="name_txt" runat="server"></asp:TextBox></td>
+                        <td>Meno a priezvisko:<asp:TextBox ID="name_txt" runat="server" OnTextChanged="createNamesFnc" AutoPostBack="true"></asp:TextBox>
+                           
+                        </td>
                     </tr>
                       <tr>
                         <td>Titul za menom:<asp:TextBox ID="titul_za" runat="server"></asp:TextBox></td>
@@ -134,6 +162,10 @@
                     </tr>
                     <tr>
                         <td>Klinika (skratka, napr. výkaz):<asp:TextBox ID="klinika_txt" runat="server"></asp:TextBox></td>
+                    </tr>
+                    <tr>
+                        <td><asp:Button ID="resetUserPsswd_btn" runat="server" Text="Reset hesla...." CssClass="red button" OnClick="resetPasswdUser" /><br />
+                            <p>Možnosť zmeny hesla daného užívateľa. Po stlačení budete presmerovaný na stránku zmeny hesla... </p></td>
                     </tr>
                 </table>
             </div>

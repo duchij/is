@@ -2,10 +2,13 @@
 <hr />
 Vytvoril:<asp:Label ID="creatUser_lbl" runat="server" Text="" Font-Bold="true"></asp:Label><br />
     Posledná zmena:<asp:Label ID="lastUser_lbl" runat="server" Text="" Font-Bold="true"></asp:Label>
+
+
 <hr />
+  <asp:Label ID="ctrl_msg_lbl" runat="server"></asp:Label>
 <div class="row">
     
-    <asp:Label ID="ctrl_msg_lbl" runat="server"></asp:Label>
+  
     
     <div class="one half">
         <%--OnSelectionChanged="Calendar1_SelectionChanged"--%>

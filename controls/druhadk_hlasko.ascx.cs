@@ -25,12 +25,20 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
             if (Session["klinika"].ToString().ToLower()=="2dk")
             {
                 this.setMyDate();
-                this.setShiftTypes();
-                this.loadclinicDeps();
-                this.setShiftForDoctor();
-                this.setEPC_init();
-                this.loadHlasko();
-                this.loadEPCData(false);
+                if (this.setShiftTypes())
+                {
+                    this.loadclinicDeps();
+                    this.setShiftForDoctor();
+                    this.setEPC_init();
+                    this.loadHlasko();
+                    this.loadEPCData(false);
+                }
+                else
+                {
+                    this.ctrl_msg_lbl.Text = "<h3 class='red'>"+Resources.Resource.no_sfihts_generated+"</h3>";
+                    
+                }
+                
             }
             
             
@@ -302,7 +310,7 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
         {
             string acText = x2.DecryptString(table[i]["work_text"].ToString(), Session["passphrase"].ToString());
             string tmp = works[table[i]["work_type"].ToString()].ToString();
-            tmp += "<li><strong>"+table[i]["patient_name"].ToString()+"</strong>, <i>("+table[i]["label"].ToString()+")</i> "+acText+"</li>";
+            tmp += "<li><strong>" + table[i]["patient_name"].ToString() + "</strong>, <i>(" + table[i]["label"].ToString() + ")</i> " + acText + "</li>";
             works[table[i]["work_type"].ToString()] = tmp;            
 
             if (Convert.ToBoolean(table[i]["osirix"]))
@@ -335,7 +343,7 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
         data.Add("text", x2.EncryptString(this.hlasenie.Text.ToString(), Session["passphrase"].ToString()));
         data.Add("last_user", Session["user_id"].ToString());
         //data.Add("creat_user", 0);
-        //data.Add("type", this.shiftType_dl.SelectedValue.ToString());
+        data.Add("type", this.shiftType_dl.SelectedValue.ToString());
         data.Add("status", "generated");
         data.Add("encrypt", "yes");
         
@@ -427,22 +435,30 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
 
     }
 
-    protected void setShiftTypes()
+    protected Boolean setShiftTypes()
     {
-        this.shiftType_dl.Items.Clear();
+        Boolean res = true;
+        //this.shiftType_dl.Items.Clear();
         StringBuilder sb = new StringBuilder();
 
-        DateTime dt = Convert.ToDateTime(this.Calendar1.SelectedDate);
+        DateTime dt = this.Calendar1.SelectedDate;
 
-        sb.AppendFormat("SELECT [typ] FROM [is_sluzby_dk] WHERE [datum]='{0}' ORDER BY [ordering] ASC", x2.unixDate(dt).ToString());
+        sb.AppendFormat("SELECT [typ] FROM [is_sluzby_dk] WHERE [datum]='{0}' ORDER BY [ordering] ASC", x2.unixDate(dt));
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
         int tableCn = table.Count;
+
+        if (tableCn == 0)
+        {
+            res = false;
+        }
 
         for (int i = 0; i < tableCn; i++)
         {
             this.shiftType_dl.Items.Add(new ListItem(table[i]["typ"].ToString(), table[i]["typ"].ToString()));
         }
+
+        return res;
 
     }
 
@@ -729,8 +745,8 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
       //  data.Add("dat_hlas", x2.unixDate(this.Calendar1.SelectedDate));
         data.Add("text", x2.EncryptString(hlasenie.Text.ToString(), Session["passphrase"].ToString()));
         data.Add("last_user", Session["user_id"].ToString());
-        data.Add("creat_user", 0);
-       // data.Add("type", this.shiftType_dl.SelectedValue.ToString());
+        //data.Add("creat_user", 0);
+        data.Add("type", this.shiftType_dl.SelectedValue.ToString());
         data.Add("encrypt", "yes");
 
         if (uzavri == true)

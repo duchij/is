@@ -10,7 +10,7 @@
             <li><asp:Button ID="offline_btn" runat="server" Text="Set Web Offline" CssClass="button red" OnClick="setState" /></li>
         <li><asp:Button ID="online_btn" runat="server" Text="Set Web Online" CssClass="button green"  OnClick="setState"/></li>
 
-             <li><asp:HyperLink ID="newUser" runat="server" NavigateUrl="is_user.aspx">!!!! newUser</asp:HyperLink></li>
+             <li><asp:HyperLink ID="newUserVykaz" runat="server" NavigateUrl="is_user_vyk.aspx">!!!! newUserVyk</asp:HyperLink></li>
 
         </ul>
   </asp:PlaceHolder>
@@ -84,7 +84,8 @@
                     
     <div class="box info half-padded"> <h3><asp:label ID="Label4" runat="server" Text="<%$ Resources:Resource,lmenu_user %>"></asp:label></h3></div>
     <ul>
-        <li><a href="adduser.aspx" target="_self">Užívateľ</a> </li>  
+        <li><a href="is_user.aspx" target="_self">Užívateľ</a> </li> 
+        <li><a href="is_user_vyk.aspx" target="_self">Užívateľský výkaz</a> </li> 
     </ul> 
                     
     <div class="box info half-padded"><h3><asp:label ID="Label5" runat="server" Text="<%$ Resources:Resource,lmenu_dfnsp %>"></asp:label></h3></div>

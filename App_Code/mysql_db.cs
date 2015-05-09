@@ -48,7 +48,8 @@ catch(Excption ex)*/
 /// </summary>
 public class mysql_db
 {
-    public log x2log = new log();  
+    public log x2log = new log();
+    x2_var x2 = new x2_var();
     public OdbcConnection my_con = new OdbcConnection();
     //public log x2log = new log();  
 
@@ -72,7 +73,7 @@ public class mysql_db
     }
 
 
-    private string parseQuery(string query)
+    public string parseQuery(string query)
     {
         query = query.Replace('[', '`');
         query = query.Replace(']', '`');
@@ -560,6 +561,10 @@ public class mysql_db
                 {
                     _tmp[j] = "NULL";
                 }
+                else if (_row.Value.ToString().Trim().Length == 0)
+                {
+                    _tmp[j] = "NULL";
+                }
                 else
                 {
                     _tmp[j] = "'" + _row.Value.ToString() + "'";
@@ -613,7 +618,12 @@ public class mysql_db
        return result;
     }
 
-
+    /// <summary>
+    /// Vlozi novy riadok no db a vrati posledne ID
+    /// </summary>
+    /// <param name="table">string table name</param>
+    /// <param name="data">SortedList data to insert</param>
+    /// <returns>SortedList kyes: status (true/false), msg(error),last_id(on succes),sql(sql in error)</returns>
 
     public SortedList mysql_insert(string table, SortedList data)
     {
@@ -639,6 +649,10 @@ public class mysql_db
             
             columns[i] = "`"+row.Key.ToString()+"`";
             if (row.Value == null)
+            {
+                values[i] = "NULL";
+            }
+            else if (row.Value.ToString().Trim().Length == 0)
             {
                 values[i] = "NULL";
             }
@@ -846,7 +860,13 @@ public class mysql_db
 
         return result;
     }
-
+    /// <summary>
+    /// returns row of SQL request
+    /// </summary>
+    /// <param name="query"></param>
+    /// <returns>
+    /// SortedList if error the result[status],result[msg],result[sql]
+    /// </returns>
     public SortedList getRow(string query)
     {
         if (query.IndexOf("LIMIT 1") == -1)

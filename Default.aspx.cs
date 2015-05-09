@@ -212,7 +212,7 @@ public partial class _Default : System.Web.UI.Page
                         Session["newsToShow"] = news[0];
                     }
 
-                    if (data["name"].ToString() == "vtablet")
+                    if (data["name"].ToString().IndexOf("tablet")!=-1)
                     {
                         Response.Redirect("tabletview.aspx");
                     }
