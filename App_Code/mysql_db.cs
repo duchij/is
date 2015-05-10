@@ -742,10 +742,9 @@ public class mysql_db
     
     /// <summary>
     /// Vykona sql nonquery napr.DELETE alebo UPDATE 
+    /// Returns SortedList (status, msg, query)
     /// </summary>
-    /// <param name="query">formatovany SQL retazec</param>
-    /// <returns>SortedList, status, msg, query</returns>
-
+    /// <param name="query">formatovany SQL retazec typu string</param>
     public SortedList execute(string query)
     {
         query = this.parseQuery(query);

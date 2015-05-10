@@ -59,10 +59,10 @@
                   </div>
                 <br />  
                 <hr />
-      <asp:Table ID="depsRdg_tbl" runat="server" EnableViewState="false"></asp:Table>
+                <asp:PlaceHolder ID="rdgDg_pl" runat="server"></asp:PlaceHolder>
                 <hr />
 
-               <div class="green box"> <h2><asp:Label ID="kojenci_title" runat="server" Text="Kojenci" ></asp:Label></h2></div>
+               <%--<div class="green box"> <h2><asp:Label ID="kojenci_title" runat="server" Text="Kojenci" ></asp:Label></h2></div>
                
                <asp:Table ID="kojenci_tbl" runat="server" BackColor="#FFAD10" Width="100%">
                </asp:Table>
@@ -148,7 +148,7 @@
                </tr>
                </table>
             
-        
+        --%>
         </div>
     <asp:Label ID="Label1" runat="server" Text=""></asp:Label>
     </div>
