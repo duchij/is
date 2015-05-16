@@ -38,16 +38,22 @@
                 <asp:Button ID="pacient_add_btn" runat="server" Text="Pridaj" OnClick="add_patient_click_fnc" CssClass="button green" />
             </div>
         </div>
+    
         <div class="row">
             <div class="one half-padded">
-                <h2>Služba</h2><hr />
+            <asp:PlaceHolder ID="osirixData_plh" runat="server">
+
+            </asp:PlaceHolder>
+
+
+<%--                <h2>Služba</h2><hr />
                 <asp:PlaceHolder ID="sluzba_pl" runat="server"></asp:PlaceHolder>
                 <h2>Kojenci</h2><hr />
                 <asp:PlaceHolder ID="kojenci_pl" runat="server"></asp:PlaceHolder>
                 <h2>Dievčatá</h2><hr />
                 <asp:PlaceHolder ID="dievcata_pl" runat="server"></asp:PlaceHolder>
                 <h2>Chlapci</h2><hr />
-                <asp:PlaceHolder ID="chlapci_pl" runat="server"></asp:PlaceHolder>
+                <asp:PlaceHolder ID="chlapci_pl" runat="server"></asp:PlaceHolder>--%>
             </div>
         </div>
 </asp:Content>

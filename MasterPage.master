@@ -76,9 +76,9 @@
         fontsize_formats: "8pt 10pt 12pt 14pt 18pt 24pt 36pt",
         font_formats: "Arial=arial,helvetica,sans-serif;Courier New=courier new,courier,monospace;Verdana=verdana",
         menubar:true,
-        plugins : 'paste textcolor code print',
+        plugins : 'paste textcolor code print autolink',
         //paste_word_valid_elements: "b,strong,i,em,h1,h2",
-        paste_retain_style_properties: "margin, padding, width, height, font-size, font-weight, font-family, color, text-align, ul, ol, li, text-decoration, border, background, float, display",
+        paste_retain_style_properties: "margin, padding, width, height, font-size, font-weight, font-family, color, text-align, ul, ol, li, text-decoration, border, background, float, display, link",
         paste_as_text: false,
         force_p_newlines: false,
        // forced_root_block : 'div',
@@ -86,7 +86,11 @@
         forced_root_block : '',
         autosave_retention: "30m",
         language: 'sk',
-        height:"400px"
+       // convert_urls: false,
+       // allow_script_urls: true,
+        height: "400px"
+
+            
 
      });
  </script>

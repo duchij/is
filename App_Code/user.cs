@@ -15,8 +15,10 @@ using System.Text;
 /// <summary>
 /// Summary description for user
 /// </summary>
-public class user: my_db
+public class user: mysql_db
 {
+
+    x2_var x2 = new x2_var();
 	public user()
 	{
 		//
@@ -24,6 +26,45 @@ public class user: my_db
 		//
 	}
 
+    public SortedList getUserInfoByID(string id)
+    {
+        SortedList result = new SortedList();
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("SELECT * FROM [is_users] WHERE [id]='{0}'", id);
+        //string query = "SELECT * FROM [is_users] WHERE [id]=" + id;
+        my_con.Open();
+
+        OdbcCommand my_com = new OdbcCommand(this.parseQuery(sb.ToString()), my_con);
+
+        OdbcDataReader reader = my_com.ExecuteReader();
+
+        if (reader.HasRows)
+        {
+            while (reader.Read())
+            {
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                    if (reader.GetValue(i) == DBNull.Value)
+                    {
+                        result.Add(reader.GetName(i).ToString(), "");
+                    }
+                    else
+                    {
+                        result.Add(reader.GetName(i).ToString(), reader.GetValue(i).ToString());
+                    }
+                }
+            }
+
+        }
+        else
+        {
+            result.Add("result", "none");
+        }
+        my_con.Close();
+
+
+        return result;
+    }
    
 
     public DataSet getAllUsersList(int clinic)
@@ -62,6 +103,26 @@ public class user: my_db
         my_con.Close();
 
         return ds;
+    }
+
+    public int checkIfLoginExists(string login)
+    {
+        string query = x2.sprintf("SELECT COUNT(*) AS [logins] FROM [is_users] WHERE [name] LIKE '{0}%'",new string[]{login});
+
+        SortedList row = this.getRow(query);
+        int result = 0;
+
+        if (row["status"] == null)
+        {
+            result = Convert.ToInt32(row["logins"]);
+        }
+        else
+        {
+            result = -1;
+            this.x2log.logData(row, row["msg"].ToString(), "error get row in checking login counts");
+        }
+
+        return result;
     }
 
 

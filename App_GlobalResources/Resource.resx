@@ -447,4 +447,10 @@
   <data name="sys_update" xml:space="preserve">
     <value>Informácie boli úspešne update-nuté</value>
   </data>
+  <data name="osirix_url" xml:space="preserve">
+    <value>http://10.10.2.49:3333/studyList?search=</value>
+  </data>
+  <data name="no_sfihts_generated" xml:space="preserve">
+    <value>Neexistujú vygenerované služby pre tento mesiac!!!! Nedajú sa písať hlásenia!!! Kontaktujte osobu zodpovednú za služby......</value>
+  </data>
 </root>

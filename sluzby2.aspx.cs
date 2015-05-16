@@ -275,6 +275,10 @@ public partial class sluzby2 : System.Web.UI.Page
         sb.AppendFormat("SELECT [state] FROM [is_sluzby_dk] WHERE [date_group]='{0}' AND [clinic]='{1}' GROUP BY [state]", dateGroup, Session["klinika_id"]);
 
         SortedList row = x2Mysql.getRow(sb.ToString());
+        if (row.Count == 0)
+        {
+            row["state"] = "setup";
+        }
 
         return row["state"].ToString();
 
@@ -1675,12 +1679,12 @@ public partial class sluzby2 : System.Web.UI.Page
         {
             if (table.Count == 0)
             {
-                if (this.rights != "admin" || this.rights != "poweruser" || this.rights!="sadmin")
+                if (this.rights.IndexOf("admin") == -1 || this.rights != "poweruser")
                 {
                     this.msg_lbl.Text = Resources.Resource.shifts_not_done;
                    // this.publish_cb.Visible = false;
                 }
-                if ((this.rights == "admin" || this.rights == "poweruser" || this.rights=="sadmin") && this.wgroup=="doctor")
+                if ((this.rights.IndexOf("admin") !=-1 || this.rights == "poweruser") && this.wgroup=="doctor")
                 {
                     int daysTmp = x2Mysql.fillDocShifts(Convert.ToInt32(dateGroup), Convert.ToInt32(daysMonth), Convert.ToInt32(mesiac), Convert.ToInt32(rok));
                     this.shiftTable.Controls.Clear();

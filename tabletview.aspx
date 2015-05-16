@@ -4,7 +4,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
-   
+   <asp:Label ID="msg_lbl" runat="server" Text=""></asp:Label>
 <div class="row">
 <div class="two thirds">
 <asp:TextBox ID="osirix_search_txt" runat="server"></asp:TextBox>
@@ -36,7 +36,7 @@
             </asp:Calendar>
            <hr />
             <asp:PlaceHolder ID="hlasenie" runat="server">
-            
+                <asp:Table ID="osirixShift_tbl" runat="server"></asp:Table>
             </asp:PlaceHolder>
 </div>
   <div class="one half one-up-ipad padded">
@@ -59,10 +59,10 @@
                   </div>
                 <br />  
                 <hr />
-      <asp:Table ID="depsRdg_tbl" runat="server"></asp:Table>
+                <asp:PlaceHolder ID="rdgDg_pl" runat="server"></asp:PlaceHolder>
                 <hr />
 
-               <div class="green box"> <h2><asp:Label ID="kojenci_title" runat="server" Text="Kojenci" ></asp:Label></h2></div>
+               <%--<div class="green box"> <h2><asp:Label ID="kojenci_title" runat="server" Text="Kojenci" ></asp:Label></h2></div>
                
                <asp:Table ID="kojenci_tbl" runat="server" BackColor="#FFAD10" Width="100%">
                </asp:Table>
@@ -148,7 +148,7 @@
                </tr>
                </table>
             
-        
+        --%>
         </div>
     <asp:Label ID="Label1" runat="server" Text=""></asp:Label>
     </div>
