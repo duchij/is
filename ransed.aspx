@@ -23,7 +23,7 @@
                      </asp:Calendar>
             </div>
             <div class="one half  half-padded">
-
+                <h2 class="blue">Pridaj pacienta na rannu diagnostiku...</h2>
                 Priezvisko: <asp:TextBox ID="name_txt" runat="server"></asp:TextBox> 
                 Poznámka:<asp:TextBox ID="note_txt" runat="server"></asp:TextBox>
                 Oddelenie

@@ -344,7 +344,7 @@ public partial class is_user : System.Web.UI.Page
                 }
                 else
                 {
-                    data.Add("oddelenie", null);
+                    data.Add("oddelenie", "NULL");
                 }
 
                 if (this.clinics_dl.SelectedValue.ToString().Length > 0)
@@ -353,7 +353,7 @@ public partial class is_user : System.Web.UI.Page
                 }
                 else
                 {
-                    data.Add("klinika", null);
+                    data.Add("klinika", "NULL");
                 }
 
                 data.Add("active", this.active_dl.SelectedValue);   
@@ -427,7 +427,18 @@ public partial class is_user : System.Web.UI.Page
 
     protected void createNamesFnc(object sender, EventArgs e)
     {
-        if (this.rights.IndexOf("admin")!=-1)
+        int userId = 0;
+        try
+        {
+            userId = Convert.ToInt32(this.selectedUser_hf.Value.ToString());
+        }
+        catch (Exception ex)
+        {
+            x2log.logData(sender, ex.ToString(), "int32 conversion error");
+        }
+
+
+        if (this.rights.IndexOf("admin")!=-1 && userId == 0)
         {
             string fullName = this.name_txt.Text.ToString();
             string fullNameAsci = x2_var.UTFtoASCII(fullName);

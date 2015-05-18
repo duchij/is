@@ -295,7 +295,10 @@ public partial class sluzby2 : System.Web.UI.Page
         sb.AppendFormat("SELECT [state] FROM [is_sluzby_2] WHERE [date_group]='{0}' GROUP BY [state]", dateGroup);
 
         SortedList row = x2Mysql.getRow(sb.ToString());
-
+        if (row.Count == 0)
+        {
+            row["state"] = "draft";
+        }
         return row["state"].ToString();
 
     }
