@@ -341,7 +341,11 @@ public class medea
         }
         catch (Exception ex)
         {
-            x2log.logData(this.parseQuery(query.ToString()), ex.ToString(), "error omegadb wrong sql in getTable()");
+
+           // x2log.logData(this.parseQuery(query.ToString()), ex.ToString(), "error omegadb wrong sql in getTable()");
+
+            x2log.logData(this.parseQuery(query.ToString()), ex.ToString(), "error medea wrong sql in getTable()");
+
         }
         my_con.Close();
         return result;

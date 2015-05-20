@@ -56,7 +56,16 @@ public partial class hlasenia_print : System.Web.UI.Page
             }
             this.odd_lbl.Text = odd + ", " + lok;
             //type_lbl.Text = data["type"].ToString();
-            this.hlas_lbl.Text = data["hlasko"].ToString();
+
+            if (data["encoded"].ToString() == "no")
+            {
+                this.hlas_lbl.Text = data["hlasko"].ToString();
+            }
+            else
+            {
+                this.hlas_lbl.Text = my_x2.DecryptString(data["hlasko"].ToString(), Session["passphrase"].ToString());
+            }
+            
             
         }
            
