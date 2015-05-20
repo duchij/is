@@ -859,6 +859,10 @@ public class mysql_db
 
         return result;
     }
+
+
+
+
     /// <summary>
     /// returns row of SQL request
     /// </summary>
