@@ -125,7 +125,15 @@ public partial class sestrhlas : System.Web.UI.Page
 
             SortedList my_last_user = new SortedList();
 
-            hlasenie.Text = data["hlasko"].ToString();
+            if (data["encoded"].ToString() == "no")
+            {
+                hlasenie.Text = data["hlasko"].ToString();
+            }
+            else
+            {
+                hlasenie.Text = x2.DecryptString(data["hlasko"].ToString(), Session["passphrase"].ToString()); 
+            }
+           
             my_last_user = x_db.getUserInfoByID(data["last_user"].ToString());
             last_user.Text = my_last_user["full_name"].ToString();
             Session.Add("akt_hlasenie", data["id"].ToString());
@@ -201,7 +209,16 @@ public partial class sestrhlas : System.Web.UI.Page
             data = x_db.getSestrHlasko(Calendar1.SelectedDate, deps_dl.SelectedValue.ToString(), predZad_cb.SelectedValue.ToString(), hlasenie.Text.ToString(), Session["user_id"].ToString(), "d");
         }
 
-        hlasenie.Text += Resources.Resource.odd_prev_hlasko + data["hlasko"].ToString();
+        if (data["encoded"].ToString() == "no")
+        {
+            hlasenie.Text += Resources.Resource.odd_prev_hlasko + data["hlasko"].ToString();
+        }
+        else
+        {
+            hlasenie.Text += Resources.Resource.odd_prev_hlasko + x2.DecryptString(data["hlasko"].ToString(), Session["passphrase"].ToString());
+        }
+
+        
 
         if (data.ContainsKey("error"))
         {
@@ -217,13 +234,14 @@ public partial class sestrhlas : System.Web.UI.Page
     protected void saveData(bool uzavri)
     {
         SortedList data = new SortedList();
-        data.Add("hlasko", hlasenie.Text.ToString());
+        data.Add("hlasko", x2.EncryptString(hlasenie.Text.ToString(),Session["passphrase"].ToString()));
         data.Add("last_user", Session["user_id"].ToString());
         data.Add("dat_hlas", x2.unixDate(this.Calendar1.SelectedDate));
         data.Add("oddelenie", this.deps_dl.SelectedValue.ToString());
         data.Add("lokalita", this.predZad_cb.SelectedValue.ToString());
         data.Add("cas", this.time_cb.SelectedValue.ToString());
         data.Add("creat_user", 0);
+        data.Add("encoded","yes");
 
         if (uzavri == true)
         {

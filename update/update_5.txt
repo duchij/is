@@ -1,0 +1,7 @@
+﻿ALTER TABLE `is_hlasko_sestry`
+ADD `state` enum('yes','no') COLLATE 'ascii_general_ci' NOT NULL DEFAULT 'no' AFTER `uzavri`,
+COMMENT='';
+--nextquery--
+ALTER TABLE `is_hlasko_sestry`
+CHANGE `state` `encoded` enum('yes','no') COLLATE 'ascii_general_ci' NOT NULL DEFAULT 'no' AFTER `uzavri`,
+COMMENT='';
