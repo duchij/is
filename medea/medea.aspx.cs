@@ -36,27 +36,40 @@ public partial class helpers_medea : System.Web.UI.Page
     protected void loadDataRDG()
     {
 
-        SortedList lastSyncRow = syncdb.getRow("SELECT MAX(id) AS [last_id],[last_date],[last_time],[succes] FROM [rdg_view_log]");
+        Dictionary<int,Hashtable> lastSyncRow = syncdb.getTable("SELECT * FROM [rdg_view_log] ORDER BY [id] DESC LIMIT 2");
 
         DateTime dt = new DateTime();
+        TimeSpan dt1 = new TimeSpan();
         DateTime date = new DateTime();
-
-       if (lastSyncRow["last_id"].ToString() != "NULL")
+        
+       if (lastSyncRow.Count > 0 )
        {
-           if (lastSyncRow["succes"].ToString() == "yes")
+           if (lastSyncRow[0]["succes"].ToString() == "yes")
             {
                 dt = DateTime.Now.AddMinutes(-1);
+                dt1 = TimeSpan.Parse(lastSyncRow[0]["last_time"].ToString());
                 date = DateTime.Today;
             }
             else
             {
-                dt = Convert.ToDateTime(lastSyncRow["last_time"]);
-                date = Convert.ToDateTime(x2.UnixToMsDateTime(lastSyncRow["last_date"].ToString()));
+
+                dt = DateTime.Now.AddMinutes(-1);
+                if (lastSyncRow[1]["last_time"]!= null)
+                {
+                    dt1 = TimeSpan.Parse(lastSyncRow[1]["last_time"].ToString());
+                    date = Convert.ToDateTime(x2.UnixToMsDateTime(lastSyncRow[1]["last_date"].ToString()));
+                }
+                else
+                {
+                    dt1 = TimeSpan.Parse(lastSyncRow[0]["last_time"].ToString());
+                    date = Convert.ToDateTime(x2.UnixToMsDateTime(lastSyncRow[0]["last_date"].ToString()));
+                }
             } 
        }
        else
        {
-           dt = new DateTime(date.Year, date.Month, date.Day, 0, 0, 1);
+           dt1 = TimeSpan.Parse("00:00:01");
+           dt = DateTime.Now.AddMinutes(-1);
            date = DateTime.Today;
        }
 
@@ -65,18 +78,20 @@ public partial class helpers_medea : System.Web.UI.Page
 
         //DateTime dt = DateTime.Now.AddMinutes(-1);
         string time = String.Format("{0:HH}",dt) + String.Format("{0:mm}",dt); //+dt.Second.ToString();
+        string[] timeArr = dt1.ToString().Split(':');
+        string time1 = timeArr[0] + timeArr[1];
         string uDate = x2.unixDate(date); 
         //string queryIn = "SELECT * FROM ADMINSQL.klinlog_view ";
         //queryIn += "WHERE datum = '2015-05-20' and cas > {0}00 ";
         //queryIn += "AND scpac <> 0";
         string queryIn = "SELECT * FROM ADMINSQL.rdg_view ";
-        queryIn += "WHERE datum = '{0}' AND cas >= {1} ";
+        queryIn += "WHERE datum = '{0}' AND cas >= {1} AND cas < {2} ";
         queryIn += "ORDER BY cas ASC";
         //string queryIn = "SELECT * FROM ADMINSQL.uzivatel_view ";
       //  queryIn += "WHERE datum = '2015-05-20' and cas > {0}00 ";
        // queryIn += "AND scpac <> 0";
         
-        string query = x2.sprintf(queryIn, new string[] { uDate, time });
+        string query = x2.sprintf(queryIn, new string[] { uDate, time1,time });
 
        //this.msg_lbl.Text = query;
 

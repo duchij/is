@@ -120,6 +120,71 @@ public class syncdb
 
     }
 
+    public Dictionary<int, Hashtable> getTable(string query)
+    {
+
+        Dictionary<int, Hashtable> result = new Dictionary<int, Hashtable>();
+
+        my_con.Open();
+
+        try
+        {
+
+            OdbcCommand my_com = new OdbcCommand(this.parseQuery(query.ToString()), my_con);
+            x2log.logData(this.parseQuery(query.ToString()), "", "syncdb mysql getTable");
+            OdbcDataReader reader = my_com.ExecuteReader();
+            int row = 0;
+
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    Hashtable tmp = new Hashtable();
+                    for (int i = 0; i < reader.FieldCount; i++)
+                    {
+
+
+                        //string inData = reader.GetValue(i).ToString();
+                        // byte[] buffer = Encoding.UTF8.GetBytes(inData);
+                        //string outData = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
+                        if (reader.GetValue(i) == DBNull.Value)
+                        {
+                            tmp.Add(reader.GetName(i).ToString(), "NULL");
+                        }
+                        else
+                        {
+                            string tf = reader.GetFieldType(i).ToString();
+
+                            if (tf == "System.Byte[]")
+                            {
+                                byte[] dl = (byte[])reader.GetValue(i);
+                                string rr = System.Text.Encoding.UTF8.GetString(dl);
+
+                                // tmp.Add(reader.GetName(i).ToString(), reader.GetString(i).ToString());
+                                tmp.Add(reader.GetName(i).ToString(), rr);
+                            }
+                            else
+                            {
+                                tmp.Add(reader.GetName(i).ToString(), reader.GetValue(i));
+                            }
+                        }
+                    }
+                    result.Add(row, tmp);
+                    row++;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            x2log.logData(this.parseQuery(query.ToString()), ex.ToString(), "syncdb error wrong sql in getTable()");
+        }
+        my_con.Close();
+
+
+        return result;
+
+    }
+
 
     /// <summary>
     /// Vlozi novy riadok no db a vrati posledne ID
