@@ -21,7 +21,7 @@ public class medea
     public log x2log = new log();
     public OdbcConnection my_con = new OdbcConnection();
 
-    public OdbcConnection sync = new OdbcConnection();
+   
 
 	public medea()
 	{
@@ -34,8 +34,7 @@ public class medea
         connString = myConfig.ConnectionStrings.ConnectionStrings["medea"];
         my_con.ConnectionString = connString.ToString();
 
-        ConnectionStringSettings connString_sync = myConfig.ConnectionStrings.ConnectionStrings["medea_sync"];
-        sync.ConnectionString = connString_sync.ToString();
+        
 	}
 
 
@@ -125,158 +124,9 @@ public class medea
         return result;
     }
 
-    public SortedList mysql_insert(string table, SortedList data)
-    {
-        SortedList result = new SortedList();
-        OdbcTransaction trans1 = null;
-        sync.Open();
-        trans1 = sync.BeginTransaction();
+    
 
-        OdbcCommand cmdtrans = new OdbcCommand();
-        cmdtrans.Connection = sync;
-        cmdtrans.Transaction = trans1;
-
-        StringBuilder sb = new StringBuilder();
-
-        string[] columns = new string[data.Count];
-        string[] values = new string[data.Count];
-        string[] col_val = new string[data.Count];
-
-
-        int i = 0;
-        foreach (DictionaryEntry row in data)
-        {
-
-            columns[i] = "`" + row.Key.ToString() + "`";
-            if (row.Value == null)
-            {
-                values[i] = "NULL";
-            }
-            else
-            {
-                values[i] = "'" + row.Value.ToString() + "'";
-            }
-            col_val[i] = "`" + row.Key + "` =  values(`" + row.Key + "`)";
-            i++;
-        }
-
-        string t_cols = string.Join(",", columns);
-        string t_values = string.Join(",", values);
-        string col_val_str = string.Join(",", col_val);
-
-        sb.AppendFormat("INSERT INTO `{0}` ({1}) VALUES ({2}) ON DUPLICATE KEY UPDATE {3};", table, t_cols, t_values, col_val_str);
-
-        string query = sb.ToString();
-
-        int id = 0;
-        try
-        {
-            x2log.logData(query, "", "mysql omegadb insert");
-            cmdtrans.CommandText = query;
-            cmdtrans.ExecuteNonQuery();
-            cmdtrans.CommandText = "SELECT last_insert_id();";
-            id = Convert.ToInt32(cmdtrans.ExecuteScalar());
-            trans1.Commit();
-            result.Add("status", true);
-            result.Add("last_id", id);
-        }
-        catch (Exception e)
-        {
-            x2log.logData(query, e.ToString(), "error omegadb wrong sql in mysql_insert()");
-            result.Add("status", false);
-            result.Add("msg", e.ToString());
-            result.Add("last_id", 0);
-            result.Add("sql", query);
-            trans1.Rollback();
-
-        }
-        sync.Close();
-        return result;
-
-    }
-
-    public SortedList mysql_insert_arr(string table, Dictionary<int, Hashtable> data)
-    {
-        SortedList result = new SortedList();
-
-        int dataCnt = data.Count;
-
-        string[] arr = new string[dataCnt];
-        string[] columns = new string[data[0].Count];
-        string[] col_vals = new string[data[0].Count];
-
-        for (int i = 0; i < dataCnt; i++)
-        {
-            string[] _tmp = new string[data[i].Count];
-            int j = 0;
-            foreach (DictionaryEntry _row in data[i])
-            {
-                if (i == 0)
-                {
-                    columns[j] = "`" + _row.Key.ToString() + "`";
-                    col_vals[j] = "`" + _row.Key.ToString() + "` =  values(`" + _row.Key.ToString() + "`)";
-                }
-
-                if (_row.Value == null)
-                {
-                    _tmp[j] = "NULL";
-                }
-                else if (_row.Value.ToString().Trim().Length == 0)
-                {
-                    _tmp[j] = "NULL";
-                }
-                else
-                {
-                    _tmp[j] = "'" + _row.Value.ToString() + "'";
-                }
-                j++;
-            }
-            arr[i] = "(" + string.Join(",", _tmp) + ")";
-        }
-
-        string t_cols = string.Join(",", columns);
-        string t_cols_vals = string.Join(",", arr);
-        string t_vals = string.Join(",", col_vals);
-
-        StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("INSERT INTO `{0}` ({1}) VALUES {2} ON DUPLICATE KEY UPDATE {3};", table, t_cols, t_cols_vals, t_vals);
-        string query = sb.ToString();
-
-        OdbcTransaction trans1 = null;
-        sync.Open();
-        trans1 = sync.BeginTransaction();
-
-        OdbcCommand cmdtrans = new OdbcCommand();
-        cmdtrans.Connection = sync;
-        cmdtrans.Transaction = trans1;
-
-        try
-        {
-            x2log.logData(query, "", "mysql insert");
-            cmdtrans.CommandText = query;
-            cmdtrans.ExecuteNonQuery();
-            cmdtrans.CommandText = "SELECT last_insert_id();";
-            int id = Convert.ToInt32(cmdtrans.ExecuteScalar());
-            trans1.Commit();
-            result.Add("status", true);
-            result.Add("last_id", id);
-        }
-        catch (Exception e)
-        {
-            x2log.logData(query, e.ToString(), "error wrong sql in mysql_insert_arr()");
-            result.Add("status", false);
-            result.Add("msg", e.ToString());
-            //result.Add("last_id", 0);
-            result.Add("sql", query);
-            trans1.Rollback();
-
-        }
-        sync.Close();
-
-
-
-        return result;
-    }
+   
 
     public SortedList execute(string query)
     {
@@ -373,65 +223,6 @@ public class medea
         return result;
     }
 
-    public SortedList getRowSync(string query)
-    {
-        if (query.IndexOf("LIMIT 1") == -1)
-        {
-            query += " LIMIT 1";
-        }
-        SortedList result = new SortedList();
-        sync.Open();
-
-
-        try
-        {
-            OdbcCommand my_com = new OdbcCommand(this.parseQuery(query.ToString()), sync);
-            //x2log.logData(this.parseQuery(query.ToString()),"","mysql getrow");
-            OdbcDataReader reader = my_com.ExecuteReader();
-            // result.Add("status", true);
-
-            if (reader.HasRows)
-            {
-                while (reader.Read())
-                {
-                    for (int i = 0; i < reader.FieldCount; i++)
-                    {
-                        if (reader.GetValue(i) == DBNull.Value)
-                        {
-                            result.Add(reader.GetName(i).ToString(), "NULL");
-                        }
-                        else
-                        {
-                            string tf = reader.GetFieldType(i).ToString();
-                            if (tf == "System.Byte[]")
-                            {
-                                byte[] dl = (byte[])reader.GetValue(i);
-                                string rr = System.Text.Encoding.UTF8.GetString(dl);
-                                result.Add(reader.GetName(i).ToString(), rr);
-                            }
-                            else
-                            {
-                                result.Add(reader.GetName(i).ToString(), reader.GetValue(i));
-                            }
-                        }
-                    }
-
-                }
-            }
-
-        }
-        catch (Exception e)
-        {
-            x2log.logData(this.parseQuery(query.ToString()), e.ToString(), "error sync wrong sql in getRow()");
-            result.Add("status", false);
-            result.Add("msg", e.ToString());
-            result.Add("sql", this.parseQuery(query.ToString()));
-        }
-        sync.Close();
-
-
-        return result;
-    }
 
 
     public Dictionary<int, Hashtable> getTable(string query)

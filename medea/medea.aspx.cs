@@ -9,6 +9,7 @@ public partial class helpers_medea : System.Web.UI.Page
 {
     x2_var x2 = new x2_var();
     medea mdb = new medea();
+    syncdb syncdb = new syncdb();
     log x2log = new log();
 
     protected void Page_Load(object sender, EventArgs e)
@@ -16,26 +17,26 @@ public partial class helpers_medea : System.Web.UI.Page
         this.loadDataRDG();
     }
 
-    protected void runSqlFnc(object sender, EventArgs e)
-    {
-        string rowStr = this.rows_txt.Text.ToString();
-        int rows = 0;
-        try
-        {
-            rows = Convert.ToInt32(rowStr);
-        }
-        catch(Exception ex)
-        {
-            this.msg_lbl.Text = ex.ToString();
-            rows = 10;
-        }
-        //this.loadDataRDG();
-    }
+    //protected void runSqlFnc(object sender, EventArgs e)
+    //{
+    //    string rowStr = this.rows_txt.Text.ToString();
+    //    int rows = 0;
+    //    try
+    //    {
+    //        rows = Convert.ToInt32(rowStr);
+    //    }
+    //    catch(Exception ex)
+    //    {
+    //        this.msg_lbl.Text = ex.ToString();
+    //        rows = 10;
+    //    }
+    //    //this.loadDataRDG();
+    //}
 
     protected void loadDataRDG()
     {
 
-        SortedList lastSyncRow = mdb.getRowSync("SELECT MAX(id) AS [last_id],[last_date],[last_time],[succes] FROM [rdg_view_log]");
+        SortedList lastSyncRow = syncdb.getRow("SELECT MAX(id) AS [last_id],[last_date],[last_time],[succes] FROM [rdg_view_log]");
 
         DateTime dt = new DateTime();
         DateTime date = new DateTime();
@@ -55,7 +56,7 @@ public partial class helpers_medea : System.Web.UI.Page
        }
        else
        {
-           dt = DateTime.Now.AddMinutes(-240);
+           dt = new DateTime(date.Year, date.Month, date.Day, 0, 0, 1);
            date = DateTime.Today;
        }
 
@@ -77,7 +78,7 @@ public partial class helpers_medea : System.Web.UI.Page
         
         string query = x2.sprintf(queryIn, new string[] { uDate, time });
 
-        this.msg_lbl.Text = query;
+       //this.msg_lbl.Text = query;
 
        // string query = "SELECT name, snapshot_isolation_state_desc, is_read_committed_snapshot_on FROM sys.databases";
 
@@ -93,30 +94,30 @@ public partial class helpers_medea : System.Web.UI.Page
 
         if (dataLn > 0)
         {
-            Table dataTbl = new Table();
-            dataTbl.Width = Unit.Percentage(100);
+           // Table dataTbl = new Table();
+           // dataTbl.Width = Unit.Percentage(100);
 
-            this.data_plh.Controls.Add(dataTbl);
+           // this.data_plh.Controls.Add(dataTbl);
 
-            TableHeaderRow headerRow = new TableHeaderRow();
-            headerRow.BackColor = System.Drawing.Color.Gray;
-            dataTbl.Controls.Add(headerRow);
+          //  TableHeaderRow headerRow = new TableHeaderRow();
+          //  headerRow.BackColor = System.Drawing.Color.Gray;
+          //  dataTbl.Controls.Add(headerRow);
 
-            int headerLn = data[0].Count;
+            //int headerLn = data[0].Count;
 
-            foreach (DictionaryEntry head in data[0])
-            {
-                TableHeaderCell datCell = new TableHeaderCell();
-                datCell.Text = head.Key.ToString();
-                headerRow.Controls.Add(datCell);
-            }
+            //foreach (DictionaryEntry head in data[0])
+            //{
+            //    TableHeaderCell datCell = new TableHeaderCell();
+            //    datCell.Text = head.Key.ToString();
+            //    headerRow.Controls.Add(datCell);
+            //}
             
             for (int i = 0; i < dataLn; i++)
             {
 
 
-                TableRow riadok = new TableRow();
-                dataTbl.Controls.Add(riadok);
+                //TableRow riadok = new TableRow();
+                //dataTbl.Controls.Add(riadok);
                 saveData[i] = new Hashtable();
                 foreach (DictionaryEntry row in data[i])
                 {
@@ -200,19 +201,19 @@ public partial class helpers_medea : System.Web.UI.Page
 
                     }
                         
-                    TableCell dataCell = new TableCell();
-                    dataCell.Text = row.Value.ToString();
-                    riadok.Controls.Add(dataCell);
+                    //TableCell dataCell = new TableCell();
+                    //dataCell.Text = row.Value.ToString();
+                    //riadok.Controls.Add(dataCell);
                 }
 
             }
 
-           SortedList res = mdb.mysql_insert_arr("rdg_view_sync",saveData);
+           SortedList res = syncdb.mysql_insert_arr("rdg_view_sync",saveData);
 
             if (Convert.ToBoolean(res["status"]))
             {
 
-                SortedList lastRow = mdb.getRowSync("SELECT MAX(id) AS [last_id] FROM [rdg_view_sync]");
+                SortedList lastRow = syncdb.getRow("SELECT MAX(id) AS [last_id] FROM [rdg_view_sync]");
 
                 SortedList logData = new SortedList();
                 logData.Add("rdg_view_id", lastRow["last_id"]);
@@ -220,7 +221,9 @@ public partial class helpers_medea : System.Web.UI.Page
                 logData.Add("last_time", saveData[dataLn-1]["cas"]);
                 logData.Add("succes", "yes");
 
-                SortedList res1 = mdb.mysql_insert("rdg_view_log", logData);
+                SortedList res1 = syncdb.mysql_insert("rdg_view_log", logData);
+
+                this.msg_lbl.Text = "OK";
             }
             else
             {
@@ -231,7 +234,9 @@ public partial class helpers_medea : System.Web.UI.Page
                 logData.Add("succes", "no");
                 logData.Add("log_msg", res["msg"].ToString());
 
-                SortedList res1 = mdb.mysql_insert("rdg_view_log", logData);
+                SortedList res1 = syncdb.mysql_insert("rdg_view_log", logData);
+
+                this.msg_lbl.Text = "Error";
             }
 
 

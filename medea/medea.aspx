@@ -10,7 +10,7 @@
     <form id="form1" runat="server">
     <div>
         <asp:Label runat="server" ID="msg_lbl"></asp:Label>
-        Zadaj pocet riadkov:<asp:TextBox ID="rows_txt" runat="server"></asp:TextBox><asp:Button ID="runSql_btn" runat="server" Text="Start" OnClick="runSqlFnc" />
+        <%--Zadaj pocet riadkov:<asp:TextBox ID="rows_txt" runat="server"></asp:TextBox><asp:Button ID="runSql_btn" runat="server" Text="Start" OnClick="runSqlFnc" />--%>
         <asp:PlaceHolder ID="data_plh" runat="server"></asp:PlaceHolder>
     </div>
     </form>
