@@ -36,62 +36,103 @@ public partial class helpers_medea : System.Web.UI.Page
     protected void loadDataRDG()
     {
 
-        Dictionary<int,Hashtable> lastSyncRow = syncdb.getTable("SELECT * FROM [rdg_view_log] ORDER BY [id] DESC LIMIT 2");
-
-        DateTime dt = new DateTime();
-        TimeSpan dt1 = new TimeSpan();
+        SortedList lastSyncRow = syncdb.getRow("SELECT MAX(id) AS [last_id],[last_time],[last_date] FROM [rdg_view_log]");
+       
+        TimeSpan  dtTimeFrom = new TimeSpan();
+        TimeSpan dtTimeTo = new TimeSpan();
+        //DateTime dateFrom = new DateTime();
         DateTime date = new DateTime();
-        
-       if (lastSyncRow.Count > 0 )
-       {
-           if (lastSyncRow[0]["succes"].ToString() == "yes")
-            {
-                dt = DateTime.Now.AddMinutes(-1);
-                dt1 = TimeSpan.Parse(lastSyncRow[0]["last_time"].ToString());
-                date = DateTime.Today;
-            }
-            else
-            {
 
-                dt = DateTime.Now.AddMinutes(-1);
-                if (lastSyncRow[1]["last_time"]!= null)
+        string queryIn = "SELECT * FROM ADMINSQL.rdg_view ";
+        string query = "";
+        
+       if (lastSyncRow["last_date"].ToString() != "NULL" )
+       {
+          
+                DateTime lastDate = Convert.ToDateTime(x2.UnixToMsDateTime(lastSyncRow["last_date"].ToString()));
+                date = DateTime.Today;
+
+                if (lastDate == date)
                 {
-                    dt1 = TimeSpan.Parse(lastSyncRow[1]["last_time"].ToString());
-                    date = Convert.ToDateTime(x2.UnixToMsDateTime(lastSyncRow[1]["last_date"].ToString()));
+                    string[] tmpArr = lastSyncRow["last_time"].ToString().Split(':');
+                    queryIn += "WHERE datum='{0}' AND cas >= {1} AND cas <= {2}";
+                    string timeFrom = tmpArr[0]+tmpArr[1];
+                    DateTime timeTo = DateTime.Now;
+                    string timeToStr = String.Format("{0:HH}",timeTo)+String.Format("{0:mm}",timeTo);
+
+                    query = x2.sprintf(queryIn, new string[] { x2.unixDate(date), timeFrom, timeToStr });
+                    this.saveRdgData(query);
+
                 }
                 else
                 {
-                    dt1 = TimeSpan.Parse(lastSyncRow[0]["last_time"].ToString());
-                    date = Convert.ToDateTime(x2.UnixToMsDateTime(lastSyncRow[0]["last_date"].ToString()));
+                    queryIn += "WHERE datum='{0}' AND cas <= {1}";
+                    query = x2.sprintf(queryIn, new string[] { x2.unixDate(lastDate),"2359"});
+                   // Boolean res = 
+                        this.saveRdgData(query);
+
+                    //if (res)
+                    //{
+                        string queryIn2 = "SELECT * FROM ADMINSQL.rdg_view ";
+                        queryIn2 += "WHERE datum='{0}' AND cas >= {1}";
+
+                        DateTime timeTo = DateTime.Now;
+                        string timeToStr = String.Format("{0:HH}", timeTo) + String.Format("{0:mm}", timeTo);
+
+                        query = x2.sprintf(queryIn2, new string[] { x2.unixDate(date), timeToStr });
+
+                        this.saveRdgData(query);
+                    //}
+                    //else
+                    //{
+                    //    SortedList logData = new SortedList();
+                    //    logData.Add("rdg_view_id", "NULL");
+                    //    logData.Add("last_date", saveData[dataLn - 1]["datum"]);
+                    //    logData.Add("last_time", saveData[dataLn - 1]["cas"]);
+                    //    logData.Add("succes", "no");
+                    //    logData.Add("log_msg", res["msg"].ToString());
+
+                    //    SortedList res1 = syncdb.mysql_insert("rdg_view_log", logData);
+
+                    //}
+                    
                 }
-            } 
+            
        }
        else
        {
-           dt1 = TimeSpan.Parse("00:00:01");
-           dt = DateTime.Now.AddMinutes(-1);
+           dtTimeFrom = TimeSpan.Parse("00:00:00");
+          // DateTime dtTemp = DateTime.Now;
+          // dtTimeTo = TimeSpan.Parse(String.Format("{0:HH}",dtTemp) + String.Format("{0:mm}",dtTemp));
            date = DateTime.Today;
+
+           queryIn += "WHERE datum='{0}' AND cas >= {1}";
+
+           query = x2.sprintf(queryIn, new string[] { x2.unixDate(date), "0001"});
+           this.saveRdgData(query);
        }
 
         
 
 
         //DateTime dt = DateTime.Now.AddMinutes(-1);
-        string time = String.Format("{0:HH}",dt) + String.Format("{0:mm}",dt); //+dt.Second.ToString();
-        string[] timeArr = dt1.ToString().Split(':');
-        string time1 = timeArr[0] + timeArr[1];
-        string uDate = x2.unixDate(date); 
+       
+        //string uDate = x2.unixDate(date);
+
         //string queryIn = "SELECT * FROM ADMINSQL.klinlog_view ";
         //queryIn += "WHERE datum = '2015-05-20' and cas > {0}00 ";
         //queryIn += "AND scpac <> 0";
-        string queryIn = "SELECT * FROM ADMINSQL.rdg_view ";
-        queryIn += "WHERE datum = '{0}' AND cas >= {1} AND cas < {2} ";
-        queryIn += "ORDER BY cas ASC";
+        
+
+        //queryIn += 
+        
+        //queryIn += "ORDER BY cas ASC";
         //string queryIn = "SELECT * FROM ADMINSQL.uzivatel_view ";
       //  queryIn += "WHERE datum = '2015-05-20' and cas > {0}00 ";
        // queryIn += "AND scpac <> 0";
+
         
-        string query = x2.sprintf(queryIn, new string[] { uDate, time1,time });
+        //string query = x2.sprintf(queryIn, new string[] { "2015-05-21", time1,uDateTo,time });
 
        //this.msg_lbl.Text = query;
 
@@ -101,6 +142,20 @@ public partial class helpers_medea : System.Web.UI.Page
         //x2log.logData(res, "", "sp_who mssql");
 
 
+        
+        
+
+        
+
+        
+
+
+    }
+
+    protected Boolean saveRdgData(string query)
+    {
+        Boolean result = false;
+
         Dictionary<int, Hashtable> data = mdb.getTable(query);
 
         Dictionary<int, Hashtable> saveData = new Dictionary<int, Hashtable>();
@@ -109,14 +164,14 @@ public partial class helpers_medea : System.Web.UI.Page
 
         if (dataLn > 0)
         {
-           // Table dataTbl = new Table();
-           // dataTbl.Width = Unit.Percentage(100);
+            // Table dataTbl = new Table();
+            // dataTbl.Width = Unit.Percentage(100);
 
-           // this.data_plh.Controls.Add(dataTbl);
+            // this.data_plh.Controls.Add(dataTbl);
 
-          //  TableHeaderRow headerRow = new TableHeaderRow();
-          //  headerRow.BackColor = System.Drawing.Color.Gray;
-          //  dataTbl.Controls.Add(headerRow);
+            //  TableHeaderRow headerRow = new TableHeaderRow();
+            //  headerRow.BackColor = System.Drawing.Color.Gray;
+            //  dataTbl.Controls.Add(headerRow);
 
             //int headerLn = data[0].Count;
 
@@ -126,7 +181,7 @@ public partial class helpers_medea : System.Web.UI.Page
             //    datCell.Text = head.Key.ToString();
             //    headerRow.Controls.Add(datCell);
             //}
-            
+
             for (int i = 0; i < dataLn; i++)
             {
 
@@ -136,26 +191,26 @@ public partial class helpers_medea : System.Web.UI.Page
                 saveData[i] = new Hashtable();
                 foreach (DictionaryEntry row in data[i])
                 {
-                    
 
-                   switch (row.Key.ToString())
+
+                    switch (row.Key.ToString())
                     {
                         case "cas":
-                            saveData[i]["cas"] = row.Value.ToString().Substring(0, 2) + ":" + row.Value.ToString().Substring(2, 2)+":00";
+                            saveData[i]["cas"] = row.Value.ToString().Substring(0, 2) + ":" + row.Value.ToString().Substring(2, 2) + ":00";
                             break;
                         case "datum":
                             saveData[i]["datum"] = x2.unixDate(Convert.ToDateTime(data[i]["datum"].ToString()));
                             break;
                         case "B":
-                            if (row.Value == null || row.Value.ToString().Trim().Length ==0) 
+                            if (row.Value == null || row.Value.ToString().Trim().Length == 0)
                             {
-                                saveData[i].Add("B","NULL");
+                                saveData[i].Add("B", "NULL");
                             }
                             else
                             {
-                                saveData[i]["B"]=row.Value;
+                                saveData[i]["B"] = row.Value;
                             }
-                                    
+
                             break;
                         case "P":
                             if (row.Value == null)
@@ -182,7 +237,7 @@ public partial class helpers_medea : System.Web.UI.Page
                         case "sczad":
                             saveData[i]["sczad"] = row.Value;
                             break;
-                        case"K":
+                        case "K":
                             if (row.Value == null || row.Value.ToString().Trim().Length == 0)
                             {
                                 saveData[i]["K"] = "NULL";
@@ -215,7 +270,7 @@ public partial class helpers_medea : System.Web.UI.Page
 
 
                     }
-                        
+
                     //TableCell dataCell = new TableCell();
                     //dataCell.Text = row.Value.ToString();
                     //riadok.Controls.Add(dataCell);
@@ -223,7 +278,7 @@ public partial class helpers_medea : System.Web.UI.Page
 
             }
 
-           SortedList res = syncdb.mysql_insert_arr("rdg_view_sync",saveData);
+            SortedList res = syncdb.mysql_insert_arr("rdg_view_sync", saveData);
 
             if (Convert.ToBoolean(res["status"]))
             {
@@ -232,20 +287,21 @@ public partial class helpers_medea : System.Web.UI.Page
 
                 SortedList logData = new SortedList();
                 logData.Add("rdg_view_id", lastRow["last_id"]);
-                logData.Add("last_date", saveData[dataLn-1]["datum"]);
-                logData.Add("last_time", saveData[dataLn-1]["cas"]);
+                logData.Add("last_date", saveData[dataLn - 1]["datum"]);
+                logData.Add("last_time", saveData[dataLn - 1]["cas"]);
                 logData.Add("succes", "yes");
 
                 SortedList res1 = syncdb.mysql_insert("rdg_view_log", logData);
 
                 this.msg_lbl.Text = "OK";
+                result = true;
             }
             else
             {
                 SortedList logData = new SortedList();
                 logData.Add("rdg_view_id", "NULL");
-                logData.Add("last_date", saveData[dataLn-1]["datum"]);
-                logData.Add("last_time", saveData[dataLn-1]["cas"]);
+                logData.Add("last_date", saveData[dataLn - 1]["datum"]);
+                logData.Add("last_time", saveData[dataLn - 1]["cas"]);
                 logData.Add("succes", "no");
                 logData.Add("log_msg", res["msg"].ToString());
 
@@ -258,19 +314,11 @@ public partial class helpers_medea : System.Web.UI.Page
         }
         else
         {
-            this.msg_lbl.Text = query+"<br>"+"<br> "+"Asi lock skus refreshnut stranku <br>";
+            this.msg_lbl.Text = query + "<br>" + "<br> " + "Asi lock skus refreshnut stranku <br>";
+            result = true;
         }
-        
 
-        
-
-        
-
-
-    }
-
-    protected void saveRdgData()
-    {
+        return result;
 
     }
 }
