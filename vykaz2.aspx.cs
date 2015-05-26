@@ -266,7 +266,7 @@ public partial class vykaz2 : System.Web.UI.Page
             int dnesJe = (int)my_date.DayOfWeek;
             string[] rowData = vykazRiadok[den].Split('~');
 
-            string dentmp = (den + 1).ToString() + "." + mesiac.ToString();
+            string dentmp = (den+1).ToString() + "." + mesiac.ToString();
 
             int res = Array.IndexOf(sviatky, dentmp);
 
@@ -298,60 +298,70 @@ public partial class vykaz2 : System.Web.UI.Page
 
     protected void makeRow(int den, int cols, string[] rowData, int rok, int mesiac, Boolean sviatok, Boolean shift, Boolean writeText)
     {
-        DateTime my_date = new DateTime(rok, mesiac, den + 1);
-
-        int dnesJe = (int)my_date.DayOfWeek;
-
-        TableRow riadok = new TableRow();
-        this.vykaz_tbl.Controls.Add(riadok);
-
-        TableCell dateCell = new TableCell();
-        dateCell.ID = "dateCell_" + den.ToString();
-
-        if (dnesJe == 6 || dnesJe == 0)
+        //den = den + 1;
+      
+        try
         {
-            dateCell.CssClass = "box red";
-        }
-        if (dnesJe != 6 && dnesJe != 0 && sviatok == true)
-        {
-            dateCell.CssClass = "box yellow";
-        }
+            DateTime my_date = new DateTime(rok, mesiac, den+1);
+            int dnesJe = (int)my_date.DayOfWeek;
 
+            TableRow riadok = new TableRow();
+            this.vykaz_tbl.Controls.Add(riadok);
 
-        dateCell.Text = (den + 1).ToString();
-
-        riadok.Controls.Add(dateCell);
-
-        for (int col = 0; col < cols; col++)
-        {
-            TableCell dataCell = new TableCell();
-            dataCell.ID = "dataCell_" + den.ToString() + "_" + col.ToString();
+            TableCell dateCell = new TableCell();
+            dateCell.ID = "dateCell_" + den.ToString();
 
             if (dnesJe == 6 || dnesJe == 0)
             {
-                dataCell.CssClass = "box red";
+                dateCell.CssClass = "box red";
+            }
+            if (dnesJe != 6 && dnesJe != 0 && sviatok == true)
+            {
+                dateCell.CssClass = "box yellow";
             }
 
-            if (dnesJe != 6 && dnesJe != 0 && sviatok)
+
+            dateCell.Text = (den + 1).ToString();
+
+            riadok.Controls.Add(dateCell);
+
+            for (int col = 0; col < cols; col++)
             {
-                dataCell.CssClass = "box yellow";
+                TableCell dataCell = new TableCell();
+                dataCell.ID = "dataCell_" + den.ToString() + "_" + col.ToString();
+
+                if (dnesJe == 6 || dnesJe == 0)
+                {
+                    dataCell.CssClass = "box red";
+                }
+
+                if (dnesJe != 6 && dnesJe != 0 && sviatok)
+                {
+                    dataCell.CssClass = "box yellow";
+                }
+
+                //  dataCell.CssClass = "box red";
+                TextBox tBox = new TextBox();
+                tBox.ID = "textBox_" + den.ToString() + "_" + col.ToString();
+                if (shift)
+                {
+                    tBox.Font.Bold = true;
+                    tBox.BackColor = System.Drawing.Color.LightGray;
+                }
+                else
+                {
+                    tBox.Font.Bold = false;
+                }
+                if (writeText) tBox.Text = rowData[col];
+                dataCell.Controls.Add(tBox);
+                riadok.Controls.Add(dataCell);
             }
-            
-          //  dataCell.CssClass = "box red";
-            TextBox tBox = new TextBox();
-            tBox.ID = "textBox_" + den.ToString() + "_" + col.ToString();
-            if (shift)
-            {
-                tBox.Font.Bold = true;
-                tBox.BackColor = System.Drawing.Color.LightGray;
-            }
-            else
-            {
-                tBox.Font.Bold = false;
-            }
-            if (writeText) tBox.Text = rowData[col];
-            dataCell.Controls.Add(tBox);
-            riadok.Controls.Add(dataCell);
+
+        }
+        catch (Exception ex)
+        {
+            //den = den - 1;
+           // my_date = my_date.AddDays(1);
         }
     }
 
