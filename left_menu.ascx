@@ -10,7 +10,7 @@
             <li><asp:Button ID="offline_btn" runat="server" Text="Set Web Offline" CssClass="button red" OnClick="setState" /></li>
         <li><asp:Button ID="online_btn" runat="server" Text="Set Web Online" CssClass="button green"  OnClick="setState"/></li>
 
-             <li><asp:HyperLink ID="newUserVykaz" runat="server" NavigateUrl="is_user_vyk.aspx">!!!! newUserVyk</asp:HyperLink></li>
+             <li><asp:HyperLink ID="newUserVykaz" runat="server" NavigateUrl="sluzby3.aspx">!!!! newShifts</asp:HyperLink></li>
 
         </ul>
   </asp:PlaceHolder>
@@ -56,7 +56,7 @@
      </ul>
      <br />
      <ul>
-        <li><a href="sluzby2.aspx" target="_self"><asp:Localize runat="server" ID="localize5" Text="<%$ Resources:Resource,odd_akt_sluz %>"></asp:Localize></a></li>
+        <li><a href="sluzby3.aspx" target="_self"><asp:Localize runat="server" ID="localize5" Text="<%$ Resources:Resource,odd_akt_sluz %>"></asp:Localize></a></li>
         <li><a href="staze.aspx" target="_self"><asp:Localize runat="server" ID="localize6" Text="<%$ Resources:Resource,odd_staze %>"></asp:Localize></a></li> 
         <li><a href="ransed.aspx" target="_self"><asp:Localize runat="server" ID="localize7" Text="<%$ Resources:Resource,ranne_sed %>"></asp:Localize></a></li>
      <li><a href="is_ohv.aspx" target="_self">OHV Kódy</a></li>
