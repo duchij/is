@@ -20,25 +20,7 @@ public partial class sluzby3: System.Web.UI.Page
     public string gKlinika;
 
     // protected System.Web.UI.HtmlControls.HtmlGenericControl hlavicka;
-    protected void Page_Init(object sender, EventArgs e)
-    {
-
-
-        //if (this.gKlinika == "kdch")
-        //{
-        //    this.kdch_pl.Visible = true;
-        //}
-
-        //if (this.gKlinika == "2dk")
-        //{
-        //    this.druhaDK_pl.Visible = true;
-        //}
-        //hlavicka.Controls.Add(new LiteralControl("<script type='text/javascript' src='tinymce/jscripts/tiny_mce/tiny_mce.js'></script>"));
-        // hlavicka.Controls.Add(new LiteralControl("<script type='text/javascript'>tinyMCE.init({mode : 'textareas',        force_br_newlines : true,        force_p_newlines : false});</script>"));
-    }
-
-
-    protected void Page_Load(object sender, EventArgs e)
+    protected void Page_PreInit(object sender, EventArgs e)
     {
         if (Session["tuisegumdrum"] == null)
         {
@@ -53,11 +35,18 @@ public partial class sluzby3: System.Web.UI.Page
             case "kdch":
                 ctpl.Controls.Add(Page.LoadControl("~/controls/shifts/kdch_shifts.ascx"));
                 break;
-            case "2dk":
-                ctpl.Controls.Add(Page.LoadControl("~/controls/druhadk_hlasko.ascx"));
-                break;
+            //case "2dk":
+            //    ctpl.Controls.Add(Page.LoadControl("~/controls/druhadk_hlasko.ascx"));
+            //    break;
         }
+
+       
     }
+
+    
+
+
+    
 
 
 

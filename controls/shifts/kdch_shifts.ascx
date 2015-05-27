@@ -1,10 +1,10 @@
-﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="kdch_shifts.ascx.cs" Inherits="controls_shifts_kdch_shifts" %>
+﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="kdch_shifts.ascx.cs" Inherits="controls_shifts_kdch_shifts"  %>
 <asp:Label runat="server" ID="msg_lbl" Text=""></asp:Label>
 <div class="row">
             
             <div class="one half"> 
                  Mesiac:<asp:DropDownList ID="mesiac_cb" runat="server" 
-                        AutoPostBack="True" onselectedindexchanged="changeSluzba" >
+                        AutoPostBack="True" onselectedindexchanged="changeSluzba" EnableViewState="true">
                         <asp:ListItem Value="1">Január</asp:ListItem>
                         <asp:ListItem Value="2">Február</asp:ListItem>
                         <asp:ListItem Value="3">Marec</asp:ListItem>
@@ -22,7 +22,7 @@
                     <div class="one half">
                     Rok: 
                 <asp:DropDownList ID="rok_cb" runat="server" AutoPostBack="True" 
-                        onselectedindexchanged="changeSluzba" >
+                        onselectedindexchanged="changeSluzba" EnableViewState="true" >
                     <asp:ListItem Value="2010">Rok 2010</asp:ListItem>
                     <asp:ListItem Value="2011">Rok 2011</asp:ListItem>
                     <asp:ListItem Value="2012">Rok 2012</asp:ListItem>
@@ -35,7 +35,7 @@
 </div>
 
 <div class="info box">
-    <asp:CheckBox ID="edit_chk" runat="server" Text="" AutoPostBack="true" />&nbsp; <asp:Label ID="editChk_lbl" runat="server" Text=""></asp:Label>
+    <asp:CheckBox ID="edit_chk" runat="server" Text="" AutoPostBack="true" EnableViewState="true" />&nbsp; <asp:Label ID="editChk_lbl" runat="server" Text=""></asp:Label>
 </div>
 Počet dní v mesiaci: <asp:Label ID="days_lbl" runat="server" Text=""></asp:Label><hr />
 <asp:Label ID="Label1" runat="server" Text="Víkend" CssClass="red box" Width="130"></asp:Label>

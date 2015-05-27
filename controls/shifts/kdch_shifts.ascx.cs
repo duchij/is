@@ -24,10 +24,10 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (Session["tuisegumdrum"] == null)
-        {
-            Response.Redirect("error.html");
-        }
+        //if (Session["tuisegumdrum"] == null)
+        //{
+        //    Response.Redirect("error.html");
+        //}
         this.msg_lbl.Text = "";
 
         this.rights = Session["rights"].ToString();
@@ -55,6 +55,7 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
         {
             this.setMonthYear();
             string type = this.getShiftStateKDCH();
+
             if (type == "active")
             {
                 this.edit_chk.Checked = false;
@@ -63,16 +64,21 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
             {
                 this.edit_chk.Checked = true;
             }
-
-            this.loadSluzby();
+            //this.msg_lbl.Text = "lolo   " + this.edit_chk.Checked.ToString();
+            
             
         }
         else
         {
             //this.shiftTable.Controls.Clear();
+            //Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
 
-            this.loadSluzby();
+            //ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
+           // CheckBox chk = (CheckBox)FindControl("edit_chk");
+           // this.msg_lbl.Text = this.edit_chk.Checked.ToString();
+            //this.loadSluzby();
         }
+        this.loadSluzby();
     }
 
     protected void initLabels()
@@ -246,7 +252,7 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
 
         if (table.Count == daysMonth)
         {
-            if (this.rights == "admin" || this.rights == "poweruser" || this.rights == "sadmin")
+            if (this.rights.IndexOf("admin") !=-1 || this.rights == "poweruser")
             {
                 string state = table[0]["state"].ToString();
 
@@ -338,7 +344,7 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
                     //  {
 
 
-                    if ((this.rights == "admin" || this.rights == "poweruser" || this.rights == "sadmin") && this.wgroup == "doctor" && this.edit_chk.Checked == true)
+                    if ((this.rights.IndexOf("admin") !=-1 || this.rights == "poweruser" ) && this.wgroup == "doctor" && this.edit_chk.Checked == true)
                     {
                         DropDownList doctors_lb = new DropDownList();
                         doctors_lb.ID = "ddl_" + row.ToString() + "_" + cols.ToString();
@@ -542,6 +548,7 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
         SortedList result = x2Mysql.mysql_insert("is_sluzby_2", data);
 
         Boolean res = Convert.ToBoolean(result["status"].ToString());
+
         if (!res)
         {
             this.msg_lbl.Text = result["msg"].ToString();
