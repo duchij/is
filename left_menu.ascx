@@ -56,7 +56,7 @@
      </ul>
      <br />
      <ul>
-        <li><a href="sluzby3.aspx" target="_self"><asp:Localize runat="server" ID="localize5" Text="<%$ Resources:Resource,odd_akt_sluz %>"></asp:Localize></a></li>
+        <li><a href="sluzby2.aspx" target="_self"><asp:Localize runat="server" ID="localize5" Text="<%$ Resources:Resource,odd_akt_sluz %>"></asp:Localize></a></li>
         <li><a href="staze.aspx" target="_self"><asp:Localize runat="server" ID="localize6" Text="<%$ Resources:Resource,odd_staze %>"></asp:Localize></a></li> 
         <li><a href="ransed.aspx" target="_self"><asp:Localize runat="server" ID="localize7" Text="<%$ Resources:Resource,ranne_sed %>"></asp:Localize></a></li>
      <li><a href="is_ohv.aspx" target="_self">OHV Kódy</a></li>

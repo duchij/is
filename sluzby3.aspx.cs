@@ -20,7 +20,7 @@ public partial class sluzby3: System.Web.UI.Page
     public string gKlinika;
 
     // protected System.Web.UI.HtmlControls.HtmlGenericControl hlavicka;
-    protected void Page_PreInit(object sender, EventArgs e)
+    protected void Page_Init(object sender, EventArgs e)
     {
         if (Session["tuisegumdrum"] == null)
         {

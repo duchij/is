@@ -22,6 +22,39 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
     public string[] shiftType;
     public string wgroup = "";
 
+    protected void Page_Init(object sender, EventArgs e)
+    {
+        if (!IsPostBack)
+        {
+            this.setMonthYear();
+            string type = this.getShiftStateKDCH();
+
+            if (type == "active")
+            {
+                this.edit_chk.Checked = false;
+            }
+            else
+            {
+                this.edit_chk.Checked = true;
+            }
+            //this.msg_lbl.Text = "lolo   " + this.edit_chk.Checked.ToString();
+
+
+        }
+        else
+        {
+            //this.shiftTable.Controls.Clear();
+            //Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+
+            //ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
+            // CheckBox chk = (CheckBox)FindControl("edit_chk");
+            // this.msg_lbl.Text = this.edit_chk.Checked.ToString();
+            //this.loadSluzby();
+        }
+        this.generateShiftTable();
+    }
+    
+
     protected void Page_Load(object sender, EventArgs e)
     {
         //if (Session["tuisegumdrum"] == null)
@@ -65,8 +98,8 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
                 this.edit_chk.Checked = true;
             }
             //this.msg_lbl.Text = "lolo   " + this.edit_chk.Checked.ToString();
-            
-            
+
+
         }
         else
         {
@@ -74,11 +107,11 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
             //Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
 
             //ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
-           // CheckBox chk = (CheckBox)FindControl("edit_chk");
-           // this.msg_lbl.Text = this.edit_chk.Checked.ToString();
+            // CheckBox chk = (CheckBox)FindControl("edit_chk");
+            // this.msg_lbl.Text = this.edit_chk.Checked.ToString();
             //this.loadSluzby();
         }
-        this.loadSluzby();
+        
     }
 
     protected void initLabels()
@@ -189,10 +222,8 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
         }
     }
 
-    protected void loadSluzby()
+    protected void generateShiftTable()
     {
-
-        //this.shiftTable.Controls.Clear();
         string mesiac = this.mesiac_cb.SelectedValue.ToString();
         string rok = this.rok_cb.SelectedValue.ToString();
 
@@ -214,6 +245,175 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
         string[] shifts = res["data"].ToString().Split(',');
         this.shiftType = shifts;
 
+
+       
+        if (this.rights.IndexOf("admin") != -1 || this.rights == "poweruser")
+        {
+            string state = this.getShiftStateKDCH();
+
+            if (state == "active")
+            {
+                this.shiftState_lbl.Text = Resources.Resource.shifts_see_all;
+                //this.publish_cb.ch
+            }
+            else
+            {
+                this.shiftState_lbl.Text = Resources.Resource.shifts_see_limited;
+            }
+        }
+
+        string[] header = shifts;
+
+            int days = daysMonth;
+            int colsNum = header.Length;
+
+            TableHeaderRow headRow = new TableHeaderRow();
+
+            TableHeaderCell headCell = new TableHeaderCell();
+            headCell.ID = "headCell_date";
+            headCell.Text = "<strong>Datum</strong>";
+            // headCell.Style
+            headRow.Controls.Add(headCell);
+
+            for (int head = 0; head < colsNum; head++)
+            {
+                TableHeaderCell headCell1 = new TableHeaderCell();
+                headCell1.ID = "headCell_" + head;
+                headCell1.Text = "<strong><center>" + x2.setLabel(header[head].ToString()) + "</center></strong>";
+                // headCell1.
+                headRow.Controls.Add(headCell1);
+            }
+            /* TableHeaderCell headCellSave = new TableHeaderCell();
+             headCellSave.ID = "headCellSave_" + colsNum;
+             headCellSave.Text = "<strong>Ulozit</strong>";
+             headRow.Controls.Add(headCellSave);*/
+
+            shiftTable.Controls.Add(headRow);
+
+            string[] freeDays = x2Sluzby.getFreeDays();
+            ArrayList doctorList = this.loadDoctors();
+
+            int aktDenMesiac = DateTime.Today.Day;
+
+
+            for (int row = 0; row < days; row++)
+            {
+                TableRow tblRow = new TableRow();
+                shiftTable.Controls.Add(tblRow);
+
+                //string[] names = table[row]["users_names"].ToString().Split(';');
+                //string[] userId = table[row]["users_ids"].ToString().Split('|');
+                //string[] comments = table[row]["comment"].ToString().Split('|');
+
+                DateTime myDate = new DateTime(Convert.ToInt32(rok), Convert.ToInt32(mesiac), row + 1);
+                int dnesJe = (int)myDate.DayOfWeek;
+                string nazov = CultureInfo.CurrentCulture.DateTimeFormat.DayNames[dnesJe];
+                string sviatok = (row + 1).ToString() + "." + myDate.Month.ToString();
+                int jeSviatok = Array.IndexOf(freeDays, sviatok);
+
+
+
+                TableCell cellDate = new TableCell();
+                tblRow.Controls.Add(cellDate);
+                // cellDate.ID = "cellDate_" + row;
+                if (dnesJe == 0 || dnesJe == 6)
+                {
+                    cellDate.CssClass = "box red";
+                }
+
+                if (jeSviatok != -1 && dnesJe != 0 && dnesJe != 6)
+                {
+                    cellDate.CssClass = "box yellow";
+                }
+                string text = (row + 1).ToString();
+                cellDate.Text = text + ". " + nazov;
+
+
+                for (int cols = 0; cols < colsNum; cols++)
+                {
+                    TableCell dataCell = new TableCell();
+                    // tblRow.Controls.Add(dataCell);
+                    // dataCell.ID = "dataCell_" + row.ToString() + "_" + cols.ToString();
+
+                    // if (cols < colsNum)
+                    //  {
+
+
+                    if ((this.rights.IndexOf("admin") != -1 || this.rights == "poweruser") && this.wgroup == "doctor" && this.edit_chk.Checked == true)
+                    {
+                        DropDownList doctors_lb = new DropDownList();
+                        doctors_lb.ID = "ddl_" + row.ToString() + "_" + cols.ToString();
+                        //doctors_lb.CssClass = "no-pad-mobile no-gap-mobile";
+
+                        int listLn = doctorList.Count;
+                        ListItem[] newItem = new ListItem[listLn];
+
+                        for (int doc = 0; doc < listLn; doc++)
+                        {
+                            string[] tmp = doctorList[doc].ToString().Split('|');
+                            newItem[doc] = new ListItem(tmp[1].ToString(), tmp[0].ToString());
+                        }
+                        doctors_lb.Items.AddRange(newItem);
+
+                        //string dd = userId[cols].ToString();
+
+                       // doctors_lb.SelectedValue = dd; // userId[cols].ToString();
+                        dataCell.Controls.Add(doctors_lb);
+                        //doctors_lb.SelectedIndex = doctors_lb.Items.IndexOf(doctors_lb.Items.FindByValue(userId[cols]));
+
+                        doctors_lb.AutoPostBack = true;
+                        doctors_lb.SelectedIndexChanged += new EventHandler(dItemChanged);
+                        //doctors_lb.SelectedValue = "-";
+
+                        TextBox textBox = new TextBox();
+                        dataCell.Controls.Add(textBox);
+                        textBox.ID = "textBox_" + row.ToString() + "_" + cols.ToString();
+                       // textBox.Text = comments[cols];
+                        textBox.AutoPostBack = true;
+                        textBox.TextChanged += new EventHandler(commentChanged);
+                    }
+                    else
+                    {
+                        Label name = new Label();
+                        dataCell.Controls.Add(name);
+                        name.ID = "name_" + row.ToString() + "_" + cols.ToString();
+                        //name.Text = names[cols] + "<br>";
+
+                        Label comment = new Label();
+                        dataCell.Controls.Add(comment);
+                        comment.ID = "label_" + row.ToString() + "_" + cols.ToString();
+                        comment.Font.Italic = true;
+                        //comment.Text = comments[cols];
+
+                    }
+                    if (dnesJe == 0 || dnesJe == 6)
+                    {
+                        dataCell.CssClass = "box red";
+                    }
+                    if (jeSviatok != -1 && dnesJe != 0 && dnesJe != 6)
+                    {
+                        dataCell.CssClass = "box yellow";
+                    }
+                    if (aktDenMesiac == (row + 1))
+                    {
+                        dataCell.BorderColor = System.Drawing.Color.Red;
+                        dataCell.BorderWidth = Unit.Point(5);
+                    }
+                    tblRow.Controls.Add(dataCell);
+                }
+            }
+    }
+
+    protected void loadSluzby()
+    {
+
+        //this.shiftTable.Controls.Clear();
+        string mesiac = this.mesiac_cb.SelectedValue.ToString();
+        string rok = this.rok_cb.SelectedValue.ToString();
+
+        int daysMonth = DateTime.DaysInMonth(Convert.ToInt32(rok), Convert.ToInt32(mesiac));
+        //this.days_lbl.Text = daysMonth.ToString();
+        SortedList res = x2Mysql.getRow("SELECT * FROM [is_settings] WHERE [name] = 'kdch_shift_doctors'");
         StringBuilder sb = new StringBuilder();
 
         if ((this.rights.IndexOf("admin")!=-1 || this.rights == "poweruser") && this.wgroup == "doctor")
@@ -252,160 +452,16 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
 
         if (table.Count == daysMonth)
         {
-            if (this.rights.IndexOf("admin") !=-1 || this.rights == "poweruser")
+
+            for (int row = 0; row < daysMonth; row++)
             {
-                string state = table[0]["state"].ToString();
-
-                if (state == "active")
-                {
-                    this.shiftState_lbl.Text = Resources.Resource.shifts_see_all;
-                    //this.publish_cb.ch
-                }
-                else
-                {
-                    this.shiftState_lbl.Text = Resources.Resource.shifts_see_limited;
-                }
-            }
-
-            string[] header = shifts;
-
-            int days = table.Count;
-            int colsNum = header.Length;
-
-            TableHeaderRow headRow = new TableHeaderRow();
-
-            TableHeaderCell headCell = new TableHeaderCell();
-            headCell.ID = "headCell_date";
-            headCell.Text = "<strong>Datum</strong>";
-            // headCell.Style
-            headRow.Controls.Add(headCell);
-
-            for (int head = 0; head < colsNum; head++)
-            {
-                TableHeaderCell headCell1 = new TableHeaderCell();
-                headCell1.ID = "headCell_" + head;
-                headCell1.Text = "<strong><center>" + x2.setLabel(header[head].ToString()) + "</center></strong>";
-                // headCell1.
-                headRow.Controls.Add(headCell1);
-            }
-            /* TableHeaderCell headCellSave = new TableHeaderCell();
-             headCellSave.ID = "headCellSave_" + colsNum;
-             headCellSave.Text = "<strong>Ulozit</strong>";
-             headRow.Controls.Add(headCellSave);*/
-
-            shiftTable.Controls.Add(headRow);
-
-            string[] freeDays = x2Sluzby.getFreeDays();
-            ArrayList doctorList = this.loadDoctors();
-
-            int aktDenMesiac = DateTime.Today.Day;
-
-
-            for (int row = 0; row < days; row++)
-            {
-                TableRow tblRow = new TableRow();
-                shiftTable.Controls.Add(tblRow);
+                //TableRow tblRow = new TableRow();
+                //shiftTable.Controls.Add(tblRow);
 
                 string[] names = table[row]["users_names"].ToString().Split(';');
                 string[] userId = table[row]["users_ids"].ToString().Split('|');
                 string[] comments = table[row]["comment"].ToString().Split('|');
 
-                DateTime myDate = new DateTime(Convert.ToInt32(rok), Convert.ToInt32(mesiac), row + 1);
-                int dnesJe = (int)myDate.DayOfWeek;
-                string nazov = CultureInfo.CurrentCulture.DateTimeFormat.DayNames[dnesJe];
-                string sviatok = (row + 1).ToString() + "." + myDate.Month.ToString();
-                int jeSviatok = Array.IndexOf(freeDays, sviatok);
-
-
-
-                TableCell cellDate = new TableCell();
-                tblRow.Controls.Add(cellDate);
-                // cellDate.ID = "cellDate_" + row;
-                if (dnesJe == 0 || dnesJe == 6)
-                {
-                    cellDate.CssClass = "box red";
-                }
-
-                if (jeSviatok != -1 && dnesJe != 0 && dnesJe != 6)
-                {
-                    cellDate.CssClass = "box yellow";
-                }
-                string text = (row + 1).ToString();
-                cellDate.Text = text + ". " + nazov;
-
-
-                for (int cols = 0; cols < colsNum; cols++)
-                {
-                    TableCell dataCell = new TableCell();
-                    // tblRow.Controls.Add(dataCell);
-                    // dataCell.ID = "dataCell_" + row.ToString() + "_" + cols.ToString();
-
-                    // if (cols < colsNum)
-                    //  {
-
-
-                    if ((this.rights.IndexOf("admin") !=-1 || this.rights == "poweruser" ) && this.wgroup == "doctor" && this.edit_chk.Checked == true)
-                    {
-                        DropDownList doctors_lb = new DropDownList();
-                        doctors_lb.ID = "ddl_" + row.ToString() + "_" + cols.ToString();
-                        //doctors_lb.CssClass = "no-pad-mobile no-gap-mobile";
-
-                        int listLn = doctorList.Count;
-                        ListItem[] newItem = new ListItem[listLn];
-
-                        for (int doc = 0; doc < listLn; doc++)
-                        {
-                            string[] tmp = doctorList[doc].ToString().Split('|');
-                            newItem[doc] = new ListItem(tmp[1].ToString(), tmp[0].ToString());
-                        }
-                        doctors_lb.Items.AddRange(newItem);
-
-                        string dd = userId[cols].ToString();
-
-                        doctors_lb.SelectedValue = dd; // userId[cols].ToString();
-                        dataCell.Controls.Add(doctors_lb);
-                        //doctors_lb.SelectedIndex = doctors_lb.Items.IndexOf(doctors_lb.Items.FindByValue(userId[cols]));
-
-                        doctors_lb.AutoPostBack = true;
-                        doctors_lb.SelectedIndexChanged += new EventHandler(dItemChanged);
-                        //doctors_lb.SelectedValue = "-";
-
-                        TextBox textBox = new TextBox();
-                        dataCell.Controls.Add(textBox);
-                        textBox.ID = "textBox_" + row.ToString() + "_" + cols.ToString();
-                        textBox.Text = comments[cols];
-                        textBox.AutoPostBack = true;
-                        textBox.TextChanged += new EventHandler(commentChanged);
-                    }
-                    else
-                    {
-                        Label name = new Label();
-                        dataCell.Controls.Add(name);
-                        name.ID = "name_" + row.ToString() + "_" + cols.ToString();
-                        name.Text = names[cols] + "<br>";
-
-                        Label comment = new Label();
-                        dataCell.Controls.Add(comment);
-                        comment.ID = "label_" + row.ToString() + "_" + cols.ToString();
-                        comment.Font.Italic = true;
-                        comment.Text = comments[cols];
-
-                    }
-                    if (dnesJe == 0 || dnesJe == 6)
-                    {
-                        dataCell.CssClass = "box red";
-                    }
-                    if (jeSviatok != -1 && dnesJe != 0 && dnesJe != 6)
-                    {
-                        dataCell.CssClass = "box yellow";
-                    }
-                    if (aktDenMesiac == (row + 1))
-                    {
-                        dataCell.BorderColor = System.Drawing.Color.Red;
-                        dataCell.BorderWidth = Unit.Point(5);
-                    }
-                    tblRow.Controls.Add(dataCell);
-                }
             }
         }
         else
@@ -419,12 +475,10 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
                 }
                 if ((this.rights.IndexOf("admin") != -1 || this.rights == "poweruser") && this.wgroup == "doctor")
                 {
-                    int daysTmp = x2Mysql.fillDocShifts(Convert.ToInt32(dateGroup), Convert.ToInt32(daysMonth), Convert.ToInt32(mesiac), Convert.ToInt32(rok));
-                    this.shiftTable.Controls.Clear();
-                    // this.publish_cb.Visible = true;
-                    //this.msg_lbl.Text = daysTmp.ToString();
-                    //ViewState.Clear();
-                    this.loadSluzby();
+                   // int daysTmp = x2Mysql.fillDocShifts(Convert.ToInt32(dateGroup), Convert.ToInt32(daysMonth), Convert.ToInt32(mesiac), Convert.ToInt32(rok));
+                   // this.shiftTable.Controls.Clear();
+                    
+                  //  this.loadSluzby();
                 }
             }
         }
