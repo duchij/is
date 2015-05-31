@@ -369,9 +369,9 @@ public class mysql_db
         return result;
     }
 
-    public int fillDocShifts(int dategroup, int days, int mesiac, int rok)
+    public int fillNkimShifts(int dategroup, int days, int mesiac, int rok, int clinic)
     {
-       
+
         int result = 0;
         //OdbcTransaction trans1 = null;
         //my_con.Open();
@@ -380,7 +380,7 @@ public class mysql_db
         OdbcCommand cmd = new OdbcCommand();
         cmd.Connection = my_con;
         cmd.CommandType = CommandType.StoredProcedure;
-        cmd.CommandText = "{CALL FILL_DOC_SHIFTS(?,?,?,?,@res)}";
+        cmd.CommandText = "{CALL FILL_NKIM_SHIFTS(?,?,?,?,?,@res)}";
 
         OdbcParameter vstup = new OdbcParameter();
         vstup.ParameterName = "dateGroup";
@@ -411,13 +411,98 @@ public class mysql_db
         cmd.Parameters.Add(vstup3);
 
         OdbcParameter vstup4 = new OdbcParameter();
-        vstup4.ParameterName = "res";
-        vstup4.Direction = ParameterDirection.Output;
+        vstup4.ParameterName = "clinic";
+        vstup4.Direction = ParameterDirection.Input;
         vstup4.OdbcType = OdbcType.Int;
-        //vstup3.Value = 2015;
+        vstup4.Value = clinic;
         cmd.Parameters.Add(vstup4);
+
+        OdbcParameter vstup5 = new OdbcParameter();
+        vstup5.ParameterName = "res";
+        vstup5.Direction = ParameterDirection.Output;
+        vstup5.OdbcType = OdbcType.Int;
+        //vstup3.Value = 2015;
+        cmd.Parameters.Add(vstup5);
         my_con.Open();
-        result = (int)cmd.ExecuteNonQuery();
+        try
+        {
+            result = (int)cmd.ExecuteNonQuery();
+        }
+        catch (Exception ex)
+        {
+            x2log.logData(cmd.ToString(), ex.ToString(), "error fill nkim shifts");
+        }
+
+
+        my_con.Close();
+
+        return result;
+    }
+
+    public int fillDocShifts(int dategroup, int days, int mesiac, int rok,int clinic)
+    {
+       
+        int result = 0;
+        //OdbcTransaction trans1 = null;
+        //my_con.Open();
+        //trans1 = my_con.BeginTransaction();
+
+        OdbcCommand cmd = new OdbcCommand();
+        cmd.Connection = my_con;
+        cmd.CommandType = CommandType.StoredProcedure;
+        cmd.CommandText = "{CALL FILL_DOC_SHIFTS(?,?,?,?,?,@res)}";
+
+        OdbcParameter vstup = new OdbcParameter();
+        vstup.ParameterName = "dateGroup";
+        vstup.Direction = ParameterDirection.Input;
+        vstup.OdbcType = OdbcType.Int;
+        vstup.Value = dategroup;
+        cmd.Parameters.Add(vstup);
+
+        OdbcParameter vstup1 = new OdbcParameter();
+        vstup1.ParameterName = "days";
+        vstup1.Direction = ParameterDirection.Input;
+        vstup1.OdbcType = OdbcType.Int;
+        vstup1.Value = days;
+        cmd.Parameters.Add(vstup1);
+
+        OdbcParameter vstup2 = new OdbcParameter();
+        vstup2.ParameterName = "mesiac";
+        vstup2.Direction = ParameterDirection.Input;
+        vstup2.OdbcType = OdbcType.Int;
+        vstup2.Value = mesiac;
+        cmd.Parameters.Add(vstup2);
+
+        OdbcParameter vstup3 = new OdbcParameter();
+        vstup3.ParameterName = "rok";
+        vstup3.Direction = ParameterDirection.Input;
+        vstup3.OdbcType = OdbcType.Int;
+        vstup3.Value = rok;
+        cmd.Parameters.Add(vstup3);
+
+        OdbcParameter vstup4 = new OdbcParameter();
+        vstup4.ParameterName = "clinic";
+        vstup4.Direction = ParameterDirection.Input;
+        vstup4.OdbcType = OdbcType.Int;
+        vstup4.Value = clinic;
+        cmd.Parameters.Add(vstup4);
+
+        OdbcParameter vstup5 = new OdbcParameter();
+        vstup5.ParameterName = "res";
+        vstup5.Direction = ParameterDirection.Output;
+        vstup5.OdbcType = OdbcType.Int;
+        //vstup3.Value = 2015;
+        cmd.Parameters.Add(vstup5);
+        my_con.Open();
+        try
+        {
+            result = (int)cmd.ExecuteNonQuery();
+        }
+        catch (Exception ex)
+        {
+            x2log.logData(cmd.ToString(), ex.ToString(), "error fill doc shifts");
+        }
+        
 
         my_con.Close();
 

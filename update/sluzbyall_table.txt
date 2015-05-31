@@ -1,0 +1,107 @@
+﻿-- Adminer 4.1.0 MySQL dump
+
+SET NAMES utf8;
+SET time_zone = '+00:00';
+
+DROP TABLE IF EXISTS `is_sluzby_all`;
+CREATE TABLE `is_sluzby_all` (
+  `item_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `datum` date NOT NULL,
+  `typ` varchar(10) CHARACTER SET ascii NOT NULL,
+  `user_id` bigint(20) unsigned DEFAULT '0',
+  `date_group` int(6) unsigned zerofill NOT NULL,
+  `ordering` tinyint(2) NOT NULL,
+  `comment` text COLLATE utf8_slovak_ci,
+  `state` enum('draft','active') CHARACTER SET ascii NOT NULL DEFAULT 'draft',
+  `clinic` bigint(20) unsigned NOT NULL,
+  PRIMARY KEY (`item_id`),
+  UNIQUE KEY `datum_typ_ordering` (`datum`,`typ`(1)),
+  KEY `user_id` (`user_id`),
+  KEY `ordering` (`ordering`),
+  KEY `datum` (`datum`),
+  KEY `typ` (`typ`(1)),
+  KEY `date_group` (`date_group`),
+  KEY `clinic` (`clinic`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_slovak_ci;
+
+
+DELIMITER ;;
+
+CREATE TRIGGER `is_sluzby_all_bi` BEFORE INSERT ON `is_sluzby_all` FOR EACH ROW
+begin
+if length(NEW.comment) = 0 THEN
+ set NEW.comment = '-';
+end if;
+
+set @mesiac = MONTH(NEW.datum);
+set @rok=YEAR(NEW.datum);
+
+
+if (@mesiac >=1 AND @mesiac <=9) THEN
+    set @dateGroup = concat(@rok,'0',@mesiac);
+    set NEW.date_group = @dateGroup;
+END IF;
+
+if (@mesiac >=10) THEN
+    set @dateGroup = concat(@rok,@mesiac);
+    set NEW.date_group = @dateGroup;
+end if;
+
+
+end;;
+
+CREATE TRIGGER `is_sluzby_all_bu` BEFORE UPDATE ON `is_sluzby_all` FOR EACH ROW
+begin        
+set @old_userId = OLD.user_id;
+        set @new_userId = NEW.user_id;
+	set @mesiac = month(OLD.datum);
+        set @rok = year(OLD.datum);
+               DELETE FROM is_vykaz WHERE rok = @rok AND mesiac = @mesiac AND user_id = @old_userId;
+DELETE FROM is_vykaz WHERE rok = @rok AND mesiac = @mesiac AND user_id = @new_userId;
+
+                end;;
+
+DELIMITER ;
+
+-- 2015-05-31 19:20:40
+
+a  k tomu stored procedure
+
+CREATE PROCEDURE `FILL_NKIM_SHIFTS`(IN `dategroup` INT, IN `days` INT, IN `mesiac` INT, IN `rok` INT, IN `clinic` INT, OUT `res` INT)
+	LANGUAGE SQL
+	NOT DETERMINISTIC
+	CONTAINS SQL
+	SQL SECURITY DEFINER
+	COMMENT ''
+BEGIN
+declare flag int default 1;
+
+	DECLARE exit handler for sqlexception	BEGIN		set flag = 0;
+        set res = -1;
+		ROLLBACK;
+			END;
+
+	DECLARE exit handler for sqlwarning	BEGIN		set flag = 0;
+        set res = -1;
+		ROLLBACK;
+			END;
+
+		SET res = 0;
+    START TRANSACTION;
+	mojLoop:LOOP
+		SET res = res + 1;
+		IF (res <= days AND flag=1) THEN
+
+			INSERT INTO is_sluzby_all (datum, typ,user_id,date_group,ordering,comment,state,clinic) VALUES 			
+			(concat(rok,'-',mesiac,'-',res),'JVSN','0',dategroup,'1','-','draft',clinic),			
+			(concat(rok,'-',mesiac,'-',res),'InterMed','0',dategroup,'2','-','draft',clinic),			
+			(concat(rok,'-',mesiac,'-',res),'Transport','0',dategroup,'3','-','draft',clinic);			
+			-- (concat(rok,'-',mesiac,'-',res),'OP','0',dategroup,'4','-','draft',clinic),			
+			-- (concat(rok,'-',mesiac,'-',res),'Prijm','0',dategroup,'5','-','draft',clinic);
+
+			ITERATE mojLoop;
+		END IF;
+	LEAVE mojLoop;
+	END LOOP mojLoop;
+    COMMIT;
+END

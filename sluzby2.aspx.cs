@@ -44,11 +44,11 @@ public partial class sluzby2 : System.Web.UI.Page
         this.rights = Session["rights"].ToString();
         this.wgroup = Session["workgroup"].ToString();
 
-        if (this.gKlinika =="kdch")
+        if (this.gKlinika =="kdch" || this.gKlinika=="nkim")
         {
             this.kdch_pl.Visible = true;
 
-            if ((this.rights == "admin" || this.rights == "poweruser" || this.rights=="sadmin") && this.wgroup == "doctor")
+            if ((this.rights.IndexOf("admin") !=-1 || this.rights == "poweruser") && this.wgroup == "doctor")
             {
                 this.publish_btn.Visible = true;
                 this.unpublish_btn.Visible = true;
@@ -80,6 +80,7 @@ public partial class sluzby2 : System.Web.UI.Page
                 this.avaible_btn.Visible = false;
             }
         }
+        
 
         if (IsPostBack == false)
         {
@@ -100,7 +101,7 @@ public partial class sluzby2 : System.Web.UI.Page
                 this.generateDKShiftTableForm();
                 this.generateWeekStatus();
             }
-            if (gKlinika == "kdch")
+            if (gKlinika == "kdch" || this.gKlinika == "nkim")
             {
                 string type = this.getShiftStateKDCH();
                 if (type == "active")
@@ -114,17 +115,9 @@ public partial class sluzby2 : System.Web.UI.Page
 
                 this.loadSluzby();
             }
-
-            
-          
         }
         else
         {
-            
-
-            //this.shiftTable.Controls.Clear();
-            //if (Session["klinika"].ToString().IndexOf("dk") != -1)
-            //{
             if (this.gKlinika == "2dk" || this.gKlinika == "1dk")
             {
                 this.generateDKShiftTableForm();
@@ -132,18 +125,9 @@ public partial class sluzby2 : System.Web.UI.Page
             }
             if (this.gKlinika == "kdch")
             {
-                //this.shiftTable.Controls.Clear();
-                
                 this.loadSluzby();
             }
-            //}
-            //else
-            //{
-            //    this.loadSluzby();
-            //}
         }
-        //this.msg_lbl.Text = e.GetType().GetEleme
-       // this.publish_cb.Checked = this.getShiftState();
     }
 
     protected void initLabels()
@@ -160,12 +144,18 @@ public partial class sluzby2 : System.Web.UI.Page
             //this.avaible_btn.Text = x2.setLabel("2dk_shifts_active");
             this.editChk_lbl.Text = "Editovat";
         }
+        if (this.gKlinika == "nkim")
+        {
+            //this.setup_btn.Text = x2.setLabel("2dk_shifts_setup");
+            //this.avaible_btn.Text = x2.setLabel("2dk_shifts_active");
+            this.editChk_lbl.Text = "Editovat";
+        }
         
     }
 
     protected void changeSluzba(object sender, EventArgs e)
     {
-        if (this.gKlinika == "kdch")
+        if (this.gKlinika == "kdch" || this.gKlinika=="nkim")
         {
             this.shiftTable.Controls.Clear();
             string type = this.getShiftStateKDCH();
@@ -283,7 +273,10 @@ public partial class sluzby2 : System.Web.UI.Page
         return row["state"].ToString();
 
     }
-
+    /// <summary>
+    /// Tato funkcia ziska stav sluzieb, ktore maju rovnaky stlpcovy system ako KDCH
+    /// </summary>
+    /// <returns>row["state"] draft/active</returns>
     protected string getShiftStateKDCH()
     {
         int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue);
@@ -292,7 +285,16 @@ public partial class sluzby2 : System.Web.UI.Page
         int dateGroup = x2.makeDateGroup(rok, mesiac);
 
         StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("SELECT [state] FROM [is_sluzby_2] WHERE [date_group]='{0}' GROUP BY [state]", dateGroup);
+        switch (this.gKlinika)
+        {
+            case "kdch":
+                sb.AppendFormat("SELECT [state] FROM [is_sluzby_2] WHERE [date_group]='{0}' GROUP BY [state]", dateGroup);
+                break;
+            case "nkim":
+                sb.AppendFormat("SELECT [state] FROM [is_sluzby_all] WHERE [date_group]='{0}' GROUP BY [state]", dateGroup);
+                break;
+        }
+       
 
         SortedList row = x2Mysql.getRow(sb.ToString());
         if (row.Count == 0)
@@ -1477,7 +1479,9 @@ public partial class sluzby2 : System.Web.UI.Page
         string dateGroup = rok+mesiac;
         Session.Add("aktDateGroup", dateGroup);
 
-        SortedList res = x2Mysql.getRow("SELECT * FROM [is_settings] WHERE [name] = 'kdch_shift_doctors'");
+        string query = x2.sprintf("SELECT * FROM [is_settings] WHERE [name] = '{0}_shift_doctors'", new string[] {this.gKlinika});
+
+        SortedList res = x2Mysql.getRow(query);
 
         // Boolean status = Convert.ToBoolean(res["status"].ToString());
 
@@ -1486,34 +1490,76 @@ public partial class sluzby2 : System.Web.UI.Page
         
         StringBuilder sb = new StringBuilder();
 
-        if ((this.rights == "admin" || this.rights == "poweruser" || this.rights=="sadmin") && this.wgroup=="doctor")
+        if ((this.rights.IndexOf("admin")!=-1 || this.rights == "poweruser") && this.wgroup=="doctor")
         {
+            switch (this.gKlinika)
+            {
+                case "kdch":
+                    sb.Append("SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],");
+                    sb.Append("[t_sluzb].[state] AS [state],");
+                    sb.Append("GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [users_ids],");
+                    sb.Append("GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],");
+                    sb.Append("GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [comment],");
+                    sb.Append("[t_sluzb].[date_group] AS [dategroup]");
+                    sb.Append("FROM [is_sluzby_2] AS [t_sluzb]");
+                    sb.Append("LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id] ");
+                    sb.AppendFormat("WHERE [t_sluzb].[date_group] = '{0}{1}' ", rok, mesiac);
+                    sb.AppendFormat("AND [t_sluzb].[clinic]={0} ", Session["klinika_id"]); 
+                    sb.Append("GROUP BY [t_sluzb].[datum]");
+                    sb.Append("ORDER BY [t_sluzb].[datum]");
+                    break;
+                case "nkim":
+                    sb.Append("SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],");
+                    sb.Append("[t_sluzb].[state] AS [state],");
+                    sb.Append("GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [users_ids],");
+                    sb.Append("GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],");
+                    sb.Append("GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [comment],");
+                    sb.Append("[t_sluzb].[date_group] AS [dategroup]");
+                    sb.Append("FROM [is_sluzby_all] AS [t_sluzb]");
+                    sb.Append("LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id] ");
+                    sb.AppendFormat("WHERE [t_sluzb].[date_group] = '{0}{1}' ", rok, mesiac);
+                    sb.AppendFormat("AND [t_sluzb].[clinic]={0} ", Session["klinika_id"]);
+                    sb.Append("GROUP BY [t_sluzb].[datum]");
+                    sb.Append("ORDER BY [t_sluzb].[datum]");
+                    break;
 
-            sb.Append("SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],");
-            sb.Append("[t_sluzb].[state] AS [state],");
-            sb.Append("GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [users_ids],");
-            sb.Append("GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],");
-            sb.Append("GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [comment],");
-            sb.Append("[t_sluzb].[date_group] AS [dategroup]");
-            sb.Append("FROM [is_sluzby_2] AS [t_sluzb]");
-            sb.Append("LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]");
-            sb.AppendFormat("WHERE [t_sluzb].[date_group] = '{0}{1}'", rok, mesiac);
-            sb.Append("GROUP BY [t_sluzb].[datum]");
-            sb.Append("ORDER BY [t_sluzb].[datum]");
+            }
+            
         }
         else
         {
-            sb.Append("SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],");
-            sb.Append("[t_sluzb].[state] AS [state],");
-            sb.Append("GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [users_ids],");
-            sb.Append("GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],");
-            sb.Append("GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [comment],");
-            sb.Append("[t_sluzb].[date_group] AS [dategroup]");
-            sb.Append("FROM [is_sluzby_2] AS [t_sluzb]");
-            sb.Append("LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]");
-            sb.AppendFormat("WHERE [t_sluzb].[date_group] = '{0}{1}' AND [t_sluzb].[state]='active'", rok, mesiac);
-            sb.Append("GROUP BY [t_sluzb].[datum]");
-            sb.Append("ORDER BY [t_sluzb].[datum]");
+            switch (this.gKlinika)
+            {
+                case "kdch":
+                    sb.Append("SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],");
+                    sb.Append("[t_sluzb].[state] AS [state],");
+                    sb.Append("GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [users_ids],");
+                    sb.Append("GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],");
+                    sb.Append("GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [comment],");
+                    sb.Append("[t_sluzb].[date_group] AS [dategroup]");
+                    sb.Append("FROM [is_sluzby_2] AS [t_sluzb]");
+                    sb.Append("LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]");
+                    sb.AppendFormat("WHERE [t_sluzb].[date_group] = '{0}{1}' AND [t_sluzb].[state]='active'", rok, mesiac);
+                    sb.AppendFormat("AND [t_sluzb].[clinic]={0} ", Session["klinika_id"]);
+                    sb.Append("GROUP BY [t_sluzb].[datum]");
+                    sb.Append("ORDER BY [t_sluzb].[datum]");
+                    break;
+                case "nkim":
+                    sb.Append("SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],");
+                    sb.Append("[t_sluzb].[state] AS [state],");
+                    sb.Append("GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [users_ids],");
+                    sb.Append("GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],");
+                    sb.Append("GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [comment],");
+                    sb.Append("[t_sluzb].[date_group] AS [dategroup]");
+                    sb.Append("FROM [is_sluzby_all] AS [t_sluzb]");
+                    sb.Append("LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]");
+                    sb.AppendFormat("WHERE [t_sluzb].[date_group] = '{0}{1}' AND [t_sluzb].[state]='active'", rok, mesiac);
+                    sb.AppendFormat("AND [t_sluzb].[clinic]={0} ", Session["klinika_id"]);
+                    sb.Append("GROUP BY [t_sluzb].[datum]");
+                    sb.Append("ORDER BY [t_sluzb].[datum]");
+                    break;
+            }
+            
         }
 
       //  this.msg_lbl.Text = sb.ToString();
@@ -1689,7 +1735,19 @@ public partial class sluzby2 : System.Web.UI.Page
                 }
                 if ((this.rights.IndexOf("admin") !=-1 || this.rights == "poweruser") && this.wgroup=="doctor")
                 {
-                    int daysTmp = x2Mysql.fillDocShifts(Convert.ToInt32(dateGroup), Convert.ToInt32(daysMonth), Convert.ToInt32(mesiac), Convert.ToInt32(rok));
+                    int daysTmp = 0;
+                    switch (this.gKlinika)
+                    {
+                        case "kdch":
+                            daysTmp = x2Mysql.fillDocShifts(Convert.ToInt32(dateGroup), Convert.ToInt32(daysMonth), Convert.ToInt32(mesiac), Convert.ToInt32(rok), Convert.ToInt32(Session["klinika_id"]));
+                            break;
+                        case "nkim":
+                            daysTmp = x2Mysql.fillNkimShifts(Convert.ToInt32(dateGroup), Convert.ToInt32(daysMonth), Convert.ToInt32(mesiac), Convert.ToInt32(rok), Convert.ToInt32(Session["klinika_id"]));
+                            break;
+                    }
+
+                    
+                    
                     this.shiftTable.Controls.Clear();
                    // this.publish_cb.Visible = true;
                     //this.msg_lbl.Text = daysTmp.ToString();
@@ -1795,7 +1853,7 @@ public partial class sluzby2 : System.Web.UI.Page
     protected ArrayList loadDoctors()
     {
         StringBuilder sb = new StringBuilder();
-        sb.Append("SELECT [id],[name3] FROM [is_users] WHERE ([work_group]='doctor') AND [active]='1'  ORDER BY [name2]");
+        sb.AppendFormat("SELECT [id],[name3] FROM [is_users] WHERE [work_group]='doctor' AND [active]='1' AND [klinika]={0} ORDER BY [name2]",Session["klinika_id"]);
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
 
@@ -1837,6 +1895,7 @@ public partial class sluzby2 : System.Web.UI.Page
         int col = Convert.ToInt32(tmp[2]);
         data.Add("typ", this.shiftType[col]);
         data.Add("ordering", col + 1);
+        data.Add("clinic", Session["klinika_id"]);
 
         string mesiac = this.mesiac_cb.SelectedValue.ToString();
         string rok = this.rok_cb.SelectedValue.ToString();
@@ -1890,6 +1949,7 @@ public partial class sluzby2 : System.Web.UI.Page
         int col = Convert.ToInt32(tmp[2]);
         data.Add("typ", this.shiftType[col]);
         data.Add("ordering", col+1);
+        data.Add("clinic", Session["klinika_id"]);
 
         string mesiac = this.mesiac_cb.SelectedValue.ToString();
         string rok = this.rok_cb.SelectedValue.ToString();

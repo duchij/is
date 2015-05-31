@@ -1,0 +1,6 @@
+﻿ALTER TABLE `is_sluzby_2`
+ADD `clinic` bigint unsigned NOT NULL,
+COMMENT='';
+--nextquery--
+ALTER TABLE `is_sluzby_2`
+ADD INDEX `clinic` (`clinic`);
