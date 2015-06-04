@@ -123,7 +123,7 @@ public partial class sluzby2 : System.Web.UI.Page
                 this.generateDKShiftTableForm();
                 this.generateWeekStatus();
             }
-            if (this.gKlinika == "kdch")
+            if (this.gKlinika == "kdch" || this.gKlinika =="nkim")
             {
                 this.loadSluzby();
             }
@@ -285,13 +285,14 @@ public partial class sluzby2 : System.Web.UI.Page
         int dateGroup = x2.makeDateGroup(rok, mesiac);
 
         StringBuilder sb = new StringBuilder();
+
         switch (this.gKlinika)
         {
             case "kdch":
                 sb.AppendFormat("SELECT [state] FROM [is_sluzby_2] WHERE [date_group]='{0}' GROUP BY [state]", dateGroup);
                 break;
             case "nkim":
-                sb.AppendFormat("SELECT [state] FROM [is_sluzby_all] WHERE [date_group]='{0}' GROUP BY [state]", dateGroup);
+                sb.AppendFormat("SELECT [state] FROM [is_sluzby_all] WHERE [date_group]='{0}' AND [clinic]='{1}' GROUP BY [state]", dateGroup,Session["klinika_id"]);
                 break;
         }
        
@@ -645,8 +646,19 @@ public partial class sluzby2 : System.Web.UI.Page
         {
             mesiac = "0" + mesiac;
         }
+        string queryIn = "";
 
-        sb.AppendFormat("UPDATE [is_sluzby_2] SET [state]='active' WHERE [date_group]='{0}{1}'", rok, mesiac);
+        switch (this.gKlinika)
+        {
+            case "kdch":
+                queryIn ="UPDATE [is_sluzby_2] SET [state]='active' WHERE [date_group]='{0}{1}' AND [clinic]='{2}'";
+                break;
+            case "nkim":
+                queryIn = "UPDATE [is_sluzby_all] SET [state]='active' WHERE [date_group]='{0}{1}' AND [clinic]='{2}'";
+                break;
+
+        }
+        sb.AppendFormat(queryIn, rok, mesiac,Session["klinika_id"]);
         SortedList res = x2Mysql.execute(sb.ToString());
 
         Boolean result = Convert.ToBoolean(res["status"].ToString());
@@ -657,7 +669,7 @@ public partial class sluzby2 : System.Web.UI.Page
         }
         else
         {
-            if (this.rights == "admin" || this.rights == "poweruser" || this.rights=="sadmin")
+            if (this.rights.IndexOf("admin") != -1 || this.rights == "poweruser")
             {
                 this.shiftState_lbl.Text = Resources.Resource.shifts_see_all;
             }
@@ -1965,8 +1977,20 @@ public partial class sluzby2 : System.Web.UI.Page
         den = den +1;
 
         data.Add("datum", this.rok_cb.SelectedValue.ToString() + "-" + this.mesiac_cb.SelectedValue.ToString() + "-" + den.ToString());
+        string table = "";
 
-        SortedList result = x2Mysql.mysql_insert("is_sluzby_2", data);
+        switch (this.gKlinika)
+        {
+            case "kdch":
+                table = "is_sluzby_2";
+                break;
+            case "nkim":
+                table = "is_sluzby_all";
+                break;
+        }
+
+
+        SortedList result = x2Mysql.mysql_insert(table, data);
 
         Boolean res = Convert.ToBoolean(result["status"].ToString());
         if (!res)

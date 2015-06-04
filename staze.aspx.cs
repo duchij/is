@@ -144,7 +144,7 @@ public partial class staze : System.Web.UI.Page
         string result="no";
         StringBuilder sb = new StringBuilder();
 
-        sb.AppendFormat("SELECT [public] FROM [is_staze_2] WHERE [date_group]='{0}' GROUP BY [public]", dateGrp);
+        sb.AppendFormat("SELECT [public] FROM [is_staze_2] WHERE [date_group]='{0}' AND [clinic]={1} GROUP BY [public]", dateGrp,Session["klinika_id"]);
 
         SortedList res = x2Mysql.getRow(sb.ToString());
         if (res.Count > 0)
@@ -361,11 +361,11 @@ public partial class staze : System.Web.UI.Page
         if (id == "publish_btn")
         {
 
-            sb.AppendFormat("UPDATE [is_staze_2] SET [public]='yes' WHERE [date_group]='{0}'", dateGrp);
+            sb.AppendFormat("UPDATE [is_staze_2] SET [public]='yes' WHERE [date_group]='{0}' AND [clinic]={1}", dateGrp,Session["klinika_id"]);
         }
         if (id == "unpublish_btn")
         {
-            sb.AppendFormat("UPDATE [is_staze_2] SET [public]='no' WHERE [date_group]='{0}'", dateGrp);
+            sb.AppendFormat("UPDATE [is_staze_2] SET [public]='no' WHERE [date_group]='{0}'  AND [clinic]={1}", dateGrp, Session["klinika_id"]);
         }
 
         SortedList res = x2Mysql.execute(sb.ToString());

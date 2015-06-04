@@ -193,8 +193,9 @@ public partial class MasterPage : System.Web.UI.MasterPage
         int dateGroup = X2.makeDateGroup(DateTime.Today.Year, DateTime.Today.Month);
         StringBuilder sb = new StringBuilder();
 
-        if (this.gKlinika == "kdch")
+        switch(this.gKlinika)
         {
+            case "kdch":
             if (this.wgroup == "doctor")
             {
                 sb.AppendFormat("SELECT [datum],[typ] FROM [is_sluzby_2] WHERE [date_group] ='{0}' AND [user_id] = '{1}' ORDER BY [datum]", dateGroup, Session["user_id"]);
@@ -203,13 +204,21 @@ public partial class MasterPage : System.Web.UI.MasterPage
             {
                 sb.AppendFormat("SELECT [datum],[typ] FROM [is_sluzby_2_sestr] WHERE [date_group] ='{0}' AND [user_id] = '{1}' AND [deps]='{2}' ORDER BY [datum]", dateGroup, Session["user_id"], Session["oddelenie"]);
             }
-        }
-        if (this.gKlinika == "2dk")
-        {
+            break;
+        case "2dk":
+        
             if (this.wgroup == "doctor")
             {
                 sb.AppendFormat("SELECT [datum],[typ] FROM [is_sluzby_dk] WHERE [date_group] ='{0}' AND [user_id] = '{1}' ORDER BY [datum]", dateGroup, Session["user_id"]);
             }
+            break;
+            case "nkim":
+                if (this.wgroup == "doctor")
+                {
+                    sb.AppendFormat("SELECT [datum],[typ] FROM [is_sluzby_all] WHERE [date_group] ='{0}' AND [user_id] = '{1}' ORDER BY [datum]", dateGroup, Session["user_id"]);
+                }
+            break;
+
         }
         
 

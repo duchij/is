@@ -83,7 +83,7 @@
         force_p_newlines: false,
        // forced_root_block : 'div',
         force_br_newlines : true,
-        forced_root_block : '',
+        //forced_root_block : '',
         autosave_retention: "30m",
         language: 'sk',
        // convert_urls: false,

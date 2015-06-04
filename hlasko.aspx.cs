@@ -56,6 +56,9 @@ public partial class hlasko : System.Web.UI.Page
             case "2dk":
                 ctpl.Controls.Add(Page.LoadControl("~/controls/druhadk_hlasko.ascx")); 
                 break;
+            case "nkim":
+                ctpl.Controls.Add(Page.LoadControl("~/controls/nkim_hlasko.ascx"));
+                break;
         }
     }
         

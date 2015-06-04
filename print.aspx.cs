@@ -31,7 +31,7 @@ public partial class hlasenia_print : System.Web.UI.Page
 
         this.datum_lbl.Text = Convert.ToDateTime(Session["hlasko_date"]).ToLongDateString();
         StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("SELECT * FROM [is_hlasko] WHERE [id] ='{0}'", Session["akt_hlasenie"].ToString());
+        sb.AppendFormat("SELECT * FROM [is_hlasko] WHERE [id] ='{0}'", Session["akt_hlasenie"]);
 
         SortedList row = x2MySql.getRow(sb.ToString());
 
@@ -41,26 +41,37 @@ public partial class hlasenia_print : System.Web.UI.Page
 
         DateTime datum = Convert.ToDateTime(Session["hlasko_date"]);
         sb.Length = 0;
-       
-        if (Session["klinika"].ToString().ToLower() == "kdch")
-        { 
-            sb.Append("SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],");
-            sb.Append("GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names]");
-            sb.Append("FROM [is_sluzby_2] AS [t_sluzb]");
-            sb.Append("LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]");
-            sb.AppendFormat("WHERE [t_sluzb].[datum]='{0}'", my_x2.unixDate(datum));
-            sb.Append("GROUP BY [t_sluzb].[datum]");
-        }
-        if (Session["klinika"].ToString().ToLower() == "2dk")
+
+        string klinika = Session["klinika"].ToString().ToLower();
+
+        switch (klinika)
         {
-            sb.Append("SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],");
-            sb.Append("GROUP_CONCAT(IFNULL([t_users].[name3],'-') ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names]");
-            sb.Append("FROM [is_sluzby_dk] AS [t_sluzb]");
-            sb.Append("LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]");
-            sb.AppendFormat("WHERE [t_sluzb].[datum]='{0}'", my_x2.unixDate(datum));
-            sb.Append("GROUP BY [t_sluzb].[datum]");
+            case "kdch":
+                sb.Append("SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],");
+                sb.Append("GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names]");
+                sb.Append("FROM [is_sluzby_2] AS [t_sluzb]");
+                sb.Append("LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]");
+                sb.AppendFormat("WHERE [t_sluzb].[datum]='{0}'", my_x2.unixDate(datum));
+                sb.Append("GROUP BY [t_sluzb].[datum]");
+                break;
+            case "2dk":
+                sb.Append("SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],");
+                sb.Append("GROUP_CONCAT(IFNULL([t_users].[name3],'-') ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names]");
+                sb.Append("FROM [is_sluzby_dk] AS [t_sluzb]");
+                sb.Append("LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]");
+                sb.AppendFormat("WHERE [t_sluzb].[datum]='{0}'", my_x2.unixDate(datum));
+                sb.Append("GROUP BY [t_sluzb].[datum]");
+                break;
+            case "nkim":
+                sb.Append("SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],");
+                sb.Append("GROUP_CONCAT(IFNULL([t_users].[name3],'-') ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names]");
+                sb.Append("FROM [is_sluzby_all] AS [t_sluzb]");
+                sb.Append("LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]");
+                sb.AppendFormat("WHERE [t_sluzb].[datum]='{0}'", my_x2.unixDate(datum));
+                sb.Append("GROUP BY [t_sluzb].[datum]");
+                break;
+                
         }
-      
 
         row = x2MySql.getRow(sb.ToString());
 

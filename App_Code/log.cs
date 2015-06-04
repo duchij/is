@@ -184,6 +184,8 @@ public class log
 
         Boolean sendMail = false;
 
+        string strToWrite="";
+
         if (error.Length > 0)
         {
             sb.AppendFormat("ERROR   {0} {1} -- {2}, IP:{3} ERROR:\r\n {4} ", dt, dh, idf,logIp, error);
@@ -201,13 +203,24 @@ public class log
         {
             SortedList sl = (SortedList)data;
             sb.AppendFormat("{0} {1} -- {2} --IP:{3} ---- SortedList:\r\n",dt,dh,idf,logIp);
+           
             foreach (DictionaryEntry row in sl)
             {
                 sb.AppendFormat("       ['{0}'] = {1} \r\n", row.Key.ToString(), row.Value.ToString());
             }
             sb.AppendLine("\r\n-----------------------------------------------------------END OF  SortedList\r\n");
+            strToWrite = sb.ToString();
 
-            if (sendMail) errorDt.Add("data", sb.ToString());
+            if(error.Length == 0)
+            {
+                if (strToWrite.Length > 500)
+                {
+                    strToWrite = strToWrite.Substring(0, 500);
+                    strToWrite += ".....data truncated......";
+                    strToWrite += "\r\n-----------------------------------------------------------END OF  SortedList\r\n";
+                }
+            }
+            if (sendMail) errorDt.Add("data", strToWrite);
             
         }
 
@@ -224,7 +237,17 @@ public class log
                 }
             }
             sb.AppendLine("\r\n-----------------------------------------------------------END OF  Dictionary<int, Hashtable>\r\n");
-            if (sendMail) errorDt.Add("data", sb.ToString());
+            strToWrite = sb.ToString();
+           if (error.Length ==0)
+           {
+               if (strToWrite.Length > 500)
+               {
+                   strToWrite = strToWrite.Substring(0, 500);
+                   strToWrite += ".....data truncated......";
+                   strToWrite += "\r\n-----------------------------------------------------------END OF  Dictionary<int, Hashtable>\r\n";
+               }
+           }
+            if (sendMail) errorDt.Add("data", strToWrite);
         }
 
         if (data.GetType() == typeof(Dictionary<int, SortedList>))
@@ -240,7 +263,17 @@ public class log
                 }
             }
             sb.AppendLine("\r\n-----------------------------------------------------------END OF  Dictionary<int, SortedList>\r\n");
-            if (sendMail) errorDt.Add("data", sb.ToString());
+            strToWrite = sb.ToString();
+            if (error.Length ==0 )
+            {
+                if (strToWrite.Length > 500)
+                {
+                    strToWrite = strToWrite.Substring(0, 500);
+                    strToWrite += ".....data truncated......";
+                    strToWrite += "\r\n-----------------------------------------------------------END OF  Dictionary<int, SortedList>\r\n";
+                }
+            }
+            if (sendMail) errorDt.Add("data", strToWrite);
         }
 
 
@@ -250,8 +283,18 @@ public class log
             sb.AppendFormat("        string = {0} \r\n", data.ToString());
             sb.AppendLine("\r\n-----------------------------------------------------------END OF  string\r\n");
 
-           
-            if (sendMail) errorDt.Add("data", sb.ToString());
+
+            strToWrite = sb.ToString();
+           if (error.Length ==0 )
+           {
+               if (strToWrite.Length > 500)
+               {
+                   strToWrite = strToWrite.Substring(0, 500);
+                   strToWrite += ".....data truncated......";
+                   strToWrite += "\r\n-----------------------------------------------------------END OF  string\r\n";
+               }
+           }
+            if (sendMail) errorDt.Add("data", strToWrite);
         }
 
         
@@ -259,7 +302,7 @@ public class log
         StreamWriter sw = this.openFile();
         if (sw != null)
         {
-            sw.WriteLine(sb.ToString());
+            sw.WriteLine(strToWrite);
             sw.Close();
             if (sendMail) this.sendMail(errorDt);
         }

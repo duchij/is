@@ -430,7 +430,7 @@ public class mysql_db
         }
         catch (Exception ex)
         {
-            x2log.logData(cmd.ToString(), ex.ToString(), "error fill nkim shifts");
+            x2log.logData(cmd.CommandText.ToString(), ex.ToString(), "error fill nkim shifts");
         }
 
 
