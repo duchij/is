@@ -179,7 +179,7 @@ public partial class labels_labels : System.Web.UI.Page
 
 
             SortedList data = new SortedList();
-            data.Add("idf", lbl.Text.ToString());
+            data.Add("idf", lbl.Text.ToString().Trim());
             data.Add("label", txt.Text.ToString());
 
             SortedList res1 = x2Mysql.mysql_update("is_labels", data, tmp[1]);
@@ -195,7 +195,7 @@ public partial class labels_labels : System.Web.UI.Page
     protected void saveLabelFnc(object sender, EventArgs e)
     {
         SortedList data = new SortedList();
-        data.Add("idf", this.labelIdf_txt.Text.ToString());
+        data.Add("idf", this.labelIdf_txt.Text.ToString().Trim());
         data.Add("label", this.labelTxt_txt.Text.ToString());
 
         string[] id = this.clinics_dl.SelectedValue.ToString().Split('|');

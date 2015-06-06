@@ -38,7 +38,21 @@ public partial class sltoword : System.Web.UI.Page
         this.rok_lbl.Text = Session["aktSluzRok"].ToString();
         string mes  = CultureInfo.CurrentCulture.DateTimeFormat.MonthNames[Convert.ToInt32(Session["aktSluzMesiac"].ToString())-1];
 
-        if (this.gKlinika == "kdch")
+        switch (this.gKlinika)
+        {
+            case "kdch":
+                this.loadSluzby();
+                break;
+            case "2dk":
+                this.generate2DK();
+                break;
+            case "nkim":
+                this.loadSluzby();
+                break;
+        }
+
+/*
+        if (this.gKlinika == "kdch" )
         {
             this.loadSluzby();
         }
@@ -46,7 +60,7 @@ public partial class sltoword : System.Web.UI.Page
         if (this.gKlinika == "2dk")
         {
             this.generate2DK();
-        }
+        }*/
 
         if (Session["toWord"].ToString() == "1")
         {
@@ -276,29 +290,59 @@ public partial class sltoword : System.Web.UI.Page
        
         string dateGroup = Session["aktDateGroup"].ToString();
 
-        SortedList res = x2Mysql.getRow("SELECT * FROM [is_settings] WHERE [name] = 'kdch_shift_doctors'");
+        string settings = "";
+        string shiftQuery = "";
+
+        switch(this.gKlinika)
+        {
+            case "kdch":
+                settings = "SELECT * FROM [is_settings] WHERE [name] = 'kdch_shift_doctors'";
+                
+                shiftQuery = "SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],";
+                shiftQuery +=" [t_sluzb].[state] AS [state],";
+                shiftQuery +=" GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [users_ids],";
+                shiftQuery +=" GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],";
+                shiftQuery +=" GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [comment],";
+                shiftQuery +=" [t_sluzb].[date_group] AS [dategroup]";
+                shiftQuery +=" FROM [is_sluzby_2] AS [t_sluzb]";
+                shiftQuery +=" LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]";
+                shiftQuery +=" WHERE [t_sluzb].[date_group] = '{0}' AND [t_sluzb].[state]='active'";
+                shiftQuery +=" GROUP BY [t_sluzb].[datum]";
+                shiftQuery +=" ORDER BY [t_sluzb].[datum]";
+
+                shiftQuery = my_x2.sprintf(shiftQuery, new string[] { dateGroup });
+                break;
+
+            case "nkim":
+                settings = "SELECT * FROM [is_settings] WHERE [name] = 'nkim_shift_doctors'";
+
+                shiftQuery = "SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],";
+                shiftQuery +=" [t_sluzb].[state] AS [state],";
+                shiftQuery +=" GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [users_ids],";
+                shiftQuery +=" GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],";
+                shiftQuery +=" GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [comment],";
+                shiftQuery +=" [t_sluzb].[date_group] AS [dategroup]";
+                shiftQuery +=" FROM [is_sluzby_all] AS [t_sluzb]";
+                shiftQuery +=" LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]";
+                shiftQuery +=" WHERE [t_sluzb].[date_group] = '{0}' AND [t_sluzb].[state]='active'";
+                shiftQuery += " AND [t_sluzb].[clinic] = {1}";
+                shiftQuery +=" GROUP BY [t_sluzb].[datum]";
+                shiftQuery +=" ORDER BY [t_sluzb].[datum]";
+
+                shiftQuery = my_x2.sprintf(shiftQuery, new string[] { dateGroup,Session["klinika_id"].ToString() });
+                break;
+
+
+        }
+
+        SortedList res = x2Mysql.getRow(settings);
 
         // Boolean status = Convert.ToBoolean(res["status"].ToString());
 
         string[] shifts = res["data"].ToString().Split(',');
         this.shiftType = shifts;
 
-        StringBuilder sb = new StringBuilder();
-
-        sb.Append("SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],");
-        sb.Append("[t_sluzb].[state] AS [state],");
-        sb.Append("GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [users_ids],");
-        sb.Append("GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],");
-        sb.Append("GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [comment],");
-        sb.Append("[t_sluzb].[date_group] AS [dategroup]");
-        sb.Append("FROM [is_sluzby_2] AS [t_sluzb]");
-        sb.Append("LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]");
-        sb.AppendFormat("WHERE [t_sluzb].[date_group] = '{0}' AND [t_sluzb].[state]='active'", dateGroup);
-        sb.Append("GROUP BY [t_sluzb].[datum]");
-        sb.Append("ORDER BY [t_sluzb].[datum]");
-    
-
-        Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
+        Dictionary<int, Hashtable> table = x2Mysql.getTable(shiftQuery);
 
 
 

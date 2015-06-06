@@ -18,24 +18,34 @@ public partial class dovkompl : System.Web.UI.Page
         int rok = Convert.ToInt32(Session["dov_rok"]);
 
         this.gKlinika = Session["klinika"].ToString().ToLower();
-
-        if (this.gKlinika == "kdch")
+        DateTime dt = DateTime.Today;
+        switch (this.gKlinika)
         {
-            this.init(rok, mesiac);
+            case "kdch":
+                this.init(rok, mesiac);
 
-            this.loadActivities(rok, mesiac);
-            this.loadShifts(rok, mesiac);
+                this.loadActivities(rok, mesiac);
+                this.loadShifts(rok, mesiac);
+                break;
+            case "nkim":
+                
+                this.dovkomplTitel_lbl.Text = x2.setLabel("nkim_dovkompl_titel") + ", " + dt.ToLongDateString();
+                this.init(rok, mesiac);
+
+                this.loadActivities(rok, mesiac);
+                this.loadShifts(rok, mesiac);
+                break;
+            case "2dk":
+                this.dovkomplTitel_lbl.Text = x2.setLabel("2dk_dovkompl_titel") + ", " + dt.ToLongDateString();
+                this.init(rok, mesiac);
+                this.loadActivities(rok, mesiac);
+                this.loadShiftsDK(rok, mesiac);
+                break;
+
+
         }
 
-        if (this.gKlinika == "2dk")
-        {
-            DateTime dt = DateTime.Today;
-            this.dovkomplTitel_lbl.Text = x2.setLabel("2dk_dovkompl_titel") + ", " + dt.ToLongDateString();
-            this.init(rok, mesiac);
-            this.loadActivities(rok, mesiac);
-            this.loadShiftsDK(rok, mesiac);
-        }
-       
+      
     }
 
     protected void loadShiftsDK(int rok, int mesiac)

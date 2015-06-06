@@ -1,0 +1,6 @@
+﻿INSERT INTO `is_labels` (`clinic`, `idf`, `label`)
+VALUES ('7', 'nkim_shifts_print', 'Služby Novorodeneckej kliniky intenzívnej medicíny');
+--nextquery--
+INSERT INTO `is_labels` (`clinic`, `idf`, `label`)
+VALUES ('7', 'nkim_shifts_sign ', 'MUDr. Dana Dolníková<br>\r\n<strong>Zástupkyňa prednostky</strong>');
+--nextquery--
