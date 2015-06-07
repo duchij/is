@@ -47,20 +47,10 @@ public partial class dovolenky : System.Web.UI.Page
         }
         else
         {
-            dovolenky_tab.Controls.Clear();
-
-            if (this.rights != "users")
-            {
-
-                this.drawDovolenTab();
-                //this.drawActDovolenky();
-
-            }
-            else
-            {
-                this.drawDovolenTab();
-                this.drawUserActDovolenky();
-            }
+            this.dovolenky_tab.Controls.Clear();
+            this.drawDovolenTab();
+            this.drawUserActDovolenky();
+        
         }
 
     }
@@ -315,17 +305,15 @@ public partial class dovolenky : System.Web.UI.Page
 
         return result;
     }
-
+    
     protected void deleteDovolenka(object sender, EventArgs e)
     {
-        Control data = (Control)sender;
-
+        Button data = (Button)sender;
         string name = data.ID.ToString();
         string[] tmp = name.Split('_');
 
-        StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("DELETE FROM [is_dovolenky] WHERE [id]='{0}'", tmp[1]);
-        SortedList res = x2Mysql.execute(sb.ToString());
+        string query = my_x2.sprintf("DELETE FROM [is_dovolenky] WHERE [id]='{0}'", new string[] {tmp[1]});
+        SortedList res = x2Mysql.execute(query);
 
         if (Convert.ToBoolean(res["status"]))
         {
@@ -390,7 +378,8 @@ public partial class dovolenky : System.Web.UI.Page
             Button mojeTlac = new Button();
             mojeTlac.CssClass = "button red width-300";
 
-            mojeTlac.Command += new CommandEventHandler(this.deleteDovolenka);
+            //mojeTlac.Command += new CommandEventHandler(this.deleteDovolenka);
+            mojeTlac.Click += new EventHandler(deleteDovolenka);
             mojeTlac.ID = "Button_" + data[i]["dov_id"].ToString();
             mojeTlac.Text = Resources.Resource.erase.ToString();
 

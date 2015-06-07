@@ -23,14 +23,9 @@ public partial class ransed : System.Web.UI.Page
             Response.Redirect("error.html");
         }
         this.msg_lbl.Text = "";
-
-        
-            this.loadDeps();
-            this.setMyDate();
-
-
-            this.loadData();
-        
+        this.loadDeps();
+        this.setMyDate();
+        this.loadData();
 
     }
 
@@ -54,8 +49,13 @@ public partial class ransed : System.Web.UI.Page
 
     protected void loadData()
     {
-        this.name_txt.Text = "";
-        this.note_txt.Text = "";
+        if (!IsPostBack)
+        {
+            this.name_txt.Text = "";
+            this.note_txt.Text = "";
+        }
+
+        
 
         //this.loadSluzby();
         this.loadSluzby();
@@ -210,12 +210,13 @@ public partial class ransed : System.Web.UI.Page
         string name = this.name_txt.Text.ToString();
         string note = this.note_txt.Text.ToString();
 
+        this.name_txt.Text = "";
+        this.note_txt.Text = "";
+
         string dep = this.odd_dl.SelectedValue.ToString();
 
         Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
         ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
-
-        
 
         Table rdgTable = (Table)ctpl.FindControl("rdgTable_" + dep);
 
@@ -238,7 +239,18 @@ public partial class ransed : System.Web.UI.Page
 
         riadok.Controls.Add(dataCell);
 
+        //this.saveToOsirix(name, note,dep);
 
+
+    }
+
+    protected void saveToOsirix(string name, string note,string dep)
+    {
+        SortedList data = new SortedList();
+        data.Add("name", name.Trim());
+        data.Add("note", note.Trim());
+        data.Add("clinic", Session["klinika_id"]);
+        data.Add("odd", dep.Trim());
     }
     
     

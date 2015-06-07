@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="dovolenky.aspx.cs" Inherits="dovolenky" Culture="sk-Sk" MaintainScrollPositionOnPostback="true" UICulture="sk-SK" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="dovolenky.aspx.cs" Inherits="dovolenky" Culture="sk-Sk" MaintainScrollPositionOnPostback="true" UICulture="sk-SK" EnableViewState="true" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
 </asp:Content>

@@ -14,7 +14,7 @@
                 <div class="row">Časť mena: <asp:TextBox ID="search_txt" runat="server" Width="200px" CssClass="inline" ToolTip="Zadaj časť priezviska s diakritikou"></asp:TextBox>
                         <asp:Button ID="search_btn" runat="server" Text="Hľadaj" OnClick="searchByNameFnc" CssClass="blue button" />
                 </div>
-                <asp:GridView ID="users_gv" runat="server" data-max="15" CssClass="responsive" AllowPaging="True" 
+                <asp:GridView ID="users_gv" runat="server" data-max="15" CssClass="responsive" AllowPaging="True"  EnableViewState="true"
                     OnPageIndexChanging="users_gv_PageIndexChanging" 
                     OnSelectedIndexChanging="users_gv_SelectedIndexChanging"
                     CaptionAlign="Left" AutoGenerateColumns="False" EnableModelValidation="True" SelectedRowStyle-BackColor="#66FF33">

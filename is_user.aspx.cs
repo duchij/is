@@ -44,7 +44,11 @@ public partial class is_user : System.Web.UI.Page
             this.admin_plh.Visible = true;
             this.user_plh.Visible = true;
             this.resetUserPsswd_btn.Visible = false;
-            this.loadGridViewData();
+            if (!IsPostBack)
+            {
+                this.loadGridViewData();
+            }
+            
         }
         else
         {
