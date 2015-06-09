@@ -26,11 +26,17 @@ public partial class is_op_show : System.Web.UI.Page
 
 
         int id = Convert.ToInt32(Request.QueryString["id"].ToString());
+        this.opprogid_hf.Value = id.ToString();
 
         SortedList op_text = x_db.getOpProgramByID(id);
         SortedList passPhrase = x_db.getPassPhrase();
         string _op = my_x2.DecryptString(op_text["full_text"].ToString(), passPhrase["data"].ToString());
         this.cela_sprava.Text = "<h2>" + op_text["short_text"].ToString() + "</h2><hr />";
         this.cela_sprava.Text += _op;
+    }
+
+    protected void printDocFnc(object sender, EventArgs e)
+    {
+        Response.Redirect("is_printdoc.aspx?w=op&id=" + this.opprogid_hf.Value.ToString());
     }
 }
