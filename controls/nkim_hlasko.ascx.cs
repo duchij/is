@@ -443,7 +443,7 @@ public partial class nkim_hlasko : System.Web.UI.UserControl
         {
             res = false;
         }
-
+        this.shiftType_dl.Items.Clear();
         for (int i = 0; i < tableCn; i++)
         {
             this.shiftType_dl.Items.Add(new ListItem(table[i]["typ"].ToString(), table[i]["typ"].ToString()));
@@ -480,7 +480,8 @@ public partial class nkim_hlasko : System.Web.UI.UserControl
         Dictionary<int, Hashtable> data = x2Mysql.getTable(sb.ToString());
 
         int dataCn = data.Count;
-        
+
+        //this.clinicDep_dl.Items.Clear();
 
         for (int i = 0; i < dataCn; i++)
         {

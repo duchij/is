@@ -453,4 +453,7 @@
   <data name="no_sfihts_generated" xml:space="preserve">
     <value>Neexistujú vygenerované služby pre tento mesiac!!!! Nedajú sa písať hlásenia!!! Kontaktujte osobu zodpovednú za služby......</value>
   </data>
+  <data name="search" xml:space="preserve">
+    <value>Hľadaj</value>
+  </data>
 </root>

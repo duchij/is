@@ -6,7 +6,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
-public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
+public partial class kdhao_hlasko : System.Web.UI.UserControl
 {
     mysql_db x2Mysql = new mysql_db();
     x2_var x2 = new x2_var();
@@ -15,9 +15,13 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
 
     protected void Page_Load(object sender, EventArgs e)
     {
-       if (!IsPostBack)
+        if (Session["tuisegumdrum"] == null)
         {
-           
+            Response.Redirect("error.html");
+        }
+
+        if (!IsPostBack)
+        {
             this.setMyDate();
             if (this.setShiftTypes())
             {
@@ -32,15 +36,12 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
                 this.ctrl_msg_lbl.Text = "<h3 class='red'>"+Resources.Resource.no_sfihts_generated+"</h3>";
                     
             }
-            
         }
         else
         {
            
             this.loadEPCData(false);
-            
-            
-            //this.loadHlasko();
+           
         }
 
         //this.setShiftTypes();
@@ -62,42 +63,12 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
 
     }
 
-    protected void showHlasko_fnc(object sender, EventArgs e)
-    {
-        Button btn = (Button)sender;
-
-        string buttonId = btn.ID.ToString();
-
-       
-        switch(buttonId)
-        {
-            case "showOup_btn":
-                this.shiftType_dl.SelectedValue = "OUP";
-                this.Calendar1_SelectionChanged(this.shiftType_dl, e);
-                break;
-            case "showOddA_btn":
-                this.shiftType_dl.SelectedValue = "OddA";
-                this.Calendar1_SelectionChanged(this.shiftType_dl, e);
-                break;
-            case "showOddB_btn":
-                this.shiftType_dl.SelectedValue = "OddB";
-                this.Calendar1_SelectionChanged(this.shiftType_dl, e);
-                break;
-            case "showOp_btn":
-                this.shiftType_dl.SelectedValue = "OP";
-                this.Calendar1_SelectionChanged(this.shiftType_dl, e);
-                break;
-        }
-        
-
-    }
-
     protected void setShiftForDoctor()
     {
         DateTime dt = Convert.ToDateTime(this.Calendar1.SelectedDate);
 
         StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("SELECT [typ] FROM [is_sluzby_2] WHERE [user_id] = '{0}' AND [datum]='{1}' AND [typ]!='Prijm'", Session["user_id"].ToString(), x2.unixDate(dt).ToString());
+        sb.AppendFormat("SELECT [typ] FROM [is_sluzby_all] WHERE [user_id] = '{0}' AND [datum]='{1}' AND [clinic]={2}", Session["user_id"].ToString(), x2.unixDate(dt).ToString(),Session["klinika_id"]);
 
         SortedList row = x2Mysql.getRow(sb.ToString());
 
@@ -463,7 +434,7 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
 
         DateTime dt = this.Calendar1.SelectedDate;
 
-        sb.AppendFormat("SELECT [typ] FROM [is_sluzby_2] WHERE [datum]='{0}' ORDER BY [ordering] ASC", x2.unixDate(dt));
+        sb.AppendFormat("SELECT [typ] FROM [is_sluzby_all] WHERE [datum]='{0}' AND [clinic]='{1}' ORDER BY [ordering] ASC", x2.unixDate(dt),Session["klinika_id"]);
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
         int tableCn = table.Count;
@@ -472,7 +443,7 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
         {
             res = false;
         }
-
+        this.shiftType_dl.Items.Clear();
         for (int i = 0; i < tableCn; i++)
         {
             this.shiftType_dl.Items.Add(new ListItem(table[i]["typ"].ToString(), table[i]["typ"].ToString()));
@@ -489,7 +460,7 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
         if (sender.GetType() == typeof(Calendar))
         {
 
-            //this.setShiftTypes();
+            this.setShiftTypes();
             this.loadHlasko();
             this.loadEPCData(false);
             this.setEPC_init();
@@ -509,7 +480,8 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
         Dictionary<int, Hashtable> data = x2Mysql.getTable(sb.ToString());
 
         int dataCn = data.Count;
-        
+
+        //this.clinicDep_dl.Items.Clear();
 
         for (int i = 0; i < dataCn; i++)
         {

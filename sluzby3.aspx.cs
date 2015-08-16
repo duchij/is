@@ -30,14 +30,21 @@ public partial class sluzby3: System.Web.UI.Page
         this.gKlinika = Session["klinika"].ToString().ToLower();
         Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
         ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
+
         switch (this.gKlinika)
         {
             case "kdch":
                 ctpl.Controls.Add(Page.LoadControl("~/controls/shifts/kdch_shifts.ascx"));
                 break;
-            //case "2dk":
-            //    ctpl.Controls.Add(Page.LoadControl("~/controls/druhadk_hlasko.ascx"));
-            //    break;
+            case "nkim":
+                ctpl.Controls.Add(Page.LoadControl("~/controls/shifts/nkim_shifts.ascx"));
+                break;
+            case "2dk":
+                ctpl.Controls.Add(Page.LoadControl("~/controls/shifts/dk_shifts.ascx"));
+                break;
+            case "kdhao":
+                ctpl.Controls.Add(Page.LoadControl("~/controls/shifts/kdhao_shifts.ascx"));
+                break;
         }
 
        

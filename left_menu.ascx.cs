@@ -54,6 +54,10 @@ public partial class left_menu : System.Web.UI.UserControl
             this.admin.Visible = false;
             this.sestra.Visible = true;
         }
+        else if (wgroup == "doctor" || rights=="poweruser")
+        {
+            this.powerusers.Visible = true; 
+        }
     }
 
     protected void setState(object sender, EventArgs e)

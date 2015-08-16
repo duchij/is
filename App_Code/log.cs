@@ -7,6 +7,32 @@ using System.Web;
 using System.Net;
 using System.Net.Mail;
 
+using System.Diagnostics;
+
+//public static class Logger
+//{
+
+//    private static object locker = new object();
+
+//    public static void Log(string source, string message)
+//    {
+//        lock (locker) {
+//            string logFilePath = @"C:\LogFile\log.txt";
+
+//            using (FileStream file = new FileStream(logFilePath,FileMode.Append,FileAccess.Write,FileShare.None) 
+//            {
+//                StreamWriter writer = new StreamWriter(file);
+
+//                writer.write(source + ": : " + message);   
+//                writer.Flush();
+
+//                file.Close();
+//            }
+//        }
+//    }
+
+//}
+
 /// <summary>
 /// Summary description for log
 /// </summary>
@@ -151,6 +177,7 @@ public class log
             
         }*/
         StreamWriter sfw =null;
+
         if (serverPath != "end")
         {
             DateTime dt = DateTime.Today;
@@ -165,11 +192,22 @@ public class log
                 File.Create(complFile);
             } */
 
-            sfw  = new StreamWriter(@complFile, true);
-        }
-       
-        
+            int counter = 0;
 
+            while (FileInUse(@complFile)&&counter<10)
+            {
+                System.Threading.Thread.Sleep(100);
+                counter++;
+            }
+            if (counter<10)
+            {
+                sfw = new StreamWriter(@complFile, true);
+            }
+            else
+            {
+                sfw = null;
+            }
+        }
         return sfw;
     }
 
@@ -297,19 +335,58 @@ public class log
             if (sendMail) errorDt.Add("data", strToWrite);
         }
 
-        
+        StreamWriter sw = null;
 
-        StreamWriter sw = this.openFile();
-        if (sw != null)
+        try
         {
-            sw.WriteLine(strToWrite);
-            sw.Close();
-            if (sendMail) this.sendMail(errorDt);
+            sw = this.openFile();
+            if (sw != null)
+            {
+                sw.WriteLine(strToWrite);
+                sw.Flush();
+                sw.Close();
+                sw.Dispose();
+            }
+            else
+            {
+
+            }
+            
+           // if (sendMail) this.sendMail(errorDt);
+            
         }
-        
-        
+        catch (Exception ex)
+        {
+            //sw.Flush();
+            //sw.Close();
+        }
+    }
+
+
+	
+
+    static bool FileInUse(string path)
+    {
+        try
+        {
+            using (FileStream fs = new FileStream(path, FileMode.OpenOrCreate))
+            {
+              
+                if (fs.CanWrite)
+                {
+                    fs.Dispose();
+                    fs.Close();
+                }
+            }
+            return false;
+        }
+        catch (IOException ex)
+        {
+            return true;
+        }
     }
 
    
 
 }
+

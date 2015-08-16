@@ -44,7 +44,7 @@ public partial class sluzby2 : System.Web.UI.Page
         this.rights = Session["rights"].ToString();
         this.wgroup = Session["workgroup"].ToString();
 
-        if (this.gKlinika =="kdch" || this.gKlinika=="nkim")
+        if (this.gKlinika == "kdch" || this.gKlinika == "nkim" || this.gKlinika == "kdhao")
         {
             this.kdch_pl.Visible = true;
 
@@ -101,7 +101,7 @@ public partial class sluzby2 : System.Web.UI.Page
                 this.generateDKShiftTableForm();
                 this.generateWeekStatus();
             }
-            if (gKlinika == "kdch" || this.gKlinika == "nkim")
+            if (gKlinika == "kdch" || this.gKlinika == "nkim"|| this.gKlinika=="kdhao")
             {
                 string type = this.getShiftStateKDCH();
                 if (type == "active")
@@ -123,7 +123,7 @@ public partial class sluzby2 : System.Web.UI.Page
                 this.generateDKShiftTableForm();
                 this.generateWeekStatus();
             }
-            if (this.gKlinika == "kdch" || this.gKlinika =="nkim")
+            if (this.gKlinika == "kdch" || this.gKlinika =="nkim" || this.gKlinika=="kdhao")
             {
                 this.loadSluzby();
             }
@@ -144,7 +144,7 @@ public partial class sluzby2 : System.Web.UI.Page
             //this.avaible_btn.Text = x2.setLabel("2dk_shifts_active");
             this.editChk_lbl.Text = "Editovat";
         }
-        if (this.gKlinika == "nkim")
+        if (this.gKlinika == "nkim" || this.gKlinika=="kdhao")
         {
             //this.setup_btn.Text = x2.setLabel("2dk_shifts_setup");
             //this.avaible_btn.Text = x2.setLabel("2dk_shifts_active");
@@ -155,7 +155,7 @@ public partial class sluzby2 : System.Web.UI.Page
 
     protected void changeSluzba(object sender, EventArgs e)
     {
-        if (this.gKlinika == "kdch" || this.gKlinika=="nkim")
+        if (this.gKlinika == "kdch" || this.gKlinika == "nkim" || this.gKlinika == "kdhao")
         {
             this.shiftTable.Controls.Clear();
             string type = this.getShiftStateKDCH();
@@ -293,6 +293,9 @@ public partial class sluzby2 : System.Web.UI.Page
                 break;
             case "nkim":
                 sb.AppendFormat("SELECT [state] FROM [is_sluzby_all] WHERE [date_group]='{0}' AND [clinic]='{1}' GROUP BY [state]", dateGroup,Session["klinika_id"]);
+                break;
+            case "kdhao":
+                sb.AppendFormat("SELECT [state] FROM [is_sluzby_all] WHERE [date_group]='{0}' AND [clinic]='{1}' GROUP BY [state]", dateGroup, Session["klinika_id"]);
                 break;
         }
        
@@ -656,6 +659,9 @@ public partial class sluzby2 : System.Web.UI.Page
             case "nkim":
                 queryIn = "UPDATE [is_sluzby_all] SET [state]='active' WHERE [date_group]='{0}{1}' AND [clinic]='{2}'";
                 break;
+            case "kdhao":
+                queryIn = "UPDATE [is_sluzby_all] SET [state]='active' WHERE [date_group]='{0}{1}' AND [clinic]='{2}'";
+                break;
 
         }
         sb.AppendFormat(queryIn, rok, mesiac,Session["klinika_id"]);
@@ -920,8 +926,8 @@ public partial class sluzby2 : System.Web.UI.Page
         if (tableCn > 0 && table[0]["state"].ToString() !="setup" )
         {
             this.shiftTable.Visible = true;
-            Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
-            ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
+            //Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+            //ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
 
             for (int doc = 0; doc < tableCn; doc++)
             {
@@ -935,7 +941,7 @@ public partial class sluzby2 : System.Web.UI.Page
 
                 if (chk_st)
                 {
-                    Control cl = ctpl.FindControl(type + "_" + dt.Day.ToString());
+                    Control cl = FindControl(type + "_" + dt.Day.ToString());
                     DropDownList dl = (DropDownList)cl;
 
                     if (this.rights == "users")
@@ -964,7 +970,7 @@ public partial class sluzby2 : System.Web.UI.Page
                 }
                 else
                 {
-                    Control tcl = ctpl.FindControl(type + "_" + dt.Day.ToString());
+                    Control tcl = FindControl(type + "_" + dt.Day.ToString());
                     Label txtDocName = (Label)tcl;
 
                     // this.shiftTable.Controls.Remove(dl);
@@ -975,7 +981,7 @@ public partial class sluzby2 : System.Web.UI.Page
 
 
                 string comment = table[doc]["comment"].ToString().Trim();
-                Control tCl = ctpl.FindControl(type + "_" + "txt_" + dt.Day.ToString());
+                Control tCl = FindControl(type + "_" + "txt_" + dt.Day.ToString());
                 TextBox txtB = (TextBox)tCl;
                 if ((comment.Length == 0 || comment=="-") && this.edit_chk.Checked == false)
                 {
@@ -1534,6 +1540,21 @@ public partial class sluzby2 : System.Web.UI.Page
                     sb.Append("GROUP BY [t_sluzb].[datum]");
                     sb.Append("ORDER BY [t_sluzb].[datum]");
                     break;
+                case "kdhao":
+                    sb.Append("SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],");
+                    sb.Append("[t_sluzb].[state] AS [state],");
+                    sb.Append("GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [users_ids],");
+                    sb.Append("GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],");
+                    sb.Append("GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [comment],");
+                    sb.Append("[t_sluzb].[date_group] AS [dategroup]");
+                    sb.Append("FROM [is_sluzby_all] AS [t_sluzb]");
+                    sb.Append("LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id] ");
+                    sb.AppendFormat("WHERE [t_sluzb].[date_group] = '{0}{1}' ", rok, mesiac);
+                    sb.AppendFormat("AND [t_sluzb].[clinic]={0} ", Session["klinika_id"]);
+                    sb.Append("GROUP BY [t_sluzb].[datum]");
+                    sb.Append("ORDER BY [t_sluzb].[datum]");
+                    break;
+                    
 
             }
             
@@ -1557,6 +1578,20 @@ public partial class sluzby2 : System.Web.UI.Page
                     sb.Append("ORDER BY [t_sluzb].[datum]");
                     break;
                 case "nkim":
+                    sb.Append("SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],");
+                    sb.Append("[t_sluzb].[state] AS [state],");
+                    sb.Append("GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [users_ids],");
+                    sb.Append("GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],");
+                    sb.Append("GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [comment],");
+                    sb.Append("[t_sluzb].[date_group] AS [dategroup]");
+                    sb.Append("FROM [is_sluzby_all] AS [t_sluzb]");
+                    sb.Append("LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]");
+                    sb.AppendFormat("WHERE [t_sluzb].[date_group] = '{0}{1}' AND [t_sluzb].[state]='active'", rok, mesiac);
+                    sb.AppendFormat("AND [t_sluzb].[clinic]={0} ", Session["klinika_id"]);
+                    sb.Append("GROUP BY [t_sluzb].[datum]");
+                    sb.Append("ORDER BY [t_sluzb].[datum]");
+                    break;
+                case "kdhao":
                     sb.Append("SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],");
                     sb.Append("[t_sluzb].[state] AS [state],");
                     sb.Append("GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [users_ids],");
@@ -1755,6 +1790,9 @@ public partial class sluzby2 : System.Web.UI.Page
                             break;
                         case "nkim":
                             daysTmp = x2Mysql.fillNkimShifts(Convert.ToInt32(dateGroup), Convert.ToInt32(daysMonth), Convert.ToInt32(mesiac), Convert.ToInt32(rok), Convert.ToInt32(Session["klinika_id"]));
+                            break;
+                        case "kdhao":
+                            daysTmp = x2Mysql.fillKdhaoShifts(Convert.ToInt32(dateGroup), Convert.ToInt32(daysMonth), Convert.ToInt32(mesiac), Convert.ToInt32(rok), Convert.ToInt32(Session["klinika_id"]));
                             break;
                     }
 

@@ -32,22 +32,32 @@
                     </div>
                     
                     <div class="three sixth">
-                    <asp:Calendar CssClass="responsive" data-max="15" ID="Calendar1" runat="server" BackColor="White" OnSelectionChanged="Calendar1_SelectionChanged" 
-                            BorderColor="#999999" DayNameFormat="Shortest" 
-                            Font-Names="Verdana" Font-Size="8pt" ForeColor="Black"  
-                           CellPadding="4">
-                        <SelectedDayStyle BackColor="#666666" Font-Bold="True" ForeColor="White" />
-                        <SelectorStyle BackColor="#CCCCCC" />
-                        <WeekendDayStyle BackColor="#FFFFCC" />
-                        <TodayDayStyle BackColor="#FFCC66" ForeColor="White" />
+                    <asp:Calendar ID="Calendar1" runat="server" BackColor="White" OnSelectionChanged="Calendar1_SelectionChanged"  CssClass="responsive" data-max="12"
+                            BorderColor="#d9edf7" DayNameFormat="Shortest"  
+                              ForeColor="Black" 
+                             CellPadding="4" >
+                        <SelectedDayStyle BackColor="#46627f" Font-Bold="True" ForeColor="White" />
+                        <SelectorStyle BackColor="#46627f" />
+                        <WeekendDayStyle BackColor="#dff0d8" />
+                        <TodayDayStyle BackColor="#f0e6f4" ForeColor="black" />
                         <OtherMonthDayStyle ForeColor="#808080" />
                         <NextPrevStyle VerticalAlign="Bottom" />
-                        <DayHeaderStyle BackColor="#CCCCCC" Font-Bold="True" Font-Size="7pt" />
-                        <TitleStyle BackColor="#999999" Font-Bold="True" BorderColor="Black" />
+                        <DayHeaderStyle BackColor="#ffe5c7" Font-Bold="True" />
+                        <TitleStyle BackColor="#d9edf7" BorderColor="Black" Font-Bold="True" />
                         </asp:Calendar>
                     </div>
                 </div>
-                    
+                    <p>
+                        <h2 style="color:red;">Dôležité.....</h2>
+                        Ak vložíte niečo priamo z MEDEI alebo z Wordu do editora, môže Vám to rozhádzať hlásenie a nemusí sa Vám ani Vašej kolegyni potom text správne uložiť.
+                        Preto.....
+                        <ul>
+                            <li><strong>Nevkladajte veci z MEDEI priamo</strong> do hlásenia ak chcete vložiť niečo z MEDEI tak v menu editora si dajte <b>Upraviť</b> a <b>Vložiť ako Text</b>. 
+                                Potom sa Vám nerozhádže ani text ani fonty. To isté platí aj o prenášaní z Wordu. Síce príjdete o formátovanie ale nestratíte text... To je na Vás :) </li>
+                            <li><strong>Aby Vám editor nerobil veľké medzery medzi riadkami</strong> použite miesto Enteru kombináciu <strong>SHIFT+Enter</strong>, kurzor Vám skočí do ďalšieho riadku bez medzere.</li>
+                        </ul>
+
+                    </p>
                    <asp:TextBox ID="hlasenie" CssClass="dtextbox" runat="server" Width="90%" Rows="30" Height="500" TextMode="MultiLine"> </asp:TextBox> 
                     
                 <%--<FTB:FreeTextBox ID="hlasenie"  Height="500" Width="100%" toolbarlayout="Bold, Italic, Underline,RemoveFormat, Redo, Undo|FontFacesMenu,FontSizesMenu|JustifyLeft,JustifyRight,JustifyCenter,JustifyFull;BulletedList,NumberedList,Indent,Outdent|WordClean,NetSpell"

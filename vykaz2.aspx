@@ -72,6 +72,7 @@
 
         <div class="row">
             <div class="one">
+                        Pocet prac. dni:<asp:TextBox ID="ine_p_dni_txt" runat="server" Width="50"></asp:TextBox>
                         Pocet hodin podla dni:<asp:TextBox ID="pocetHod_txt" runat="server" Width="50" CssClass="mojInline"></asp:TextBox>
                         <%--<asp:Label ID="pocetHod_lbl" runat="server"></asp:Label> --%>
                         Rozdiel medzi: <strong><asp:Label ID="rozdiel_lbl" runat="server" CssClass="mojInline"></asp:Label></strong>

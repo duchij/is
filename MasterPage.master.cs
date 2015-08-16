@@ -46,7 +46,7 @@ public partial class MasterPage : System.Web.UI.MasterPage
     protected void Page_Load(object sender, EventArgs e)
     {
         
-        this.gKlinika = Session["klinika"].ToString().ToLower();
+        this.gKlinika = Session["klinika"].ToString().Trim();
         this.web_titel.Text = X2.setLabel(Session["klinika"].ToString().ToLower()+"_web_titel");
 
         this.current_user_lbl.Text = Session["fullname"].ToString();
@@ -217,6 +217,12 @@ public partial class MasterPage : System.Web.UI.MasterPage
                 {
                     sb.AppendFormat("SELECT [datum],[typ] FROM [is_sluzby_all] WHERE [date_group] ='{0}' AND [user_id] = '{1}' ORDER BY [datum]", dateGroup, Session["user_id"]);
                 }
+            break;
+            case "kdhao":
+            if (this.wgroup == "doctor")
+            {
+                sb.AppendFormat("SELECT [datum],[typ] FROM [is_sluzby_all] WHERE [date_group] ='{0}' AND [user_id] = '{1}' ORDER BY [datum]", dateGroup, Session["user_id"]);
+            }
             break;
 
         }

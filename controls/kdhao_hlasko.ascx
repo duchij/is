@@ -1,4 +1,4 @@
-﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="kdch_hlasko.ascx.cs" Inherits="controls_druhadk_hlasko" EnableViewState="true" %>
+﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="kdhao_hlasko.ascx.cs" Inherits="kdhao_hlasko" EnableViewState="true" %>
 <hr />
 Vytvoril:<asp:Label ID="creatUser_lbl" runat="server" Text="" Font-Bold="true"></asp:Label><br />
     Posledná zmena:<asp:Label ID="lastUser_lbl" runat="server" Text="" Font-Bold="true"></asp:Label>
@@ -30,7 +30,7 @@ Vytvoril:<asp:Label ID="creatUser_lbl" runat="server" Text="" Font-Bold="true"><
     
     </div>
     <div class="one half padded">
-        Zobraz v OSIRIXe
+        RDG v prehliadači....
         <hr />
         <asp:Table ID="osirix_tbl" runat="server"></asp:Table>
          
@@ -75,12 +75,13 @@ Vytvoril:<asp:Label ID="creatUser_lbl" runat="server" Text="" Font-Bold="true"><
             <div class="one fifth">
                 Typ:<asp:DropDownList ID="worktype_cb" runat="server">
                     <asp:ListItem Value="prijem">Príjem</asp:ListItem>
-                <asp:ListItem Value="operac">Operácia/Asistencia/Výkon</asp:ListItem>
-                <asp:ListItem Value="sledov">Sledovanie</asp:ListItem>
-                <asp:ListItem Value="konzil">Konzílium</asp:ListItem>
-                <asp:ListItem Value="vizita">Vizita</asp:ListItem>
-                <asp:ListItem Value="dekurz">Dekurzovanie</asp:ListItem>
-                <asp:ListItem Value="urgent">Urgent</asp:ListItem>
+                    <asp:ListItem Value="vyhodV">Vyhodnocovanie výsledkov</asp:ListItem>
+                    <asp:ListItem Value="upravL">Úprava liečby</asp:ListItem>
+                    <asp:ListItem Value="konzul">Konzultácia</asp:ListItem>
+                    <asp:ListItem Value="vizita">Vizita</asp:ListItem>
+                    <asp:ListItem Value="dekurz">Dekurzovanie</asp:ListItem>
+                    <asp:ListItem Value="konzil">Konzílium</asp:ListItem>
+                    <%--<asp:ListItem Value="urgent">Urgent</asp:ListItem>--%>
                     </asp:DropDownList>
             </div> 
         </div>
@@ -119,15 +120,6 @@ Vytvoril:<asp:Label ID="creatUser_lbl" runat="server" Text="" Font-Bold="true"><
     </div>
 </div>
      </div> <%-- blue bx--%>
-Zobraz hlasenia
-<div class="row">
-    <asp:Button CssClass="medium button red" runat="server" ID="showOup_btn" OnClick="showHlasko_fnc" Text="OUP" />
-    <asp:Button CssClass="medium button blue" runat="server" ID="showOddA_btn" OnClick="showHlasko_fnc" Text="OddA" />
-    <asp:Button CssClass="medium button green" runat="server" ID="showOddB_btn" OnClick="showHlasko_fnc" Text="OddB" />
-    <asp:Button CssClass="medium button asphalt" runat="server" ID="showOp_btn" OnClick="showHlasko_fnc" Text="Op. pohotovost" />
-    
-</div>
-
 <asp:TextBox ID="hlasenie" CssClass="dtextbox" runat="server"  Width="90%" Rows="30" Height="500" TextMode="MultiLine"> </asp:TextBox>
 <asp:Button ID="saveHlasko_btn" runat="server" Text="Ulož zmenu" OnClick="saveHlaskoFnc" CssClass="button green" />
                 

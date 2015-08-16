@@ -1146,6 +1146,20 @@ public partial class vykaz2 : System.Web.UI.Page
 
         int pocetPracdni = days - pocetVolnychDni;
 
+        string ineDni = this.ine_p_dni_txt.Text.ToString();
+
+        if (ineDni.Trim().Length > 0)
+        {
+            try {
+                pocetPracdni = Convert.ToInt32(ineDni);
+            }
+            catch (Exception ex)
+            {
+
+            }
+            
+        }
+
         decimal pocetPracHod = 0;
 
         if (Session["pracdoba"].ToString().Length != 0)
@@ -1491,7 +1505,7 @@ public partial class vykaz2 : System.Web.UI.Page
                         if (dovolenky[i]["type"].ToString() == "do") { my_text_box.Text = "D"; my_text_box1.Text = "D"; my_text_box2.Text = "0"; my_text_box3.Text = "0"; }
                         if (dovolenky[i]["type"].ToString() == "pn") { my_text_box.Text = "PN"; my_text_box1.Text = "PN"; my_text_box2.Text = "0"; my_text_box3.Text = "0"; }
                         if (dovolenky[i]["type"].ToString() == "sk") { my_text_box.Text = "SK"; my_text_box1.Text = "SK"; my_text_box2.Text = "0"; my_text_box3.Text = "0"; }
-                        if (dovolenky[i]["type"].ToString() == "le") { my_text_box.Text = "SK"; my_text_box1.Text = "Le"; my_text_box2.Text = "0"; my_text_box3.Text = "0"; }
+                        if (dovolenky[i]["type"].ToString() == "le") { my_text_box.Text = "Le"; my_text_box1.Text = "Le"; my_text_box2.Text = "0"; my_text_box3.Text = "0"; }
 
                         
                     }

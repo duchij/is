@@ -10,8 +10,9 @@
             <li><asp:Button ID="offline_btn" runat="server" Text="Set Web Offline" CssClass="button red" OnClick="setState" /></li>
         <li><asp:Button ID="online_btn" runat="server" Text="Set Web Online" CssClass="button green"  OnClick="setState"/></li>
 
-             <li><asp:HyperLink ID="newUserVykaz" runat="server" NavigateUrl="sluzby3.aspx">!!!! newShifts</asp:HyperLink></li>
-
+             <li><asp:HyperLink ID="newUserVykaz" runat="server" NavigateUrl="is_opkniha.aspx">!!!! OPKniha</asp:HyperLink></li>
+            <li><asp:HyperLink ID="newSluz" runat="server" NavigateUrl="sluzby3.aspx">!!!! NewSluz</asp:HyperLink></li>
+            <li><asp:HyperLink ID="is_lf" runat="server" NavigateUrl="is_lf.aspx">!!!! Subory</asp:HyperLink></li>
         </ul>
   </asp:PlaceHolder>
 
@@ -81,6 +82,16 @@
 
         <li>Mesačný výkaz</li> 
     </ul>                   
+   </asp:PlaceHolder>
+
+    <asp:PlaceHolder ID="powerusers" runat="server"  Visible="false">
+        <div class="box info half-padded"> 
+            PowerUser
+        </div>
+        <ul>
+            <li><a href="opprogram.aspx" target="_self">Operačný program</a></li>
+            
+        </ul>                   
    </asp:PlaceHolder>
                     
     <div class="box info half-padded"> <h3><asp:label ID="Label4" runat="server" Text="<%$ Resources:Resource,lmenu_user %>"></asp:label></h3></div>

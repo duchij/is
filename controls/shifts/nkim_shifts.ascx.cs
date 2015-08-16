@@ -12,7 +12,7 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 
-public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
+public partial class controls_shifts_nkim_shifts : System.Web.UI.UserControl
 {
     public mysql_db x2Mysql = new mysql_db();
     public x2_var x2 = new x2_var();
@@ -21,6 +21,7 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
     public string rights = "";
     public string[] shiftType;
     public string wgroup = "";
+    private string clinicIdf = "";
 
     protected void Page_Init(object sender, EventArgs e)
     {
@@ -39,7 +40,7 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
 
         this.rights = Session["rights"].ToString();
         this.wgroup = Session["workgroup"].ToString();
-
+        this.clinicIdf = Session["klinika"].ToString();
         //this.gKlinika = Session["klinika"].ToString().ToLower();
 
         this.initLabels();
@@ -125,7 +126,7 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
         int dateGroup = x2.makeDateGroup(rok, mesiac);
 
         StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("SELECT [state] FROM [is_sluzby_2] WHERE [date_group]='{0}' AND [clinic]='{1}' GROUP BY [state]", dateGroup,Session["klinika_id"]);
+        sb.AppendFormat("SELECT [state] FROM [is_sluzby_all] WHERE [date_group]='{0}' AND [clinic]='{1}' GROUP BY [state]", dateGroup,Session["klinika_id"]);
 
         SortedList row = x2Mysql.getRow(sb.ToString());
         if (row.Count == 0)
@@ -147,7 +148,7 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
             mesiac = "0" + mesiac;
         }
 
-        sb.AppendFormat("UPDATE [is_sluzby_2] SET [state]='active' WHERE [date_group]='{0}{1}'", rok, mesiac);
+        sb.AppendFormat("UPDATE [is_sluzby_all] SET [state]='active' WHERE [date_group]='{0}{1}' AND [clinic]='{2}'", rok, mesiac,Session["klinika_id"]);
         SortedList res = x2Mysql.execute(sb.ToString());
 
         Boolean result = Convert.ToBoolean(res["status"].ToString());
@@ -171,12 +172,9 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
         string rok = this.rok_cb.SelectedValue.ToString();
         string mesiac = this.mesiac_cb.SelectedValue.ToString();
 
-        if (mesiac.Length == 1)
-        {
-            mesiac = "0" + mesiac;
-        }
+        int dateGroup = x2.makeDateGroup(Convert.ToInt32(rok), Convert.ToInt32(mesiac));
 
-        sb.AppendFormat("UPDATE [is_sluzby_2] SET [state]='draft' WHERE [date_group]='{0}{1}'", rok, mesiac);
+        sb.AppendFormat("UPDATE [is_sluzby_all] SET [state]='draft' WHERE [date_group]='{0}' AND [clinic]='{1}", dateGroup, Session["klinika_id"].ToString());
         SortedList res = x2Mysql.execute(sb.ToString());
 
         Boolean result = Convert.ToBoolean(res["status"].ToString());
@@ -209,8 +207,8 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
 
         string dateGroup = rok + mesiac;
         Session.Add("aktDateGroup", dateGroup);
-        
-        SortedList res = x2Mysql.getRow("SELECT * FROM [is_settings] WHERE [name] = 'kdch_shift_doctors'");
+        string query = x2.sprintf("SELECT * FROM [is_settings] WHERE [name] = '{0}_shift_doctors'", new string[] { this.clinicIdf });
+        SortedList res = x2Mysql.getRow(query);
 
         // Boolean status = Convert.ToBoolean(res["status"].ToString());
 
@@ -386,9 +384,9 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
 
         int daysMonth = DateTime.DaysInMonth(Convert.ToInt32(rok), Convert.ToInt32(mesiac));
         //this.days_lbl.Text = daysMonth.ToString();
-        SortedList res = x2Mysql.getRow("SELECT * FROM [is_settings] WHERE [name] = 'kdch_shift_doctors'");
+        string query = x2.sprintf("SELECT * FROM [is_settings] WHERE [name] = '{0}_shift_doctors'", new string[] { this.clinicIdf });
+        SortedList res = x2Mysql.getRow(query);
         StringBuilder sb = new StringBuilder();
-
         int dateGroup = x2.makeDateGroup(Convert.ToInt32(rok), Convert.ToInt32(mesiac));
         
         if ((this.rights.IndexOf("admin")!=-1 || this.rights == "poweruser") && this.wgroup == "doctor")
@@ -399,12 +397,13 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
             sb.Append("GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [users_ids],");
             sb.Append("GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],");
             sb.Append("GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [comment],");
-            sb.Append("[t_sluzb].[date_group] AS [dategroup]");
-            sb.Append("FROM [is_sluzby_2] AS [t_sluzb]");
-            sb.Append("LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]");
-            sb.AppendFormat("WHERE [t_sluzb].[date_group] = '{0}'", dateGroup);
-            sb.Append("GROUP BY [t_sluzb].[datum]");
-            sb.Append("ORDER BY [t_sluzb].[datum]");
+            sb.Append("[t_sluzb].[date_group] AS [dategroup] ");
+            sb.Append("FROM [is_sluzby_all] AS [t_sluzb] ");
+            sb.Append("LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id] ");
+            sb.AppendFormat("WHERE [t_sluzb].[date_group] = '{0}'",dateGroup );
+            sb.AppendFormat("AND[t_sluzb].[clinic] = '{0}' ", Session["klinika_id"]);
+            sb.Append("GROUP BY [t_sluzb].[datum] ");
+            sb.Append("ORDER BY [t_sluzb].[datum] ");
         }
         else
         {
@@ -414,9 +413,10 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
             sb.Append("GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],");
             sb.Append("GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [comment],");
             sb.Append("[t_sluzb].[date_group] AS [dategroup]");
-            sb.Append("FROM [is_sluzby_2] AS [t_sluzb]");
+            sb.Append("FROM [is_sluzby_all] AS [t_sluzb]");
             sb.Append("LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]");
             sb.AppendFormat("WHERE [t_sluzb].[date_group] = '{0}' AND [t_sluzb].[state]='active'", dateGroup);
+            sb.AppendFormat("WHERE [t_sluzb].[clinic] = '{0}'", Session["klinika_id"]);
             sb.Append("GROUP BY [t_sluzb].[datum]");
             sb.Append("ORDER BY [t_sluzb].[datum]");
         }
@@ -477,9 +477,9 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
                 }
                 if ((this.rights.IndexOf("admin") != -1 || this.rights == "poweruser") && this.wgroup == "doctor")
                 {
-                    int daysTmp = x2Mysql.fillDocShifts(Convert.ToInt32(dateGroup), Convert.ToInt32(daysMonth), Convert.ToInt32(mesiac), Convert.ToInt32(rok),Convert.ToInt32(Session["klinika_id"]));
+                    int daysTmp = x2Mysql.fillNkimShifts(Convert.ToInt32(dateGroup), Convert.ToInt32(daysMonth), Convert.ToInt32(mesiac), Convert.ToInt32(rok),Convert.ToInt32(Session["klinika_id"]));
                     this.shiftTable.Controls.Clear();
-
+                    
                     this.loadSluzby();
                 }
             }
@@ -489,7 +489,7 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
     protected ArrayList loadDoctors()
     {
         StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("SELECT [id],[name3] FROM [is_users] WHERE ([work_group]='doctor') AND [active]='1' AND [klinika]={0}  ORDER BY [name2]",Session["klinika_id"]);
+        sb.AppendFormat("SELECT [id],[name3] FROM [is_users] WHERE ([work_group]='doctor') AND [active]='1' AND [klinika]='{0}'  ORDER BY [name2]",Session["klinika_id"]);
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
 
@@ -531,7 +531,7 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
         int col = Convert.ToInt32(tmp[2]);
         data.Add("typ", this.shiftType[col]);
         data.Add("ordering", col + 1);
-        data.Add("clinic", Session["klinika_id"]);
+
         string mesiac = this.mesiac_cb.SelectedValue.ToString();
         string rok = this.rok_cb.SelectedValue.ToString();
 
@@ -548,7 +548,7 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
         data.Add("datum", this.rok_cb.SelectedValue.ToString() + "-" + this.mesiac_cb.SelectedValue.ToString() + "-" + den.ToString());
         data.Add("comment", tBoxF.Text.ToString());
 
-        SortedList result = x2Mysql.mysql_insert("is_sluzby_2", data);
+        SortedList result = x2Mysql.mysql_insert("is_sluzby_all", data);
 
         Boolean res = Convert.ToBoolean(result["status"].ToString());
 
@@ -601,7 +601,7 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
 
         data.Add("datum", this.rok_cb.SelectedValue.ToString() + "-" + this.mesiac_cb.SelectedValue.ToString() + "-" + den.ToString());
 
-        SortedList result = x2Mysql.mysql_insert("is_sluzby_2", data);
+        SortedList result = x2Mysql.mysql_insert("is_sluzby_all", data);
 
         Boolean res = Convert.ToBoolean(result["status"].ToString());
 
