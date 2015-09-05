@@ -6,6 +6,10 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
     
     <asp:Label ID="msg_lbl" runat="server" Text=""></asp:Label>
+
+    
+
+
     <asp:PlaceHolder ID="admin_plh" runat="server">
 
         <div class="row">
@@ -14,10 +18,10 @@
                 <div class="row">Časť mena: <asp:TextBox ID="search_txt" runat="server" Width="200px" CssClass="inline" ToolTip="Zadaj časť priezviska s diakritikou"></asp:TextBox>
                         <asp:Button ID="search_btn" runat="server" Text="Hľadaj" OnClick="searchByNameFnc" CssClass="blue button" />
                 </div>
-                <asp:GridView ID="users_gv" runat="server" data-max="15" CssClass="responsive" AllowPaging="True"  EnableViewState="true"
+                <asp:GridView ID="users_gv" runat="server" data-max="15" CssClass="responsive" AllowPaging="True"
                     OnPageIndexChanging="users_gv_PageIndexChanging" 
                     OnSelectedIndexChanging="users_gv_SelectedIndexChanging"
-                    CaptionAlign="Left" AutoGenerateColumns="False" EnableModelValidation="True" SelectedRowStyle-BackColor="#66FF33">
+                    CaptionAlign="Left" AutoGenerateColumns="False" EnableModelValidation="True" SelectedRowStyle-BackColor="#66FF33" PagerSettings-Mode="NumericFirstLast" FooterStyle-HorizontalAlign="Center" FooterStyle-VerticalAlign="Bottom">
                          <Columns>
                              <asp:CommandField ShowSelectButton="True" />
                              <asp:BoundField DataField="id" HeaderText="id">
@@ -35,6 +39,9 @@
                              </asp:BoundField>
                              <asp:CommandField ShowDeleteButton="True" />
                          </Columns>
+
+<FooterStyle HorizontalAlign="Center" VerticalAlign="Bottom"></FooterStyle>
+
                 </asp:GridView> 
                
             </div>
@@ -101,6 +108,7 @@
                                     <asp:ListItem Value="assistent">Asistent</asp:ListItem>
                                     <asp:ListItem Value="op">Operačky</asp:ListItem>
                                     <asp:ListItem Value="other">Ostatné</asp:ListItem>
+                                    <asp:ListItem Value="sklad">Sklad</asp:ListItem>
                                 <%--<asp:ListItem Value="sestra">Sestra</asp:ListItem>
                                 <asp:ListItem Value="sestra_vd">Sestra_vd</asp:ListItem>
                                 <asp:ListItem Value="medix">medix</asp:ListItem>--%>

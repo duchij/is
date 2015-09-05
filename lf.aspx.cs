@@ -58,8 +58,15 @@ public partial class lf : System.Web.UI.Page
         Response.Clear();
         Response.Buffer = true;
         Response.Cache.SetCacheability(HttpCacheability.NoCache);
+        Response.ContentType = lfData["file-type"].ToString();
+        switch (lfData["file-type"].ToString())
+        {
+            case ".exe":
+                Response.ContentType = "application/vnd.exe";
+                break;
 
-        Response.ContentType =lfData["file-type"].ToString();
+        }
+        
         
         Response.AddHeader("content-disposition", "attachment;filename=" + lfData["file-name"].ToString());
         Response.AddHeader("content-length", lfData["file-size"].ToString());

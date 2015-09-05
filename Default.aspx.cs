@@ -212,6 +212,16 @@ public partial class _Default : System.Web.UI.Page
                         Session["newsToShow"] = news[0];
                     }
 
+                    if (Session["klinika"].ToString() == "skladzm")
+                    {
+                        SortedList vzpData = new SortedList();
+                        vzpData.Add("search", "all");
+                        vzpData.Add("tab", "1");
+                        Session.Add("sklad_vzp",vzpData);
+                        Response.Redirect(@"sklad/vzp.aspx");
+                    }
+
+
                     if (data["name"].ToString().IndexOf("tablet")!=-1)
                     {
                         Response.Redirect("tabletview.aspx");

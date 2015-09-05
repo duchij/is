@@ -75,8 +75,19 @@ public class mysql_db
 
     public string parseQuery(string query)
     {
-        query = query.Replace('[', '`');
-        query = query.Replace(']', '`');
+        if (query.IndexOf("].[") !=-1)
+        {
+            query = query.Replace('[', '`');
+            query = query.Replace(']', '`'); 
+        }
+        else
+        {
+            query = query.Replace(".", "`.`");
+            query = query.Replace('[', '`');
+            query = query.Replace(']', '`'); 
+        }
+
+       
 
         return query;
     }
@@ -245,6 +256,14 @@ public class mysql_db
 
         my_con.Close();
 
+        return result;
+    }
+
+    public string buildSql(string inQuery, string[] args)
+    {
+        string result = "";
+        result = x2.sprintf(inQuery, args);
+        result = parseQuery(result);
         return result;
     }
 
@@ -774,9 +793,93 @@ public class mysql_db
        return result;
     }
 
+    
+
     protected void myEscape(string text)
     {
         //string pattern = @""
+    }
+
+    //TODO je nutne parsovanie pola pre insert dat do samostanej fnc...
+ 
+
+    /// <summary>
+    /// Vlozi novy riadok do db a vrati posledne ID, bez transakcie, avsak toto je v transakci nutne je trans lebo ked sa to robi v transakic
+    /// </summary>
+    /// <param name="table">string table name</param>
+    /// <param name="data">SortedList data to insert</param>
+    /// <param name="myCon">OdbcConnection v ktorej to je </param>
+    /// <param name="trans">OdbcTransaction v ktorej to je </param>
+    /// <returns>SortedList kyes: status (true/false), msg(error),last_id(on succes),sql(sql in error)</returns>
+
+    public SortedList mysql_insert_nt(string table, SortedList data, OdbcConnection myCon, OdbcTransaction trans1)
+    {
+        SortedList result = new SortedList();
+       // my_con.Open();
+
+        OdbcCommand cmdtrans = new OdbcCommand();
+        cmdtrans.Connection = myCon;
+        cmdtrans.Transaction = trans1;
+
+        StringBuilder sb = new StringBuilder();
+
+        string[] columns = new string[data.Count];
+        string[] values = new string[data.Count];
+        string[] col_val = new string[data.Count];
+
+
+        int i = 0;
+        foreach (DictionaryEntry row in data)
+        {
+
+            columns[i] = "`" + row.Key.ToString() + "`";
+            if (row.Value == null)
+            {
+                values[i] = "NULL";
+            }
+            else if (row.Value.ToString().Trim().Length == 0)
+            {
+                values[i] = "NULL";
+            }
+            else
+            {
+                values[i] = "'" + row.Value.ToString() + "'";
+            }
+            col_val[i] = "`" + row.Key + "` =  values(`" + row.Key + "`)";
+            i++;
+        }
+
+        string t_cols = string.Join(",", columns);
+        string t_values = string.Join(",", values);
+        string col_val_str = string.Join(",", col_val);
+
+        sb.AppendFormat("INSERT INTO `{0}` ({1}) VALUES ({2}) ON DUPLICATE KEY UPDATE {3};", table, t_cols, t_values, col_val_str);
+
+        string query = sb.ToString();
+
+        int id = 0;
+        try
+        {
+            x2log.logData(query, "", "mysql insert_nt");
+            cmdtrans.CommandText = query;
+            cmdtrans.ExecuteNonQuery();
+            cmdtrans.CommandText = "SELECT last_insert_id();";
+            id = Convert.ToInt32(cmdtrans.ExecuteScalar());
+            result.Add("status", true);
+            result.Add("last_id", id);
+        }
+        catch (Exception e)
+        {
+            x2log.logData(query, e.ToString(), "error wrong sql in mysql_insert_nt()");
+            result.Add("status", false);
+            result.Add("msg", e.ToString());
+            result.Add("last_id", 0);
+            result.Add("sql", query);
+
+        }
+        //my_con.Close();
+        return result;
+
     }
 
     /// <summary>
@@ -1021,7 +1124,72 @@ public class mysql_db
         return result;
     }
 
+    /// <summary>
+    /// returns row of SQL request in current Connection and transaction as SortedList if error the result[status],result[msg],result[sql]
+    /// </summary>
+    /// <param name="query">SQL Format string</param>
+    /// <param name="my_con">Current ODBC Connection</param>
+    /// <param name="trans">Current ODBC transaction</param>
+  
+    public SortedList getRowInCon(string query, OdbcConnection my_con, OdbcTransaction trans)
+    {
+        if (query.IndexOf("LIMIT 1") == -1)
+        {
+            query += " LIMIT 1";
+        }
+        SortedList result = new SortedList();
+        //my_con.Open();
 
+
+        try
+        {
+            OdbcCommand my_com = new OdbcCommand(this.parseQuery(query.ToString()), my_con, trans);
+            x2log.logData(this.parseQuery(query.ToString()), "", "mysql getrow");
+            OdbcDataReader reader = my_com.ExecuteReader();
+            // result.Add("status", true);
+
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    for (int i = 0; i < reader.FieldCount; i++)
+                    {
+                        if (reader.GetValue(i) == DBNull.Value)
+                        {
+                            result.Add(reader.GetName(i).ToString(), "NULL");
+                        }
+                        else
+                        {
+                            string tf = reader.GetFieldType(i).ToString();
+                            if (tf == "System.Byte[]")
+                            {
+                                byte[] dl = (byte[])reader.GetValue(i);
+                                string rr = System.Text.Encoding.UTF8.GetString(dl);
+                                result.Add(reader.GetName(i).ToString(), rr);
+                            }
+                            else
+                            {
+                                result.Add(reader.GetName(i).ToString(), reader.GetValue(i));
+                            }
+                        }
+                    }
+
+                }
+            }
+
+        }
+        catch (Exception e)
+        {
+            x2log.logData(this.parseQuery(query.ToString()), e.ToString(), "error wrong sql in getRow()");
+            result.Add("status", false);
+            result.Add("msg", e.ToString());
+            result.Add("sql", this.parseQuery(query.ToString()));
+        }
+        //my_con.Close();
+
+
+        return result;
+    }
 
 
     /// <summary>
@@ -1097,11 +1265,15 @@ public class mysql_db
 
         Dictionary<int, Hashtable> result = new Dictionary<int, Hashtable>();
 
-        my_con.Open();
-
         try
         {
 
+            if (query.Trim().Length==0)
+            {
+                throw new System.Exception("NO VALID OR EMPTY SQL String...");
+            }
+
+            my_con.Open();
             OdbcCommand my_com = new OdbcCommand(this.parseQuery(query.ToString()), my_con);
             x2log.logData(this.parseQuery(query.ToString()),"","mysql getTable");
             OdbcDataReader reader = my_com.ExecuteReader();

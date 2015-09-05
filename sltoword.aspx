@@ -42,8 +42,7 @@
     <hr />
         <a href="javascript:window.print();" style="font-weight:bolder;font-size:x-large;" />
          <asp:Label ID="print_lbl" runat="server" Text="<%$ Resources:Resource, print %>"></asp:Label> </a> &nbsp;
-        <asp:HyperLink ID="HyperLink1" runat="server" 
-        NavigateUrl="hlasko.aspx" Font-Bold="true" Font-Size="X-Large" Text="<%$ Resources:Resource, back %>"></asp:HyperLink></div> 
+        <a href="javascript:history.back();" style="font-weight:bolder;font-size:x-large;" /><asp:literal id="test" runat="server" Text="<%$ Resources:Resource, back %>"></asp:literal></a></div> 
         </div>
         <asp:Table ID="shiftTable" runat="server" BorderColor="Black" BorderWidth="1" cellpadding="0" cellspacing="0" >
         </asp:Table>   

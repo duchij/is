@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="sklad1.aspx.cs" Inherits="sklad_hladanie" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="sklad1.aspx.cs" Inherits="sklad_hladanie" EnableViewState="true" %>
 
 <!DOCTYPE html>
 

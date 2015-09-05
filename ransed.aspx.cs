@@ -104,7 +104,7 @@ public partial class ransed : System.Web.UI.Page
         headCell.Text = "<h2>Sluzby</h2>";
         headRow.Controls.Add(headCell);
 
-        sb.Append("SELECT [patient_name] AS [name] FROM [is_hlasko_epc] AS [hlasko_epc]");
+        sb.Append("SELECT [patient_name] AS [name], [work_text] AS [text], [work_place] AS [place] FROM [is_hlasko_epc] AS [hlasko_epc]");
         sb.AppendLine("INNER JOIN [is_hlasko] AS [hlasko] ON [hlasko].[id] = [hlasko_epc].[hlasko_id] ");
         sb.AppendFormat("WHERE [hlasko].[dat_hlas]='{0}'", my_x2.unixDate(datum));
         sb.AppendFormat("AND [hlasko].[clinic]='{0}'", Session["klinika_id"]);
@@ -121,11 +121,18 @@ public partial class ransed : System.Web.UI.Page
             dataCell.HorizontalAlign = HorizontalAlign.Center;
 
             HyperLink osirixLn = new HyperLink();
-            osirixLn.Text = data[i]["name"].ToString();
-            osirixLn.CssClass = "large green button align-center";
-            osirixLn.NavigateUrl = Resources.Resource.osirix_url + data[i]["name"];
 
+            string[] tmpArr = data[i]["name"].ToString().Split(' ');
+            osirixLn.Text = tmpArr[0];
+            osirixLn.CssClass = "large green button align-center";
+            osirixLn.NavigateUrl = Resources.Resource.osirix_url + x2_var.UTFtoASCII(data[i]["name"].ToString());
             dataCell.Controls.Add(osirixLn);
+            Literal workText = new Literal();
+            workText.Text = "<p><strong>Odd - (" + data[i]["place"].ToString() + ")</strong>, " + my_x2.DecryptString(data[i]["text"].ToString(), Session["passphrase"].ToString()) + "</p>";
+            dataCell.Controls.Add(workText);
+
+
+
 
             riadok.Controls.Add(dataCell);
         }
@@ -182,7 +189,7 @@ public partial class ransed : System.Web.UI.Page
             HyperLink osirixLink = new HyperLink();
             osirixLink.Text = data[i]["name"].ToString();
             osirixLink.CssClass = "button blue large";
-            osirixLink.NavigateUrl = Resources.Resource.osirix_url + data[i]["name"].ToString();
+            osirixLink.NavigateUrl = Resources.Resource.osirix_url + x2_var.UTFtoASCII(data[i]["name"].ToString());
             osirixLink.Target = "_blank";
             dataCell.Controls.Add(osirixLink);
 

@@ -264,6 +264,24 @@ public class x2_var
 
     }
 
+    public string makeHashString(string text)
+    {
+        MD5CryptoServiceProvider hasher = new MD5CryptoServiceProvider();
+        System.Text.ASCIIEncoding enc = new System.Text.ASCIIEncoding();
+        byte[] data = enc.GetBytes(text);
+        data = hasher.ComputeHash(data);
+        //Convert.
+        return Convert.ToBase64String(data).Replace('/', 'x'); 
+
+    }
+
+    public string makeByteHash(byte[] data)
+    {
+        MD5CryptoServiceProvider hasher = new MD5CryptoServiceProvider();
+        data = hasher.ComputeHash(data);
+        return Convert.ToBase64String(data);
+    }
+
     public string makeFileHash(string text)
     {
         MD5CryptoServiceProvider hasher = new MD5CryptoServiceProvider();

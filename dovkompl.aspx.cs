@@ -35,6 +35,14 @@ public partial class dovkompl : System.Web.UI.Page
                 this.loadActivities(rok, mesiac);
                 this.loadShifts(rok, mesiac);
                 break;
+            case "kdhao":
+
+                this.dovkomplTitel_lbl.Text = x2.setLabel("kdhao_dovkompl_titel") + ", " + dt.ToLongDateString();
+                this.init(rok, mesiac);
+
+                this.loadActivities(rok, mesiac);
+                this.loadShifts(rok, mesiac);
+                break;
             case "2dk":
                 this.dovkomplTitel_lbl.Text = x2.setLabel("2dk_dovkompl_titel") + ", " + dt.ToLongDateString();
                 this.init(rok, mesiac);

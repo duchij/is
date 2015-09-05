@@ -56,11 +56,11 @@ public partial class controls_shifts_nkim_shifts : System.Web.UI.UserControl
             this.kdch_pl.Visible = false;
             this.edit_chk.Visible = false;
         }
-
+        string type = this.getShiftStateKDCH();
         if (!IsPostBack)
         {
             this.setMonthYear();
-            string type = this.getShiftStateKDCH();
+           
 
             if (type == "active")
             {
@@ -70,12 +70,23 @@ public partial class controls_shifts_nkim_shifts : System.Web.UI.UserControl
             {
                 this.edit_chk.Checked = true;
             }
-            //this.msg_lbl.Text = "lolo   " + this.edit_chk.Checked.ToString();
 
+
+            //this.msg_lbl.Text = "lolo   " + this.edit_chk.Checked.ToString();
+            if (type == "active" || (this.rights.IndexOf("admin") != -1 || this.rights == "poweruser"))
+            {
+
+                this.generateShiftTable();
+            }
 
         }
         else
         {
+            if (type == "active" || (this.rights.IndexOf("admin") != -1 || this.rights == "poweruser"))
+            {
+
+                this.generateShiftTable();
+            }
             //this.shiftTable.Controls.Clear();
             //Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
 
@@ -84,7 +95,8 @@ public partial class controls_shifts_nkim_shifts : System.Web.UI.UserControl
             // this.msg_lbl.Text = this.edit_chk.Checked.ToString();
             //this.loadSluzby();
         }
-        this.generateShiftTable();
+        
+       
     }
 
     protected void initLabels()
@@ -96,6 +108,7 @@ public partial class controls_shifts_nkim_shifts : System.Web.UI.UserControl
     {
         this.shiftTable.Controls.Clear();
         string type = this.getShiftStateKDCH();
+
         if (type == "active")
         {
             this.edit_chk.Checked = false;
@@ -105,7 +118,7 @@ public partial class controls_shifts_nkim_shifts : System.Web.UI.UserControl
             this.edit_chk.Checked = true;
         }
 
-        this.loadSluzby();
+        this.generateShiftTable();
     }
 
     protected void setMonthYear()
@@ -129,10 +142,12 @@ public partial class controls_shifts_nkim_shifts : System.Web.UI.UserControl
         sb.AppendFormat("SELECT [state] FROM [is_sluzby_all] WHERE [date_group]='{0}' AND [clinic]='{1}' GROUP BY [state]", dateGroup,Session["klinika_id"]);
 
         SortedList row = x2Mysql.getRow(sb.ToString());
+
         if (row.Count == 0)
         {
             row["state"] = "draft";
         }
+
         return row["state"].ToString();
 
     }
@@ -309,7 +324,7 @@ public partial class controls_shifts_nkim_shifts : System.Web.UI.UserControl
                     //  {
 
 
-                    if ((this.rights.IndexOf("admin") != -1 || this.rights == "poweruser") && this.wgroup == "doctor" && this.edit_chk.Checked == true)
+                    if (this.edit_chk.Checked == true)
                     {
                         DropDownList doctors_lb = new DropDownList();
                         doctors_lb.ID = "ddl_" + row.ToString() + "_" + cols.ToString();

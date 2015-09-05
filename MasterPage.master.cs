@@ -41,10 +41,15 @@ public partial class MasterPage : System.Web.UI.MasterPage
        // doSetWebState(sender, e);
     //}
 
-    
+    protected void Page_PreInit(object sender, EventArgs e)
+    {
+       
+    }
 
     protected void Page_Load(object sender, EventArgs e)
     {
+
+        
         
         this.gKlinika = Session["klinika"].ToString().Trim();
         this.web_titel.Text = X2.setLabel(Session["klinika"].ToString().ToLower()+"_web_titel");

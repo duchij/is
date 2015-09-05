@@ -37,7 +37,7 @@ public class lf : mysql_db
 
     }
 
-    public SortedList lf_getLfData2(int id)
+    public SortedList lf_getLfData2(int id) 
     {
         SortedList result = new SortedList();
         StringBuilder sb = new StringBuilder();
@@ -180,6 +180,224 @@ public class lf : mysql_db
         my_con.Close();
         return result;
     }
+
+    
+
+
+    public DataSet getFiles(int clinic, int folder)
+    {
+
+        string query = "";
+        if (folder== 0)
+        {
+            query = @"  SELECT [t_struct.item_lf_id] AS [item_id],[t_struct.item_name] AS [item_name],[t_struct.item_comment] AS [item_comment]
+                        FROM [is_structure] AS [t_struct]
+                       WHERE [t_struct.clinic_id]='{0}'
+                        AND [t_struct.item_parent_id]='{1}'";
+
+        }
+        else
+        {
+            query = "SELECT [t_struct.item_lf_id] AS [item_id],[t_struct.item_name] AS [item_name],[t_struct.item_comment] AS [item_comment]";
+            query += " FROM [is_structure] AS [t_struct]";
+            //query += " INNER JOIN [is_data_2] AS [t_data] ON [t_data.id] = [t_struct.item_lf_id]";
+            query += " WHERE [t_struct.clinic_id]='{0}'";
+            query += " AND [t_struct.item_parent_id]='{1}'";
+        }
+        //string query = sb.ToString();
+        my_con.Open();
+        string sql = this.buildSql(query, new string[] { clinic.ToString(),folder.ToString() });
+        OdbcDataAdapter da = new OdbcDataAdapter(sql, my_con);
+        DataSet ds = new DataSet();
+        da.Fill(ds);
+        my_con.Close();
+
+        return ds;
+    }
+
+    public int sameContent(string hash,OdbcConnection myCon, OdbcTransaction trans)
+    {
+        int result = 0;
+
+        string sql = this.buildSql("SELECT [id] FROM [is_data_2] WHERE [hash]='{0}'", new string[] { hash });
+
+        SortedList res = this.getRowInCon(sql,myCon, trans);
+        
+        if (res["id"] != null)
+        {
+            result = Convert.ToInt32(res["id"]);  
+        }
+
+        return result;
+
+    }
+
+    public SortedList storeLfDataInTable(byte[] content, SortedList lfData, string table,SortedList isStruct)
+    {
+        SortedList result = new SortedList();
+
+        OdbcTransaction trans1 = null;
+        my_con.Open();
+
+        OdbcCommand cmd = new OdbcCommand();
+        cmd.Connection = my_con;
+        cmd.CommandType = CommandType.Text;
+
+        trans1 = my_con.BeginTransaction();
+
+        cmd.Transaction = trans1;
+
+        // cmd.CommandText.ToString();
+
+        try
+        {
+
+            int id = 0;
+
+            int tmp = this.sameContent(isStruct["item_hash"].ToString(), my_con, trans1);
+
+            if (tmp == 0)
+            {
+                cmd.CommandText = "INSERT INTO `is_data_2`(`file-name`,`file-size`,`file-type`,`file-content`, `user_id`, `clinic_id`, `hash`) VALUES (?,?,?,?,?,?,?)";
+
+                cmd.Parameters.Add("filename", OdbcType.Text).Value = lfData["file-name"].ToString();
+                cmd.Parameters.Add("filesize", OdbcType.BigInt).Value = Convert.ToInt32(lfData["file-size"]);
+                cmd.Parameters.Add("filetype", OdbcType.VarChar).Value = lfData["file-type"].ToString();
+                cmd.Parameters.Add("filecontent", OdbcType.Binary).Value = content;
+                cmd.Parameters.Add("userid", OdbcType.BigInt).Value = Convert.ToInt32(lfData["user_id"]);
+                cmd.Parameters.Add("clinicid", OdbcType.BigInt).Value = Convert.ToInt32(lfData["clinic_id"]);
+                cmd.Parameters.Add("hash", OdbcType.Char).Value = isStruct["item_hash"].ToString();
+
+
+                cmd.ExecuteNonQuery();
+                cmd.CommandText = "SELECT LAST_INSERT_ID();";
+
+                id = Convert.ToInt32(cmd.ExecuteScalar());
+            }
+            else
+            {
+                id = tmp;
+            }
+
+
+
+            isStruct.Add("item_lf_id", id);
+
+            SortedList res = this.mysql_insert_nt(table, isStruct, my_con, trans1);
+
+            if (Convert.ToBoolean(res["status"]))
+            {
+                result.Add("status", true);
+
+                cmd.Transaction.Commit();
+            }
+            else
+            {
+                x2log.logData(res["sql"].ToString(), res["msg"].ToString(), "error wrong sql in storeLfDataInTable() insert in structure");
+                x2log.logData(lfData, "chyba vystup lf data", "error in lfinsert");
+                result.Add("status", false);
+                result.Add("msg", res["msg"].ToString());
+
+                cmd.Transaction.Rollback();
+            }
+        }
+        catch (Exception ex)
+        {
+            x2log.logData(cmd.CommandText.ToString(), ex.ToString(), "error wrong sql in lfInsertData()");
+            //x2log.logData(lfData, "chyba vystup lf data", "error in lfinsert");
+            result.Add("status", false);
+            result.Add("msg", ex.ToString());
+            cmd.Transaction.Rollback();
+        }
+        my_con.Close();
+
+        return result;
+    }
+
+
+    public SortedList storeLfData(byte[] content, SortedList lfData, SortedList isStruct)
+    {
+        SortedList result = new SortedList();
+
+        OdbcTransaction trans1 = null;
+        my_con.Open();
+
+        OdbcCommand cmd = new OdbcCommand();
+        cmd.Connection = my_con;
+        cmd.CommandType = CommandType.Text;
+
+        trans1 = my_con.BeginTransaction();
+
+        cmd.Transaction = trans1;
+       
+       // cmd.CommandText.ToString();
+
+        try
+        {
+
+            int id = 0;
+
+            int tmp = this.sameContent(isStruct["item_hash"].ToString(),my_con, trans1);
+
+            if (tmp == 0)
+            {
+                cmd.CommandText = "INSERT INTO `is_data_2`(`file-name`,`file-size`,`file-type`,`file-content`, `user_id`, `clinic_id`, `hash`) VALUES (?,?,?,?,?,?,?)";
+
+                cmd.Parameters.Add("filename", OdbcType.Text).Value = lfData["file-name"].ToString();
+                cmd.Parameters.Add("filesize", OdbcType.BigInt).Value = Convert.ToInt32(lfData["file-size"]);
+                cmd.Parameters.Add("filetype", OdbcType.VarChar).Value = lfData["file-type"].ToString();
+                cmd.Parameters.Add("filecontent", OdbcType.Binary).Value = content;
+                cmd.Parameters.Add("userid", OdbcType.BigInt).Value = Convert.ToInt32(lfData["user_id"]);
+                cmd.Parameters.Add("clinicid", OdbcType.BigInt).Value = Convert.ToInt32(lfData["clinic_id"]);
+                cmd.Parameters.Add("hash", OdbcType.Char).Value = isStruct["item_hash"].ToString();
+
+
+                cmd.ExecuteNonQuery();
+                cmd.CommandText = "SELECT LAST_INSERT_ID();";
+
+                id = Convert.ToInt32(cmd.ExecuteScalar());
+            }
+            else
+            {
+                id = tmp;
+            }
+
+            
+
+            isStruct.Add("item_lf_id", id);
+             
+            SortedList res = this.mysql_insert_nt("is_structure", isStruct, my_con, trans1); 
+
+            if (Convert.ToBoolean(res["status"]))
+            {
+                result.Add("status", true);
+
+                cmd.Transaction.Commit();
+            }
+            else
+            {
+                x2log.logData(res["sql"].ToString(), res["msg"].ToString(), "error wrong sql in storeLfData() insert in structure");
+               // x2log.logData(lfData, "chyba vystup lf data", "error in lfinsert");
+                result.Add("status", false);
+                result.Add("msg", res["msg"].ToString());
+
+                cmd.Transaction.Rollback();
+            }
+        }
+        catch (Exception ex)
+        {
+            x2log.logData(cmd.CommandText.ToString(), ex.ToString(), "error wrong sql in lfInsertData()");
+            x2log.logData(lfData, "chyba vystup lf data", "error in lfinsert");
+            result.Add("status", false);
+            result.Add("msg", ex.ToString());
+            cmd.Transaction.Rollback();
+        }
+        my_con.Close();
+
+        return result;
+    }
+
+    
 
 
 

@@ -132,9 +132,6 @@ public partial class is_user : System.Web.UI.Page
             int clinic = Convert.ToInt32(Session["klinika_id"]);
             this.users_gv.DataSource = x_db.getAllUsersList(clinic);
         }
-
-        
-
         this.users_gv.DataBind();
     }
 
@@ -142,6 +139,15 @@ public partial class is_user : System.Web.UI.Page
     {
         //this.clearFields();
         this.users_gv.PageIndex = e.NewPageIndex;
+        if (this.rights == "admin")
+        {
+            this.users_gv.DataSource = x_db.getAllUsersList(0);
+        }
+        if (this.rights == "sadmin")
+        {
+            int clinic = Convert.ToInt32(Session["klinika_id"]);
+            this.users_gv.DataSource = x_db.getAllUsersList(clinic);
+        }
         this.users_gv.DataBind();
     }
 

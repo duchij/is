@@ -1,0 +1,6 @@
+﻿ALTER TABLE `is_data_2`
+ADD `hash` char(32) COLLATE 'ascii_general_ci' NULL AFTER `id`,
+COMMENT='';
+--nextquery--
+ALTER TABLE `is_data_2`
+ADD INDEX `hash` (`hash`(32));

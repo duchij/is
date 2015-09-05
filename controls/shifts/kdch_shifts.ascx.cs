@@ -56,10 +56,12 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
             this.edit_chk.Visible = false;
         }
 
+        string type = this.getShiftStateKDCH();
+
         if (!IsPostBack)
         {
             this.setMonthYear();
-            string type = this.getShiftStateKDCH();
+            
 
             if (type == "active")
             {
@@ -69,12 +71,22 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
             {
                 this.edit_chk.Checked = true;
             }
-            //this.msg_lbl.Text = "lolo   " + this.edit_chk.Checked.ToString();
+
+            if (type == "active" || (this.rights.IndexOf("admin") != -1 || this.rights == "poweruser"))
+            {
+
+                this.generateShiftTable();
+            }
 
 
         }
         else
         {
+            if (type == "active" || (this.rights.IndexOf("admin") != -1 || this.rights == "poweruser"))
+            {
+
+                this.generateShiftTable();
+            }
             //this.shiftTable.Controls.Clear();
             //Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
 
@@ -83,7 +95,7 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
             // this.msg_lbl.Text = this.edit_chk.Checked.ToString();
             //this.loadSluzby();
         }
-        this.generateShiftTable();
+        //this.generateShiftTable();
     }
 
     protected void initLabels()
@@ -104,7 +116,7 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
             this.edit_chk.Checked = true;
         }
 
-        this.loadSluzby();
+        this.generateShiftTable();
     }
 
     protected void setMonthYear()

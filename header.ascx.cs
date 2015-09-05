@@ -45,6 +45,9 @@ public partial class header : System.Web.UI.UserControl
             case "2dk":
                 this.makeHeaderDK();
                 break;
+            case "1dk":
+                this.makeHeaderDK();
+                break;
             case "nkim":
                 this.makeHeaderNkim();
                 break;

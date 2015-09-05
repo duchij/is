@@ -135,7 +135,7 @@ public class log
         string shortDate = this.unixDate(dt);
         //string path = @"..\App_Data\";
 
-        string complFile = serverPath+@"\App_Data\"+shortDate+".log";
+        string complFile = serverPath+"\\App_Data\\"+shortDate+".log";
 
         if (!File.Exists(complFile))
         {

@@ -65,7 +65,7 @@ public partial class tabletview : System.Web.UI.Page
     {
         this.osirixShift_tbl.Controls.Clear();
         StringBuilder sb = new StringBuilder();
-        sb.Append("SELECT [patient_name] AS [name] FROM [is_hlasko_epc] AS [hlasko_epc]");
+        sb.Append("SELECT [patient_name] AS [name], [work_place] AS [place], [work_text] AS [text] FROM [is_hlasko_epc] AS [hlasko_epc]");
         sb.AppendLine("INNER JOIN [is_hlasko] AS [hlasko] ON [hlasko].[id] = [hlasko_epc].[hlasko_id] ");
         sb.AppendFormat("WHERE [hlasko].[dat_hlas]='{0}'",my_x2.unixDate(this.Calendar1.SelectedDate));
         sb.AppendFormat("AND [hlasko].[clinic]='{0}'", Session["klinika_id"]);
@@ -84,9 +84,13 @@ public partial class tabletview : System.Web.UI.Page
             HyperLink osirixLn = new HyperLink();
             osirixLn.Text = data[i]["name"].ToString();
             osirixLn.CssClass = "large green button align-center";
-            osirixLn.NavigateUrl = Resources.Resource.osirix_url + data[i]["name"];
+            osirixLn.NavigateUrl = Resources.Resource.osirix_url + x2_var.UTFtoASCII(data[i]["name"].ToString());
            
             dataCell.Controls.Add(osirixLn);
+
+            Literal workText = new Literal();
+            workText.Text = "<p><strong>Odd - (" + data[i]["place"].ToString() + ")</strong>, " + my_x2.DecryptString(data[i]["text"].ToString(), Session["passphrase"].ToString()) + "</p>";
+            dataCell.Controls.Add(workText);
 
             riadok.Controls.Add(dataCell);
         }
@@ -255,7 +259,7 @@ public partial class tabletview : System.Web.UI.Page
             HyperLink osirixLink = new HyperLink();
             osirixLink.Text = name_txt.Text.ToString();
             osirixLink.CssClass = "large button blue";
-            osirixLink.NavigateUrl = Resources.Resource.osirix_url + name_txt.Text.ToString();
+            osirixLink.NavigateUrl = Resources.Resource.osirix_url + x2_var.UTFtoASCII(name_txt.Text.ToString());
             osirixLink.Target = "_blank";
             dataCell.Controls.Add(osirixLink);
 
@@ -316,33 +320,39 @@ public partial class tabletview : System.Web.UI.Page
         DateTime datum = this.Calendar1.SelectedDate;
 
         StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("SELECT GROUP_CONCAT([osirix] SEPARATOR ' ') AS [osirix] FROM [is_hlasko] WHERE [dat_hlas] = '{0}'", my_x2.unixDate(datum));
-        SortedList result = x2db.getRow(sb.ToString());
+        sb.Append("SELECT [patient_name] AS [name], [work_text] AS [text], [work_place] AS [place] FROM [is_hlasko_epc] AS [hlasko_epc]");
+        sb.AppendLine("INNER JOIN [is_hlasko] AS [hlasko] ON [hlasko].[id] = [hlasko_epc].[hlasko_id] ");
+        sb.AppendFormat("WHERE [hlasko].[dat_hlas]='{0}'", my_x2.unixDate(datum));
+        sb.AppendFormat("AND [hlasko].[clinic]='{0}'", Session["klinika_id"]);
 
-        string osirix = my_x2.getStr(result["osirix"].ToString());
+        Dictionary<int, Hashtable> data = x2db.getTable(sb.ToString());
 
-        string tmp = osirix.Replace((char)13,' ');
+        int dataLn = data.Count;
 
-        string[] str = tmp.Split(' ');
-
-        for (int i = 0; i < str.Length; i++)
+        for (int i = 0; i < dataLn; i++)
         {
-            if (str[i].Trim().Length > 0)
-            {
+          
                 TableRow riadok = new TableRow();
                 this.osirixShift_tbl.Controls.Add(riadok);
                 TableCell dataCell = new TableCell();
                 dataCell.HorizontalAlign = HorizontalAlign.Center;
 
                 HyperLink meno_lnk = new HyperLink();
-                meno_lnk.Text = str[i].ToUpper();
-                meno_lnk.NavigateUrl = Resources.Resource.osirix_url + str[i];
+                string[] tmpArr = data[i]["name"].ToString().Split(' ');
+
+
+                meno_lnk.Text = tmpArr[0].ToUpper();
+                meno_lnk.NavigateUrl = Resources.Resource.osirix_url +x2_var.UTFtoASCII(tmpArr[0]);
                 meno_lnk.Target = "_blank";
                 meno_lnk.CssClass = "large button green align-center";
-
                 dataCell.Controls.Add(meno_lnk);
+
+                Literal workText = new Literal();
+                workText.Text = "<p><strong>Odd - (" + data[i]["place"].ToString() + ")</strong>, " + my_x2.DecryptString(data[i]["text"].ToString(), Session["passphrase"].ToString()) + "</p>";
+                dataCell.Controls.Add(workText);
+
+                
                 riadok.Controls.Add(dataCell);
-            }
         }
 
     }

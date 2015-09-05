@@ -24,7 +24,7 @@
                 ForeColor="Black" 
           
                 onselectionchanged="Calendar1_SelectionChanged" 
-          WeekendDayStyle-HorizontalAlign="Center" CellPadding="4" CssClass="responsive" data-max="15">
+          WeekendDayStyle-HorizontalAlign="Center" CellPadding="4" CssClass="responsive" data-max="12">
                 <SelectedDayStyle BackColor="#46627f" Font-Bold="True" ForeColor="White" />
                         <SelectorStyle BackColor="#46627f" />
                         <WeekendDayStyle BackColor="#dff0d8" />
@@ -46,7 +46,7 @@
                         BorderColor="#46627f" CellPadding="4" 
                         DayNameFormat="Shortest" 
                         ForeColor="Black" 
-                          OnSelectionChanged="Calendar2_SelectionChanged" CssClass="responsive" data-max="15">
+                          OnSelectionChanged="Calendar2_SelectionChanged" CssClass="responsive" data-max="12">
                         <SelectedDayStyle BackColor="#46627f" Font-Bold="True" ForeColor="White" />
                         <SelectorStyle BackColor="#46627f" />
                         <WeekendDayStyle BackColor="#dff0d8" />

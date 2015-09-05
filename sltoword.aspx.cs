@@ -49,6 +49,9 @@ public partial class sltoword : System.Web.UI.Page
             case "nkim":
                 this.loadSluzby();
                 break;
+            case "kdhao":
+                this.loadSluzby();
+                break;
         }
 
 /*
@@ -330,6 +333,24 @@ public partial class sltoword : System.Web.UI.Page
                 shiftQuery +=" ORDER BY [t_sluzb].[datum]";
 
                 shiftQuery = my_x2.sprintf(shiftQuery, new string[] { dateGroup,Session["klinika_id"].ToString() });
+                break;
+            case "kdhao":
+                settings = "SELECT * FROM [is_settings] WHERE [name] = 'kdhao_shift_doctors'";
+
+                shiftQuery = "SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],";
+                shiftQuery += " [t_sluzb].[state] AS [state],";
+                shiftQuery += " GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [users_ids],";
+                shiftQuery += " GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],";
+                shiftQuery += " GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [comment],";
+                shiftQuery += " [t_sluzb].[date_group] AS [dategroup]";
+                shiftQuery += " FROM [is_sluzby_all] AS [t_sluzb]";
+                shiftQuery += " LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]";
+                shiftQuery += " WHERE [t_sluzb].[date_group] = '{0}' AND [t_sluzb].[state]='active'";
+                shiftQuery += " AND [t_sluzb].[clinic] = {1}";
+                shiftQuery += " GROUP BY [t_sluzb].[datum]";
+                shiftQuery += " ORDER BY [t_sluzb].[datum]";
+
+                shiftQuery = my_x2.sprintf(shiftQuery, new string[] { dateGroup, Session["klinika_id"].ToString() });
                 break;
 
 
