@@ -67,6 +67,10 @@ public partial class staze : System.Web.UI.Page
 
             if (this.rights.IndexOf("admin") != -1 || this.rights=="poweruser")
             {
+                if (state == "yes")
+                {
+                    this.edit_chk.Checked = false;
+                }
                 this.drawTable();
             }
             else if (this.rights == "users" && state=="yes")

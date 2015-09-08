@@ -199,7 +199,7 @@ public partial class tabletview : System.Web.UI.Page
             dataCell.Controls.Add(osirixLink);
 
             Label osirixComment = new Label();
-            osirixComment.Text = "&nbsp;&nbsp;&nbsp;" + data[i]["poznamka"].ToString() + "&nbsp;&nbsp;&nbsp;";
+            osirixComment.Text = "&nbsp;&nbsp;&nbsp;" + my_x2.getStr(data[i]["poznamka"].ToString()) + "&nbsp;&nbsp;&nbsp;";
             dataCell.Controls.Add(osirixComment);
 
             Button delLink = new Button();
@@ -264,7 +264,7 @@ public partial class tabletview : System.Web.UI.Page
             dataCell.Controls.Add(osirixLink);
 
             Label osirixComment = new Label();
-            osirixComment.Text = "&nbsp;&nbsp;&nbsp;" + note_txt.Text.ToString() + "&nbsp;&nbsp;&nbsp;";
+            osirixComment.Text = "&nbsp;&nbsp;&nbsp;" + my_x2.getStr(note_txt.Text.ToString()) + "&nbsp;&nbsp;&nbsp;";
             dataCell.Controls.Add(osirixComment);
 
             Button delLink = new Button();
@@ -321,9 +321,10 @@ public partial class tabletview : System.Web.UI.Page
 
         StringBuilder sb = new StringBuilder();
         sb.Append("SELECT [patient_name] AS [name], [work_text] AS [text], [work_place] AS [place] FROM [is_hlasko_epc] AS [hlasko_epc]");
+        //sb.Append("");
         sb.AppendLine("INNER JOIN [is_hlasko] AS [hlasko] ON [hlasko].[id] = [hlasko_epc].[hlasko_id] ");
         sb.AppendFormat("WHERE [hlasko].[dat_hlas]='{0}'", my_x2.unixDate(datum));
-        sb.AppendFormat("AND [hlasko].[clinic]='{0}'", Session["klinika_id"]);
+        sb.AppendFormat("AND [hlasko].[clinic]='{0}' AND [hlasko_epc.osirix]='true'", Session["klinika_id"]);
 
         Dictionary<int, Hashtable> data = x2db.getTable(sb.ToString());
 
@@ -357,78 +358,6 @@ public partial class tabletview : System.Web.UI.Page
 
     }
 
-
-    //protected void loadKojenciData()
-    //{
-    //    this.kojenci_tbl.Controls.Clear();
-
-    //    StringBuilder sb = new StringBuilder();
-    //    DateTime datum = this.Calendar2.SelectedDate;
-
-    //    sb.AppendFormat("SELECT * FROM [is_osirix] WHERE [date] = '{0}' AND [odd] = '{1}'", my_x2.unixDate(datum), "KOJ");
-
-    //    Dictionary<int, SortedList> result = x2db.getTableSL(sb.ToString());
-
-    //    int rows = result.Count;
-
-    //    if (rows > 0)
-    //    {
-    //        for (int i = 0; i < rows; i++)
-    //        {
-    //            this.makeDynamicTable(result[i], "kojenci", "kojenci_tbl");
-
-    //        }
-    //    }
-    //}
-
-    //protected void loadChlapciData()
-    //{
-    //    this.chlapci_tbl.Controls.Clear();
-
-    //    StringBuilder sb = new StringBuilder();
-    //    DateTime datum = this.Calendar2.SelectedDate;
-
-    //    sb.AppendFormat("SELECT * FROM [is_osirix] WHERE [date] = '{0}' AND [odd] = '{1}'", my_x2.unixDate(datum), "VD");
-
-    //    Dictionary<int, SortedList> result = x2db.getTableSL(sb.ToString());
-
-    //    int rows = result.Count;
-
-    //    if (rows > 0)
-    //    {
-    //        for (int i = 0; i < rows; i++)
-    //        {
-    //            this.makeDynamicTable(result[i], "chlapci", "chlapci_tbl");
-
-    //        }
-    //    }
-    //}
-
-    //protected void loadDievcataData()
-    //{
-    //    this.dievcata_tbl.Controls.Clear();
-
-    //    StringBuilder sb = new StringBuilder();
-    //    DateTime datum = this.Calendar2.SelectedDate;
-
-    //    sb.AppendFormat("SELECT * FROM [is_osirix] WHERE [date] = '{0}' AND [odd] = '{1}'", my_x2.unixDate(datum), "MSV");
-
-    //    Dictionary<int, SortedList> result = x2db.getTableSL(sb.ToString());
-
-    //    int rows = result.Count;
-
-    //    if (rows > 0)
-    //    {
-    //        for (int i = 0; i < rows; i++)
-    //        {
-    //            this.makeDynamicTable(result[i], "dievcata", "dievcata_tbl");
-
-    //        }
-    //    }
-    //}
-
-
-
     protected void setMyDate()
     {
         DateTime tc = DateTime.Now;
@@ -446,31 +375,6 @@ public partial class tabletview : System.Web.UI.Page
         }
     }
 
-   
-
-    //public string makeLink(string str)
-    //{
-    //    string result = "";
-
-    //    string Odd = x2_var.UTFtoASCII(str);
-    //    // string def = "";
-    //    string[] tmp = this.returnStrArray(Odd);
-    //    int cnt = tmp.Length;
-
-    //    for (int i = 0; i < cnt; i++)
-    //    {
-    //        result += "<p><a href='http://10.10.2.49:3333/studyList?search=" + tmp[i] + "' target='_blank' style='font-size:xx-large;font-weight:bolder;'>" + tmp[i].ToUpper() + "</a></p>";
-    //    }
-
-    //    return result;
-    //}
-
-    //public string[] returnStrArray(string str)
-    //{
-    //    string[] result = Regex.Split(str, "\r\n");
-    //    return result;
-    //}
-
     protected void Calendar1_SelectionChanged(object sender, EventArgs e)
     {
         //this.loadSluzby();
@@ -485,276 +389,7 @@ public partial class tabletview : System.Web.UI.Page
         //this.loadChlapciData();
     }
 
-    //protected void saveData(string id, string text)
-    //{
-    //    SortedList data = new SortedList();
-    //    data["osirix"] = x2_var.UTFtoASCII(text);
-    //    string res = x_db.update_row("is_hlasko", data, id);
-    //    if (res != "ok")
-    //    {
-    //        Label1.Text = res;
-    //    }
-    //    else
-    //    {
-    //        Label1.Text = res;
-    //    }
-    //}
-
-    //protected void makeDynamicTable(SortedList data,string prefix, string _tabulka)
-    //{
-    //    ContentPlaceHolder ctpl = new ContentPlaceHolder();
-    //    Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
-
-    //    ctpl = (ContentPlaceHolder)tmpControl;
-
-    //    string id = "";
-    //    if (data["item_id"] == null)
-    //    {
-    //        id = data["last_id"].ToString();
-    //    }
-    //    else
-    //    {
-    //        id = data["item_id"].ToString();
-    //    }
-    //    //row_tbl.ID = prefix+"_row_" + id.ToString();
-
-    //    Control tbl = ctpl.FindControl(_tabulka);
-    //    Table tabulka = (Table)tbl;
-
-    //    TableRow row_tbl = new TableRow();
-        
-    //    tabulka.Controls.Add(row_tbl);
-
-
-
-    //    TableCell cell_tbl = new TableCell();
-        
-    //    //cell_tbl.ID = prefix+"_cell_" + id.ToString();
-
-
-    //    HyperLink meno_lnk = new HyperLink();
-    //    meno_lnk.ID = prefix+"_meno_" + id.ToString();
-    //    meno_lnk.CssClass = "large button blue";
-    //    if (data["name"] != null)
-    //    {
-    //        meno_lnk.Text = data["name"].ToString(); 
-            
-    //        meno_lnk.NavigateUrl = "http://10.10.2.49:3333/studyList?search=" + data["name"].ToString(); 
-    //    }
-    //    else
-    //    {
-    //        Control txt = ctpl.FindControl(prefix + "_diag");
-    //        TextBox text_tmp = (TextBox)txt;
-    //        meno_lnk.Text = text_tmp.Text.ToString();
-    //        meno_lnk.NavigateUrl = "http://10.10.2.49:3333/studyList?search=" + meno_lnk.Text.ToString();
-    //    }
-
-        
-    //    meno_lnk.Target = "_blank";
-    //    cell_tbl.Controls.Add(meno_lnk);
-
-    //    Label note_lbl = new Label();
-    //    note_lbl.ID = prefix + "_lbl_" + id;
-    //    note_lbl.CssClass = "align-left";
-    //    if (data["poznamka"] != null)
-    //    {
-    //        note_lbl.Text = data["poznamka"].ToString();
-    //    }
-    //    else
-    //    {
-    //        Control txt1 = ctpl.FindControl(prefix + "_note");
-    //        TextBox text_tmp1 = (TextBox)txt1;
-    //        note_lbl.Text =text_tmp1.Text.ToString() ;
-    //    }
-    //    cell_tbl.Controls.Add(note_lbl);
-
-
-
-        
-
-    //    Button delete_btn = new Button();
-    //    delete_btn.ID = prefix+"_delete_" + id.ToString();
-    //    delete_btn.Text = "Zmaz";
-    //    delete_btn.CssClass = "medium button red pull-right";
-    //    delete_btn.Click += new EventHandler(delete_btn_fnc);
-
-    //    cell_tbl.Controls.Add(delete_btn);
-
-    //    row_tbl.Controls.Add(cell_tbl);
-    //}
-
-    //protected void delete_btn_fnc(object sender, EventArgs e)
-    //{
-    //    Button btn = (Button)sender;
-    //    string[] str = btn.ID.ToString().Split('_');
-
-    //    SortedList res = x2db.execute("DELETE FROM [is_osirix] WHERE [item_id]=" + str[2]);
-
-    //    Boolean result = Convert.ToBoolean(res["status"]);
-    //    if (!result)
-    //    {
-    //        Label1.Text = res["msg"].ToString();
-    //    }
-    //    else
-    //    {
-    //        this.loadPostData();
-    //    }
-        
-     
-       
-    //}
-
-    //protected void kojenci_diag_btn_Click(object sender, EventArgs e)
-    //{
-    //    //string tmp = x_db.getOsirixData(Session["kojneci"].ToString();
-
-    //   // string defRes = x2_var.UTFtoASCII(this.kojenci_diag.Text.ToString());
-
-    //    //this.saveData(Session["kojneci"].ToString(), defRes);
-    //    SortedList data = new SortedList();
-
-    //    string name = this.kojenci_diag.Text.ToString();
-    //    name = name.Trim();
-    //    name = x2_var.UTFtoASCII(name);
-
-    //    if (name.Length > 0)
-    //    {
-
-    //        data.Add("name", name);
-    //        data.Add("poznamka", this.kojenci_note.Text.ToString());
-    //        DateTime datum = this.Calendar2.SelectedDate;
-    //        data.Add("date", my_x2.unixDate(datum));
-    //        data.Add("odd", "KOJ");
-
-    //        SortedList result = x2db.mysql_insert("is_osirix", data);
-           
-    //        bool res = Convert.ToBoolean(result["status"]);
-    //        int id = Convert.ToInt32(result["last_id"]);
-    //        if (res)
-    //        {
-    //            if (id > 0)
-    //            {
-    //                this.makeDynamicTable(result, "kojenci", "kojenci_tbl");
-    //                this.kojenci_diag.Text = "";
-    //                this.kojenci_note.Text = "";
-
-    //            }
-    //        }
-    //        else
-    //        {
-    //            Response.Write("<script>alert('" + result["msg"].ToString() + "')</script>");
-    //        }
-    //    }
-    //    else
-    //    {
-    //        this.alert("Meno musi byt vypisane !!!!!");
-    //    }
-
-        
-    //   // this.saveData()
-    //}
-
-    //protected void dievcata_diag_btn_Click(object sender, EventArgs e)
-    //{
-    //    //string tmp = x_db.getOsirixData(Session["kojneci"].ToString();
-
-    //    // string defRes = x2_var.UTFtoASCII(this.kojenci_diag.Text.ToString());
-
-    //    //this.saveData(Session["kojneci"].ToString(), defRes);
-    //    SortedList data = new SortedList();
-
-    //    string name = this.dievcata_diag.Text.ToString();
-    //    name = name.Trim();
-    //    name = x2_var.UTFtoASCII(name);
-
-    //    if (name.Length > 0)
-    //    {
-
-    //        data.Add("name", name);
-    //        data.Add("poznamka", this.dievcata_note.Text.ToString());
-    //        DateTime datum = this.Calendar2.SelectedDate;
-    //        data.Add("date", my_x2.unixDate(datum));
-    //        data.Add("odd", "MSV");
-
-    //        SortedList result = x2db.mysql_insert("is_osirix", data);
-    //        bool res = Convert.ToBoolean(result["status"]);
-    //        int id = Convert.ToInt32(result["last_id"]);
-    //        if (res)
-    //        {
-    //            if (id > 0)
-    //            {
-    //                this.makeDynamicTable(result, "dievcata", "dievcata_tbl");
-    //                this.dievcata_diag.Text = "";
-    //                this.dievcata_note.Text = "";
-    //            }
-    //        }
-    //        else
-    //        {
-    //            Response.Write("<script>alert('" + result["msg"].ToString() + "')</script>");
-    //        }
-    //    }
-    //    else
-    //    {
-    //        this.alert("Meno musi byt vypisane !!!!!");
-    //    }
-
-
-    //    // this.saveData()
-    //}
-
-
-    //protected void chlapci_diag_btn_Click(object sender, EventArgs e)
-    //{
-    //    //string tmp = x_db.getOsirixData(Session["kojneci"].ToString();
-
-    //    // string defRes = x2_var.UTFtoASCII(this.kojenci_diag.Text.ToString());
-
-    //    //this.saveData(Session["kojneci"].ToString(), defRes);
-    //    SortedList data = new SortedList();
-
-    //    string name = this.chlapci_diag.Text.ToString();
-    //    name = name.Trim();
-    //    name = x2_var.UTFtoASCII(name);
-
-    //    if (name.Length > 0)
-    //    {
-
-    //        data.Add("name", name);
-    //        data.Add("poznamka", this.chlapci_note.Text.ToString());
-    //        DateTime datum = this.Calendar2.SelectedDate;
-    //        data.Add("date", my_x2.unixDate(datum));
-    //        data.Add("odd", "VD");
-
-    //        SortedList result = x2db.mysql_insert("is_osirix", data);
-    //        bool res = Convert.ToBoolean(result["status"]);
-    //        int id = Convert.ToInt32(result["last_id"]);
-    //        if (res)
-    //        {
-    //            if (id > 0)
-    //            {
-    //                this.makeDynamicTable(result, "chlapci", "chlapci_tbl");
-    //                this.chlapci_diag.Text = "";
-    //                this.chlapci_note.Text = "";
-
-    //            }
-    //        }
-    //        else
-    //        {
-    //            Response.Write("<script>alert('" + result["msg"].ToString() + "')</script>");
-    //        }
-    //    }
-    //    else
-    //    {
-    //        this.alert("Meno musi byt vypisane !!!!!");
-    //    }
-
-    //    // this.saveData()
-    //}
-
-    //protected void alert(string message)
-    //{
-    //    Response.Write("<script>alert('" + message + "');</script>");
-    //}
+    
 
     protected void search_fnc(object sender, EventArgs e)
     {
@@ -762,7 +397,8 @@ public partial class tabletview : System.Web.UI.Page
 
         if (searchName.Length > 0)
         {
-            Response.Write("<script>window.open('http://10.10.2.49:3333/studyList?search=" + searchName + "','_blank','');</script>");
+            Response.Redirect("http://10.10.2.49:3333/studyList?search=" + searchName);
+            //Response.Write("<script>window.open('http://10.10.2.49:3333/studyList?search=" + searchName + "','_blank','');</script>");
         }
         else
         {

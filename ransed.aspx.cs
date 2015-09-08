@@ -25,12 +25,16 @@ public partial class ransed : System.Web.UI.Page
         this.msg_lbl.Text = "";
         this.loadDeps();
         this.setMyDate();
+       
         this.loadData();
+        
+        
 
     }
 
     protected void loadDeps()
     {
+        this.odd_dl.Controls.Clear();
         string query = my_x2.sprintf("SELECT * FROM [is_deps] WHERE [clinic_id]='{0}'", new string[] {Session["klinika_id"].ToString()});
         Dictionary<int,Hashtable> table = x2db.getTable(query);
 
@@ -54,7 +58,7 @@ public partial class ransed : System.Web.UI.Page
             this.name_txt.Text = "";
             this.note_txt.Text = "";
         }
-
+        this.osirixData_plh.Controls.Clear();
         
 
         //this.loadSluzby();
@@ -89,25 +93,26 @@ public partial class ransed : System.Web.UI.Page
         this.loadData();
     }
 
-    protected void loadSluzby()
+    protected void  loadSluzby()
     {
         DateTime datum = this.Calendar1.SelectedDate.AddDays(-1);
 
         StringBuilder sb = new StringBuilder();
-
         Table shiftTable = new Table();
-        this.osirixData_plh.Controls.Add(shiftTable);
+        shiftTable.ID = "tableShift";
+        shiftTable.Controls.Clear();
 
+        this.osirixData_plh.Controls.Add(shiftTable);
         TableHeaderRow headRow = new TableHeaderRow();
         shiftTable.Controls.Add(headRow);
         TableHeaderCell headCell = new TableHeaderCell();
         headCell.Text = "<h2>Sluzby</h2>";
         headRow.Controls.Add(headCell);
 
-        sb.Append("SELECT [patient_name] AS [name], [work_text] AS [text], [work_place] AS [place] FROM [is_hlasko_epc] AS [hlasko_epc]");
+        sb.Append("SELECT [patient_name] AS [name], [work_text] AS [text], [work_place] AS [place],[hlasko_epc.id] AS [epc_id] FROM [is_hlasko_epc] AS [hlasko_epc]");
         sb.AppendLine("INNER JOIN [is_hlasko] AS [hlasko] ON [hlasko].[id] = [hlasko_epc].[hlasko_id] ");
         sb.AppendFormat("WHERE [hlasko].[dat_hlas]='{0}'", my_x2.unixDate(datum));
-        sb.AppendFormat("AND [hlasko].[clinic]='{0}'", Session["klinika_id"]);
+        sb.AppendFormat("AND [hlasko].[clinic]='{0}' AND [hlasko_epc.osirix]='true'", Session["klinika_id"]);
 
         Dictionary<int, Hashtable> data = x2db.getTable(sb.ToString());
 
@@ -126,16 +131,27 @@ public partial class ransed : System.Web.UI.Page
             osirixLn.Text = tmpArr[0];
             osirixLn.CssClass = "large green button align-center";
             osirixLn.NavigateUrl = Resources.Resource.osirix_url + x2_var.UTFtoASCII(data[i]["name"].ToString());
+            osirixLn.Target = "_blank";
             dataCell.Controls.Add(osirixLn);
             Literal workText = new Literal();
             workText.Text = "<p><strong>Odd - (" + data[i]["place"].ToString() + ")</strong>, " + my_x2.DecryptString(data[i]["text"].ToString(), Session["passphrase"].ToString()) + "</p>";
             dataCell.Controls.Add(workText);
 
+            /*Button delBtn = new Button();
+            delBtn.ID = "delRdg_" + data[i]["epc_id"].ToString();
+            delBtn.CssClass = "red button";
+            delBtn.CssClass = "Zmazat";
+            delBtn.Click += new EventHandler(delRdgFnc);
+            dataCell.Controls.Add(delBtn);
 
 
-
-            riadok.Controls.Add(dataCell);
+            riadok.Controls.Add(dataCell);*/
         }
+    }
+
+    protected void delRdgFnc(object sender, EventArgs e)
+    {
+
     }
 
     protected void setDepsView()
@@ -147,11 +163,17 @@ public partial class ransed : System.Web.UI.Page
 
         int dataCn = data.Count;
 
+        Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+        ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
+
+        
 
         for (int i = 0; i < dataCn; i++)
         {
             Table rdgTable = new Table();
+            rdgTable.Controls.Clear();
             rdgTable.ID = "rdgTable_" + data[i]["idf"];
+
             this.osirixData_plh.Controls.Add(rdgTable);
 
             TableHeaderRow headRow = new TableHeaderRow();
@@ -194,7 +216,7 @@ public partial class ransed : System.Web.UI.Page
             dataCell.Controls.Add(osirixLink);
 
             Label osirixComment = new Label();
-            osirixComment.Text = "&nbsp;&nbsp;&nbsp;" + data[i]["poznamka"].ToString() + "&nbsp;&nbsp;&nbsp;";
+            osirixComment.Text = "&nbsp;&nbsp;&nbsp;" + my_x2.getStr(data[i]["poznamka"].ToString()) + "&nbsp;&nbsp;&nbsp;";
             dataCell.Controls.Add(osirixComment);
 
             Button delLink = new Button();
@@ -226,6 +248,7 @@ public partial class ransed : System.Web.UI.Page
         ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
 
         Table rdgTable = (Table)ctpl.FindControl("rdgTable_" + dep);
+
 
         TableRow riadok = new TableRow();
         rdgTable.Controls.Add(riadok);

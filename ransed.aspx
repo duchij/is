@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="ransed.aspx.cs" Inherits="ransed" EnableViewState="true" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="ransed.aspx.cs" Inherits="ransed" EnableViewState="false" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server"></asp:Content>
 
@@ -8,24 +8,25 @@
  <h2> Ranné sedenie</h2><hr />
         <div class="row">
             <div class="one half">
-                <asp:Calendar ID="Calendar1" runat="server" BackColor="White" BorderColor="#999999" DayNameFormat="Shortest" 
-                          ForeColor="Black" CssClass="responsive" data-max="15" 
-        Height="180px" Width="200px" OnSelectionChanged="date_changed_fnc" 
-        CellPadding="4">
-                    <SelectedDayStyle BackColor="#666666" Font-Bold="True" ForeColor="White" />
-                    <SelectorStyle BackColor="#CCCCCC" />
-                    <WeekendDayStyle BackColor="#FFFFCC" />
-                    <TodayDayStyle BackColor="#CCCCCC" ForeColor="Black" />
-                    <OtherMonthDayStyle ForeColor="#808080" />
-                    <NextPrevStyle VerticalAlign="Bottom" />
-                    <DayHeaderStyle BackColor="#CCCCCC" Font-Bold="True"  />
-                    <TitleStyle BackColor="#999999" Font-Bold="True" BorderColor="Black" />
-                     </asp:Calendar>
+               <asp:Calendar ID="Calendar1" runat="server" BackColor="White" OnSelectionChanged="date_changed_fnc"  CssClass="responsive" data-max="12"
+                            BorderColor="#d9edf7" DayNameFormat="Shortest"  
+                              ForeColor="Black" 
+                             CellPadding="2" NextPrevStyle-Width="10%" DayHeaderStyle-Wrap="False" TitleStyle-HorizontalAlign="Left" NextPrevFormat="CustomText" TitleFormat="MonthYear" TitleStyle-Wrap="True" TitleStyle-VerticalAlign="Top" NextPrevStyle-HorizontalAlign="Left" TitleStyle-Width="100%" SelectorStyle-Wrap="False" TitleStyle-CssClass="calendarTitle">
+                        <SelectedDayStyle BackColor="#46627f" Font-Bold="True" ForeColor="White" />
+                        <SelectorStyle BackColor="#46627f" />
+                        <WeekendDayStyle BackColor="#dff0d8" />
+                        <TodayDayStyle BackColor="#f0e6f4" ForeColor="black" />
+                        <OtherMonthDayStyle ForeColor="#808080" />
+                        <NextPrevStyle VerticalAlign="Bottom" />
+                        <DayHeaderStyle BackColor="#ffe5c7" Font-Bold="True" />
+                        <TitleStyle BackColor="#d9edf7" BorderColor="Black" Font-Bold="True" />
+                        </asp:Calendar>
             </div>
             <div class="one half  half-padded">
-                <h2 class="blue">Pridaj pacienta na rannu diagnostiku...</h2>
+                <h2 class="blue">Pridaj pacienta na rannú diagnostiku...</h2>
                 Priezvisko: <asp:TextBox ID="name_txt" runat="server"></asp:TextBox> 
                 Poznámka:<asp:TextBox ID="note_txt" runat="server"></asp:TextBox>
+                <p>Sem napíšte krátku epikrízu, alebo to čo chcete prebrať na rannom sedení...</p>
                 Oddelenie
 
                 <asp:DropDownList ID="odd_dl" runat="server">
@@ -41,7 +42,7 @@
     
         <div class="row">
             <div class="one half-padded">
-            <asp:PlaceHolder ID="osirixData_plh" runat="server">
+            <asp:PlaceHolder ID="osirixData_plh" runat="server" EnableViewState="false">
 
             </asp:PlaceHolder>
 
