@@ -49,6 +49,7 @@
                 </asp:DropDownList>
                 </div> 
             </div>
+    <asp:Button ID="Button1" runat="server" Text="Vykaz" OnClick="generate_nurse_plan_fnc" />
  Počet dní v mesiaci: <asp:Label ID="days_lbl" runat="server" Text="Label"></asp:Label><hr />
                 <asp:Label ID="Label1" runat="server" Text="Víkend" CssClass="red box" Width="130"></asp:Label>
                 <asp:Label ID="Label2" runat="server" Text="Štátny sviatok" CssClass="yellow box" Width="130"></asp:Label>

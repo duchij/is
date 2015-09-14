@@ -178,7 +178,7 @@ public partial class header : System.Web.UI.UserControl
             sb.Append("SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],");
             sb.Append("[t_sluzb].[state] AS [state],");
             sb.Append("GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [users_ids],");
-            sb.Append("GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],");
+            sb.Append("GROUP_CONCAT(IF([t_sluzb].[user_id]='0','-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],");
             sb.Append("GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [comment],");
             sb.Append("[t_sluzb].[date_group] AS [dategroup]");
             sb.Append("FROM [is_sluzby_2_sestr] AS [t_sluzb]");
@@ -195,6 +195,7 @@ public partial class header : System.Web.UI.UserControl
         {
             string[] docBefore = table[0]["users_names"].ToString().Split(';');
             string[] comments = table[0]["comment"].ToString().Split('|');
+
             if (this.wgroup == "doctor" || this.wgroup=="other")
             {
                 
@@ -217,23 +218,56 @@ public partial class header : System.Web.UI.UserControl
             if (this.wgroup == "nurse" || this.wgroup == "assistent")
             {
                 this.head1_lbl.Text = "Den:<br>";
-                this.oup_lbl.Text = docBefore[0].ToString() + "<div style='font-size:8px;'><em>(" + comments[0].ToString() + ")</em></div><br>";
-                this.oup_lbl.Text += docBefore[1].ToString() + "<div style='font-size:8px;'><em>(" + comments[1].ToString() + ")</em></div><br>";
-                this.oup_lbl.Text += docBefore[2].ToString() + "<div style='font-size:8px;'><em>(" + comments[2].ToString() + ")</em></div><br>";
+                int index = docBefore.Length;
+                if (index >= 0 && index < docBefore.Length)
+                {
+                    this.oup_lbl.Text = docBefore[0].ToString() + "<div style='font-size:8px;'><em>(" + comments[0].ToString() + ")</em></div><br>";
+                }
+                if (index >= 0 && index < docBefore.Length)
+                {
+                    this.oup_lbl.Text += docBefore[1].ToString() + "<div style='font-size:8px;'><em>(" + comments[1].ToString() + ")</em></div><br>";
+
+                }
+                if (index >= 0 && index < docBefore.Length)
+                {
+                    this.oup_lbl.Text += docBefore[2].ToString() + "<div style='font-size:8px;'><em>(" + comments[2].ToString() + ")</em></div><br>";
+
+                }
 
                 this.head2_lbl.Text = "Ranka.";
-                this.odda_lbl.Text = docBefore[3].ToString() + "<div style='font-size:8px;'><em>(" + comments[3].ToString()+ ")</em></div>";
+                if (index >= 0 && index < docBefore.Length)
+                {
+                    this.odda_lbl.Text = docBefore[3].ToString() + "<div style='font-size:8px;'><em>(" + comments[3].ToString() + ")</em></div>";
+                }
 
                 this.head3_lbl.Text = "Sanit.1";
-                this.oddb_lbl.Text = docBefore[4].ToString() + "<div style='font-size:8px;'><em>(" + comments[4].ToString() + ")</em></div>";
+                if (index >= 0 && index < docBefore.Length)
+                {
+                    this.oddb_lbl.Text = docBefore[4].ToString() + "<div style='font-size:8px;'><em>(" + comments[4].ToString() + ")</em></div>";
+                }
 
                 this.head4_lbl.Text = "Sanit.2";
-                this.op_lbl.Text = docBefore[5].ToString() + "<div style='font-size:8px;'><em>(" + comments[5].ToString() + ")</em></div>";
+                if (index >= 0 && index < docBefore.Length)
+                {
+                    this.op_lbl.Text = docBefore[5].ToString() + "<div style='font-size:8px;'><em>(" + comments[5].ToString() + ")</em></div>";
+                }
 
                 this.head5_lbl.Text = "Noc:";
-                this.trp_lbl.Text = docBefore[6].ToString() + "<div style='font-size:8px;'><em>(" + comments[6].ToString() + ")</em></div><br>";
-                this.trp_lbl.Text += docBefore[7].ToString() + "<div style='font-size:8px;'><em>(" + comments[7].ToString() + ")</em></div><br>";
-                this.trp_lbl.Text += docBefore[8].ToString() + "<div style='font-size:8px;'><em>(" + comments[8].ToString() + ")</em></div><br>";
+                if (index >= 0 && index < docBefore.Length)
+                {
+                    this.trp_lbl.Text = docBefore[6].ToString() + "<div style='font-size:8px;'><em>(" + comments[6].ToString() + ")</em></div><br>";
+
+                }
+                if (index >= 0 && index < docBefore.Length)
+                {
+                    this.trp_lbl.Text += docBefore[7].ToString() + "<div style='font-size:8px;'><em>(" + comments[7].ToString() + ")</em></div><br>";
+
+                }
+                if (index >= 0 && index < docBefore.Length)
+                {
+                    this.trp_lbl.Text += docBefore[8].ToString() + "<div style='font-size:8px;'><em>(" + comments[8].ToString() + ")</em></div><br>";
+
+                }
               
                 if (table[1]["users_names"] != null)
                 {

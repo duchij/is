@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Text;
 using System.Globalization;
 using System.Collections;
@@ -11,6 +12,8 @@ using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
 
 public partial class sluzby2_sestr : System.Web.UI.Page
 {
@@ -108,19 +111,19 @@ public partial class sluzby2_sestr : System.Web.UI.Page
 
 
         int depsLn = table.Count;
-        ListItem[] newItem = new ListItem[depsLn];
+        System.Web.UI.WebControls.ListItem[] newItem = new System.Web.UI.WebControls.ListItem[depsLn];
        // this.deps_dl.Items.Clear();
         for (int dep = 0; dep < depsLn; dep++)
         {
             if (this.rights == "admin" || this.rights == "poweruser")
             {
-                this.deps_dl.Items.Add(new ListItem(table[dep]["label"].ToString(), table[dep]["idf"].ToString()));
+                this.deps_dl.Items.Add(new System.Web.UI.WebControls.ListItem(table[dep]["label"].ToString(), table[dep]["idf"].ToString()));
             }
             else
             {
                 if (this.deps == table[dep]["idf"].ToString() && this.rights == "users")
                 {
-                    this.deps_dl.Items.Add(new ListItem(table[dep]["label"].ToString(), table[dep]["idf"].ToString()));
+                    this.deps_dl.Items.Add(new System.Web.UI.WebControls.ListItem(table[dep]["label"].ToString(), table[dep]["idf"].ToString()));
                 }
             }
         }
@@ -300,32 +303,54 @@ public partial class sluzby2_sestr : System.Web.UI.Page
                         //doctors_lb.CssClass = "no-pad-mobile no-gap-mobile";
                         
                         int listLn = doctorList.Count;
-                        ListItem[] newItem = new ListItem[listLn];
+                        System.Web.UI.WebControls.ListItem[] newItem =new System.Web.UI.WebControls.ListItem[listLn];
 
                         for (int doc = 0; doc < listLn; doc++)
                         {
                             string[] tmp = doctorList[doc].ToString().Split('|');
-                            newItem[doc] = new ListItem(tmp[1].ToString(), tmp[0].ToString());
+                            newItem[doc] = new System.Web.UI.WebControls.ListItem(tmp[1].ToString(), tmp[0].ToString());
                         }
                         doctors_lb.Items.AddRange(newItem);
 
-                        string dd = userId[cols].ToString();
+                        if (cols >= 0 && cols < names.Length )
+                        {
+                            string dd = userId[cols].ToString();
 
-                        doctors_lb.SelectedValue = dd; // userId[cols].ToString();
-                        doctors_lb.ToolTip = names[cols].ToString();
-                        dataCell.Controls.Add(doctors_lb);
-                        //doctors_lb.SelectedIndex = doctors_lb.Items.IndexOf(doctors_lb.Items.FindByValue(userId[cols]));
+                            doctors_lb.SelectedValue = dd; // userId[cols].ToString();
+                            doctors_lb.ToolTip = names[cols].ToString();
+                            dataCell.Controls.Add(doctors_lb);
+                            //doctors_lb.SelectedIndex = doctors_lb.Items.IndexOf(doctors_lb.Items.FindByValue(userId[cols]));
 
-                        doctors_lb.AutoPostBack = true;
-                        doctors_lb.SelectedIndexChanged += new EventHandler(dItemChanged);
-                        //doctors_lb.SelectedValue = "-";
+                            doctors_lb.AutoPostBack = true;
+                            doctors_lb.SelectedIndexChanged += new EventHandler(dItemChanged);
+                            //doctors_lb.SelectedValue = "-";
 
-                        TextBox textBox = new TextBox();
-                        dataCell.Controls.Add(textBox);
-                        textBox.ID = "textBox_" + row.ToString() + "_" + cols.ToString();
-                        textBox.Text = comments[cols];
-                        textBox.AutoPostBack = true;
-                        textBox.TextChanged += new EventHandler(commentChanged);
+                            TextBox textBox = new TextBox();
+                            dataCell.Controls.Add(textBox);
+                            textBox.ID = "textBox_" + row.ToString() + "_" + cols.ToString();
+                            textBox.Text = comments[cols];
+                            textBox.AutoPostBack = true;
+                            textBox.TextChanged += new EventHandler(commentChanged);
+                        }
+                        else
+                        {
+                            doctors_lb.SelectedValue = "-"; // userId[cols].ToString();
+                            doctors_lb.ToolTip = "-";
+                            dataCell.Controls.Add(doctors_lb);
+                            //doctors_lb.SelectedIndex = doctors_lb.Items.IndexOf(doctors_lb.Items.FindByValue(userId[cols]));
+
+                            doctors_lb.AutoPostBack = true;
+                            doctors_lb.SelectedIndexChanged += new EventHandler(dItemChanged);
+                            //doctors_lb.SelectedValue = "-";
+
+                            TextBox textBox = new TextBox();
+                            dataCell.Controls.Add(textBox);
+                            textBox.ID = "textBox_" + row.ToString() + "_" + cols.ToString();
+                            textBox.Text = "-";
+                            textBox.AutoPostBack = true;
+                            textBox.TextChanged += new EventHandler(commentChanged);
+                        }
+                        
                     }
                     else
                     {
@@ -688,7 +713,133 @@ public partial class sluzby2_sestr : System.Web.UI.Page
         
     }
     
-    
+    protected void generate_nurse_plan_fnc(object sender, EventArgs e)
+    {
+        string query = @"
+                        SELECT [t_users.full_name] AS [name]
+                           ,GROUP_CONCAT([t_sluzb.typ] ORDER BY [t_sluzb.datum] SEPARATOR ';' ) AS [plan] 
+                           ,GROUP_CONCAT(DATE_FORMAT([t_sluzb.datum],'%Y-%c-%e') ORDER BY [t_sluzb.datum] SEPARATOR ';' ) AS [datum]
+                        FROM [is_sluzby_2_sestr] AS [t_sluzb]
+                            INNER JOIN [is_users] AS [t_users] ON [t_users.id] = [t_sluzb.user_id]
+                        WHERE [t_sluzb.date_group]='201509' AND [deps]='MSV' 
+                        GROUP BY [t_sluzb.user_id]
+                        ORDER BY [t_sluzb.datum] 
+                        ";
+
+        query = x2Mysql.buildSql(query,new string[] {});
+
+        Dictionary<int, Hashtable> table = x2Mysql.getTable(query);
+            this.makePdf(table);
+
+    }
+
+    protected void makePdf(Dictionary<int, Hashtable> table)
+    {
+        
+
+        
+        int milis = DateTime.Now.Millisecond;
+        string path = Server.MapPath("App_Data");
+        string imagepath = Server.MapPath("App_Data");
+        string oldFile = @path + @"\nurse\plan5.pdf";
+        string hash = x2.makeFileHash(Session["login"].ToString() + milis.ToString());
+        string newFile = @path + @"\nurse\plan\plan_" + hash + ".pdf";
+        this.msg_lbl.Text = oldFile;
+        // open the reader
+        PdfReader reader = new PdfReader(oldFile);
+        
+               
+        Rectangle size = reader.GetPageSizeWithRotation(1);
+        Document myDoc = new Document(size,0,0,0,0);
+        myDoc.SetPageSize(size);
+        float rot = reader.GetPageRotation(1);
+        //reader.Pa
+
+
+        //1cm == 28.3pt
+        
+
+
+        // open the writer
+        FileStream fs = new FileStream(newFile, FileMode.Create, FileAccess.Write);
+        PdfWriter writer = PdfWriter.GetInstance(myDoc, fs);
+        myDoc.Open();
+        PdfImportedPage page = writer.GetImportedPage(reader, 1);
+
+        
+
+
+        // the pdf content
+        //PdfWriter pw = writer.DirectContent;
+        PdfContentByte cb = writer.DirectContent;
+        //cb.AddTemplate(page, 0, 1.0F);
+        cb.AddTemplate(page, -1f, 0, 0, -1f, reader.GetPageSizeWithRotation(1).Width,  reader.GetPageSizeWithRotation(1).Height);
+        //cb.AddTemplate(page, 0, 1.0F, -1.0F, 0, page.Width, 0);
+        //cb.AddTemplate(page, 1f, 0, 0, 1f, 0, 0);
+
+        //PdfDictionary pdfDic = new PdfDictionary();
+        //pdfDic = reader.GetPageN(1);
+        //pdfDic.Put(PdfName.ROTATE, new PdfNumber(rot + 90));
+        //PdfStamper stamp = new PdfStamper(reader,new )
+        BaseFont mojFont = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1250, false);
+        cb.SetFontAndSize(mojFont, 9);
+        int tbLn = table.Count;
+
+        float startRowY = size.Height- 135; //126 start
+        float startPlanX = (float)133.7;
+        float nameDistance = 35;
+        float planDistance = (float)11.23;
+
+        int rok = Convert.ToInt32(this.rok_cb.SelectedValue);
+        int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue);
+
+        int days = DateTime.DaysInMonth(rok, mesiac);
+        for (int i=0; i<tbLn; i++)
+        {
+            if (i <10)
+            {
+                
+
+                cb.BeginText();
+                cb.MoveText(10, startRowY-(i*35));
+                cb.ShowText(table[i]["name"].ToString());
+                cb.EndText();
+
+                string[] sluzby = table[i]["plan"].ToString().Split(';');
+                string[] dni = table[i]["datum"].ToString().Split(';');
+
+                //int slLn = sluzby.Length;
+                for (int p=0;p<days;p++)
+                {
+
+                    string unixDate = rok.ToString() + "-" + mesiac.ToString() +"-"+ (p + 1).ToString();
+
+                    int pos = Array.IndexOf(dni,unixDate);
+
+                    if (pos !=-1)
+                    {
+                        cb.BeginText();
+                        cb.MoveText(startPlanX + (p * planDistance), startRowY - (i * 35));
+                        cb.ShowText(sluzby[pos]);
+                        cb.EndText();
+                    }
+
+                    
+                }
+
+            }
+            
+        }
+
+        
+        
+
+        myDoc.Close();
+        fs.Close();
+        writer.Close();
+        reader.Close();
+
+    }
 
 
 }

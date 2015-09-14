@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Configuration;
+using System.Web.Configuration;
 using System.Text;
 using System.IO;
 using System.Collections.Generic;
@@ -6,6 +8,8 @@ using System.Collections;
 using System.Web;
 using System.Net;
 using System.Net.Mail;
+using System.Data;
+using System.Security.Cryptography;
 
 using System.Diagnostics;
 
@@ -38,8 +42,8 @@ using System.Diagnostics;
 /// </summary>
 public class log
 {
-   // x2_var x2 = new x2_var(); 
     public string serverPath = "";
+//    public OdbcConnection my_con = new OdbcConnection();
     
 	public log()
 	{
@@ -47,7 +51,11 @@ public class log
 		//
 		// TODO: Add constructor logic here
 		//
-	}
+    //    Configuration myConfig = WebConfigurationManager.OpenWebConfiguration("/is");
+    //    ConnectionStringSettings connString;
+    //    connString = myConfig.ConnectionStrings.ConnectionStrings["kdch_sk"];
+    //    my_con.ConnectionString = connString.ToString();
+       }
 
     private string Ip()
     {
@@ -74,6 +82,17 @@ public class log
 
         }
         return ipAddress;
+    }
+
+    private string makeHashString(string text)
+    {
+        MD5CryptoServiceProvider hasher = new MD5CryptoServiceProvider();
+        System.Text.ASCIIEncoding enc = new System.Text.ASCIIEncoding();
+        byte[] data = enc.GetBytes(text);
+        data = hasher.ComputeHash(data);
+        //Convert.
+        return Convert.ToBase64String(data).Replace('/', 'x');
+
     }
 
     private string unixDate(DateTime datum)
@@ -156,7 +175,7 @@ public class log
         }
     }
 
-    private StreamWriter openFile()
+    private SortedList openFile()
     {
         try
         {
@@ -177,6 +196,8 @@ public class log
             
         }*/
         StreamWriter sfw =null;
+        string complFile = "";
+        string fileName = "";
 
         if (serverPath != "end")
         {
@@ -185,7 +206,8 @@ public class log
             string shortDate = this.unixDate(dt);
             //string path = @"..\App_Data\";
 
-            string complFile = serverPath + @"\App_Data\" + shortDate + ".log";
+            complFile = this.serverPath + @"\App_Data\" + shortDate + ".log";
+            fileName = shortDate + ".log";
 
             /*if (!File.Exists(complFile))
             {
@@ -208,7 +230,12 @@ public class log
                 sfw = null;
             }
         }
-        return sfw;
+
+        SortedList result = new SortedList();
+        result.Add("sfw", sfw);
+        result.Add("fileName", fileName);
+
+        return result;
     }
 
     public void logData(object data, string error, string idf)
@@ -247,9 +274,12 @@ public class log
                 sb.AppendFormat("       ['{0}'] = {1} \r\n", row.Key.ToString(), row.Value.ToString());
             }
             sb.AppendLine("\r\n-----------------------------------------------------------END OF  SortedList\r\n");
+            
+#if DEBUG
             strToWrite = sb.ToString();
-
-            if(error.Length == 0)
+#else
+            strToWrite = sb.ToString();
+            if (error.Length == 0)
             {
                 if (strToWrite.Length > 500)
                 {
@@ -258,6 +288,7 @@ public class log
                     strToWrite += "\r\n-----------------------------------------------------------END OF  SortedList\r\n";
                 }
             }
+#endif
             if (sendMail) errorDt.Add("data", strToWrite);
             
         }
@@ -276,7 +307,11 @@ public class log
             }
             sb.AppendLine("\r\n-----------------------------------------------------------END OF  Dictionary<int, Hashtable>\r\n");
             strToWrite = sb.ToString();
-           if (error.Length ==0)
+#if DEBUG
+            strToWrite = sb.ToString();
+#else
+            strToWrite = sb.ToString();
+            if (error.Length ==0)
            {
                if (strToWrite.Length > 500)
                {
@@ -285,6 +320,7 @@ public class log
                    strToWrite += "\r\n-----------------------------------------------------------END OF  Dictionary<int, Hashtable>\r\n";
                }
            }
+#endif
             if (sendMail) errorDt.Add("data", strToWrite);
         }
 
@@ -302,6 +338,10 @@ public class log
             }
             sb.AppendLine("\r\n-----------------------------------------------------------END OF  Dictionary<int, SortedList>\r\n");
             strToWrite = sb.ToString();
+#if DEBUG
+            strToWrite = sb.ToString();
+#else
+            strToWrite = sb.ToString();
             if (error.Length ==0 )
             {
                 if (strToWrite.Length > 500)
@@ -311,6 +351,7 @@ public class log
                     strToWrite += "\r\n-----------------------------------------------------------END OF  Dictionary<int, SortedList>\r\n";
                 }
             }
+#endif
             if (sendMail) errorDt.Add("data", strToWrite);
         }
 
@@ -321,17 +362,24 @@ public class log
             sb.AppendFormat("        string = {0} \r\n", data.ToString());
             sb.AppendLine("\r\n-----------------------------------------------------------END OF  string\r\n");
 
-
+#if DEBUG
             strToWrite = sb.ToString();
-           if (error.Length ==0 )
-           {
+#else
+            strToWrite = sb.ToString();
+            if (error.Length ==0 )
+            {
                if (strToWrite.Length > 500)
                {
                    strToWrite = strToWrite.Substring(0, 500);
                    strToWrite += ".....data truncated......";
                    strToWrite += "\r\n-----------------------------------------------------------END OF  string\r\n";
                }
-           }
+            }
+#endif
+            {
+		 
+	    }
+
             if (sendMail) errorDt.Add("data", strToWrite);
         }
 
@@ -339,27 +387,80 @@ public class log
 
         try
         {
-            sw = this.openFile();
+            SortedList res = this.openFile();
+            sw = (StreamWriter)res["sfw"];
+            string fileName = res["fileName"].ToString();
+
             if (sw != null)
             {
+               
                 sw.WriteLine(strToWrite);
                 sw.Flush();
                 sw.Close();
+                this.registerTempFile(fileName, 7);
                 sw.Dispose();
+                
+                //reg.registerTempFile(sw.)
             }
-            else
-            {
-
-            }
+            
             
            // if (sendMail) this.sendMail(errorDt);
             
         }
         catch (Exception ex)
         {
+           if (this.serverPath != "end")
+           {
+
+               string edt = DateTime.Today.ToShortDateString();
+               string edh = DateTime.Now.ToLongTimeString();
+
+               string elogIp = this.Ip();
+
+               DateTime eDt = DateTime.Today;
+
+               string shortDate = this.unixDate(eDt);
+               string fileName = this.serverPath+@"\App_Data\global_error_" + shortDate + ".log";
+               string shortName = "global_error_" + shortDate + ".log";
+               StringBuilder esb = new StringBuilder();
+               esb.AppendFormat("\r\n Global error..........{0} {1} {2}", elogIp, edt, edh);
+               esb.Append("_________________________________________________________________________\r\n");
+               esb.AppendFormat("{0}\r\n", ex.ToString());
+               esb.Append("_________________________________________________________________________\r\n");
+
+
+               StreamWriter sfw = new StreamWriter(fileName, true);
+               sfw.WriteLine(esb.ToString());
+               sfw.Close();
+               sfw.Dispose();
+               //this.registerTempFile(shortName, 7);
+               
+
+           }
+          
             //sw.Flush();
             //sw.Close();
         }
+        
+    }
+
+    private void registerTempFile(string filename, Int32 days)
+    {
+        SortedList data = new SortedList();
+
+        Int32 unixTimestamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+        Int32 tolivetime = unixTimestamp + days * 24 * 60 * 60;
+
+
+        data.Add("file_name", filename);
+        data.Add("time_in", unixTimestamp);
+        data.Add("time_out", tolivetime);
+        data.Add("hash", this.makeHashString(filename));
+
+        mysql_db db = new mysql_db();
+        db.mysql_insert_log(data);
+        
+      
     }
 
 
@@ -386,6 +487,8 @@ public class log
         }
     }
 
+
+  
    
 
 }

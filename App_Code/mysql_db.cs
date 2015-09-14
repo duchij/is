@@ -75,19 +75,20 @@ public class mysql_db
 
     public string parseQuery(string query)
     {
-        if (query.IndexOf("].[") !=-1)
+        if (query.IndexOf("[") != -1 && query.IndexOf("]") != -1)
         {
-            query = query.Replace('[', '`');
-            query = query.Replace(']', '`'); 
+            if (query.IndexOf("].[") != -1)
+            {
+                query = query.Replace('[', '`');
+                query = query.Replace(']', '`');
+            }
+            else
+            {
+                query = query.Replace(".", "`.`");
+                query = query.Replace('[', '`');
+                query = query.Replace(']', '`');
+            }
         }
-        else
-        {
-            query = query.Replace(".", "`.`");
-            query = query.Replace('[', '`');
-            query = query.Replace(']', '`'); 
-        }
-
-       
 
         return query;
     }
@@ -1265,6 +1266,8 @@ public class mysql_db
 
         Dictionary<int, Hashtable> result = new Dictionary<int, Hashtable>();
 
+        //if (query.IndexOf(""))
+
         try
         {
 
@@ -1425,5 +1428,70 @@ public class mysql_db
 
     }
 
+    public Boolean mysql_insert_log(SortedList data)
+    {
+        Boolean result = true;
+        
+
+        StringBuilder sb = new StringBuilder();
+
+        string[] columns = new string[data.Count];
+        string[] values = new string[data.Count];
+        string[] col_val = new string[data.Count];
+
+
+        int i = 0;
+        foreach (DictionaryEntry row in data)
+        {
+
+            columns[i] = "`" + row.Key.ToString() + "`";
+            if (row.Value == null)
+            {
+                values[i] = "NULL";
+            }
+            else if (row.Value.ToString().Trim().Length == 0)
+            {
+                values[i] = "NULL";
+            }
+            else
+            {
+                values[i] = "'" + row.Value.ToString() + "'";
+            }
+            col_val[i] = "`" + row.Key + "` =  values(`" + row.Key + "`)";
+            i++;
+        }
+
+        string t_cols = string.Join(",", columns);
+        string t_values = string.Join(",", values);
+        string col_val_str = string.Join(",", col_val);
+
+        sb.AppendFormat("INSERT INTO `{0}` ({1}) VALUES ({2}) ON DUPLICATE KEY UPDATE {3};", "is_register_temp", t_cols, t_values, col_val_str);
+
+        string query = sb.ToString();
+
+        int id = 0;
+        try
+        {
+            my_con.Open();
+            OdbcCommand my_com = new OdbcCommand(this.parseQuery(query.ToString()), my_con);
+            my_com.CommandText = query;
+            my_com.ExecuteNonQuery();
+            // cmdtrans.CommandText = "SELECT last_insert_id();";
+            // id = Convert.ToInt32(cmdtrans.ExecuteScalar());
+            
+            // result.Add("last_id", id);
+        }
+        catch (Exception e)
+        {
+            result = false;
+            //result.Add("msg", e.ToString());
+            //result.Add("last_id", 0);
+            //result.Add("sql", query);
+
+        }
+        my_con.Close();
+        return result;
+
+    }
 
 }

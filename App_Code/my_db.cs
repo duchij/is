@@ -1739,9 +1739,9 @@ public class my_db
 
     }
 
-    public void deleteFilesInDb()
+    public void deleteFilesInDb(int days)
     {
-        string ss = "delete  from `is_register_temp` where (unix_timestamp (now()) - `time_out`)/60/60/24 - (`time_out` - `time_in`)/60/60/24 = 0";
+        string ss = @"DELETE  FROM `is_register_temp` WHERE (UNIX_TIMESTAMP (NOW()) - `time_out`)/60/60/24 - (`time_out` - `time_in`)/60/60/24 >='"+days.ToString()+"'";
 
         my_con.Open();
 

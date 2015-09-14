@@ -14,6 +14,7 @@ using System.Security.Cryptography;
 public partial class _Default : System.Web.UI.Page
 {
     my_db db_obj = new my_db();
+    //mysql_db db_obj = new mysql_db();
     x2_var x2 = new x2_var();
     log x2log = new log();
     mysql_db x2Mysql = new mysql_db();
@@ -325,7 +326,6 @@ public partial class _Default : System.Web.UI.Page
                     File.Delete(@Server.MapPath("App_Data") + @"\" + filesToDelete[i]);
                 }
             }
-            db_obj.deleteFilesInDb();
         }
     }
 

@@ -23,7 +23,11 @@ public partial class ransed : System.Web.UI.Page
             Response.Redirect("error.html");
         }
         this.msg_lbl.Text = "";
-        this.loadDeps();
+        if (!IsPostBack)
+        {
+            this.loadDeps();
+        }
+       
         this.setMyDate();
        
         this.loadData();
@@ -34,7 +38,7 @@ public partial class ransed : System.Web.UI.Page
 
     protected void loadDeps()
     {
-        this.odd_dl.Controls.Clear();
+        //this.odd_dl.Controls.Clear();
         string query = my_x2.sprintf("SELECT * FROM [is_deps] WHERE [clinic_id]='{0}'", new string[] {Session["klinika_id"].ToString()});
         Dictionary<int,Hashtable> table = x2db.getTable(query);
 
@@ -100,7 +104,6 @@ public partial class ransed : System.Web.UI.Page
         StringBuilder sb = new StringBuilder();
         Table shiftTable = new Table();
         shiftTable.ID = "tableShift";
-        shiftTable.Controls.Clear();
 
         this.osirixData_plh.Controls.Add(shiftTable);
         TableHeaderRow headRow = new TableHeaderRow();
@@ -109,10 +112,11 @@ public partial class ransed : System.Web.UI.Page
         headCell.Text = "<h2>Sluzby</h2>";
         headRow.Controls.Add(headCell);
 
-        sb.Append("SELECT [patient_name] AS [name], [work_text] AS [text], [work_place] AS [place],[hlasko_epc.id] AS [epc_id] FROM [is_hlasko_epc] AS [hlasko_epc]");
+
+        sb.Append("SELECT [patient_name] AS [name], [work_text] AS [text], [work_place] AS [place],[hlasko_epc].[id] AS [epc_id] FROM [is_hlasko_epc] AS [hlasko_epc]");
         sb.AppendLine("INNER JOIN [is_hlasko] AS [hlasko] ON [hlasko].[id] = [hlasko_epc].[hlasko_id] ");
         sb.AppendFormat("WHERE [hlasko].[dat_hlas]='{0}'", my_x2.unixDate(datum));
-        sb.AppendFormat("AND [hlasko].[clinic]='{0}' AND [hlasko_epc.osirix]='true'", Session["klinika_id"]);
+        sb.AppendFormat("AND [hlasko].[clinic]='{0}' AND [hlasko_epc].[osirix]='true'", Session["klinika_id"]);
 
         Dictionary<int, Hashtable> data = x2db.getTable(sb.ToString());
 
@@ -142,10 +146,10 @@ public partial class ransed : System.Web.UI.Page
             delBtn.CssClass = "red button";
             delBtn.CssClass = "Zmazat";
             delBtn.Click += new EventHandler(delRdgFnc);
-            dataCell.Controls.Add(delBtn);
+            dataCell.Controls.Add(delBtn);*/
 
 
-            riadok.Controls.Add(dataCell);*/
+            riadok.Controls.Add(dataCell);
         }
     }
 
@@ -220,8 +224,8 @@ public partial class ransed : System.Web.UI.Page
             dataCell.Controls.Add(osirixComment);
 
             Button delLink = new Button();
-            delLink.ID = "del_" + dep + "_" + data[i]["item_id"].ToString();
-            //delLink.Click += new EventHandler(deleteOsirEntry);
+            delLink.ID = "del_" + data[i]["item_id"].ToString();
+            delLink.Click += new EventHandler(deleteOsirEntry);
             delLink.Text = Resources.Resource.delete;
             delLink.CssClass = "red button";
 
@@ -231,6 +235,28 @@ public partial class ransed : System.Web.UI.Page
         }
 
 
+    }
+
+    protected void deleteOsirEntry(object sender, EventArgs e)
+    {
+        Button btn = (Button)sender;
+
+        string id = btn.ID.ToString();
+        string[] arr = id.Split('_');
+
+        string query = @"DELETE FROM [is_osirix] WHERE [item_id]='{0}'";
+
+        query = x2db.buildSql(query,new string[]{arr[1]});
+
+        SortedList res = x2db.execute(query);
+        if (!(Boolean)res["status"])
+        {
+            this.msg_lbl.Text = res["msg"].ToString();
+        }
+        else
+        {
+            this.loadData();
+        }
     }
 
     protected void add_patient_click_fnc(object sender, EventArgs e)
@@ -244,43 +270,75 @@ public partial class ransed : System.Web.UI.Page
 
         string dep = this.odd_dl.SelectedValue.ToString();
 
-        Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
-        ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
+        int osirId = this.saveToOsirix(name, note, dep);
 
-        Table rdgTable = (Table)ctpl.FindControl("rdgTable_" + dep);
+        if (osirId >0)
+        {
+            Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+            ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
+
+            Table rdgTable = (Table)ctpl.FindControl("rdgTable_" + dep);
 
 
-        TableRow riadok = new TableRow();
-        rdgTable.Controls.Add(riadok);
+            TableRow riadok = new TableRow();
+            rdgTable.Controls.Add(riadok);
 
-        TableCell dataCell = new TableCell();
+            TableCell dataCell = new TableCell();
 
-        HyperLink osirixLn = new HyperLink();
-        osirixLn.CssClass = "button large blue";
-        osirixLn.NavigateUrl = Resources.Resource.osirix_url + name;
-        osirixLn.Text = name;
-        dataCell.Controls.Add(osirixLn);
+            HyperLink osirixLn = new HyperLink();
+            osirixLn.CssClass = "button large blue";
+            osirixLn.NavigateUrl = Resources.Resource.osirix_url + name;
+            osirixLn.Target = "_blank";
+            osirixLn.Text = name;
+            dataCell.Controls.Add(osirixLn);
 
-        riadok.Controls.Add(dataCell);
+            riadok.Controls.Add(dataCell);
 
-        Label noteLbl = new Label();
-        noteLbl.Text = note;
-        dataCell.Controls.Add(noteLbl);
+            Label noteLbl = new Label();
+            noteLbl.Text = note;
+            dataCell.Controls.Add(noteLbl);
 
-        riadok.Controls.Add(dataCell);
+            Button delLink = new Button();
+            delLink.ID = "del_" + osirId;
+            delLink.Click += new EventHandler(deleteOsirEntry);
+            delLink.Text = Resources.Resource.delete;
+            delLink.CssClass = "red button";
+            dataCell.Controls.Add(delLink);
 
-        //this.saveToOsirix(name, note,dep);
+            riadok.Controls.Add(dataCell);
+        }
+        else
+        {
+            this.msg_lbl.Text += "Chyba pri ukladani....";
+        }
+        
+
 
 
     }
 
-    protected void saveToOsirix(string name, string note,string dep)
+    protected Int32 saveToOsirix(string name, string note,string dep)
     {
+        int result = 0;
         SortedList data = new SortedList();
         data.Add("name", name.Trim());
-        data.Add("note", note.Trim());
+        data.Add("poznamka", note.Trim());
         data.Add("clinic", Session["klinika_id"]);
         data.Add("odd", dep.Trim());
+        data.Add("date", my_x2.unixDate(this.Calendar1.SelectedDate));
+
+        SortedList res = x2db.mysql_insert("is_osirix", data);
+
+        if (!(Boolean)res["status"])
+        {
+            this.msg_lbl.Text = res["msg"].ToString();
+        }
+        else
+        {
+            result = (Int32)res["last_id"];
+        }
+
+        return result;
     }
     
     

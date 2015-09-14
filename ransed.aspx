@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="ransed.aspx.cs" Inherits="ransed" EnableViewState="false" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="ransed.aspx.cs" Inherits="ransed" EnableViewState="true" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server"></asp:Content>
 
@@ -11,7 +11,7 @@
                <asp:Calendar ID="Calendar1" runat="server" BackColor="White" OnSelectionChanged="date_changed_fnc"  CssClass="responsive" data-max="12"
                             BorderColor="#d9edf7" DayNameFormat="Shortest"  
                               ForeColor="Black" 
-                             CellPadding="2" NextPrevStyle-Width="10%" DayHeaderStyle-Wrap="False" TitleStyle-HorizontalAlign="Left" NextPrevFormat="CustomText" TitleFormat="MonthYear" TitleStyle-Wrap="True" TitleStyle-VerticalAlign="Top" NextPrevStyle-HorizontalAlign="Left" TitleStyle-Width="100%" SelectorStyle-Wrap="False" TitleStyle-CssClass="calendarTitle">
+                             CellPadding="2" NextPrevStyle-Width="10%" DayHeaderStyle-Wrap="False" TitleStyle-HorizontalAlign="Left" NextPrevFormat="CustomText" TitleFormat="MonthYear" TitleStyle-Wrap="True" TitleStyle-VerticalAlign="Top" NextPrevStyle-HorizontalAlign="Left" TitleStyle-Width="100%" SelectorStyle-Wrap="False">
                         <SelectedDayStyle BackColor="#46627f" Font-Bold="True" ForeColor="White" />
                         <SelectorStyle BackColor="#46627f" />
                         <WeekendDayStyle BackColor="#dff0d8" />
@@ -29,7 +29,7 @@
                 <p>Sem napíšte krátku epikrízu, alebo to čo chcete prebrať na rannom sedení...</p>
                 Oddelenie
 
-                <asp:DropDownList ID="odd_dl" runat="server">
+                <asp:DropDownList ID="odd_dl" runat="server" EnableViewState="true">
                        <%-- <asp:ListItem Value="MSV">Dievčatá</asp:ListItem>
                         <asp:ListItem Value="KOJ">Kojenci</asp:ListItem>
                         <asp:ListItem Value="VD">Chlapci</asp:ListItem>--%>

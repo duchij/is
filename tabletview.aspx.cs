@@ -324,7 +324,7 @@ public partial class tabletview : System.Web.UI.Page
         //sb.Append("");
         sb.AppendLine("INNER JOIN [is_hlasko] AS [hlasko] ON [hlasko].[id] = [hlasko_epc].[hlasko_id] ");
         sb.AppendFormat("WHERE [hlasko].[dat_hlas]='{0}'", my_x2.unixDate(datum));
-        sb.AppendFormat("AND [hlasko].[clinic]='{0}' AND [hlasko_epc.osirix]='true'", Session["klinika_id"]);
+        sb.AppendFormat("AND [hlasko].[clinic]='{0}' AND [hlasko_epc].[osirix]='true'", Session["klinika_id"]);
 
         Dictionary<int, Hashtable> data = x2db.getTable(sb.ToString());
 
