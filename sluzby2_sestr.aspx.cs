@@ -729,7 +729,9 @@ public partial class sluzby2_sestr : System.Web.UI.Page
         query = x2Mysql.buildSql(query,new string[] {});
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(query);
-            this.makePdf(table);
+        
+        
+        this.makePdf(table);
 
     }
 
@@ -741,7 +743,7 @@ public partial class sluzby2_sestr : System.Web.UI.Page
         int milis = DateTime.Now.Millisecond;
         string path = Server.MapPath("App_Data");
         string imagepath = Server.MapPath("App_Data");
-        string oldFile = @path + @"\nurse\plan5.pdf";
+        string oldFile = @path + @"\nurse\plan10.pdf";
         string hash = x2.makeFileHash(Session["login"].ToString() + milis.ToString());
         string newFile = @path + @"\nurse\plan\plan_" + hash + ".pdf";
         this.msg_lbl.Text = oldFile;
@@ -772,8 +774,9 @@ public partial class sluzby2_sestr : System.Web.UI.Page
         // the pdf content
         //PdfWriter pw = writer.DirectContent;
         PdfContentByte cb = writer.DirectContent;
-        //cb.AddTemplate(page, 0, 1.0F);
-        cb.AddTemplate(page, -1f, 0, 0, -1f, reader.GetPageSizeWithRotation(1).Width,  reader.GetPageSizeWithRotation(1).Height);
+        cb.AddTemplate(page, 0, 0);
+        //rotate 270 degree hardcoded
+        //cb.AddTemplate(page, -1f, 0, 0, -1f, reader.GetPageSizeWithRotation(1).Width,  reader.GetPageSizeWithRotation(1).Height);
         //cb.AddTemplate(page, 0, 1.0F, -1.0F, 0, page.Width, 0);
         //cb.AddTemplate(page, 1f, 0, 0, 1f, 0, 0);
 
@@ -783,26 +786,130 @@ public partial class sluzby2_sestr : System.Web.UI.Page
         //PdfStamper stamp = new PdfStamper(reader,new )
         BaseFont mojFont = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1250, false);
         cb.SetFontAndSize(mojFont, 9);
-        int tbLn = table.Count;
+        
 
-        float startRowY = size.Height- 135; //126 start
-        float startPlanX = (float)133.7;
-        float nameDistance = 35;
-        float planDistance = (float)11.23;
+        float startRowY = size.Height- 189; //126 start
+        float startNameX = (float)28.51;
+        float startPlanX = (float)173.8;
+        float nameDistance = (float)23.66;
+        float planDistance = (float)15.38;
+        //float planEleDistance = (float)7.27;
+
+
+        float dateX = (float)632.16;
+        float dateY = size.Height - (float)30.53;
+
+
+        float madeByX = (float)613.81;
+        float madeByY = size.Height - (float)56.66;
+
+        float depX = (float)59.43;
+        float depY = size.Height - (float)42.65;
+
+        float clinicX = (float)88.25;
+        float clinicY = size.Height - (float)53.09;
+
 
         int rok = Convert.ToInt32(this.rok_cb.SelectedValue);
         int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue);
 
+        //rok a mesiac
+        cb.BeginText();
+        cb.MoveText(dateX, dateY);
+        cb.ShowText(mesiac.ToString()+" / "+rok.ToString());
+        cb.EndText();
+        //kto spravil
+        cb.BeginText();
+        cb.MoveText(madeByX, madeByY);
+        cb.ShowText(Session["fullname"].ToString());
+        cb.EndText();
+        //oddelenie
+        cb.BeginText();
+        cb.MoveText(depX, depY);
+        cb.ShowText(this.deps_dl.SelectedItem.ToString());
+        cb.EndText();
+        //Klinika
+        cb.BeginText();
+        cb.MoveText(clinicX, clinicY);
+        cb.ShowText(Session["clinic_label"].ToString()); ;
+        cb.EndText();
+
+
+
         int days = DateTime.DaysInMonth(rok, mesiac);
+
+        cb.SetColorStroke(BaseColor.LIGHT_GRAY);
+        cb.SetColorFill(BaseColor.LIGHT_GRAY);
+
+        string[] freeDays = Session["freedays"].ToString().Split(',');
+
+        double kof = 12.4;
+        for (int i = 0; i < days; i++)
+        {
+            int den = i + 1;
+            /*if (i == 1)
+            {
+                cb.Rectangle(46, size.Height-(float)odHora, 10, 10);
+                cb.Fill();
+            }*/
+
+            string mesDen = den.ToString() + "." + mesiac.ToString();
+
+            int rs_tmp = Array.IndexOf(freeDays, mesDen);
+
+            DateTime my_date = new DateTime(Convert.ToInt32(rok), Convert.ToInt32(mesiac), den);
+            int dnesJe = (int)my_date.DayOfWeek;
+
+            if (dnesJe == 0 || dnesJe == 6 || rs_tmp != -1)
+            {
+                //173.22
+                //vyska stlpca je 11
+                //od lava 46
+                //dlzka je 423.7
+                
+                /* cb.MoveTo(46, size-odHora +(11*i));
+                 cb.LineTo(469, size - odHora + (11 * i));
+                 cb.LineTo(469, size - odHora + (11 * i)-11);
+                 cb.LineTo(46, size - odHora + (11 * i) - 11);
+                 //Path closed, strokend filled
+                 cb.ClosePathFillStroke();*/
+                double recY = (size.Height - (startRowY+10)) + (planDistance * i);
+
+                float recYY = (float)recY;
+
+                cb.Rectangle(startPlanX+(i*planDistance), (float)179.40, (float)13.96, (float)235.97);
+                //cb.Stroke();
+                cb.Fill();
+            }
+
+
+        }
+        cb.SetColorStroke(BaseColor.BLACK);
+        cb.SetColorFill(BaseColor.BLACK);
+
+        cb.SetFontAndSize(mojFont, 9);
+
+        int tbLn = table.Count;
+
+       // int modulo = 8 % 10;
+
+
+
         for (int i=0; i<tbLn; i++)
         {
             if (i <10)
             {
-                
+                string[] nm = table[i]["name"].ToString().Split(' ');
+                cb.BeginText();
+                cb.MoveText(startNameX, startRowY - (i * nameDistance));
+                          
+                cb.ShowText(nm[0]);
+                cb.EndText();
 
                 cb.BeginText();
-                cb.MoveText(10, startRowY-(i*35));
-                cb.ShowText(table[i]["name"].ToString());
+                cb.MoveText(startNameX, startRowY - (i * nameDistance)-9);
+
+                cb.ShowText(nm[1]);
                 cb.EndText();
 
                 string[] sluzby = table[i]["plan"].ToString().Split(';');
@@ -819,7 +926,7 @@ public partial class sluzby2_sestr : System.Web.UI.Page
                     if (pos !=-1)
                     {
                         cb.BeginText();
-                        cb.MoveText(startPlanX + (p * planDistance), startRowY - (i * 35));
+                        cb.MoveText(startPlanX + (p * planDistance), startRowY - (i * nameDistance));
                         cb.ShowText(sluzby[pos]);
                         cb.EndText();
                     }
@@ -830,7 +937,8 @@ public partial class sluzby2_sestr : System.Web.UI.Page
             }
             
         }
-
+        myDoc.NewPage();
+        cb.AddTemplate(page, 0,0);
         
         
 
@@ -841,5 +949,8 @@ public partial class sluzby2_sestr : System.Web.UI.Page
 
     }
 
+    protected void writeData(PdfContentByte cb, SortedList data)
+    {
 
+    }
 }

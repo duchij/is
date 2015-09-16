@@ -229,7 +229,7 @@ public class my_db
         SortedList result = new SortedList();
 
         StringBuilder sb = new StringBuilder();
-        sb.AppendLine("SELECT [users].*, [clinics].[idf] as [clinics_idf], [deps].[idf] AS [deps_idf]");  
+        sb.AppendLine("SELECT [users].*, [clinics].[idf] as [clinics_idf], [deps].[idf] AS [deps_idf], [clinics].[full_name] AS [clinic_label]");  
         sb.AppendLine("FROM [is_users] AS [users]");
         sb.AppendLine("LEFT JOIN [is_clinics] AS [clinics] ON [clinics].[id] = [users].[klinika]");
         sb.AppendLine("LEFT JOIN [is_deps] AS [deps] ON [deps].[id] = [users].[oddelenie]");

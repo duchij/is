@@ -124,6 +124,7 @@ public partial class _Default : System.Web.UI.Page
                     Session.Add("titul_pred", x2.getStr(data["titul_pred"].ToString()));
                     Session.Add("titul_za", x2.getStr(data["titul_za"].ToString()));
                     Session.Add("klinika_label", x2.getStr(data["klinika_label"].ToString()));
+                    Session.Add("clinic_label", x2.getStr(data["clinic_label"].ToString()));
                     Session.Add("zaradenie", x2.getStr(data["zaradenie"].ToString()));
 
                     string[] fd = x2Mysql.getFreeDays();
@@ -176,6 +177,7 @@ public partial class _Default : System.Web.UI.Page
 
                     Session.Add("zaradenie",  x2.getStr(data["zaradenie"].ToString()));
                     Session.Add("klinika_label", x2.getStr(data["klinika_label"].ToString()));
+                    Session.Add("clinic_label", x2.getStr(data["clinic_label"].ToString()));
 
                     if (data["name"].ToString() == "sklad")
                     {
