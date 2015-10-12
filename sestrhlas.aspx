@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="sestrhlas.aspx.cs" Inherits="sestrhlas"  MaintainScrollPositionOnPostback="true" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="sestrhlas.aspx.cs" Inherits="sestrhlas"  MaintainScrollPositionOnPostback="true" EnableEventValidation="false" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
 </asp:Content>
@@ -58,6 +58,12 @@
                         </ul>
 
                     </p>
+            <div class="blue box">
+                <asp:CheckBox ID="listCodes_chk" runat="server" AutoPostBack="true" Checked="false" /> <asp:Label AssociatedControlID="listCodes_chk" runat="server" CssClass="mojInline">Zobraz sesterské diagnózy</asp:Label>
+               <p><small>Umožňuje vybrať sesterskú diagnózu podľa skupiny. Zobrazenie vypnete odkvačnutím kvačky</small></p>
+                
+                 </div>
+                <asp:PlaceHolder ID="nursecodes_plh" runat="server"></asp:PlaceHolder>
                    <asp:TextBox ID="hlasenie" CssClass="dtextbox" runat="server" Width="90%" Rows="30" Height="500" TextMode="MultiLine"> </asp:TextBox> 
                     
                 <%--<FTB:FreeTextBox ID="hlasenie"  Height="500" Width="100%" toolbarlayout="Bold, Italic, Underline,RemoveFormat, Redo, Undo|FontFacesMenu,FontSizesMenu|JustifyLeft,JustifyRight,JustifyCenter,JustifyFull;BulletedList,NumberedList,Indent,Outdent|WordClean,NetSpell"

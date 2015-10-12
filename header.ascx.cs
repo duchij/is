@@ -156,48 +156,50 @@ public partial class header : System.Web.UI.UserControl
         string dnesStr = dnes.ToShortDateString();
         string vceraStr = vcera.ToShortDateString();
 
-        StringBuilder sb = new StringBuilder();
+        string query ="";
         this.date_lbl.Text = DateTime.Today.ToLongDateString();
         if (this.wgroup == "doctor" || this.wgroup == "op" || this.wgroup == "other")
         {
 
-            sb.Append("SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],");
-            sb.Append("[t_sluzb].[state] AS [state],");
-            sb.Append("GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [users_ids],");
-            sb.Append("GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],");
-            sb.Append("GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [comment],");
-            sb.Append("[t_sluzb].[date_group] AS [dategroup]");
-            sb.Append("FROM [is_sluzby_2] AS [t_sluzb]");
-            sb.Append("LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]");
-            sb.AppendFormat("WHERE [t_sluzb].[datum]='{0}' OR [t_sluzb].[datum]='{1}'", my_x2.unixDate(vcera), my_x2.unixDate(dnes));
-            sb.Append("GROUP BY [t_sluzb].[datum]");
-            sb.Append("ORDER BY [t_sluzb].[datum] DESC");
+            query = @"SELECT 
+                            [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],
+                            [t_sluzb].[state] AS [state],
+                            GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [users_ids],
+                            GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],
+                            GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [comment],
+                            [t_sluzb].[date_group] AS [dategroup]
+                        FROM [is_sluzby_2] AS [t_sluzb]
+                                LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]
+                        WHERE [t_sluzb].[datum]='{0}' OR [t_sluzb].[datum]='{1}'
+                        GROUP BY [t_sluzb].[datum]
+                        ORDER BY [t_sluzb].[datum] DESC";
+
+            query = x2Mysql.buildSql(query, new string[] { my_x2.unixDate(vcera), my_x2.unixDate(dnes) });
+
+
         }
         if (this.wgroup == "nurse" || this.wgroup=="assistent")
         {
-            sb.Append("SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],");
-            sb.Append("[t_sluzb].[state] AS [state],");
-            sb.Append("GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [users_ids],");
-            sb.Append("GROUP_CONCAT(IF([t_sluzb].[user_id]='0','-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],");
-            sb.Append("GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [comment],");
-            sb.Append("[t_sluzb].[date_group] AS [dategroup]");
-            sb.Append("FROM [is_sluzby_2_sestr] AS [t_sluzb]");
-            sb.Append("LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]");
-            sb.AppendFormat("WHERE ([t_sluzb].[datum]='{0}' OR [t_sluzb].[datum]='{1}')", my_x2.unixDate(vcera), my_x2.unixDate(dnes));
-            sb.AppendFormat("AND [t_sluzb].[deps]='{0}'", this.deps);
-            sb.Append("GROUP BY [t_sluzb].[datum]");
-            sb.Append("ORDER BY [t_sluzb].[datum] DESC");
+                query = @"SELECT 
+                                GROUP_CONCAT(CONCAT_WS(';',[t_sluzb.typ],[t_users.name3]) SEPARATOR '|') AS [sluzba], 
+                                [t_sluzb.datum] AS [datum] 
+                            FROM [is_sluzby_2_sestr] AS [t_sluzb] 
+                                INNER JOIN [is_users] AS [t_users] ON [t_users.id] = [t_sluzb.user_id]
+                            WHERE [datum] = '{0}' OR [datum]='{1}'
+                            AND [deps] = '{2}'
+                            GROUP BY [datum] DESC
+                            ";
+            query = x2Mysql.buildSql(query, new string[] { my_x2.unixDate(vcera), my_x2.unixDate(dnes), this.deps });
         }
 
-        Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
+        Dictionary<int, Hashtable> table = x2Mysql.getTable(query);
 
         if (table.Count == 2)
         {
-            string[] docBefore = table[0]["users_names"].ToString().Split(';');
-            string[] comments = table[0]["comment"].ToString().Split('|');
-
             if (this.wgroup == "doctor" || this.wgroup=="other")
             {
+                string[] docBefore = table[0]["users_names"].ToString().Split(';');
+                string[] comments = table[0]["comment"].ToString().Split('|');
                 
                 // string[] docAfter = table[1]["users_names"].ToString().Split(';');
 
@@ -217,61 +219,76 @@ public partial class header : System.Web.UI.UserControl
 
             if (this.wgroup == "nurse" || this.wgroup == "assistent")
             {
+               // string 
                 this.head1_lbl.Text = "Den:<br>";
-                int index = docBefore.Length;
-                if (index >= 0 && index < docBefore.Length)
-                {
-                    this.oup_lbl.Text = docBefore[0].ToString() + "<div style='font-size:8px;'><em>(" + comments[0].ToString() + ")</em></div><br>";
-                }
-                if (index >= 0 && index < docBefore.Length)
-                {
-                    this.oup_lbl.Text += docBefore[1].ToString() + "<div style='font-size:8px;'><em>(" + comments[1].ToString() + ")</em></div><br>";
+                string[] sluzbDnes = table[0]["sluzba"].ToString().Split('|');
 
-                }
-                if (index >= 0 && index < docBefore.Length)
-                {
-                    this.oup_lbl.Text += docBefore[2].ToString() + "<div style='font-size:8px;'><em>(" + comments[2].ToString() + ")</em></div><br>";
+                SortedList data = new SortedList();
 
+                int slLn = sluzbDnes.Length;
+
+                for (int i = 0; i < slLn; i++ )
+                {
+                    string[] tmp = sluzbDnes[i].Split(';');
+                    data.Add(tmp[0], tmp[1]);
                 }
 
+                if (data["D1"] != null)
+                {
+                    this.oup_lbl.Text = data["D1"].ToString()+"<br>";// +"<div style='font-size:8px;'><em>(" + comments[0].ToString() + ")</em></div><br>";
+                }
+                if (data["D2"] != null)
+                {
+                    this.oup_lbl.Text += data["D2"].ToString()+"<br>"; // + "<div style='font-size:8px;'><em>(" + comments[1].ToString() + ")</em></div><br>";
+                }
+                if (data["A1"] != null)
+                {
+                    this.oup_lbl.Text += data["A1"].ToString();// + "<div style='font-size:8px;'><em>(" + comments[2].ToString() + ")</em></div><br>";
+                }
                 this.head2_lbl.Text = "Ranka.";
-                if (index >= 0 && index < docBefore.Length)
+                if (data["RA"] != null)
                 {
-                    this.odda_lbl.Text = docBefore[3].ToString() + "<div style='font-size:8px;'><em>(" + comments[3].ToString() + ")</em></div>";
+                    this.odda_lbl.Text = data["RA"].ToString()+"<br>";// +"<div style='font-size:8px;'><em>(" + comments[3].ToString() + ")</em></div>";
+                }
+                if (data["RA2"] != null)
+                {
+                    this.odda_lbl.Text += data["RA2"].ToString();// +"<div style='font-size:8px;'><em>(" + comments[3].ToString() + ")</em></div>";
                 }
 
                 this.head3_lbl.Text = "Sanit.1";
-                if (index >= 0 && index < docBefore.Length)
+                if (data["S1"] != null)
                 {
-                    this.oddb_lbl.Text = docBefore[4].ToString() + "<div style='font-size:8px;'><em>(" + comments[4].ToString() + ")</em></div>";
+                    this.oddb_lbl.Text = data["S1"].ToString();// +"<div style='font-size:8px;'><em>(" + comments[4].ToString() + ")</em></div>";
                 }
 
                 this.head4_lbl.Text = "Sanit.2";
-                if (index >= 0 && index < docBefore.Length)
+                if (data["S2"] != null)
                 {
-                    this.op_lbl.Text = docBefore[5].ToString() + "<div style='font-size:8px;'><em>(" + comments[5].ToString() + ")</em></div>";
+                    this.op_lbl.Text = data["S2"].ToString();// +"<div style='font-size:8px;'><em>(" + comments[5].ToString() + ")</em></div>";
                 }
 
                 this.head5_lbl.Text = "Noc:";
-                if (index >= 0 && index < docBefore.Length)
+                if (data["N1"] != null)
                 {
-                    this.trp_lbl.Text = docBefore[6].ToString() + "<div style='font-size:8px;'><em>(" + comments[6].ToString() + ")</em></div><br>";
-
+                    this.trp_lbl.Text = data["N1"].ToString()+"<br>";// + "<div style='font-size:8px;'><em>(" + comments[6].ToString() + ")</em></div><br>";
                 }
-                if (index >= 0 && index < docBefore.Length)
+                if (data["N2"] != null)
                 {
-                    this.trp_lbl.Text += docBefore[7].ToString() + "<div style='font-size:8px;'><em>(" + comments[7].ToString() + ")</em></div><br>";
-
+                    this.trp_lbl.Text += data["N2"].ToString()+"<br>";// + "<div style='font-size:8px;'><em>(" + comments[7].ToString() + ")</em></div><br>";
                 }
-                if (index >= 0 && index < docBefore.Length)
+                if (data["A2"] !=null)
                 {
-                    this.trp_lbl.Text += docBefore[8].ToString() + "<div style='font-size:8px;'><em>(" + comments[8].ToString() + ")</em></div><br>";
-
+                    this.trp_lbl.Text += data["A2"].ToString();// + "<div style='font-size:8px;'><em>(" + comments[8].ToString() + ")</em></div><br>";
                 }
+
+                string poSluzbe = table[1]["sluzba"].ToString();
               
+                poSluzbe = poSluzbe.Replace('|',',');
+                poSluzbe = poSluzbe.Replace(';', '-');
+
                 if (table[1]["users_names"] != null)
                 {
-                    this.po_lbl.Text = table[1]["users_names"].ToString();
+                    this.po_lbl.Text = "<p><small>"+poSluzbe+"</small></p>";
                 }
                 else
                 {

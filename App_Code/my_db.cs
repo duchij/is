@@ -1716,7 +1716,8 @@ public class my_db
     public List<string> loadTmpFilesToDelete()
     {
       
-        string ss = "select *  from `is_register_temp` where (unix_timestamp (now()) - `time_out`)/60/60/24 - (`time_out` - `time_in`)/60/60/24 < 0"; 
+        string ss = @"select *,((unix_timestamp (now()) - `time_out`)/60/60/24) as cas  
+                        from `is_register_temp` where ((unix_timestamp (now()) - `time_out`)/60/60/24 )> 10"; 
         my_con.Open();
 
         List<string> result = new List<string>();
@@ -1729,7 +1730,18 @@ public class my_db
         {
             while (reader.Read())
             {
-                result.Add(reader["file_name"].ToString());
+                if (reader["folder"] != DBNull.Value)
+                {
+                    result.Add(reader["file_name"].ToString() + "|" + reader["folder"].ToString());
+                }
+                else
+                {
+                    result.Add(reader["file_name"].ToString());
+                }
+
+
+                
+                //result.Add()
 
             }
            

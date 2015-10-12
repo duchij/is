@@ -91,6 +91,7 @@ public partial class MasterPage : System.Web.UI.MasterPage
             this.hlas_lekar_plh.Visible = true;
             this.hlas_sestier_plh.Visible = true;
         }
+        //this.loadLogo();
         this.shiftsOfCurrentUser();
 
 
@@ -102,6 +103,20 @@ public partial class MasterPage : System.Web.UI.MasterPage
         this.info_plh.Visible = false;
         
     }
+
+    //protected void loadLogo()
+    //{
+    //    SortedList row = x2Mysql.getRow("SELECT [data] FROM [is_settings] WHERE [name] = 'logo'");
+    //    if (row["data"]!=null)
+    //    {
+    //        string serverUrl = Session["serverUrl"].ToString();
+
+    //        StringBuilder sb = new StringBuilder();
+    //        sb.AppendFormat(@"<img src='App_Data/logo/{0}'>",row["data"].ToString());
+
+    //        this.logo.Text = sb.ToString();
+    //    }
+    //}
 
     protected void stateIt(object sender, EventArgs e)
     {

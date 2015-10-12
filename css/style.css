@@ -210,4 +210,13 @@ margin:2px 0;
 .calendarTitle {
     font-size:14px;
 }
+
+.myPic {
+    /*float: left;*/
+}
+
+h1 .myTitle {
+   line-height:120px;
+   padding-top:20px;
+}
 	

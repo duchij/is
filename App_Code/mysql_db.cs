@@ -11,6 +11,7 @@ using System.Web.UI.HtmlControls;
 using System.Data;
 using System.Data.Odbc;
 using System.Text;
+using System.Text.RegularExpressions;
 /*
  * try
         {
@@ -75,20 +76,30 @@ public class mysql_db
 
     public string parseQuery(string query)
     {
-        if (query.IndexOf("[") != -1 && query.IndexOf("]") != -1)
-        {
-            if (query.IndexOf("].[") != -1)
-            {
-                query = query.Replace('[', '`');
-                query = query.Replace(']', '`');
-            }
-            else
-            {
-                query = query.Replace(".", "`.`");
-                query = query.Replace('[', '`');
-                query = query.Replace(']', '`');
-            }
-        }
+        //if (query.IndexOf("[") != -1 && query.IndexOf("]") != -1)
+        //{
+        //    if (query.IndexOf("].[") != -1)
+        //    {
+        //        query = query.Replace('[', '`');
+        //        query = query.Replace(']', '`');
+        //    }
+        //    else
+        //    {
+        string pattern = @"\[([a-z_0-9]+)\.([a-z_0-9]+)\]";
+        Regex reg = new Regex(pattern);
+
+        query = reg.Replace(query, @"`$1`.`$2`");
+
+        pattern = @"\[([a-z_0-9]+)\]";
+        reg = new Regex(pattern);
+        query = reg.Replace(query, @"`$1`");
+
+
+               // query = query.Replace(".", "`.`");
+                 //query = query.Replace('[', '`');
+                //query = query.Replace(']', '`');
+          //  }
+       // }
 
         return query;
     }
@@ -1492,6 +1503,23 @@ public class mysql_db
         my_con.Close();
         return result;
 
+    }
+
+    public SortedList registerTempFile(string filename, Int32 days,string folder)
+    {
+        SortedList data = new SortedList();
+
+        Int32 unixTimestamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+        Int32 tolivetime = unixTimestamp + days * 24 * 60 * 60;
+
+        data.Add("file_name", filename);
+        data.Add("time_in", unixTimestamp);
+        data.Add("time_out", tolivetime);
+        data.Add("folder", folder);
+
+        SortedList result = this.mysql_insert("is_register_temp", data);
+
+        return result;
     }
 
 }

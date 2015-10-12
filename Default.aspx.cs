@@ -150,6 +150,7 @@ public partial class _Default : System.Web.UI.Page
                 {
 
                     e.Authenticated = true;
+
                     x2log.logData(data, "", "user login:"+data["full_name"]);
 
                     this.deleteFilesPerDays();
@@ -323,14 +324,26 @@ public partial class _Default : System.Web.UI.Page
         {
             for (int i = 0; i < filesToDelete.Count; i++)
             {
-                if (File.Exists(@Server.MapPath("App_Data") + @"\" + filesToDelete[i])) 
+                if (filesToDelete[i].IndexOf("|") == -1)
                 {
-                    File.Delete(@Server.MapPath("App_Data") + @"\" + filesToDelete[i]);
+                    if (File.Exists(@Server.MapPath("App_Data") + @"\" + filesToDelete[i]))
+                    {
+                        File.Delete(@Server.MapPath("App_Data") + @"\" + filesToDelete[i]);
+                    }
+                }
+                else
+                {
+                    string[] tmp = filesToDelete[i].Split('|');
+
+                    if (File.Exists(@Server.MapPath("App_Data") + @"\"+tmp[1]+@"\" + tmp[0]))
+                    {
+                       // File.Delete(@Server.MapPath("App_Data") + @"\"+tmp[1]+@"\" + tmp[0]);
+                    }
                 }
             }
         }
     }
-
+    
     protected bool maVyplnPoziadavky(string user_id)
     {
         bool result = false;

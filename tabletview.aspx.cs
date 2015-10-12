@@ -235,7 +235,7 @@ public partial class tabletview : System.Web.UI.Page
 
         SortedList data = new SortedList();
 
-        data.Add("name", name_txt.Text);
+        data.Add("name", x2_var.UTFtoASCII(name_txt.Text.ToString()));
         data.Add("poznamka", note_txt.Text);
         data.Add("odd", idArr[1]);
         data.Add("clinic", Session["klinika_id"]);

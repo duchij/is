@@ -78,6 +78,7 @@
     <ul>
         <li><a href="sestrhlas.aspx" target="_self">Hlásenie sestier</a></li>
         <li><a href="sluzby2_sestr.aspx" target="_top">Služby</a></li>
+        <li><a href="dovolenky_sestr.aspx" target="_top">Dovolenky</a></li>
         <li><a href="sluzby2.aspx" target="_self">Služby lekári<%--<asp:Localize runat="server" ID="localize2" Text="<%$ Resources:Resource,odd_akt_sluz %>"></asp:Localize>--%></a></li>
 
         <li>Mesačný výkaz</li> 

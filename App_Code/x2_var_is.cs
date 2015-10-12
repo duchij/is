@@ -568,7 +568,21 @@ public class x2_var
             return msOutput;
         }
 
+        public string errorMessage(string text)
+        {
+            string result = @"  <div class='error message'>
+                                    <h2>Nastala chyba:</h2>
+                                    <p>{0}</p>
+                                </div>
+                                ";
 
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat(result, text);
+
+            result = sb.ToString();
+
+            return result;
+        }
        
 
 

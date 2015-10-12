@@ -210,7 +210,7 @@
         <h2>
             <asp:Label ID="holiday_for_user" runat="server" Text="<%$ Resources:Resource, holiday_for_user_month %>"></asp:Label>
             <asp:Label ID="monthUser_lbl" runat="server" Text=""></asp:Label></h2>
-        <asp:Table ID="zoznamUser_tbl" runat="server" style="font-size:large;">
+        <asp:Table ID="zoznamUser_tbl" runat="server" style="font-size:large;" EnableViewState="true">
         </asp:Table>
         <hr />
     </asp:PlaceHolder>

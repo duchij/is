@@ -34,6 +34,17 @@ public partial class sestrhlas : System.Web.UI.Page
             Response.Redirect("error.html");
         }
 
+        if (this.listCodes_chk.Checked)
+        {
+            Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+            ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
+            Control ctl = ctpl.FindControl("nursecodes_plh");
+            PlaceHolder plh = (PlaceHolder)ctl;
+            plh.Controls.Add(Page.LoadControl("~/controls/nursecodes.ascx"));
+        }
+        
+
+
         this.deps = Session["oddelenie"].ToString();
         this.rights = Session["rights"].ToString();
 

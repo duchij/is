@@ -4,3 +4,7 @@ COMMENT='';
 --nextquery--
 ALTER TABLE `is_data_2`
 ADD INDEX `hash` (`hash`(32));
+--nextquery--
+ALTER TABLE `is_register_temp`
+ADD INDEX `time_in` (`time_in`),
+ADD INDEX `time_out` (`time_out`);

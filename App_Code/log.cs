@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define DEBUG
+
+using System;
 using System.Configuration;
 using System.Web.Configuration;
 using System.Text;
@@ -306,7 +308,7 @@ public class log
                 }
             }
             sb.AppendLine("\r\n-----------------------------------------------------------END OF  Dictionary<int, Hashtable>\r\n");
-            strToWrite = sb.ToString();
+            //strToWrite = sb.ToString();
 #if DEBUG
             strToWrite = sb.ToString();
 #else
@@ -337,7 +339,7 @@ public class log
                 }
             }
             sb.AppendLine("\r\n-----------------------------------------------------------END OF  Dictionary<int, SortedList>\r\n");
-            strToWrite = sb.ToString();
+           // strToWrite = sb.ToString();
 #if DEBUG
             strToWrite = sb.ToString();
 #else
@@ -395,7 +397,7 @@ public class log
             {
                
                 sw.WriteLine(strToWrite);
-                sw.Flush();
+                //sw.Flush();
                 sw.Close();
                 this.registerTempFile(fileName, 7);
                 sw.Dispose();

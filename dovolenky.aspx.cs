@@ -317,6 +317,7 @@ public partial class dovolenky : System.Web.UI.Page
 
         if (Convert.ToBoolean(res["status"]))
         {
+            //this.msg_lbl.Text += "bolo zmazane...";
             Response.Redirect("dovolenky.aspx");
         }
         else
@@ -339,18 +340,15 @@ public partial class dovolenky : System.Web.UI.Page
 
         // string tmp_do = my_x2.unixDate(new DateTime(datum.Year, datum.Month, pocetDni));
 
-        StringBuilder query = new StringBuilder();
-        query.AppendLine("SELECT [is_users].[id],[is_users].[full_name] AS [full_name],");
-        query.AppendLine("[is_dovolenky].[id] AS [dov_id], [is_dovolenky].[user_id],[is_dovolenky].[od],[is_dovolenky].[do], [is_dovolenky].[type],[is_dovolenky].[comment] ");
-        query.AppendLine("FROM [is_users] INNER JOIN [is_dovolenky] ON [is_users].[id] = [is_dovolenky].[user_id] ");
-        query.AppendFormat("WHERE [is_dovolenky].[od] BETWEEN '{0}-{1}-01 00:00:00' AND '{0}-{1}-{2} 23:59:00' ", tc_year, tc_month, pocetDni);
-        query.AppendFormat("AND [is_dovolenky].[user_id] = '{0}' ",Session["user_id"]);
-        query.AppendLine("ORDER BY [is_dovolenky].[od]");
-        //query.AppendFormat("WHERE (MONTH([is_dovolenky].[od]) = '{0}' OR MONTH([is_dovolenky].[do]) = '{0}')", tc_month);
-       
-        
-        //query.AppendFormat("AND (YEAR([is_dovolenky].[od]) = '{0}' OR YEAR([is_dovolenky].[do]) = '{0}') AND [is_users].[id] = {1} ", tc_year, Session["user_id"]);
-        //query.AppendLine(" ORDER BY [is_dovolenky].[od]");
+        string query = @"
+                            SELECT  [is_users].[id],[is_users].[full_name] AS [full_name],
+                                    [is_dovolenky].[id] AS [dov_id], [is_dovolenky].[user_id],[is_dovolenky].[od],[is_dovolenky].[do], [is_dovolenky].[type],[is_dovolenky].[comment]
+                                FROM [is_users] INNER JOIN [is_dovolenky] ON [is_users].[id] = [is_dovolenky].[user_id]
+                            WHERE [is_dovolenky].[od] BETWEEN '{0}-{1}-01 00:00:00' AND '{0}-{1}-{2} 23:59:00'
+                                    AND [is_dovolenky].[user_id] = '{3}'
+                            ORDER BY [is_dovolenky].[od]
+                        ";
+        query = x2Mysql.buildSql(query, new string[] { tc_year.ToString(), tc_month.ToString(), pocetDni.ToString(), Session["user_id"].ToString() });
 
         Dictionary<int, Hashtable> data = x2Mysql.getTable(query.ToString());
         
@@ -379,12 +377,24 @@ public partial class dovolenky : System.Web.UI.Page
             mojeTlac.CssClass = "button red width-300";
 
             //mojeTlac.Command += new CommandEventHandler(this.deleteDovolenka);
-            mojeTlac.Click += new EventHandler(deleteDovolenka);
+            
+           
             mojeTlac.ID = "Button_" + data[i]["dov_id"].ToString();
             mojeTlac.Text = Resources.Resource.erase.ToString();
 
             buttonCell.Controls.Add(mojeTlac);
+            //mojeTlac.Click += new EventHandler(this.deleteDovolenka);
             mojRiadok.Controls.Add(buttonCell);
+        }
+
+        Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+        ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
+        
+        for (int b=0; b<pocetDov; b++)
+        {
+            Control ctrl = ctpl.FindControl("Button_" + data[b]["dov_id"].ToString());
+            Button btn = (Button)ctrl;
+            btn.Click += new EventHandler(this.deleteDovolenka);
         }
         
     }

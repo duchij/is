@@ -26,9 +26,10 @@ public partial class ransed : System.Web.UI.Page
         if (!IsPostBack)
         {
             this.loadDeps();
+            this.setMyDate();
         }
        
-        this.setMyDate();
+        
        
         this.loadData();
         
@@ -109,7 +110,7 @@ public partial class ransed : System.Web.UI.Page
         TableHeaderRow headRow = new TableHeaderRow();
         shiftTable.Controls.Add(headRow);
         TableHeaderCell headCell = new TableHeaderCell();
-        headCell.Text = "<h2>Sluzby</h2>";
+        headCell.Text = "<h2>Služby</h2>";
         headRow.Controls.Add(headCell);
 
 
@@ -262,7 +263,7 @@ public partial class ransed : System.Web.UI.Page
     protected void add_patient_click_fnc(object sender, EventArgs e)
     {
 
-        string name = this.name_txt.Text.ToString();
+        string name = x2_var.UTFtoASCII(this.name_txt.Text.ToString());
         string note = this.note_txt.Text.ToString();
 
         this.name_txt.Text = "";
@@ -287,7 +288,7 @@ public partial class ransed : System.Web.UI.Page
 
             HyperLink osirixLn = new HyperLink();
             osirixLn.CssClass = "button large blue";
-            osirixLn.NavigateUrl = Resources.Resource.osirix_url + name;
+            osirixLn.NavigateUrl = Resources.Resource.osirix_url +x2_var.UTFtoASCII(name);
             osirixLn.Target = "_blank";
             osirixLn.Text = name;
             dataCell.Controls.Add(osirixLn);
