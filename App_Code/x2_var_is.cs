@@ -77,6 +77,35 @@ public class x2_var
     }
 
 
+    public string stringTo64(string text)
+    {
+        System.Text.UTF8Encoding UTF8 = new System.Text.UTF8Encoding();
+
+        byte[] tmpArr = UTF8.GetBytes(text);
+
+        return Convert.ToBase64String(tmpArr);
+
+    }
+
+    public string stringFrom64(string text)
+    {
+        //System.Text.UTF8Encoding UTF8 = new System.Text.UTF8Encoding();
+        string result = "";
+        try
+        {
+            byte[] tmpArr = Convert.FromBase64String(text);
+            result = System.Text.Encoding.UTF8.GetString(tmpArr);
+        }
+        catch (Exception ex)
+        {
+            result = text;
+        }
+
+        return result;
+        
+
+    }
+
     public static string UTFtoASCII(string value)
     {
         if (String.IsNullOrEmpty(value))
@@ -583,8 +612,23 @@ public class x2_var
 
             return result;
         }
-       
+
+    public string warningMessage(SortedList data)
+    {
+        string result = @"  <div class='dismissible warning message'>
+                                    <h2 class='red'>Pozor!!!</h2>
+                                    <p>{0}</p>
+                                    <p>{1}</p>
+                                </div>
+                                ";
+
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat(result, data["title"].ToString(),data["action"].ToString());
+
+        result = sb.ToString();
+
+        return result;
+    }
 
 
-        
 }

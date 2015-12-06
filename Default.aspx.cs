@@ -211,9 +211,17 @@ public partial class _Default : System.Web.UI.Page
 
                   
                     List<string> news = db_obj.getLastNews();
+
                     if (news.Count > 0)
                     {
                         Session["newsToShow"] = news[0];
+                        Session["newsToShowDialog"] = news[0];
+                        //Page.ClientScript.RegisterStartupScript(this.GetType(), "AlertNews", "alert('trara');", true);
+                    }
+                    else
+                    {
+                        Session["newsToShow"] = "";
+                        Session["newsToShowDialog"] = "";
                     }
 
                     if (Session["klinika"].ToString() == "skladzm")

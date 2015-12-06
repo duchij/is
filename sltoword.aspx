@@ -19,7 +19,7 @@
 
     </style>
 </head>
-<body style="font-family:Arial CE; font-size:11px;">
+<body style="font-family:Arial, Helvetica, sans-serif,arial; font-size:11px;">
     <form id="form1" runat="server">
 
 
@@ -44,10 +44,10 @@
          <asp:Label ID="print_lbl" runat="server" Text="<%$ Resources:Resource, print %>"></asp:Label> </a> &nbsp;
         <a href="javascript:history.back();" style="font-weight:bolder;font-size:x-large;" /><asp:literal id="test" runat="server" Text="<%$ Resources:Resource, back %>"></asp:literal></a></div> 
         </div>
-        <asp:Table ID="shiftTable" runat="server" BorderColor="Black" BorderWidth="1" cellpadding="0" cellspacing="0" >
+        <asp:Table ID="shiftTable" runat="server" BorderColor="Black" BorderWidth="1" cellpadding="0" cellspacing="0" Font-Size="Large" Width="100%"  >
         </asp:Table>   
         <br />
-        <asp:Label ID="shift_sign" runat="server" Text=""></asp:Label>
+        <asp:Label ID="shift_sign" runat="server" Text="" Font-Size="Large"></asp:Label>
     </div>
    
     </form>

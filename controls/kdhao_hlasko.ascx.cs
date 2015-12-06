@@ -358,7 +358,7 @@ public partial class kdhao_hlasko : System.Web.UI.UserControl
         DateTime dt = Convert.ToDateTime(this.Calendar1.SelectedDate);
         
         StringBuilder sb = new StringBuilder();
-        sb.Append("SELECT [is_hlasko].*, [users1].[full_name] AS [creatUser], [users2].[full_name] AS [lastUser] FROM [is_hlasko]");
+        sb.Append("SELECT `is_hlasko`.*, [users1].[full_name] AS [creatUser] , [users2].[full_name] AS [lastUser] FROM [is_hlasko]");
         sb.AppendLine("INNER JOIN [is_users] AS [users1] ON [users1].[id] = [is_hlasko].[creat_user]");
         sb.AppendLine("INNER JOIN [is_users] AS [users2] ON [users2].[id] = [is_hlasko].[last_user]");
         sb.AppendFormat("WHERE [clinic]='{0}' AND [dat_hlas]='{1}' AND [type]='{2}'", Session["klinika_id"], x2.unixDate(dt), this.shiftType_dl.SelectedValue);

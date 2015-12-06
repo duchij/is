@@ -40,6 +40,7 @@
         data.Add("type", sender.GetType().ToString());
         
         x2log.logData(data,Environment.StackTrace.ToString(),"Global ERROR");
+
         //Server.Transfer("error.html");
         // Code that runs when an unhandled error occurs
 
@@ -98,6 +99,7 @@
 
     void Session_End(object sender, EventArgs e) 
     {
+        Response.Write(Environment.StackTrace.ToString());
         Server.Transfer("Default.aspx");
         // Code that runs when a session ends. 
         // Note: The Session_End event is raised only when the sessionstate mode

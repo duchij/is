@@ -51,24 +51,24 @@ public partial class is_epc : System.Web.UI.Page
 
         StringBuilder sb = new StringBuilder();
 
-        sb.AppendLine("SELECT [hlasko_epc].*,[hlasko].[dat_hlas] AS [datum_hlasenia], [hlasko].[type] AS [typ_sluzby]");
+        sb.AppendLine("SELECT `hlasko_epc`.*,[hlasko.dat_hlas] AS [datum_hlasenia], [hlasko.type] AS [typ_sluzby]");
         sb.AppendLine("FROM [is_hlasko_epc] AS [hlasko_epc]");
-        sb.AppendLine("INNER JOIN [is_hlasko] AS [hlasko] ON [hlasko].[id] = [hlasko_epc].[hlasko_id]");
-        sb.AppendFormat("WHERE [hlasko_epc].[user_id] = '{0}'",Convert.ToInt32(Session["user_id"]));
-        sb.AppendFormat("AND [hlasko_epc].[work_start] BETWEEN '{0} 00:00:00' AND '{1} 07:59:00' ORDER BY [hlasko_epc].[work_start] ASC",zacDt,koncDt);
+        sb.AppendLine("INNER JOIN [is_hlasko] AS [hlasko] ON [hlasko.id] = [hlasko_epc.hlasko_id]");
+        sb.AppendFormat("WHERE [hlasko_epc.user_id] = '{0}'",Convert.ToInt32(Session["user_id"]));
+        sb.AppendFormat("AND [hlasko_epc.work_start] BETWEEN '{0} 00:00:00' AND '{1} 07:59:00' ORDER BY [hlasko_epc.work_start] ASC",zacDt,koncDt);
 
         Dictionary<int, SortedList> table = x2Mysql.getTableSL(sb.ToString());
         //x2log.logData(table, "", "tabulka sluzieb");
 
 
         sb.Length = 0;
-        sb.AppendLine("SELECT [hlasko].[dat_hlas] AS [datum],[hlasko].[type] AS [sluzba_typ],[hlasko_epc].[user_id], SUM([work_time]) AS [worktime]");
+        sb.AppendLine("SELECT [hlasko.dat_hlas] AS [datum],[hlasko.type] AS [sluzba_typ],[hlasko_epc.user_id], SUM([work_time]) AS [worktime]");
         sb.AppendLine("FROM [is_hlasko_epc] as [hlasko_epc]");
-        sb.AppendLine("LEFT JOIN [is_hlasko] AS [hlasko] ON [hlasko].[id]=[hlasko_epc].[hlasko_id]");
-        sb.AppendFormat("WHERE [hlasko_epc].[work_start] BETWEEN '{0} 00:00:00' AND '{1} 07:59:00'", zacDt, koncDt);
+        sb.AppendLine("LEFT JOIN [is_hlasko] AS [hlasko] ON [hlasko.id]=[hlasko_epc.hlasko_id]");
+        sb.AppendFormat("WHERE [hlasko_epc.work_start] BETWEEN '{0} 00:00:00' AND '{1} 07:59:00'", zacDt, koncDt);
         sb.AppendFormat("AND [user_id]='{0}'", Session["user_id"].ToString());
-        sb.AppendLine("GROUP BY [hlasko_epc].[hlasko_id]");
-        sb.AppendLine("ORDER BY [hlasko].[dat_hlas]");
+        sb.AppendLine("GROUP BY [hlasko_epc.hlasko_id]");
+        sb.AppendLine("ORDER BY [hlasko.dat_hlas]");
 
         Dictionary<int, Hashtable> statTable = x2Mysql.getTable(sb.ToString());
 

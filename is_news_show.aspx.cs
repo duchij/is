@@ -14,6 +14,7 @@ public partial class is_news_show : System.Web.UI.Page
 {
     my_db x_db = new my_db();
     mysql_db x2Mysql = new mysql_db();
+    x2_var X2 = new x2_var();
     //string id = 0;
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -26,13 +27,22 @@ public partial class is_news_show : System.Web.UI.Page
         //SortedList akt_user_info = x_db.getUserInfoByID(Session["user_id"].ToString());
         //user.Text = akt_user_info["full_name"].ToString();
         int id = Convert.ToInt32(Request.QueryString["id"].ToString());
-        StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("SELECT [cela_sprava],[cielova-skupina] FROM [is_news] WHERE [id]={0}", id);
+        string query = @"SELECT [cela_sprava],[cielova_skupina] FROM [is_news] WHERE [id]={0}";
 
-        SortedList row = x2Mysql.getRow(sb.ToString());
-        if (row.Count > 0 )
+        query = x2Mysql.buildSql(query, new string[] { id.ToString() });
+
+        SortedList row = x2Mysql.getRow(query);
+
+        if (row["status"]==null)
         {
-            this.cela_sprava.Text = row["cela_sprava"].ToString();
+            this.cela_sprava.Text = X2.stringFrom64(row["cela_sprava"].ToString());
         }
+        else
+        {
+            this.msg_lbl.Text = row["msg"].ToString();
+        }
+           
+            
+        
     }
 }

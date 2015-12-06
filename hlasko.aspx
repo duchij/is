@@ -6,11 +6,11 @@
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
    
-
+    <asp:ScriptManager ID="ScriptManager1" runat="server" AllowCustomErrorsRedirect="true"></asp:ScriptManager>
 
     <%-- hlasko pre 2dk --%>
     <asp:PlaceHolder ID="hlasko_pl" runat="server" >
-
+        <asp:HiddenField ID="newsDialogShow" runat="server" Value="" />
         <%--<druhadk_hlasko:dk_hlasko runat="server"></druhadk_hlasko:dk_hlasko>--%>
     </asp:PlaceHolder>
 

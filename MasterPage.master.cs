@@ -48,10 +48,12 @@ public partial class MasterPage : System.Web.UI.MasterPage
 
     protected void Page_Load(object sender, EventArgs e)
     {
-
+        if (Session["tuisegumdrum"] == null)
+        {
+            Response.Redirect("error.html");
+        }
         
-        
-        this.gKlinika = Session["klinika"].ToString().Trim();
+        this.gKlinika = Session["klinika"].ToString().Trim().ToLower();
         this.web_titel.Text = X2.setLabel(Session["klinika"].ToString().ToLower()+"_web_titel");
 
         this.current_user_lbl.Text = Session["fullname"].ToString();
@@ -62,7 +64,7 @@ public partial class MasterPage : System.Web.UI.MasterPage
         {
             if (Session["newsToShow"].ToString().Length != 0)
             {
-                this.showInfoMessage();
+               this.showInfoMessage();
             }
             else
             {
@@ -92,6 +94,7 @@ public partial class MasterPage : System.Web.UI.MasterPage
             this.hlas_sestier_plh.Visible = true;
         }
         //this.loadLogo();
+        //this.master_lbl.Text = this.gKlinika;
         this.shiftsOfCurrentUser();
 
 
@@ -101,6 +104,7 @@ public partial class MasterPage : System.Web.UI.MasterPage
     {
         left_menu.setStateButton += new EventHandler(stateIt);
         this.info_plh.Visible = false;
+        
         
     }
 
@@ -175,27 +179,41 @@ public partial class MasterPage : System.Web.UI.MasterPage
         //Page.ClientScript.RegisterStartupScript(this.GetType(), "close", sb.ToString());
     }
 
+
+
+
     protected void showInfoMessage()
     {
         
             this.info_plh.Visible = true;
 
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("SELECT [cela_sprava],[cielova-skupina] FROM [is_news] WHERE [id]={0}", Convert.ToInt32(Session["newsToShow"]));
+            sb.AppendFormat("SELECT [cela_sprava],[cielova_skupina],[id] FROM [is_news] WHERE [id]={0}", Convert.ToInt32(Session["newsToShow"]));
 
             SortedList row = x2Mysql.getRow(sb.ToString());
 
-            if (row["cielova-skupina"].ToString() == "doctors" && this.wgroup == "doctor")
+            string spravaDialog = row["cela_sprava"].ToString();
+            
+            string sprava = X2.stringFrom64(row["cela_sprava"].ToString());
+            if (sprava.Length > 300)
             {
-                this.info_message_lbl.Text = row["cela_sprava"].ToString();
+                sprava = sprava.Substring(0, 300);
             }
-            else if (row["cielova-skupina"].ToString() == "nurses" && this.wgroup=="nurse" )
+
+            sprava += "<p><a href='is_news_show.aspx?id={0}' target='_self'>Celá správa >>>></a></p>";
+            sprava = X2.sprintf(sprava,new string[]{row["id"].ToString()});
+
+            if (row["cielova_skupina"].ToString() == "doctors" && this.wgroup == "doctor")
             {
-                this.info_message_lbl.Text = row["cela_sprava"].ToString();
+                this.info_message_lbl.Text = sprava;
             }
-            else if (row["cielova-skupina"].ToString() == "all")
+            else if (row["cielova_skupina"].ToString() == "nurses" && this.wgroup=="nurse" )
             {
-                this.info_message_lbl.Text = row["cela_sprava"].ToString();
+                this.info_message_lbl.Text = sprava;
+            }
+            else if (row["cielova_skupina"].ToString() == "all")
+            {
+                this.info_message_lbl.Text = sprava;
             }
             else
             {
@@ -205,6 +223,8 @@ public partial class MasterPage : System.Web.UI.MasterPage
             
        
         Session["newsToShow"]="";
+        Session["newsToShowDialog"] = spravaDialog;
+        
     }
 
 
@@ -246,11 +266,13 @@ public partial class MasterPage : System.Web.UI.MasterPage
             break;
 
         }
-        
+        string query = sb.ToString();
+        query = x2Mysql.buildSql(query, new string[] { });
 
-        Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
+        Dictionary<int, Hashtable> table = x2Mysql.getTable(query);
 
         string[] shifts = new string[table.Count];
+
         if (table.Count > 0)
         {
             int tblLen = table.Count;
@@ -265,7 +287,7 @@ public partial class MasterPage : System.Web.UI.MasterPage
                     shifts[i] = X2.UnixToMsDateTime(table[i]["datum"].ToString()).ToString("d.M") + " (" + table[i]["typ"].ToString() + ")";
                 }
             }
-            this.currentShifts_lbl.Text = String.Join(", ",shifts);
+            this.currentShifts_lbl.Text =String.Join(", ",shifts);
 
         }
 

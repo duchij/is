@@ -76,30 +76,14 @@ public class mysql_db
 
     public string parseQuery(string query)
     {
-        //if (query.IndexOf("[") != -1 && query.IndexOf("]") != -1)
-        //{
-        //    if (query.IndexOf("].[") != -1)
-        //    {
-        //        query = query.Replace('[', '`');
-        //        query = query.Replace(']', '`');
-        //    }
-        //    else
-        //    {
-        string pattern = @"\[([a-z_0-9]+)\.([a-z_0-9]+)\]";
+        string pattern = @"\[([a-zA-Z_0-9-]+)\.([a-zA-Z_0-9]+)\]";
         Regex reg = new Regex(pattern);
 
         query = reg.Replace(query, @"`$1`.`$2`");
 
-        pattern = @"\[([a-z_0-9]+)\]";
+        pattern = @"\[([a-zA-Z_0-9-]+)\]";
         reg = new Regex(pattern);
         query = reg.Replace(query, @"`$1`");
-
-
-               // query = query.Replace(".", "`.`");
-                 //query = query.Replace('[', '`');
-                //query = query.Replace(']', '`');
-          //  }
-       // }
 
         return query;
     }

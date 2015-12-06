@@ -456,4 +456,13 @@
   <data name="search" xml:space="preserve">
     <value>Hľadaj</value>
   </data>
+  <data name="birth_num" xml:space="preserve">
+    <value>Rodné číslo</value>
+  </data>
+  <data name="date" xml:space="preserve">
+    <value>Dátum</value>
+  </data>
+  <data name="diagnose" xml:space="preserve">
+    <value>Diagnóza</value>
+  </data>
 </root>

@@ -184,35 +184,102 @@ public class lf : mysql_db
     
 
 
-    public DataSet getFiles(int clinic, int folder)
+    public Dictionary<int,Hashtable> getFiles(int clinic, int folder, int userId)
     {
 
         string query = "";
         if (folder== 0)
         {
-            query = @"  SELECT [t_struct.item_lf_id] AS [item_id],[t_struct.item_name] AS [item_name],[t_struct.item_comment] AS [item_comment]
+            query = @"  SELECT [t_struct.item_lf_id] AS [item_lf_id],[t_struct.item_name] AS [item_name],[t_struct.item_comment] AS [item_comment],
+                          [t_struct.item_id] AS [item_id], [t_struct.user_id] AS [user_id]
                         FROM [is_structure] AS [t_struct]
                        WHERE [t_struct.clinic_id]='{0}'
-                        AND [t_struct.item_parent_id]='{1}'";
+                        AND [t_struct.item_parent_id]='{1}'
+                        ";
 
         }
         else
         {
-            query = "SELECT [t_struct.item_lf_id] AS [item_id],[t_struct.item_name] AS [item_name],[t_struct.item_comment] AS [item_comment]";
-            query += " FROM [is_structure] AS [t_struct]";
-            //query += " INNER JOIN [is_data_2] AS [t_data] ON [t_data.id] = [t_struct.item_lf_id]";
-            query += " WHERE [t_struct.clinic_id]='{0}'";
-            query += " AND [t_struct.item_parent_id]='{1}'";
+            query = @"SELECT [t_struct.item_lf_id] AS [item_lf_id],[t_struct.item_name] AS [item_name],[t_struct.item_comment] AS [item_comment],
+                             [t_struct.item_id] AS [item_id], [t_struct.user_id] AS [user_id]
+                            FROM [is_structure] AS [t_struct]
+                        INNER JOIN [is_data_2] AS [t_data] ON [t_data.id] = [t_struct.item_lf_id]
+                            WHERE [t_struct.clinic_id]='{0}'
+                                AND [t_struct.item_parent_id]='{1}'
+                        ";
         }
-        //string query = sb.ToString();
-        my_con.Open();
-        string sql = this.buildSql(query, new string[] { clinic.ToString(),folder.ToString() });
-        OdbcDataAdapter da = new OdbcDataAdapter(sql, my_con);
-        DataSet ds = new DataSet();
-        da.Fill(ds);
-        my_con.Close();
+        query = this.buildSql(query, new string[] { clinic.ToString(),folder.ToString(),userId.ToString() });
+        return this.getTable(query);
+    }
 
-        return ds;
+
+    public SortedList deleteFolder(int folderId)
+    {
+        SortedList result = new SortedList();
+        OdbcTransaction trans1 = null;
+
+        Boolean status = true;
+        my_con.Open();
+
+        OdbcCommand cmd = new OdbcCommand();
+        cmd.Connection = my_con;
+        cmd.CommandType = CommandType.Text;
+        trans1 = my_con.BeginTransaction();
+
+        cmd.Transaction = trans1;
+
+        string query = "UPDATE [is_structure] SET [item_parent_id]=0 WHERE [item_parent_id]={0}";
+
+        query = this.buildSql(query, new string[] { folderId.ToString() });
+
+        try
+        {
+            cmd.CommandText = query;
+            cmd.ExecuteNonQuery();
+        }
+        catch (Exception ex)
+        {
+            
+
+            cmd.Transaction.Rollback();
+            my_con.Close();
+            x2log.logData(query, ex.ToString(), "error to delete folder step1");
+            status = false;
+            result.Add("status", false);
+            result.Add("msg", ex.ToString());
+        }
+
+        if (status)
+        {
+            query = "DELETE FROM [is_structure] WHERE [item_id]={0}";
+            query = this.buildSql(query, new string[] { folderId.ToString() });
+
+            try
+            {
+                cmd.CommandText = query;
+                cmd.ExecuteNonQuery();  
+            }
+            catch (Exception ex)
+            {
+                cmd.Transaction.Rollback();
+                my_con.Close();
+                status = false;
+                x2log.logData(query, ex.ToString(), "error to delete folder step2");
+                result.Add("status", false);
+                result.Add("msg", ex.ToString());
+            }
+        }
+       
+
+        if (status)
+        {
+            cmd.Transaction.Commit();
+            my_con.Close();
+            result.Add("status", true);
+            
+        }
+
+        return result;
     }
 
     public int sameContent(string hash,OdbcConnection myCon, OdbcTransaction trans)

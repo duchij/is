@@ -1273,7 +1273,7 @@ public class my_db
 
     public List<string> getLastNews()
     {
-        string query = "SELECT [id] FROM [is_news] WHERE DATE(NOW()) - DATE([datum]) <= 7 ORDER BY [datum] DESC LIMIT 1";
+        string query = "SELECT [id] FROM [is_news] WHERE DATE_ADD([datum],INTERVAL -7 DAY) ORDER BY [datum] DESC LIMIT 1";
 
         List<string> result = new List<string>();
         my_con.Open();

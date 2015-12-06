@@ -10,12 +10,18 @@ using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
+using System.Web.Services;
+using System.Web.Script;
+using System.Web.Script.Serialization;
+
+
+
 
 public partial class is_lf : System.Web.UI.Page
 {
 
     x2_var x2 = new x2_var();
-    lf x2lf = new lf();
+    public lf x2lf = new lf();
     log x2log = new log();
 
     protected void Page_Init (object sender, EventArgs e)
@@ -28,6 +34,8 @@ public partial class is_lf : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        
+
         if (!IsPostBack)
         {
             this.loadFolders();
@@ -38,26 +46,40 @@ public partial class is_lf : System.Web.UI.Page
             //this.loadFolders();
             this.loadFiles();
         }
-        
+
         if (Request.QueryString["dr"] != null)
         {
             try
             {
-                this.deleteFile(Convert.ToInt32(Request.QueryString["dr"].ToString()));
+                int id = Convert.ToInt32(Request.QueryString["dr"].ToString());
+                this.deleteFile(id);
             }
             catch (Exception ex)
             {
-                x2log.logData(Request.QueryString["dr"].ToString(), ex.ToString(), "error in bad request");
-                this.msg_lbl.Text = ex.ToString();
+                this.msg_lbl.Text = x2.errorMessage(ex.ToString());
             }
-            
+
         }
+
 
     }
 
     protected void deleteFile(int id)
     {
-         
+        string query = @"DELETE FROM [is_structure] WHERE [item_lf_id] = {0} ";
+
+        query = x2lf.buildSql(query, new string[] { id.ToString() });
+
+        SortedList res = x2lf.execute(query);
+        if (!(Boolean)res["status"])
+        {
+            this.msg_lbl.Text = x2.errorMessage(res["msg"].ToString());
+        }
+        else
+        {
+            this.loadFiles();
+        }
+
     }
 
     protected void create_folder_fnc(object sender, EventArgs e)
@@ -75,17 +97,18 @@ public partial class is_lf : System.Web.UI.Page
             data.Add("user_id", Session["user_id"]);
             if (this.see_me_chk.Checked)
             {
-                data.Add("visibility", "me");
+                data.Add("visibility", Session["user_id"]);
             }
             else
             {
-                data.Add("visibility", "all");
+                data.Add("visibility", 0);
             }
             data.Add("item_comment", this.folder_comment_txt.Text);
 
             SortedList res = x2lf.mysql_insert("is_structure", data);
             if (Convert.ToBoolean(res["status"]))
             {
+                this.settab_hv.Value = "tab2";
                 this.loadFolders();
             }
             
@@ -94,13 +117,73 @@ public partial class is_lf : System.Web.UI.Page
 
     protected void loadFiles()
     {
+        this.files_tbl.Controls.Clear();
+
         int clinic = Convert.ToInt32(Session["klinika_id"]);
         int folder = Convert.ToInt32(this.folders_dl.SelectedValue.ToString());
 
         this.actual_folder_lbl.Text = this.folders_dl.SelectedItem.ToString();
 
-        this.lf_gv.DataSource = x2lf.getFiles(clinic, folder);
-        this.lf_gv.DataBind();
+        int userId = Convert.ToInt32(Session["user_id"].ToString());
+
+        Dictionary<int, Hashtable> files = x2lf.getFiles(clinic, folder,userId);
+
+        TableHeaderRow headRow = new TableHeaderRow();
+        TableHeaderCell headCellName = new TableHeaderCell();
+        headCellName.Text = "Nazov";
+        headRow.Controls.Add(headCellName);
+
+        TableHeaderCell headCellNote = new TableHeaderCell();
+        headCellNote.Text = "Popis";
+        headRow.Controls.Add(headCellNote);
+
+        TableHeaderCell headCellActions = new TableHeaderCell();
+        headCellActions.Text = "...";
+        headRow.Controls.Add(headCellActions);
+
+        this.files_tbl.Controls.Add(headRow);
+
+        int tblLn = files.Count;
+
+        for (int i=0; i< tblLn; i++)
+        {
+            TableRow riadok = new TableRow();
+
+            TableCell nameCell = new TableCell();
+            nameCell.Text = files[i]["item_name"].ToString();
+            riadok.Controls.Add(nameCell);
+
+            TableCell noteCell = new TableCell();
+            noteCell.Text = x2.getStr(files[i]["item_comment"].ToString());
+            riadok.Controls.Add(noteCell);
+
+            TableCell actionCell = new TableCell();
+            Button downBtn = new Button();
+            downBtn.Text = "Zobraz/Stiahni...";
+            downBtn.ID = "downBtn_" + files[i]["item_id"].ToString();
+            downBtn.Click += new EventHandler(download_fnc);
+            downBtn.CssClass = "button green";
+
+            actionCell.Controls.Add(downBtn);
+            if (files[i]["user_id"].ToString() == Session["user_id"].ToString())
+            {
+                Button delBtn = new Button();
+                delBtn.Text = "Zmaz";
+                delBtn.ID = "delBtn_" + files[i]["item_id"].ToString();
+                delBtn.OnClientClick = "return confirm('Zmazať " + files[i]["item_name"].ToString() + "?');";
+                delBtn.Click += new EventHandler(deleteFile_fnc);
+                delBtn.CssClass = "button red";
+
+                actionCell.Controls.Add(delBtn);
+            }
+            
+
+            riadok.Controls.Add(actionCell);
+
+            this.files_tbl.Controls.Add(riadok);
+
+        }
+
     }
 
     protected void onPickUp( object sender, EventArgs e)
@@ -110,9 +193,15 @@ public partial class is_lf : System.Web.UI.Page
     protected void loadFolders()
     {
         this.folders_dl.Items.Clear();
-        string query = "SELECT [item_name],[item_id] FROM [is_structure] WHERE [item_parent_id] IS NULL AND [clinic_id]='{0}'";
+        this.del_folders_dl.Items.Clear();
+        string query = @"SELECT [item_name],[item_id] 
+                            FROM [is_structure] 
+                        WHERE [item_parent_id] IS NULL 
+                            AND [clinic_id]='{0}'
+                               AND ([visibility]={1} OR [visibility]=0)
+                            ";
 
-        string sql = x2lf.buildSql(query, new string[] { Session["klinika_id"].ToString() });
+        string sql = x2lf.buildSql(query, new string[] { Session["klinika_id"].ToString(),Session["user_id"].ToString() });
 
         Dictionary<int, Hashtable> table = x2lf.getTable(sql);
 
@@ -121,7 +210,11 @@ public partial class is_lf : System.Web.UI.Page
         for (int i=0; i<tableLn;i++)
         {
             this.folders_dl.Items.Add(new ListItem(table[i]["item_name"].ToString(), table[i]["item_id"].ToString()));
+            this.del_folders_dl.Items.Add(new ListItem(table[i]["item_name"].ToString(), table[i]["item_id"].ToString()));
         }
+
+        
+
     }
 
     protected void changeFolderFnc(object sender, EventArgs e)
@@ -129,27 +222,62 @@ public partial class is_lf : System.Web.UI.Page
         this.loadFiles();
     }
 
-    protected void grid_menu_fnc(object sender, EventArgs e)
-    {
-        this.msg_lbl.Text = sender.ToString();
-    }
+   
 
     protected void download_fnc(object sender, EventArgs e)
     {
-        int id =Convert.ToInt32(this.lf_gv.SelectedRow.Cells[0].Text.ToString());
+        Button btn = (Button)sender;
+        string[] idStr = btn.ID.ToString().Split('_');
+        SortedList row = x2lf.getRow("SELECT [item_lf_id] AS [id] FROM [is_structure] WHERE [item_id]=" + idStr[1]);
+        int id = Convert.ToInt32(row["id"].ToString());
         Response.Redirect("lf.aspx?id=" + id.ToString());
     }
 
-    
+    protected void deleteFile_fnc(object sender, EventArgs e)
+    {
+        Button btn = (Button)sender;
+        string[] idStr = btn.ID.ToString().Split('_');
+        int id = Convert.ToInt32(idStr[1]);
+        SortedList res = x2lf.execute("DELETE FROM [is_structure] WHERE [item_id]=" + id);
+        if ((Boolean)(res["status"]))
+        {
+            this.loadFiles();
+        }
+        else
+        {
+            this.msg_lbl.Text = x2.errorMessage(res["msg"].ToString());
+        }
+
+        
+    }
+
+    protected void deleteFolderFnc(object sender, EventArgs e)
+    {
+        int folderId = Convert.ToInt32(this.del_folders_dl.SelectedValue.ToString());
+
+        if (folderId > 0)
+        {
+            SortedList res = x2lf.deleteFolder(folderId);
+
+            if ((Boolean)res["status"])
+            {
+                this.loadFolders();
+                this.loadFiles();
+            }
+            else
+            {
+                this.msg_lbl.Text = x2.errorMessage(res["msg"].ToString());
+            }
+        }
+        
+    }
+
+   
 
     protected void uploadFileFnc(object sender, EventArgs e)
     {
-        
-
         if (this.lf_upf.HasFile)
         {
-            
-
             try
             {
                 long size = this.lf_upf.PostedFile.InputStream.Length;
@@ -208,23 +336,20 @@ public partial class is_lf : System.Web.UI.Page
             }
             catch (Exception ex)
             {
-                this.msg_lbl.Text = "<div class='dismissible error message'>"+ex.ToString()+"</div>";
+                this.msg_lbl.Text = x2.errorMessage("Súbor sa nenahral...!!!!");
                // this.ctrl_msg_lbl.Text = this.loadFile_fup.PostedFile.FileName + "<br><br>" + ex.ToString();
             }
         }
     }
 
-
-    protected void lf_gv_RowDeleting(object sender, GridViewDeleteEventArgs e)
+    protected void setVisibilityFnc(object sender, EventArgs e)
     {
-
-        int row = e.RowIndex;
-
-        int delId = Convert.ToInt32(this.lf_gv.Rows[row].Cells[0].Text.ToString());
-
-        StringBuilder sb = new StringBuilder();
-        sb.Append("<div class='warning message'><h1>Naozaj zmazat subor?</h1>");
-        sb.AppendFormat("<a href='is_lf.aspx?dr={0}' class='button green' target='_self'>ANO</a>/NIE </div>",delId);
-        this.msg_lbl.Text = sb.ToString();
+          
     }
+
+
+
+
+
+
 }

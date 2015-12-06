@@ -22,6 +22,7 @@ public partial class dovkompl : System.Web.UI.Page
         switch (this.gKlinika)
         {
             case "kdch":
+                this.dovkomplTitel_lbl.Text = "Prehľad prítomností a neprítomností KDCH";
                 this.init(rok, mesiac);
 
                 this.loadActivities(rok, mesiac);
@@ -195,11 +196,18 @@ public partial class dovkompl : System.Web.UI.Page
     {
         int dateGroup = x2.makeDateGroup(rok, mesiac);
 
-        StringBuilder sb = new StringBuilder();
-        sb.AppendLine("SELECT [datum], group_concat([typ] ORDER BY [ordering]) AS [type], group_concat([user_id] ORDER BY [ordering]) AS [user_ids] FROM [is_sluzby_2]");
-        sb.AppendFormat("WHERE [date_group] = '{0}' AND [state]='active' GROUP BY [datum] ", dateGroup);
+        string query = @"   SELECT  [t_sluz.datum] AS [datum], 
+                                    GROUP_CONCAT([t_sluz.typ] ORDER BY [t_sluz.ordering]) AS [type], 
+                                    GROUP_CONCAT([t_sluz.user_id] ORDER BY [t_sluz.ordering]) AS [user_ids] 
+                            FROM [is_sluzby_2] AS [t_sluz]
+                            INNER JOIN [is_users] AS [t_users] ON [t_users.id] = [t_sluz.user_id]
+                            WHERE [t_sluz.date_group] = '{0}' AND [t_sluz.state]='active' AND [t_users.worker]='int'  
+                                  GROUP BY [datum] 
+                        ";
 
-        Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
+        query = x2Mysql.buildSql(query, new string[] { dateGroup.ToString() });
+
+        Dictionary<int, Hashtable> table = x2Mysql.getTable(query);
 
         int tableCn = table.Count;
         int days = DateTime.DaysInMonth(rok, mesiac);
@@ -299,15 +307,16 @@ public partial class dovkompl : System.Web.UI.Page
 
     protected void loadActivities(int rok, int mesiac)
     {
-        StringBuilder sb = new StringBuilder();
-        sb.AppendLine("SELECT [is_dovolenky].[id] AS [dov_id],[is_dovolenky].[user_id],[is_dovolenky].[od], ");
-        sb.AppendLine("[is_dovolenky].[do],[is_dovolenky].[type], [is_dovolenky].[comment] FROM [is_dovolenky] ");
-       // sb.AppendLine("INNER JOIN [is_dovolenky] ON [is_users].[id]=[is_dovolenky].[user_id] ");
-        sb.AppendFormat("WHERE (MONTH([is_dovolenky].[od]) = '{0}' OR MONTH([is_dovolenky].[do]) = '{0}') ", mesiac);
-        sb.AppendFormat("AND (YEAR([is_dovolenky].[od]) = '{0}' OR YEAR([is_dovolenky].[do]) = '{0}')", rok);
-        sb.AppendFormat("AND [is_dovolenky].[clinics]='{0}' ORDER BY [is_dovolenky].[do] ASC",Session["klinika_id"]);
 
-        Dictionary<int, Hashtable> data = x2Mysql.getTable(sb.ToString());
+        string query = @"SELECT [is_dovolenky.id] AS [dov_id] ,[is_dovolenky.user_id],[is_dovolenky.od],
+                                [is_dovolenky.do],[is_dovolenky.type], [is_dovolenky.comment] FROM [is_dovolenky]
+                            WHERE (MONTH([is_dovolenky.od]) = '{0}' OR MONTH([is_dovolenky.do]) = '{0}') 
+                                AND (YEAR([is_dovolenky.od]) = '{1}' OR YEAR([is_dovolenky.do]) = '{1}')
+                                AND [is_dovolenky.clinics]='{2}' ORDER BY [is_dovolenky.do] ASC
+                        ";
+        query = x2Mysql.buildSql(query, new string[] { mesiac.ToString(), rok.ToString(), Session["klinika_id"].ToString() });
+
+        Dictionary<int, Hashtable> data = x2Mysql.getTable(query);
         int dataCn = data.Count;
 
         int days = DateTime.DaysInMonth(rok, mesiac);
@@ -431,14 +440,16 @@ public partial class dovkompl : System.Web.UI.Page
 
     protected void init(int rok, int mesiac)
     {
-        StringBuilder sb = new StringBuilder();
-        sb.AppendLine("SELECT [id],[name],[name2],[name3],[titul_pred],[full_name],[titul_za] FROM [is_users] ");
-        sb.AppendFormat("WHERE ([active]='1' AND [klinika] = '{0}' AND [work_group]='doctor') ",Session["klinika_id"]);
-        sb.AppendLine("AND [name] != 'admin' AND [name] != 'vtablet'");
-        //sb.AppendFormat("AND [klinika]='{0}'", this.gKlinika);
-        sb.AppendLine("ORDER BY [name2] ASC");
 
-        Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
+        string query = @"SELECT 
+                                [id],[name],[name2],[name3],[titul_pred],[full_name],[titul_za] FROM [is_users] 
+                            WHERE ([active]='1' AND [klinika] = '{0}' AND [work_group]='doctor' AND [worker]='int') 
+                                AND [name] <> 'admin' 
+                                AND [name] <> 'vtablet'
+                            ORDER BY [name2] ASC
+                        ";
+        query = x2Mysql.buildSql(query, new string[] { Session["klinika_id"].ToString() });
+        Dictionary<int, Hashtable> table = x2Mysql.getTable(query);
 
         int tableCnt = table.Count;
 

@@ -44,16 +44,20 @@ public partial class is_news : System.Web.UI.Page
 
     protected void saveMessage_Click(object sender, EventArgs e)
     {
-        
+
+        System.Text.UTF8Encoding UTF8 = new System.Text.UTF8Encoding();
+        byte[] text64Arr = UTF8.GetBytes(this.full_text.Text.ToString());
+
+        string text64 = Convert.ToBase64String(text64Arr);
 
         SortedList data = new SortedList();
         if (Session["news_edit_id"] == null)
         {
             data.Add("kratka_sprava", small_text.Text.ToString());
-            data.Add("cela_sprava", full_text.Text.ToString());
+            data.Add("cela_sprava", text64);
             data.Add("datum_txt", DateTime.Today.ToShortDateString());
             data.Add("user", Session["user_id"].ToString());
-            data.Add("cielova-skupina", this.targetGroup_dl.SelectedValue.ToString());
+            data.Add("cielova_skupina", this.targetGroup_dl.SelectedValue.ToString());
 
             SortedList res = x2Mysql.mysql_insert("is_news", data);
 
@@ -69,8 +73,10 @@ public partial class is_news : System.Web.UI.Page
         else
         {
             data.Add("kratka_sprava", this.small_text.Text.ToString());
-            data.Add("cela_sprava", this.full_text.Text.ToString());
-            data.Add("cielova-skupina", this.targetGroup_dl.SelectedValue.ToString());
+
+            data.Add("cela_sprava", text64);
+            
+            data.Add("cielova_skupina", this.targetGroup_dl.SelectedValue.ToString());
 
             SortedList res = x2Mysql.mysql_update("is_news", data, Session["news_edit_id"].ToString());
             if (Convert.ToBoolean(res["status"]))
@@ -87,8 +93,17 @@ public partial class is_news : System.Web.UI.Page
 
     }
 
+
+
+
     protected void news_gv_RowDeleting(object sender, GridViewDeleteEventArgs e)
     {
+        //GridView gv = (GridView)sender;
+
+        //LinkButton db = (LinkButton)this.news_gv.Rows[e.RowIndex].Cells[4].Controls[0];
+
+        //db.OnClientClick = "return confirm('Zmazat?');";
+
         string result = x_db.DeleteNewsRow(Convert.ToInt32(news_gv.Rows[e.RowIndex].Cells[1].Text.ToString()));
 
         if (result == "ok")
@@ -111,15 +126,30 @@ public partial class is_news : System.Web.UI.Page
         // msg_lbl.Text += news_gv.Rows[e.NewSelectedIndex].Cells[1].Text.ToString();
 
         SortedList data = x_db.getInfoNewsData(Convert.ToInt32(news_gv.Rows[e.NewSelectedIndex].Cells[1].Text.ToString()));
-
+        string text = "";
         if (data["status"] == null)
         {
             this.small_text.Text = data["kratka_sprava"].ToString();
-            this.full_text.Text = data["cela_sprava"].ToString();
+
+            try
+            {
+                byte[] tmpArr = Convert.FromBase64String(data["cela_sprava"].ToString());
+                text = System.Text.Encoding.UTF8.GetString(tmpArr);
+
+            }
+            catch (Exception error)
+            {
+                text = data["kratka_sprava"].ToString();
+            }
+            
+
+
+            this.full_text.Text = text;
             Session["news_edit_id"] = data["id"];
 
         }
 
     }
 
+   
 }

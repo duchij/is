@@ -439,54 +439,56 @@ public partial class header : System.Web.UI.UserControl
         if (this.wgroup == "doctor")
         {
 
-            sb.Append(" SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],");
-            sb.Append(" [t_sluzb].[state] AS [state],");
-            sb.Append(" GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [users_ids],");
-            sb.Append(" GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],");
-            sb.Append(" GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [comment],");
-            sb.Append(" [t_sluzb].[date_group] AS [dategroup]");
+            sb.Append(" SELECT [t_sluzb.datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb.ordering] SEPARATOR ';') AS [type1],");
+            sb.Append(" [t_sluzb.state] AS [state],");
+            sb.Append(" GROUP_CONCAT([t_sluzb.user_id] ORDER BY [t_sluzb.ordering] SEPARATOR '|') AS [users_ids],");
+            sb.Append(" GROUP_CONCAT(IF([t_sluzb.user_id]=0,'-',[t_users.name3]) ORDER BY [t_sluzb.ordering] SEPARATOR ';') AS [users_names],");
+            sb.Append(" GROUP_CONCAT(IF([t_sluzb.comment]=NULL,'-',[t_sluzb.comment]) ORDER BY [t_sluzb.ordering] SEPARATOR '|') AS [comment],");
+            sb.Append(" [t_sluzb.date_group] AS [dategroup]");
             sb.Append(" FROM [is_sluzby_all] AS [t_sluzb]");
-            sb.Append(" LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]");
-            sb.AppendFormat(" WHERE [t_sluzb].[datum]='{0}' OR [t_sluzb].[datum]='{1}'", my_x2.unixDate(vcera), my_x2.unixDate(dnes));
+            sb.Append(" LEFT JOIN [is_users] AS [t_users] ON [t_users.id] = [t_sluzb.user_id]");
+            sb.AppendFormat(" WHERE [t_sluzb.datum]='{0}' OR [t_sluzb.datum]='{1}'", my_x2.unixDate(vcera), my_x2.unixDate(dnes));
             sb.AppendFormat("AND [clinic]={0}", Session["klinika_id"]);
-            sb.Append(" GROUP BY [t_sluzb].[datum]");
-            sb.Append(" ORDER BY [t_sluzb].[datum] DESC");
+            sb.Append(" GROUP BY [t_sluzb.datum]");
+            sb.Append(" ORDER BY [t_sluzb.datum] DESC");
         }
-        //if (this.wgroup == "nurse" || this.wgroup == "assistent")
-        //{
-        //    sb.Append("SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],");
-        //    sb.Append("[t_sluzb].[state] AS [state],");
-        //    sb.Append("GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [users_ids],");
-        //    sb.Append("GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],");
-        //    sb.Append("GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [comment],");
-        //    sb.Append("[t_sluzb].[date_group] AS [dategroup]");
-        //    sb.Append("FROM [is_sluzby_2_sestr] AS [t_sluzb]");
-        //    sb.Append("LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]");
-        //    sb.AppendFormat("WHERE ([t_sluzb].[datum]='{0}' OR [t_sluzb].[datum]='{1}')", my_x2.unixDate(vcera), my_x2.unixDate(dnes));
-        //    sb.AppendFormat("AND [t_sluzb].[deps]='{0}'", this.deps);
-        //    sb.Append("GROUP BY [t_sluzb].[datum]");
-        //    sb.Append("ORDER BY [t_sluzb].[datum] DESC");
-        //}
+        
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
-
+        this.head1_lbl.Text = "OddAB: ";
+        this.head2_lbl.Text = "OddABVik:";
+        this.head3_lbl.Text = "TTransplant: ";
+        this.head4_lbl.Text = "-";
+        this.head5_lbl.Text = "-";
         if (table.Count == 2)
         {
             string[] docBefore = table[0]["users_names"].ToString().Split(';');
+            int docLn = docBefore.Length;
             string[] comments = table[0]["comment"].ToString().Split('|');
+
             if (this.wgroup == "doctor" || this.wgroup == "other")
             {
-
+                 
                 // string[] docAfter = table[1]["users_names"].ToString().Split(';');
-                this.head1_lbl.Text = "OddAB: ";
-                this.oup_lbl.Text = docBefore[0].ToString() + "<br>" + comments[0].ToString();
-                this.head2_lbl.Text = "OddABVik:";
-                this.odda_lbl.Text = docBefore[1].ToString() + "<br>" + comments[1].ToString();
-                this.head3_lbl.Text = "TTransplant: ";
-                this.oddb_lbl.Text = docBefore[2].ToString() + "<br>" + comments[2].ToString();
-                this.head4_lbl.Text = "-";
+                
+                if (docLn >0 && docBefore[0] != null)
+                {
+                    this.oup_lbl.Text = docBefore[0].ToString() + "<br>" + comments[0].ToString();
+                }
+                
+              
+                if (docLn>1 && docBefore[1] != null)
+                {
+                    this.odda_lbl.Text = docBefore[1].ToString() + "<br>" + comments[1].ToString();
+                }
+                
+                if (docLn >2  && docBefore[2] != null)
+                {
+                    this.oddb_lbl.Text = docBefore[2].ToString() + "<br>" + comments[2].ToString();
+                }
+                
                 this.op_lbl.Text = "-";
-                this.head5_lbl.Text = "-";
+                
                 this.trp_lbl.Text = "-";
 
                 this.po_lbl.Text = table[1]["users_names"].ToString();

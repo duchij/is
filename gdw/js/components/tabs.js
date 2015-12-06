@@ -15,6 +15,7 @@
     $('body').on('click', '.tabs > ul li', function(e) {
       var tab, tabs;
       tab = $(this).addClass('active');
+	  console.log(tab);
       tabs = tab.parents('.tabs');
       tab.siblings('li').removeClass('active');
       tabs.find('> div, > ul > div').hide();

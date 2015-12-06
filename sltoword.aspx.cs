@@ -20,7 +20,7 @@ public partial class sltoword : System.Web.UI.Page
     public mysql_db x2Mysql = new mysql_db();
     public string[] shiftType;
     public string gKlinika;
-
+    
 
     sluzbyclass x2Sluzby = new sluzbyclass();
 
@@ -50,7 +50,7 @@ public partial class sltoword : System.Web.UI.Page
                 this.loadSluzby();
                 break;
             case "kdhao":
-                this.loadSluzby();
+                this.drawTable();
                 break;
         }
 
@@ -490,6 +490,238 @@ public partial class sltoword : System.Web.UI.Page
             }
         }
     }
+
+
+    protected void drawTable()
+    {
+        string query = @"SELECT [name],[data] FROM [is_settings] WHERE [name]='{0}'";
+
+        query = x2Mysql.buildSql(query, new string[] { "kdhao_shift_doctors" });
+
+        SortedList row = x2Mysql.getRow(query);
+
+        string data = row["data"].ToString();
+
+        this.parseMultiTable(data);
+
+    }
+
+    protected void parseMultiTable(string data)
+    {
+        string[] freeDays = Session["freedays"].ToString().Split(',');
+
+        this.shiftTable.Controls.Clear();
+        string mesiac = Session["aktSluzMesiac"].ToString();
+        string rok = Session["aktSluzRok"].ToString();
+
+
+        int daysMonth = DateTime.DaysInMonth(Convert.ToInt32(rok), Convert.ToInt32(mesiac));
+
+        if (mesiac.Length == 1)
+        {
+            mesiac = "0" + mesiac;
+        }
+
+        string dateGroup = rok + mesiac;
+        Session.Add("aktDateGroup", dateGroup);
+
+
+        string[] groups = data.Split(';');
+        int grps = groups.Length;
+        TableHeaderRow headRow = new TableHeaderRow();
+
+        TableHeaderCell dayHeadCell = new TableHeaderCell();
+        dayHeadCell.Text = "Datum";
+        dayHeadCell.Width = 140;
+        headRow.Controls.Add(dayHeadCell);
+
+        for (int i = 0; i < grps; i++)
+        {
+            //string[] head = groups[i].Split('_');
+
+            TableHeaderCell headCell = new TableHeaderCell();
+            headCell.HorizontalAlign = HorizontalAlign.Center;
+            headCell.Text = "<center><strong>" + groups[i] + "</center></strong>";
+
+            headRow.Controls.Add(headCell);
+        }
+        this.shiftTable.Controls.Add(headRow);
+
+        for (int day = 0; day < daysMonth; day++)
+        {
+
+            TableRow dataRow = new TableRow();
+
+            TableCell dayCell = new TableCell();
+            int rDay = day + 1;
+
+            DateTime myDate = new DateTime(Convert.ToInt32(rok), Convert.ToInt32(mesiac), rDay);
+            int dnesJe = (int)myDate.DayOfWeek;
+            string nazov = CultureInfo.CurrentCulture.DateTimeFormat.DayNames[dnesJe];
+            string sviatok = rDay.ToString() + "." + myDate.Month.ToString();
+            int jeSviatok = Array.IndexOf(freeDays, sviatok);
+
+
+
+            dayCell.Text = rDay.ToString() + ". " + nazov;
+            dataRow.Controls.Add(dayCell);
+
+            for (int col = 0; col < grps; col++)
+            {
+                TableCell dataCell = new TableCell();
+
+                if (dnesJe == 0 || dnesJe == 6)
+                {
+                    dataCell.BackColor = System.Drawing.Color.LightGray;
+                }
+
+                if (jeSviatok != -1 && dnesJe != 0 && dnesJe != 6)
+                {
+                    dataCell.BackColor = System.Drawing.Color.LightGray;
+                }
+
+
+                string[] ddls = groups[col].Split(',');
+                if (ddls.Length > 0)
+                {
+                    int dCount = ddls.Length;
+                    for (int cnt = 0; cnt < dCount; cnt++)
+                    {
+                        Label dl = new Label();
+                        dl.ID = "name_" + rDay.ToString() + "_" + ddls[cnt];
+                        dl.Text = "-";
+
+                        dataCell.Controls.Add(dl);
+
+                        Label comment = new Label();
+                        comment.ID = "comment_" + rDay.ToString() + "_" + ddls[cnt];
+                        comment.Text = "-";
+                        dataCell.Controls.Add(comment);
+
+                        dataRow.Controls.Add(dataCell);
+                    }
+                }
+                else
+                {
+                    
+                    Label dl = new Label();
+                    dl.ID = "name_" + rDay.ToString() + "_" + groups[col];
+                    dl.Text = "-";
+
+                    dataCell.Controls.Add(dl);
+
+                    Label comment = new Label();
+                    comment.ID = "comment_" + rDay.ToString() + "_" + groups[col];
+                    comment.Text = "-";
+                    dataCell.Controls.Add(comment);
+
+                    dataRow.Controls.Add(dataCell);
+                }
+            }
+            this.shiftTable.Controls.Add(dataRow);
+        }
+        this.setShifts();
+    }
+
+    protected void setShifts()
+    {
+        string query = "";
+
+        int mesiac = Convert.ToInt32(Session["aktSluzMesiac"].ToString());
+        int rok = Convert.ToInt32(Session["aktSluzRok"].ToString());
+
+        int dateGroup = my_x2.makeDateGroup(rok, mesiac);
+            query = @"SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],
+                [t_sluzb].[state] AS [state],
+                GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [users_ids],
+                GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],
+                GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [comment],
+                [t_sluzb].[date_group] AS [dategroup]
+                FROM [is_sluzby_all] AS [t_sluzb]
+                LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]
+                    WHERE [t_sluzb].[date_group] = '{0}' AND [t_sluzb].[state]='active'
+                AND [t_sluzb].[clinic] = '{1}' 
+                GROUP BY [t_sluzb].[datum]
+                ORDER BY [t_sluzb].[datum]";
+
+        int daysMonth = DateTime.DaysInMonth(rok, mesiac);
+
+
+        query = x2Mysql.buildSql(query, new string[] { dateGroup.ToString(), Session["aktSluzClinic"].ToString() });
+
+        Dictionary<int, Hashtable> table = x2Mysql.getTable(query);
+
+        int tblCnt = table.Count;
+        if (tblCnt > 0)
+        {
+            for (int day = 0; day < tblCnt; day++)
+            {
+
+                int rDay = Convert.ToDateTime(my_x2.UnixToMsDateTime(table[day]["datum"].ToString())).Day;
+                string[] names = table[day]["users_names"].ToString().Split(';');
+                string[] userId = table[day]["users_ids"].ToString().Split('|');
+                string[] comments = table[day]["comment"].ToString().Split('|');
+                string[] type = table[day]["type1"].ToString().Split(';');
+
+                int tpLn = type.Length;
+
+                if (names.Length != userId.Length)
+                {
+                    this.msg_lbl.Text = my_x2.errorMessage("Inkonzistencia v datach prosim opravit.....");
+                }
+                if (tpLn == 0)
+                {
+                    
+                        Control crtl = FindControl("name_" + rDay.ToString() + "_" + table[day]["type1"].ToString());
+
+                        Label ddl = (Label)crtl;
+
+                        try
+                        {
+                            ddl.Text = table[day]["user_names"].ToString() + "<br>";
+                        }
+                        catch (Exception ex)
+                        {
+                            ddl.Text = "-<br>";
+                        }
+
+                        Control crtl1 = FindControl("comment_" + rDay.ToString() + "_" + table[day]["type1"].ToString());
+                        Label textBox = (Label)crtl1;
+                        textBox.Text = "<i>"+table[day]["comment"].ToString() + "</i><br>";
+                }
+                else
+                {
+                    for (int col = 0; col < tpLn; col++)
+                    {
+                       
+                        Control crtl = FindControl("name_" + rDay.ToString() + "_" + type[col]);
+                        Label ddl = (Label)crtl;
+
+                        try
+                        {
+                            ddl.Text = names[col] + "<br>";
+                        }
+                        catch (Exception ex)
+                        {
+                            ddl.Text = "-<br>";
+                        }
+
+                        Control crtl1 = FindControl("comment_" + rDay.ToString() + "_" + type[col]);
+                        Label textBox = (Label)crtl1;
+                       
+                        textBox.Text = "<i>"+comments[col] + "</i><br>";
+                    }
+                }
+
+            }
+        }
+        else
+        {
+           this.msg_lbl.Text = Resources.Resource.shifts_not_done;
+        }
+    }
+
+
 
 
 

@@ -25,6 +25,14 @@
     </ul>
 
 </asp:PlaceHolder>
+<div class="box yellow">
+<h3 class="red ">Návody</h3>
+</div>
+    <ul>
+        <li><a href="http://wiki.systemomega.com/omega/customers/dfnsp/kdch/planovanie-prijmov" target="_blank">Plánovanie Príjmov</a></li>
+        <li><a href="http://10.10.2.83/kdch/index.php?post=vytvykaz" target="_blank">Tvorba výkazu</a> <div class="small red">Funguje len v rámci DFNsP</div></li>
+    </ul>
+
 
  <asp:PlaceHolder ID="operacky" runat="server"  Visible="false">
         <h3>Operacky</h3>
@@ -61,6 +69,7 @@
         <li><a href="staze.aspx" target="_self"><asp:Localize runat="server" ID="localize6" Text="<%$ Resources:Resource,odd_staze %>"></asp:Localize></a></li> 
         <li><a href="ransed.aspx" target="_self"><asp:Localize runat="server" ID="localize7" Text="<%$ Resources:Resource,ranne_sed %>"></asp:Localize></a></li>
      <li><a href="is_ohv.aspx" target="_self">OHV Kódy</a></li>
+         <li><a href="is_opkniha.aspx" target="_self" style="color:red;" >Operačná kniha</a></li>
      </ul>
   </asp:PlaceHolder>
                     
@@ -91,6 +100,7 @@
         </div>
         <ul>
             <li><a href="opprogram.aspx" target="_self">Operačný program</a></li>
+            <li><a href="is_news.aspx" target="_self">Aktuality pre KDCH</a></li>
             
         </ul>                   
    </asp:PlaceHolder>

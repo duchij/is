@@ -33,13 +33,17 @@
 	    <link type="text/css" rel="stylesheet" href="css/groundwork-anim.css">
 	    <link type="text/css" rel="stylesheet" href="css/groundwork-ie.css"><![endif]-->
 	   	<link type="text/css" rel="stylesheet" href="gdw/css/duch.css" />
-	   	 
+	   	 <link type="text/css" rel="stylesheet" href="css/jquery-ui.min.css" />
+        <link type="text/css" rel="stylesheet" href="css/jquery-ui.structure.min.css" />
+        <link type="text/css" rel="stylesheet" href="css/jquery-ui.theme.min.css" />
     <title>ISESKO</title>
     <asp:ContentPlaceHolder id="head" runat="server">
     </asp:ContentPlaceHolder>
    <%-- <link href="css/style.css" rel="stylesheet" type="text/css" />--%>
     <script type="text/javascript" src="tinymce/js/tinymce/tinymce.min.js"></script>
     <script type="text/javascript">
+
+        
 
         function ieskoClosing() {
             if (netscape != undefined)
@@ -106,7 +110,9 @@
 </head>
 
 <body>
+    
     <form id="form1" runat="server">
+        
         <asp:Label ID="master_lbl" runat="server" Text=""></asp:Label>
      <div class="container">
      
@@ -125,7 +131,15 @@
 							
 
 						</ul>
+
 					</li>--%>
+                     <li><button class="red">Návody</button>
+                         <ul>
+                              <li><a href="http://wiki.systemomega.com/omega/customers/dfnsp/kdch/planovanie-prijmov" target="_blank">Plánovanie Príjmov</a></li>
+                            <li><a href="http://10.10.2.83/kdch/index.php?post=vytvykaz" target="_blank">Tvorba výkazu</a> <div class="small red">Funguje len v rámci DFNsP</div></li>
+
+                         </ul>
+                    </li>
 				<asp:PlaceHolder ID="hlas_lekar_plh" runat="server">
                     <li><button>Lekár</button>
                         <ul>
@@ -199,7 +213,7 @@
         <div class="row">
             <div class="one">
             <asp:PlaceHolder ID="info_plh" runat="server">
-                <div class="dismissible warning message"><asp:Label ID="info_message_lbl" runat="server"></asp:Label></div>  
+                <div class="dismissible error message"><asp:Label ID="info_message_lbl" runat="server"></asp:Label></div>  
 
             </asp:PlaceHolder>
             </div>
@@ -215,7 +229,9 @@
                 <menu:left_menu ID="left_menu" runat="server" />
             </div>
             <div class="seven tenths one-up-ipad half-padded">
-                <asp:ContentPlaceHolder id="ContentPlaceHolder1" runat="server">     
+                
+                <asp:ContentPlaceHolder id="ContentPlaceHolder1" runat="server">   
+                    
                 </asp:ContentPlaceHolder>
             </div>
             
@@ -234,6 +250,7 @@
     </form>
       <script type="text/javascript" src="gdw/js/libs/jquery-1.10.2.min.js"></script>
 	<script type="text/javascript" src="gdw/js/groundwork.all.js"></script>
+    <script type="text/javascript" src="js/jquery-ui.js"></script>
     <script type="text/javascript" src="js/isesko.js"></script> 
      
      

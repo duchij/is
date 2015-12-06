@@ -5,23 +5,23 @@ VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "is", ".", "{5B5BEAF8-A9BD-4688-96C5-C0DCD5EDCBD2}"
 	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv2.0"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv3.5"
 		Debug.AspNetCompiler.VirtualPath = "/is"
-		Debug.AspNetCompiler.PhysicalPath = "..\is\"
+		Debug.AspNetCompiler.PhysicalPath = "..\is3\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\is\"
 		Debug.AspNetCompiler.Updateable = "false"
 		Debug.AspNetCompiler.ForceOverwrite = "true"
 		Debug.AspNetCompiler.FixedNames = "false"
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.VirtualPath = "/is"
-		Release.AspNetCompiler.PhysicalPath = "..\is\"
+		Release.AspNetCompiler.PhysicalPath = "..\is3\"
 		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\is\"
 		Release.AspNetCompiler.Updateable = "false"
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "50167"
-		SlnRelativePath = "..\is\"
+		SlnRelativePath = "..\is3\"
 	EndProjectSection
 EndProject
 Global
