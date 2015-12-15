@@ -127,6 +127,11 @@ public partial class is_seminar : System.Web.UI.Page
         headCellSemin.Font.Bold = true;
         headRow.Controls.Add(headCellSemin);
 
+        TableHeaderCell nameCellSemin = new TableHeaderCell();
+        nameCellSemin.Text = "Meno";
+        nameCellSemin.Font.Bold = true;
+        headRow.Controls.Add(nameCellSemin);
+
         TableHeaderCell headCellAction = new TableHeaderCell();
         headCellAction.Text = "Akcia";
         headCellAction.Font.Bold = true;
@@ -139,7 +144,9 @@ public partial class is_seminar : System.Web.UI.Page
             TableRow tblRow = new TableRow();
 
             TableCell dateCell = new TableCell();
-            dateCell.Text = x2.UnixToMsDateTime(table[i]["date"].ToString()).ToString();
+            DateTime dt = Convert.ToDateTime(x2.MSDate(table[i]["date"].ToString()));
+
+            dateCell.Text = dt.ToLongDateString();
             tblRow.Controls.Add(dateCell);
 
             TableCell seminCell = new TableCell();
@@ -152,7 +159,7 @@ public partial class is_seminar : System.Web.UI.Page
 
 
             TableCell actionCell = new TableCell();
-
+            actionCell.Text = "-";
             if (this.rights.IndexOf("admin")!=-1 || this.rights=="poweruser")
             {
                 Button editBtn = new Button();

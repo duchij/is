@@ -62,13 +62,14 @@
         <li><a href="vykaz2.aspx" target="_self">Mesačný výkaz</a></li>
         <li><a href="dovolenky.aspx" target="_self">Dovolenky, Voľná</a></li> 
         <li><a href="poziadavky.aspx" target="_self"><asp:label ID="poziadavky_lbl" runat="server" Text="<%$ Resources:Resource,odd_poziadavky %>"></asp:label></a></li>
-         <li><a href="is_seminar.aspx" target="_self">Seminare</a></li>
+         
      </ul>
      <br />
      <ul>
         <li><a href="sluzby2.aspx" target="_self"><asp:Localize runat="server" ID="localize5" Text="<%$ Resources:Resource,odd_akt_sluz %>"></asp:Localize></a></li>
         <li><a href="staze.aspx" target="_self"><asp:Localize runat="server" ID="localize6" Text="<%$ Resources:Resource,odd_staze %>"></asp:Localize></a></li> 
         <li><a href="ransed.aspx" target="_self"><asp:Localize runat="server" ID="localize7" Text="<%$ Resources:Resource,ranne_sed %>"></asp:Localize></a></li>
+         <li><a href="is_seminar.aspx" target="_self" style="color:darkblue;">Semináre</a></li>
      <li><a href="is_ohv.aspx" target="_self">OHV Kódy</a></li>
          
      </ul>

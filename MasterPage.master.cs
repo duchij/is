@@ -195,13 +195,20 @@ public partial class MasterPage : System.Web.UI.MasterPage
             string spravaDialog = row["cela_sprava"].ToString();
             
             string sprava = X2.stringFrom64(row["cela_sprava"].ToString());
-            if (sprava.Length > 300)
+
+            int pos = sprava.IndexOf("-viac-");
+
+            if (pos != -1)
             {
-                sprava = sprava.Substring(0, 300);
+
+                sprava = sprava.Substring(0, pos);
             }
 
-            sprava += "<p><a href='is_news_show.aspx?id={0}' target='_self'>Celá správa >>>></a></p>";
-            sprava = X2.sprintf(sprava,new string[]{row["id"].ToString()});
+            string link = " <p> <a href='is_news_show.aspx?id={0}' target='_self'>Celá správa >>>></a> </p>";
+
+            link = X2.sprintf(link, new string[] { row["id"].ToString() });
+
+            sprava = sprava + link;
 
             if (row["cielova_skupina"].ToString() == "doctors" && this.wgroup == "doctor")
             {
