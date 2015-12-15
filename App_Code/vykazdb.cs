@@ -12,6 +12,9 @@ using System.Web.UI.HtmlControls;
 using System.Data;
 using System.Data.Odbc;
 using System.Text;
+using MySql.Data;
+using MySql.Data.MySqlClient;
+
 /// <summary>
 /// Summary description for vykaz
 /// </summary>
@@ -137,9 +140,9 @@ public class vykazdb : my_db
         SortedList result = new SortedList();
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(sb.ToString(), my_con);
+        MySqlCommand my_com = new MySqlCommand(sb.ToString(), my_con);
 
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlDataReader reader = my_com.ExecuteReader();
 
         if (reader.HasRows)
         {
@@ -181,9 +184,9 @@ public class vykazdb : my_db
         string result = "0";
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(sb.ToString(), my_con);
+        MySqlCommand my_com = new MySqlCommand(sb.ToString(), my_con);
 
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlDataReader reader = my_com.ExecuteReader();
         
 
         if (reader.HasRows)

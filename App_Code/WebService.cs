@@ -78,21 +78,57 @@ public class WebService : System.Web.Services.WebService {
 
     }
 
-    
+    private Dictionary<string,string> parseDate(string data)
+    {
+        JavaScriptSerializer js1 = new JavaScriptSerializer();
+        return js1.Deserialize<Dictionary<string, string>>(data);
+    }
+
+
+    [WebMethod(EnableSession = true)]
+    public string hlaskoSelectedTab(string data)
+    {
+        JavaScriptSerializer js1 = new JavaScriptSerializer();
+
+        Dictionary<string, string> obj = js1.Deserialize<Dictionary<string, string>>(data);
+        Session["hlaskoSelTab"] = obj["selTab"].ToString();
+        return data;
+    }
+
+    [WebMethod(EnableSession = true)]
+    public string lfSelectedTab(string data)
+    {
+        JavaScriptSerializer js1 = new JavaScriptSerializer();
+
+        Dictionary<string, string> obj = js1.Deserialize<Dictionary<string, string>>(data);
+        Session["lfSelTab"] = obj["selTab"].ToString();
+        return data;
+    }
+
+    [WebMethod(EnableSession = true)]
+    public string OopknihaSelectedTab(string data)
+    {
+        JavaScriptSerializer js1 = new JavaScriptSerializer();
+
+        Dictionary<string, string> obj = js1.Deserialize<Dictionary<string, string>>(data);
+        Session["opKnihaSelTab"] = obj["selTab"].ToString();
+        return data;
+    }
+
 
     //[WebMethod]
     ////[System.Web.Script.Services.ScriptMethod(UseHttpGet = true)]
     //public string HelloWorld(List<data> kilo) {
-       
+
     //    foreach (var row in kilo){
-                
+
     //    }
 
     //    JavaScriptSerializer js = new JavaScriptSerializer();
     //    data ds = new data();
     //    ds.test = "23";
     //    ds.pokus = "test";
-        
+
     //   // return "{'lalal':'test'}"; 
     //    return js.Serialize(ds).ToString();
     //}

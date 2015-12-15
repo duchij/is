@@ -64,6 +64,24 @@ public partial class lf : System.Web.UI.Page
             case ".exe":
                 Response.ContentType = "application/vnd.exe";
                 break;
+            case ".doc":
+                Response.ContentType = "application/msword";
+                break;
+            case ".docx":
+                Response.ContentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+                break;
+            case ".xls":
+                Response.ContentType = "application/msexcel";
+                break;
+            case ".xlsx":
+                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                break;
+            case ".ppt":
+                Response.ContentType = "application/mspowerpoint";
+                break;
+            case ".pptx":
+                Response.ContentType = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+                break;
 
         }
         

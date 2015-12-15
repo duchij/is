@@ -5,6 +5,7 @@ using System.Collections.Generic;
 //using System.Linq;
 using System.Web;
 using System.Web.UI;
+using System.Web.UI.WebControls;
 using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Globalization;
@@ -49,6 +50,31 @@ public class x2_var
 
         return result;
     }
+
+    public void fillYearMonth(ref DropDownList month_dl, ref DropDownList year_dl, string months, string years)
+    {
+        string[] monthsArr = months.Split(';');
+        string[] yearsArr = years.Split(',');
+
+        int myLn = monthsArr.Length;
+
+        for (int m=0; m< myLn; m++)
+        {
+            string[] tmp = monthsArr[m].Split(',');
+            month_dl.Items.Add(new System.Web.UI.WebControls.ListItem((string)HttpContext.GetGlobalResourceObject("resource",tmp[0].ToString()), tmp[1].ToString()));
+
+        }
+
+        int yearStart = Convert.ToInt32(yearsArr[0]);
+        int yearStop = Convert.ToInt32(yearsArr[1]);
+
+        for (int year= yearStart; year<= yearStop; year++)
+        {
+            year_dl.Items.Add(new System.Web.UI.WebControls.ListItem("Rok "+year.ToString(), year.ToString()));
+        }
+
+    }
+
 
     public string sprintf(string str, string[] args)
     {
@@ -596,6 +622,22 @@ public class x2_var
 
             return msOutput;
         }
+
+        public void errorMessage2(ref Literal msg, string text)
+        {
+            string result = @"  <div class='error message'>
+                                    <h2>Nastala chyba:</h2>
+                                    <p>{0}</p>
+                                </div>
+                                ";
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat(result, text);
+
+            result = sb.ToString();
+            msg.Text = result;
+
+        } 
 
         public string errorMessage(string text)
         {

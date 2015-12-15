@@ -11,6 +11,8 @@ using System.Web.UI.HtmlControls;
 using System.Data;
 using System.Data.Odbc;
 using System.Text;
+using MySql.Data;
+using MySql.Data.MySqlClient;
 
 /// <summary>
 /// Summary description for user
@@ -34,9 +36,9 @@ public class user: mysql_db
         //string query = "SELECT * FROM [is_users] WHERE [id]=" + id;
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(this.parseQuery(sb.ToString()), my_con);
+        MySqlCommand my_com = new MySqlCommand(this.parseQuery(sb.ToString()), my_con);
 
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlDataReader reader = my_com.ExecuteReader();
 
         if (reader.HasRows)
         {
@@ -81,7 +83,7 @@ public class user: mysql_db
         string query = sb.ToString();
         my_con.Open();
 
-        OdbcDataAdapter da = new OdbcDataAdapter(this.parseQuery(query), my_con);
+        MySqlDataAdapter da = new MySqlDataAdapter(this.parseQuery(query), my_con);
         DataSet ds = new DataSet();
         da.Fill(ds);
         my_con.Close();
@@ -97,7 +99,7 @@ public class user: mysql_db
         sb.AppendFormat(this.parseQuery(query.ToString()), name, klinika_id);
         my_con.Open();
 
-        OdbcDataAdapter da = new OdbcDataAdapter(sb.ToString(), my_con);
+        MySqlDataAdapter da = new MySqlDataAdapter(sb.ToString(), my_con);
         DataSet ds = new DataSet();
         da.Fill(ds);
         my_con.Close();

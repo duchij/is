@@ -155,7 +155,13 @@
                     </li>
 
                     <%--</li>--%></asp:PlaceHolder>
+                <li><button class="red">Pomôcky</button>
+                         <ul>
+                              <li class="yellow"><a href="is_opkniha.aspx" target="_self">Operačná kniha</a></li>
+                            <li><a href="is_lf.aspx" target="_self">Priložené súbory</a> <div class="small red">Pozor nepôjdu nahrať, len na prezeranie</div></li>
 
+                         </ul>
+                    </li>
                 <asp:PlaceHolder ID="hlas_sestier_plh" runat="server">
                 <li><button>Sestra</button>
                     <ul>
@@ -197,7 +203,8 @@
                     <asp:Literal ID="web_titel" runat="server" Text="web_titel"></asp:Literal>
 
                     </h1>
-                   <h3>Moje služby:<asp:Label ID="currentShifts_lbl" runat="server" Text="" CssClass="red" ></asp:Label></h3> 
+                   <h3 style="line-height:normal;">Moje služby:<asp:Label ID="currentShifts_lbl" runat="server" Text="" CssClass="red" ></asp:Label></h3> 
+                   <span class="small"><asp:Literal ID="seminars_lbl" runat="server" Text=""></asp:Literal></span>
                 </div>
 		        <div class="one fifth"><div class="double-padded" align="right">
                 <asp:Button ID="log_out" runat="server"  OnClick="log_out_Click" Text="<%$ Resources:Resource, logout %>" class="large button red desktop-only" /><br />
@@ -250,7 +257,7 @@
     </form>
       <script type="text/javascript" src="gdw/js/libs/jquery-1.10.2.min.js"></script>
 	<script type="text/javascript" src="gdw/js/groundwork.all.js"></script>
-    <script type="text/javascript" src="js/jquery-ui.js"></script>
+    <script type="text/javascript" src="js/jquery-ui.min.js"></script>
     <script type="text/javascript" src="js/isesko.js"></script> 
      
      

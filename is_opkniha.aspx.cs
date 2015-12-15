@@ -18,6 +18,14 @@ public partial class is_opkniha : System.Web.UI.Page
         {
             Response.Redirect("error.html");
         }
+
+        if (Session["opKnihaSelTab"] != null)
+        {
+            //this.msg_lbl.Text = Session["hlaskoSelTab"].ToString();
+            this.opknihaTab_hv.Value = Session["opKnihaSelTab"].ToString();
+        }
+
+
         this.msg_lbl.Text = "";
         this.loadCount();
     }
@@ -60,6 +68,35 @@ public partial class is_opkniha : System.Web.UI.Page
            this.msg_lbl.Text = x2.errorMessage("Roky nie sú čísla:  " + ex);
         }
     }
+
+    protected void searchInMyOPFnc(object sender, EventArgs e)
+    {
+        int fromYear = 0;
+        int toYear = 0;
+
+        try
+        {
+            fromYear = Convert.ToInt32(this.fromYearMyOP_txt.Text.ToString());
+            toYear = Convert.ToInt32(this.toYearMyOP_txt.Text.ToString());
+
+            if (this.menoMyOP_txt.Text.ToString().Trim().Length > 0 && fromYear>0 && toYear>0)
+            {
+               
+                this.searchDataMyOP(this.menoMyOP_txt.Text.ToString().Trim(), fromYear, toYear);
+            }
+            else
+            {
+                this.msg_lbl.Text = x2.errorMessage("Nie čo hľadať !!!!!!");
+            }
+
+
+        }
+        catch (Exception ex)
+        {
+            this.msg_lbl.Text = x2.errorMessage("Roky nie sú čísla:  " + ex);
+        }
+    }
+
 
     protected void searchInOPFnc(object sender, EventArgs e)
     {
@@ -179,6 +216,98 @@ public partial class is_opkniha : System.Web.UI.Page
         }
 
     }
+
+    protected void searchDataMyOP(string name, int fromYear, int toYear)
+    {
+
+        //string queryStr = this.queryDg_txt.Text.ToString().Trim();
+        //string finalLike = this.parseQuery(this.queryDg_txt.Text);
+        string nameAsci = x2_var.UTFtoASCII(name);
+
+        string query = x2.sprintf("SELECT [datum],[priezvisko],[rodne_cislo],[diagnoza],[vykon],[operater] FROM [is_opkniha] WHERE ([operater] LIKE '%{0}%' OR '%{3}%') AND [datum] BETWEEN '{1}-01-01 00:00:01' AND '{2}-12-31 23:59:59' ORDER BY [datum] ", new String[] { name, fromYear.ToString(), toYear.ToString(),nameAsci });
+        Dictionary<int, Hashtable> table = x2Mysql.getTable(query);
+
+
+        int resLn = table.Count;
+        this.foundRows_lbl.Text = "Nájdených:" + resLn.ToString() + " záznamov."; ;
+
+        TableHeaderRow headRow = new TableHeaderRow();
+
+        TableHeaderCell dateHeadCell = new TableHeaderCell();
+        dateHeadCell.Text = "Datum";
+        dateHeadCell.Font.Bold = true;
+        dateHeadCell.BackColor = System.Drawing.Color.LightGray;
+        headRow.Controls.Add(dateHeadCell);
+
+        TableHeaderCell nameHeadCell = new TableHeaderCell();
+        nameHeadCell.Text = "Meno";
+        nameHeadCell.Font.Bold = true;
+        nameHeadCell.BackColor = System.Drawing.Color.LightGray;
+        headRow.Controls.Add(nameHeadCell);
+
+        TableHeaderCell rcHeadCell = new TableHeaderCell();
+        rcHeadCell.Text = "Rodne cislo";
+        rcHeadCell.Font.Bold = true;
+        rcHeadCell.BackColor = System.Drawing.Color.LightGray;
+        headRow.Controls.Add(rcHeadCell);
+
+        TableHeaderCell dgHeadCell = new TableHeaderCell();
+        dgHeadCell.Text = "Diagnoza";
+        dgHeadCell.Font.Bold = true;
+        dgHeadCell.BackColor = System.Drawing.Color.LightGray;
+        headRow.Controls.Add(dgHeadCell);
+
+        TableHeaderCell opHeadCell = new TableHeaderCell();
+        opHeadCell.Text = "Vykon";
+        opHeadCell.Font.Bold = true;
+        opHeadCell.BackColor = System.Drawing.Color.LightGray;
+        headRow.Controls.Add(opHeadCell);
+
+        TableHeaderCell teamHeadCell = new TableHeaderCell();
+        teamHeadCell.Text = "Team";
+        teamHeadCell.Font.Bold = true;
+        teamHeadCell.BackColor = System.Drawing.Color.LightGray;
+        headRow.Controls.Add(teamHeadCell);
+
+        this.result_tbl.Controls.Add(headRow);
+
+
+
+        for (int row = 0; row < resLn; row++)
+        {
+            TableRow resRow = new TableRow();
+
+            TableCell dateCell = new TableCell();
+            dateCell.Text = table[row]["datum"].ToString();
+            resRow.Controls.Add(dateCell);
+
+            TableCell nameCell = new TableCell();
+            nameCell.Text = table[row]["priezvisko"].ToString();
+            resRow.Controls.Add(nameCell);
+
+            TableCell rcCell = new TableCell();
+            rcCell.Text = table[row]["rodne_cislo"].ToString();
+            resRow.Controls.Add(rcCell);
+
+            TableCell dgCell = new TableCell();
+            dgCell.Text = table[row]["diagnoza"].ToString();
+            resRow.Controls.Add(dgCell);
+
+            TableCell opCell = new TableCell();
+            opCell.Text = table[row]["vykon"].ToString();
+            resRow.Controls.Add(opCell);
+
+            TableCell teamCell = new TableCell();
+            teamCell.Text = table[row]["operater"].ToString();
+            resRow.Controls.Add(teamCell);
+
+            this.result_tbl.Controls.Add(resRow);
+
+        }
+
+    }
+
+
 
     protected void searchData(string queryStr, int fromYear, int toYear)
     {
@@ -323,4 +452,42 @@ public partial class is_opkniha : System.Web.UI.Page
 
         Response.Redirect("toexcel.aspx?a=opres");
     }
+
+    protected void searchInMyExcelOPFnc(object sender, EventArgs e)
+    {
+
+        int fromYear = 0;
+        int toYear = 0;
+
+        try
+        {
+            fromYear = Convert.ToInt32(this.fromYearMyOP_txt.Text.ToString());
+            toYear = Convert.ToInt32(this.toYearMyOP_txt.Text.ToString());
+
+            if (this.menoMyOP_txt.Text.ToString().Trim().Length > 0 && fromYear > 0 && toYear > 0)
+            {
+                string name = this.menoMyOP_txt.Text.ToString().Trim();
+                string nameAsci = x2_var.UTFtoASCII(name);
+                   
+                //this.searchDataMyOP(this.menoMyOP_txt.Text.ToString().Trim(), fromYear, toYear);
+                string query = x2.sprintf("SELECT [datum],[priezvisko],[rodne_cislo],[diagnoza],[vykon],[operater] FROM [is_opkniha] WHERE ([operater] LIKE '%{0}%' OR '%{3}%') AND [datum] BETWEEN '{1}-01-01 00:00:01' AND '{2}-12-31 23:59:59' ORDER BY [datum] ", new String[] { name, fromYear.ToString(), toYear.ToString(), nameAsci });
+
+                Session["toExcelQuery"] = query;
+
+                Response.Redirect("toexcel.aspx?a=opres");
+            }
+            else
+            {
+                this.msg_lbl.Text = x2.errorMessage("Nie čo hľadať !!!!!!");
+            }
+
+
+        }
+        catch (Exception ex)
+        {
+            this.msg_lbl.Text = x2.errorMessage("Roky nie sú čísla:  " + ex);
+        }
+    }
+
+
 }

@@ -9,6 +9,13 @@
                    Prihlasený: <strong><asp:Label ID="user" runat="server" Text="Label" ForeColor="#990000"></asp:Label></strong><br />
                    Poslednú zmenu vykonal:<strong> <asp:Label ID="last_user" runat="server" Text="Label" ForeColor="#990000"></asp:Label></strong><br />
                 <hr />
+    <div class="yellow box">
+    <a href="lf.aspx?id=323" target="_blank" role="author" class="large asphalt">Sesterská prekladová správa</a>
+        <p class="small black">Kliknutím sa otvorí prekladová správa vo Worde, poznm. nutnosť mať nainštalovaný Word 2007 a vyšší
+            následne sa dá do "chlievikov" vpisovať normálne vo Worde text. Ak tam niečo nie je stačí dokument len normálne vytlačiť a dopísať rukou.
+            <strong>Pozor</strong> v hlavičke je nutné si vybrať oddelenie.
+        </p>
+    </div>
                 <div class="row">
                     <div class="one sixth">
                     <asp:DropDownList ID="deps_dl" runat="server" 

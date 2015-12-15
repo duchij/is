@@ -15,6 +15,13 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
 
     protected void Page_Load(object sender, EventArgs e)
     {
+
+        if (Session["hlaskoSelTab"]!=null)
+        {
+            //this.msg_lbl.Text = Session["hlaskoSelTab"].ToString();
+            this.hlaskoSelectedTab.Value = Session["hlaskoSelTab"].ToString();
+        }
+
        if (!IsPostBack)
         {
            
@@ -29,7 +36,7 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
             }
             else
             {
-                this.ctrl_msg_lbl.Text = "<h3 class='red'>"+Resources.Resource.no_sfihts_generated+"</h3>";
+                this.msg_lbl.Text = "<h3 class='red'>"+Resources.Resource.no_sfihts_generated+"</h3>";
                     
             }
             
@@ -64,6 +71,7 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
 
     protected void showHlasko_fnc(object sender, EventArgs e)
     {
+
         Button btn = (Button)sender;
 
         string buttonId = btn.ID.ToString();
@@ -192,7 +200,7 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
                     }
                     else
                     {
-                        this.ctrl_msg_lbl.Text = res["msg"].ToString();
+                        this.msg_lbl.Text = res["msg"].ToString();
                     }
                 }
                 else
@@ -211,13 +219,13 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
                     }
                     else
                     {
-                        this.ctrl_msg_lbl.Text = res["msg"].ToString();
+                        this.msg_lbl.Text = x2.errorMessage(res["msg"].ToString());
                     }
                 }
             }
             catch (Exception ex)
             {
-                this.ctrl_msg_lbl.Text = this.loadFile_fup.PostedFile.FileName + "<br><br>" + ex.ToString();
+                this.msg_lbl.Text = x2.errorMessage(this.loadFile_fup.PostedFile.FileName + "<br><br>" + ex.ToString());
             }
         }
 
@@ -226,6 +234,8 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
 
     protected void saveActivity_fnc(object sender, EventArgs e)
     {
+        //this.hlaskoSelectedTab.Value = "1";
+
         int realTime = this.calcAfter19();
         this.jsWorktimetxt.Text = realTime.ToString();
         SortedList data = new SortedList();
@@ -257,7 +267,7 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
 
             if (!status)
             {
-                this.ctrl_msg_lbl.Text = res["msg"].ToString() + "<br>" + res["sql"].ToString();
+                this.msg_lbl.Text = res["msg"].ToString() + "<br>" + res["sql"].ToString();
             }
             else
             {
@@ -289,7 +299,7 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
             }
             else
             {
-                this.ctrl_msg_lbl.Text = resUp["msg"].ToString();
+                this.msg_lbl.Text = x2.errorMessage(resUp["msg"].ToString());
             }
         }
     }
@@ -378,7 +388,7 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
         }
         else
         {
-           this.ctrl_msg_lbl.Text = res["msg"].ToString();
+           this.msg_lbl.Text = x2.errorMessage(res["msg"].ToString());
         }
     }
 
@@ -415,7 +425,7 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
             }
             else
             {
-                this.ctrl_msg_lbl.Text = result["msg"].ToString();
+                this.msg_lbl.Text = x2.errorMessage(result["msg"].ToString());
             }
 
         }
@@ -486,6 +496,7 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
 
     protected void Calendar1_SelectionChanged(object sender, EventArgs e)
     {
+        
         if (sender.GetType() == typeof(Calendar))
         {
 
@@ -536,7 +547,7 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
 
         if (objId[0] == "editBtn")
         {
-           // this.ctrl_msg_lbl.Text = objId[1] + "...." + objId[0];
+           // this.msg_lbl.Text = objId[1] + "...." + objId[0];
             sb.Length = 0;
             sb.AppendFormat("SELECT * FROM [is_hlasko_epc] WHERE [id] = '{0}'", objId[1]);
             SortedList row = x2Mysql.getRow(sb.ToString());
@@ -586,7 +597,7 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
             SortedList res = x2Mysql.execute(sb.ToString());
             if (!Convert.ToBoolean(res["status"]))
             {
-                this.ctrl_msg_lbl.Text = res["msg"].ToString() + "<br><br>" + res["query"].ToString();
+                this.msg_lbl.Text = x2.errorMessage( res["msg"].ToString() + "<br><br>" + res["query"].ToString());
             }
             this.loadEPCData(true);
             //this._generateHlasko();
@@ -792,7 +803,7 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
         }
         else
         {
-            this.ctrl_msg_lbl.Text = res["msg"].ToString();
+            this.msg_lbl.Text =x2.errorMessage(res["msg"].ToString());
         }
     }
 
@@ -810,7 +821,7 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
 
         if (!Convert.ToBoolean(res["status"]))
         {
-            this.ctrl_msg_lbl.Text = res["msg"].ToString();
+            this.msg_lbl.Text = x2.errorMessage(res["msg"].ToString());
         }
         else
         {

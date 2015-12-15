@@ -1,20 +1,34 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="kdch_hlasko.ascx.cs" Inherits="controls_druhadk_hlasko" EnableViewState="true" %>
+<asp:HiddenField ID="hlaskoSelectedTab" runat="server" />
+<h1 class="black">Hlásenie služby</h1>
 <hr />
 Vytvoril:<asp:Label ID="creatUser_lbl" runat="server" Text="" Font-Bold="true"></asp:Label><br />
     Posledná zmena:<asp:Label ID="lastUser_lbl" runat="server" Text="" Font-Bold="true"></asp:Label>
-
-
 <hr />
-  <asp:Label ID="ctrl_msg_lbl" runat="server"></asp:Label>
+  <asp:literal ID="msg_lbl" runat="server"></asp:literal>
 <div class="row">
-    
-  
-    
-    <div class="one half">
-        <%--OnSelectionChanged="Calendar1_SelectionChanged"--%>
-        Služba:
-        <asp:DropDownList ID="shiftType_dl" runat="server" AutoPostBack="true" OnSelectedIndexChanged="Calendar1_SelectionChanged"></asp:DropDownList>
-    <asp:Calendar ID="Calendar1" runat="server" BackColor="White" OnSelectionChanged="Calendar1_SelectionChanged"  CssClass="responsive" data-max="12"
+<div class="dismissible info message">
+    <h3 class="red">Nové hlásko</h3>
+    Hlásenie bolo rozdelené, na tri taby. V prvom píšete Vaše EPČ, v druhom tab-e sa Vám generuje EPČ zoznam a v treťom hlásenie služby.
+    Stačí sa len kliknúť do daného tabu a uvidíte čo ste vložili.<br />
+    T.č. pribudlo aj miesto kde píšete EPČ, je to len kvôli sprehľadneniu.<br />
+    Samozrejme kliknutím na túto správu táto zmizne.....
+</div>
+</div>
+<div id="hlasko_tabs">
+    <ul>
+        <li><a href="#hlasko_tab1">Písanie EPČ</a></li>
+        <li><a href="#hlasko_tab2">Zoznam EPČ</a></li>
+        <li><a href="#hlasko_tab3">Hlásenie služby</a></li>
+    </ul>
+
+    <div id="hlasko_tab1"> <!--zaciatok tab1-->
+        <div class="row">
+            <div class="one half">
+            <%--OnSelectionChanged="Calendar1_SelectionChanged"--%>
+            <h3 class="green">Služba:</h3>
+                <asp:DropDownList ID="shiftType_dl" runat="server" AutoPostBack="true" OnSelectedIndexChanged="Calendar1_SelectionChanged"></asp:DropDownList>
+                    <asp:Calendar ID="Calendar1" runat="server" BackColor="White" OnSelectionChanged="Calendar1_SelectionChanged"  CssClass="responsive" data-max="15"
                             BorderColor="#d9edf7" DayNameFormat="Shortest"  
                               ForeColor="Black" 
                              CellPadding="4" >
@@ -28,28 +42,20 @@ Vytvoril:<asp:Label ID="creatUser_lbl" runat="server" Text="" Font-Bold="true"><
                         <TitleStyle BackColor="#d9edf7" BorderColor="Black" Font-Bold="True" />
                         </asp:Calendar>
     
-    </div>
-    <div class="one half padded">
-        Zobraz v OSIRIXe
-        <hr />
-        <asp:Table ID="osirix_tbl" runat="server"></asp:Table>
+            </div>
+
+            <div class="one half padded">
+                Zobraz v OSIRIXe
+                <hr />
+                <asp:Table ID="osirix_tbl" runat="server"></asp:Table>
          
-    </div> 
-</div>
-    <div class="row">
-    
-   
-        <div class="success box">
-            <asp:Table ID="activity_tbl" runat="server"></asp:Table>
-            <asp:Label ID="kompl_work_time" runat="server" Text=""></asp:Label><br />
-            <asp:Button ID="generate_btn" runat="server" Text="Generuj hlasko" CssClass="button green" /> 
-        </div>
+            </div> 
+        
+        
+      </div>
 
-    </div>
-
-    <br />
-<div class="row">
-        <asp:Label ID="epc_titel" runat="server" Text="<%$ Resources:Resource,epc_titel %>" CssClass="green"></asp:Label>
+        <div class="row">
+        <asp:Label ID="epc_titel" runat="server" Text="<%$ Resources:Resource,epc_titel %>" CssClass="green large"></asp:Label>
 </div>
 <div class="box blue">  
 <div class="row">
@@ -83,7 +89,7 @@ Vytvoril:<asp:Label ID="creatUser_lbl" runat="server" Text="" Font-Bold="true"><
                 <asp:ListItem Value="urgent">Urgent</asp:ListItem>
                     </asp:DropDownList>
             </div> 
-        </div>
+</div>
 
 <div class="row">
         <div class="one half">
@@ -119,25 +125,43 @@ Vytvoril:<asp:Label ID="creatUser_lbl" runat="server" Text="" Font-Bold="true"><
     </div>
 </div>
      </div> <%-- blue bx--%>
-Zobraz hlasenia
-<div class="row">
-    <asp:Button CssClass="medium button red" runat="server" ID="showOup_btn" OnClick="showHlasko_fnc" Text="OUP" />
-    <asp:Button CssClass="medium button blue" runat="server" ID="showOddA_btn" OnClick="showHlasko_fnc" Text="OddA" />
-    <asp:Button CssClass="medium button green" runat="server" ID="showOddB_btn" OnClick="showHlasko_fnc" Text="OddB" />
-    <asp:Button CssClass="medium button asphalt" runat="server" ID="showOp_btn" OnClick="showHlasko_fnc" Text="Op. pohotovost" />
-    
-</div>
 
-<asp:TextBox ID="hlasenie" CssClass="dtextbox" runat="server"  Width="90%" Rows="30" Height="500" TextMode="MultiLine"> </asp:TextBox>
-<asp:Button ID="saveHlasko_btn" runat="server" Text="Ulož zmenu" OnClick="saveHlaskoFnc" CssClass="button green" />
-                
-               
+
+
+
+    </div><!--koniec tab1-->
+    <div id="hlasko_tab2"><!--zaciatok tab2-->
+         <div class="row">
+    
+   
+        <div class="success box">
+            <asp:Table ID="activity_tbl" runat="server"></asp:Table>
+            <asp:Label ID="kompl_work_time" runat="server" Text=""></asp:Label><br />
+            <asp:Button ID="generate_btn" runat="server" Text="Generuj hlasko" CssClass="button green" /> 
+        </div>
+
+    </div>
+    </div><!--koniec tab2-->
+    <div id="hlasko_tab3"><!--zaciatok tab3-->
+        <h3>Zobraz hlasenia</h3>
+        <div class="row">
+            <asp:Button CssClass="medium button red" runat="server" ID="showOup_btn" OnClick="showHlasko_fnc" Text="OUP" />
+            <asp:Button CssClass="medium button blue" runat="server" ID="showOddA_btn" OnClick="showHlasko_fnc" Text="OddA" />
+            <asp:Button CssClass="medium button green" runat="server" ID="showOddB_btn" OnClick="showHlasko_fnc" Text="OddB" />
+            <asp:Button CssClass="medium button asphalt" runat="server" ID="showOp_btn" OnClick="showHlasko_fnc" Text="Op. pohotovost" />
+            <asp:TextBox ID="hlasenie" CssClass="dtextbox" runat="server"  Width="90%" Rows="30" Height="500" TextMode="MultiLine"> </asp:TextBox>
+            <asp:Button ID="saveHlasko_btn" runat="server" Text="Ulož zmenu" OnClick="saveHlaskoFnc" CssClass="button green" />
                 <asp:Button ID="print_btn" runat="server" Text="Vytlač" CssClass="button blue" OnClick="printFnc" />
-                
                 <asp:Button ID="toWord_btn" runat="server" Text="Tlač/Word"  />
-                
                 <asp:Button ID="def_lock_btn" runat="server" Text="Uzavrieť a vytlačiť hlásko" 
                     CssClass="button red" />          
+        </div>
+    </div><!--koniec tab3-->
+
+</div>  <!-- Koniec tabov -->  
+  
+    
+
        
 
 

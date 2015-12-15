@@ -11,6 +11,8 @@ using System.Web.UI.HtmlControls;
 using System.Data;
 using System.Data.Odbc;
 using System.Text;
+using MySql.Data;
+using MySql.Data.MySqlClient;
 
 /// <summary>
 /// Summary description for lf
@@ -29,7 +31,7 @@ public class lf : mysql_db
         StringBuilder sb = new StringBuilder();
         sb.AppendFormat("SELECT [file-content] FROM [is_data] WHERE [id]='{0}'", id);
         my_con.Open();
-        OdbcCommand my_com = new OdbcCommand(this.parseQuery(sb.ToString()), my_con);
+        MySqlCommand my_com = new MySqlCommand(this.parseQuery(sb.ToString()), my_con);
 
         byte[] result = (byte[])my_com.ExecuteScalar();
         my_con.Close();
@@ -43,8 +45,8 @@ public class lf : mysql_db
         StringBuilder sb = new StringBuilder();
         sb.AppendFormat("SELECT [file-name],[file-size],[file-type] FROM [is_data_2] WHERE [id]='{0}'", id);
         my_con.Open();
-        OdbcCommand my_com = new OdbcCommand(this.parseQuery(sb.ToString()), my_con);
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlCommand my_com = new MySqlCommand(this.parseQuery(sb.ToString()), my_con);
+        MySqlDataReader reader = my_com.ExecuteReader();
 
         if (reader.HasRows)
         {
@@ -72,10 +74,10 @@ public class lf : mysql_db
     public SortedList lf_lfUpdateData(byte[] data, SortedList lfData)
     {
         SortedList result = new SortedList();
-        OdbcTransaction trans1 = null;
+        MySqlTransaction trans1 = null;
         my_con.Open();
 
-        OdbcCommand cmd = new OdbcCommand();
+        MySqlCommand cmd = new MySqlCommand();
         cmd.Connection = my_con;
         cmd.CommandType = CommandType.Text;
 
@@ -84,11 +86,11 @@ public class lf : mysql_db
         cmd.Transaction = trans1;
         cmd.CommandText = "UPDATE `is_data_2` SET `file-name`=?,`file-size`=?,`file-type`=?,`file-content`=? WHERE `id`=?";
 
-        cmd.Parameters.Add("filename", OdbcType.Text).Value = lfData["file-name"].ToString();
-        cmd.Parameters.Add("filesize", OdbcType.BigInt).Value = Convert.ToInt32(lfData["file-size"]);
-        cmd.Parameters.Add("filetype", OdbcType.VarChar).Value = lfData["file-type"].ToString();
-        cmd.Parameters.Add("filecontent", OdbcType.Binary).Value = data;
-        cmd.Parameters.Add("id", OdbcType.BigInt).Value = Convert.ToInt32(lfData["id"]);
+        cmd.Parameters.Add("filename", MySqlDbType.Text).Value = lfData["file-name"].ToString();
+        cmd.Parameters.Add("filesize", MySqlDbType.Int32).Value = Convert.ToInt32(lfData["file-size"]);
+        cmd.Parameters.Add("filetype", MySqlDbType.VarChar).Value = lfData["file-type"].ToString();
+        cmd.Parameters.Add("filecontent", MySqlDbType.Binary).Value = data;
+        cmd.Parameters.Add("id", MySqlDbType.Int32).Value = Convert.ToInt32(lfData["id"]);
         cmd.CommandText.ToString();
         try
         {
@@ -113,15 +115,15 @@ public class lf : mysql_db
     public byte[] lf_lfStoredData(int id, int size)
     {
         byte[] result = new byte[size];
-        OdbcCommand cmd = new OdbcCommand();
+        MySqlCommand cmd = new MySqlCommand();
         cmd.Connection = my_con;
         cmd.CommandText = "SELECT `file-content` FROM `is_data_2` WHERE `id` = ?";
 
-        cmd.Parameters.Add("id", OdbcType.BigInt).Value = id;
+        cmd.Parameters.Add("id", MySqlDbType.Int32).Value = id;
 
         my_con.Open();
 
-        OdbcDataReader reader = cmd.ExecuteReader();
+        MySqlDataReader reader = cmd.ExecuteReader();
 
         if (reader.HasRows)
         {
@@ -140,11 +142,11 @@ public class lf : mysql_db
     public SortedList lf_lfInsertData(byte[] data, SortedList lfData)
     {
         SortedList result = new SortedList();
-        OdbcTransaction trans1 = null;
+        MySqlTransaction trans1 = null;
         
         my_con.Open();
 
-        OdbcCommand cmd = new OdbcCommand();
+        MySqlCommand cmd = new MySqlCommand();
         cmd.Connection = my_con;
         cmd.CommandType = CommandType.Text;
 
@@ -153,12 +155,12 @@ public class lf : mysql_db
         cmd.Transaction = trans1;
         cmd.CommandText = "INSERT INTO `is_data_2`(`file-name`,`file-size`,`file-type`,`file-content`, `user_id`, `clinic_id`) VALUES (?,?,?,?,?,?)";
 
-        cmd.Parameters.Add("filename", OdbcType.Text).Value = lfData["file-name"].ToString();
-        cmd.Parameters.Add("filesize", OdbcType.BigInt).Value = Convert.ToInt32(lfData["file-size"]);
-        cmd.Parameters.Add("filetype", OdbcType.VarChar).Value = lfData["file-type"].ToString();
-        cmd.Parameters.Add("filecontent", OdbcType.Binary).Value = data;
-        cmd.Parameters.Add("userid", OdbcType.BigInt).Value = Convert.ToInt32(lfData["user_id"]);
-        cmd.Parameters.Add("clinicid", OdbcType.BigInt).Value = Convert.ToInt32(lfData["clinic_id"]);
+        cmd.Parameters.Add("filename", MySqlDbType.Text).Value = lfData["file-name"].ToString();
+        cmd.Parameters.Add("filesize", MySqlDbType.Int32).Value = Convert.ToInt32(lfData["file-size"]);
+        cmd.Parameters.Add("filetype", MySqlDbType.VarChar).Value = lfData["file-type"].ToString();
+        cmd.Parameters.Add("filecontent", MySqlDbType.Binary).Value = data;
+        cmd.Parameters.Add("userid", MySqlDbType.Int32).Value = Convert.ToInt32(lfData["user_id"]);
+        cmd.Parameters.Add("clinicid", MySqlDbType.Int32).Value = Convert.ToInt32(lfData["clinic_id"]);
         cmd.CommandText.ToString();
         try
         {
@@ -216,12 +218,12 @@ public class lf : mysql_db
     public SortedList deleteFolder(int folderId)
     {
         SortedList result = new SortedList();
-        OdbcTransaction trans1 = null;
+        MySqlTransaction trans1 = null;
 
         Boolean status = true;
         my_con.Open();
 
-        OdbcCommand cmd = new OdbcCommand();
+        MySqlCommand cmd = new MySqlCommand();
         cmd.Connection = my_con;
         cmd.CommandType = CommandType.Text;
         trans1 = my_con.BeginTransaction();
@@ -282,13 +284,14 @@ public class lf : mysql_db
         return result;
     }
 
-    public int sameContent(string hash,OdbcConnection myCon, OdbcTransaction trans)
+    //public int sameContent(string hash,MySqlConnection myCon, MySqlTransaction trans)
+    public int sameContent(string hash)
     {
         int result = 0;
 
         string sql = this.buildSql("SELECT [id] FROM [is_data_2] WHERE [hash]='{0}'", new string[] { hash });
 
-        SortedList res = this.getRowInCon(sql,myCon, trans);
+        SortedList res = this.getRowInCon(sql);
         
         if (res["id"] != null)
         {
@@ -302,11 +305,11 @@ public class lf : mysql_db
     public SortedList storeLfDataInTable(byte[] content, SortedList lfData, string table,SortedList isStruct)
     {
         SortedList result = new SortedList();
-
-        OdbcTransaction trans1 = null;
+        int tmp = this.sameContent(isStruct["item_hash"].ToString());
+        MySqlTransaction trans1 = null;
         my_con.Open();
 
-        OdbcCommand cmd = new OdbcCommand();
+        MySqlCommand cmd = new MySqlCommand();
         cmd.Connection = my_con;
         cmd.CommandType = CommandType.Text;
 
@@ -321,19 +324,20 @@ public class lf : mysql_db
 
             int id = 0;
 
-            int tmp = this.sameContent(isStruct["item_hash"].ToString(), my_con, trans1);
+            
+            
 
             if (tmp == 0)
             {
                 cmd.CommandText = "INSERT INTO `is_data_2`(`file-name`,`file-size`,`file-type`,`file-content`, `user_id`, `clinic_id`, `hash`) VALUES (?,?,?,?,?,?,?)";
 
-                cmd.Parameters.Add("filename", OdbcType.Text).Value = lfData["file-name"].ToString();
-                cmd.Parameters.Add("filesize", OdbcType.BigInt).Value = Convert.ToInt32(lfData["file-size"]);
-                cmd.Parameters.Add("filetype", OdbcType.VarChar).Value = lfData["file-type"].ToString();
-                cmd.Parameters.Add("filecontent", OdbcType.Binary).Value = content;
-                cmd.Parameters.Add("userid", OdbcType.BigInt).Value = Convert.ToInt32(lfData["user_id"]);
-                cmd.Parameters.Add("clinicid", OdbcType.BigInt).Value = Convert.ToInt32(lfData["clinic_id"]);
-                cmd.Parameters.Add("hash", OdbcType.Char).Value = isStruct["item_hash"].ToString();
+                cmd.Parameters.Add("filename", MySqlDbType.Text).Value = lfData["file-name"].ToString();
+                cmd.Parameters.Add("filesize", MySqlDbType.Int32).Value = Convert.ToInt32(lfData["file-size"]);
+                cmd.Parameters.Add("filetype", MySqlDbType.VarChar).Value = lfData["file-type"].ToString();
+                cmd.Parameters.Add("filecontent", MySqlDbType.Binary).Value = content;
+                cmd.Parameters.Add("userid", MySqlDbType.Int32).Value = Convert.ToInt32(lfData["user_id"]);
+                cmd.Parameters.Add("clinicid", MySqlDbType.Int32).Value = Convert.ToInt32(lfData["clinic_id"]);
+                cmd.Parameters.Add("hash", MySqlDbType.VarChar).Value = isStruct["item_hash"].ToString();
 
 
                 cmd.ExecuteNonQuery();
@@ -350,7 +354,8 @@ public class lf : mysql_db
 
             isStruct.Add("item_lf_id", id);
 
-            SortedList res = this.mysql_insert_nt(table, isStruct, my_con, trans1);
+           // SortedList res = this.mysql_insert_nt(table, isStruct, ref my_con, trans1);
+            SortedList res = this.mysql_insert_nt(table, isStruct, ref cmd);
 
             if (Convert.ToBoolean(res["status"]))
             {
@@ -386,10 +391,12 @@ public class lf : mysql_db
     {
         SortedList result = new SortedList();
 
-        OdbcTransaction trans1 = null;
+        int tmp = this.sameContent(isStruct["item_hash"].ToString());
+        
+        MySqlTransaction trans1 = null;
         my_con.Open();
 
-        OdbcCommand cmd = new OdbcCommand();
+        MySqlCommand cmd = new MySqlCommand();
         cmd.Connection = my_con;
         cmd.CommandType = CommandType.Text;
 
@@ -404,19 +411,18 @@ public class lf : mysql_db
 
             int id = 0;
 
-            int tmp = this.sameContent(isStruct["item_hash"].ToString(),my_con, trans1);
-
             if (tmp == 0)
             {
-                cmd.CommandText = "INSERT INTO `is_data_2`(`file-name`,`file-size`,`file-type`,`file-content`, `user_id`, `clinic_id`, `hash`) VALUES (?,?,?,?,?,?,?)";
+                cmd.CommandText = @"INSERT INTO `is_data_2`(`file-name`,`file-size`,`file-type`,`file-content`, `user_id`, `clinic_id`, `hash`)
+                                        VALUES (@filename,@filesize,@filetype,@filecontent,@userid,@clinicid,@hash)";
 
-                cmd.Parameters.Add("filename", OdbcType.Text).Value = lfData["file-name"].ToString();
-                cmd.Parameters.Add("filesize", OdbcType.BigInt).Value = Convert.ToInt32(lfData["file-size"]);
-                cmd.Parameters.Add("filetype", OdbcType.VarChar).Value = lfData["file-type"].ToString();
-                cmd.Parameters.Add("filecontent", OdbcType.Binary).Value = content;
-                cmd.Parameters.Add("userid", OdbcType.BigInt).Value = Convert.ToInt32(lfData["user_id"]);
-                cmd.Parameters.Add("clinicid", OdbcType.BigInt).Value = Convert.ToInt32(lfData["clinic_id"]);
-                cmd.Parameters.Add("hash", OdbcType.Char).Value = isStruct["item_hash"].ToString();
+                cmd.Parameters.Add("filename", MySqlDbType.Text).Value = lfData["file-name"].ToString();
+                cmd.Parameters.Add("filesize", MySqlDbType.Int32).Value = Convert.ToInt32(lfData["file-size"]);
+                cmd.Parameters.Add("filetype", MySqlDbType.VarChar).Value = lfData["file-type"].ToString();
+                cmd.Parameters.Add("filecontent", MySqlDbType.Binary).Value = content;
+                cmd.Parameters.Add("userid", MySqlDbType.Int32).Value = Convert.ToInt32(lfData["user_id"]);
+                cmd.Parameters.Add("clinicid", MySqlDbType.Int32).Value = Convert.ToInt32(lfData["clinic_id"]);
+                cmd.Parameters.Add("hash", MySqlDbType.VarChar).Value = isStruct["item_hash"].ToString();
 
 
                 cmd.ExecuteNonQuery();
@@ -433,7 +439,7 @@ public class lf : mysql_db
 
             isStruct.Add("item_lf_id", id);
              
-            SortedList res = this.mysql_insert_nt("is_structure", isStruct, my_con, trans1); 
+            SortedList res = this.mysql_insert_nt("is_structure", isStruct, ref cmd); 
 
             if (Convert.ToBoolean(res["status"]))
             {

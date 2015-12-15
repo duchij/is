@@ -1,110 +1,26 @@
-﻿//function testik() {
-//    alert("pokus");
-//}
+﻿
 
-
-
-function onSuccess(data) {
-    alert(data);
-}
-
-function showNewsInfo(text)
+function sendData(fnc,data,callBack)
 {
-    alert(text);
-}
-
-function testFnc()
-{
-    loadNews("test");
-}
-
-function test() {
-    //alert("lolo");
-   // var st = $("input[id$=testButton").val();
-    var st = "test";
     $.ajax({
-        type: "POST",
-        url: "../WebService.asmx/loadNews",
-        data: "text=halo",
-        beforeSend: function (xhr) {
-            xhr.setRequestHeader("Content-type",
-                                 "application/json; charset=utf-8");
-        },
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        // success: function (response) { alert("uspech"+ response); },
-        failure: function (response) {
-            alert("chyba"+response);
-        },
-        complete: function (res) {alert(res);}
-    });
-}
-
-function checkTab(tab)
-{
-    alert(tab);
-    
-}
-
-function pisanie2(ele)
-{
-    //var text = $("#pisanie_txt").val(); 
-    $("#test_dl").focus(down);
-}
-
-function pisanie()
-{
-    var text = $("#pisanie_txt").val();
-    $.ajax({
-        url: "WebService.asmx/loadData",
+        url: "WebService.asmx/"+fnc,
         method: "POST",
-        dataType: "json",
-        contentType: "application/json; charset=utf-8",
+        dataType: "text",
+       // contentType: "application/json; charset=utf-8",
+        contentType: "application/x-www-form-urlencoded; charset=UTF-8",
         // contentType: "application/x-www-form-urlencoded",
         //contentType: "text/html",
-        data: "{text:'"+text+"'}",
+        data: "data=" + JSON.stringify(data),
         success: function (data) {
-            //showNewsText(data);
             console.log(data);
+            //showNewsText(data);
+            var xml = $.parseXML(data);
+            var dtJson = xml.childNodes[0].innerHTML;
+            var obj = JSON.parse(dtJson);
+            window[callBack](obj);
         }
 
     });
-
-
-}
-
-
-function printTable() {
-    var DocumentContainer = document.getElementById('shiftTable');
-    console.log(DocumentContainer.innerHTML);
-    var WindowObject = window.open('', 'PrintWindow', 'width=750,height=650,top=50,left=50,toolbars=no,scrollbars=yes,status=no,resizable=yes');
-    var strHtml = "<html>\n<head>\n<link rel='stylesheet' type='text/css' href='print.css'>\n</head><body>\n<div style='testStyle' documentcontainer.innerhtml='' mode='hold' />         WindowObject.document.writeln(strHtml)";
-    WindowObject.document.close();
-    WindowObject.focus();
-    // WindowObject.print();
-    // WindowObject.close();
-    //alert(DocumentContainer);
-}
-
-function loadNews(id)
-{
-    var news = { newsId: 'lalal', newsText: 'toto je pokus' };
-    $.ajax({
-        url: "WebService.asmx/loadNews",
-        method: "POST",
-        dataType: "json",
-        contentType: "application/json; charset=utf-8",
-        // contentType: "application/x-www-form-urlencoded",
-        //contentType: "text/html",
-        data:  "{data:'"+JSON.stringify(news)+"'}",
-        success: function (data) {
-            //showNewsText(data);
-            console.log(data);
-        }
-
-    });
-
-    
 }
 
 
@@ -125,100 +41,126 @@ function openDropdown(elementId) {
     $('#' + elementId).focus(down).blur(up).focus();
 }
 
-$(document).ready(function () {
 
-    
 
-    //var news = $("input[id$=newsDialogShow]").val().toString();
+function hlaskoTabs()
+{
+    $("#hlasko_tabs").tabs();
 
-    //if (news.length >0) {
-    //    loadNews(news);
-    //}
 
-    $("#tabs").tabs();
+    $("#hlasko_tabs").tabs({
+        activate: function (event) {
 
-    var stab = $("input[id$=_settab_hv]").val();
-    if (stab != undefined && stab.length > 0) {
-        //alert(stab);
-        $("#tabs").tabs({active:1});
-    }
+            var tab = event.currentTarget.hash;
+           // console.log(tab);
 
-    //$("select[id$=test_dl]").on("keyup", function (e) {
-    //    pisanie2($(this));
-        
-    //});
-
-    $("#test_btn").click(function () {
-       // alert("hura");
-        var request = $.ajax({
-            url: "WebService.asmx/loadNews",
-            method: "POST",
-            dataType: "text",
-            contentType: "application/x-www-form-urlencoded; charset=UTF-8",
-            //contentType: "application/x-www-form-urlencoded",
-            //contentType: "text/plain",
-            data:"data="+JSON.stringify({test: "lala", pokus: "husra" }),
-            succes:function(data){
-                console.log($.parseXML(data));
-            },
-            error: function (data) {
-                console.log(data);
-            }
-          
-        });
-        //request.success(function (data) {
-        //    console.log(data);
-        //});
-
-        request.done(function (data) {
-            var xml = $.parseXML(data)
-            console.log(xml.childNodes[0].innerHTML);
-
-            
-            //alert(data);
-        });
-
-        //request.success(function (data) {
-        //    console.log(data);
-        //    alert(data);
-        //});
-
+            sendData("hlaskoSelectedTab", { selTab: tab }, "afterSelectTab");
+        }
     });
 
-    //alert("hura");
+    var selTab = $("input[id$=hlaskoSelectedTab]").val();
+    
+    if (selTab!= undefined && selTab.indexOf("hlasko_tab" != -1)) {
+        switch (selTab) {
+            case "#hlasko_tab1":
+                $("#hlasko_tabs").tabs({ active: 0 });
+                break;
+            case "#hlasko_tab2":
+                $("#hlasko_tabs").tabs({ active: 1 });
+                break;
+            case "#hlasko_tab3":
+                $("#hlasko_tabs").tabs({ active: 2 });
+                break;
+        }
+    }
+}
 
-    //$("input[id$=testButton").click(function (e) {
-    //    //var st = false;
-    //    //if ($("input[id$=_publish_cb]").attr("checked")) {
-    //    //    st = true;
-    //    //}
-            
-    //    var st = $("input[id$=_publish_cb]").is(":checked");
+function opKnihaTabs()
+{
+    
+    $("#opkniha_tabs").tabs();
 
-    //    //if (st) {
-    //    alert("lolo");
+    $("#opkniha_tabs").tabs({
+        activate: function (event) {
 
+            var tab = event.currentTarget.hash;
+           // console.log(tab);
 
-    //    $.ajax({
-    //        type: "POST",
-    //        url: "hlasko.aspx/setData",
-    //        data: '{state: "' +st + '" }',
-    //        contentType: "application/json; charset=utf-8",
-    //        dataType: "json",
-    //        success: function (response) { alert(response.d); },
-
-    //        failure: function (response) {
-    //            alert(response.d);
-    //        }
-    //    });
-    //    // }
+            sendData("opknihaSelectedTab", { selTab: tab }, "afterOpKnihaSelectTab");
+        }
+    });
 
 
-    //});
+}
 
-    //$("input[id$=_dovNameCell_]").mouseover(function (e) {
-    //    alert("lolo");
-    //});
+function lfTabs() {
+
+    $("#lf_tabs").tabs();
+
+    $("#lf_tabs").tabs({
+        activate: function (event) {
+
+            var tab = event.currentTarget.hash;
+            console.log(tab);
+
+            sendData("lfSelectedTab", { selTab: tab }, "afterLfSelectTab");
+        }
+    });
+
+
+    var selTab = $("input[id$=setlftab_hv]").val();
+
+    if (selTab != undefined && selTab.indexOf("lf_tab" != -1)) {
+        switch (selTab) {
+            case "#lf_tab1":
+                $("#lf_tabs").tabs({ active: 0 });
+                break;
+            case "#lf_tab2":
+                $("#lf_tabs").tabs({ active: 1 });
+                break;
+            case "#lf_tab3":
+                $("#lf_tabs").tabs({ active: 2 });
+                break;
+        }
+    }
+
+}
+
+function afterLfSelectTab(data) {
+    var tab = data.selTab;
+    $("input[id$=setlftab_hv]").val(tab);
+}
+
+
+function afterSelectTab(data)
+{
+    var tab = data.selTab;
+    $("input[id$=hlaskoSelectedTab]").val(tab);
+}
+
+function setSeminar()
+{
+        var dt = $("input[id$=date_txt]").val();
+    
+        $("input[id$=date_txt]").datepicker();
+        $("input[id$=date_txt]").datepicker("option", "dateFormat", "yy-mm-dd");
+        $("input[id$=date_txt]").datepicker("option", "dateFormat", "yy-mm-dd");
+        $("input[id$=date_txt]").datepicker("setDate", dt);
+   // $("input[id$=date_txt]").datepicker("setDate", "yy-mm-dd");
+}
+
+$(document).ready(function () {
+
+    hlaskoTabs();
+    opKnihaTabs();
+    lfTabs();
+
+
+    if ($("input[id$=isSeminarsPage]").val() == "1")
+    {
+        setSeminar();
+    }
+
 
     $("#delPasswdBtn").click(function (e) {
         //alert("lal");
@@ -280,15 +222,5 @@ $(document).ready(function () {
         }
     });
 
-
-    //$("input[id$=_jsWorskstarttxt]").on('change', ':input', function () {
-    //    alert("lo");
-    //});
-
-
-    //$("input[id$=_jsTextBox1]").change(function (e) {
-    //    var str = $("input[id$=_jsTextBox1]").val();
-    //    alert(str);
-    //});
 
 });

@@ -12,6 +12,8 @@ using System.Web.UI.HtmlControls;
 using System.Data;
 using System.Data.Odbc;
 using System.Text;
+using MySql.Data;
+using MySql.Data.MySqlClient;
 
 
 /// <summary>
@@ -19,7 +21,9 @@ using System.Text;
 /// </summary>
 public class my_db
 {
-    public  OdbcConnection my_con = new OdbcConnection();
+    //public  OdbcConnection my_con = new OdbcConnection();
+    public MySqlConnection my_con = new MySqlConnection();
+
     x2_var x2 = new x2_var();
 
 	public my_db()
@@ -46,7 +50,8 @@ public class my_db
         string query = "SELECT * FROM is_opvykon WHERE Oddelenie='" + druh + "'";
         string conn = my_con.ConnectionString.ToString();
         my_con.Open();
-        OdbcDataAdapter da = new OdbcDataAdapter(query, conn);
+        MySqlDataAdapter da = new MySqlDataAdapter(query, conn);
+        
         DataSet ds = new DataSet();
         da.Fill(ds);
         my_con.Close();
@@ -59,7 +64,7 @@ public class my_db
         string query = "SELECT * FROM is_opkniha ORDER BY DESC";
         string conn = my_con.ConnectionString.ToString();
         my_con.Open();
-        OdbcDataAdapter da = new OdbcDataAdapter(query, conn);
+        MySqlDataAdapter da = new MySqlDataAdapter(query, conn);
         DataSet ds = new DataSet();
         da.Fill(ds);
         my_con.Close();
@@ -74,10 +79,10 @@ public class my_db
         query.AppendFormat("SELECT id, full_name,`group` FROM `{0}` WHERE `group` = '{1}' OR `group`= 'poweruser' AND `active`= 1 ORDER BY SUBSTR(`name`,2)",table,skupina);
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(query.ToString(), my_con);
+        MySqlCommand my_com = new MySqlCommand(query.ToString(), my_con);
 
-        OdbcDataReader reader = my_com.ExecuteReader();
-
+        MySqlDataReader reader = my_com.ExecuteReader();
+        
         if (reader.HasRows)
         {
             while (reader.Read())
@@ -102,9 +107,9 @@ public class my_db
         //string query = "SELECT * FROM [is_users] WHERE [id]=" + id;
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(this.parseQuery(sb.ToString()), my_con);
+        MySqlCommand my_com = new MySqlCommand(this.parseQuery(sb.ToString()), my_con);
 
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlDataReader reader = my_com.ExecuteReader();
 
         if (reader.HasRows)
         {
@@ -142,9 +147,9 @@ public class my_db
 
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(query.ToString(), my_con);
+        MySqlCommand my_com = new MySqlCommand(query.ToString(), my_con);
 
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlDataReader reader = my_com.ExecuteReader();
         int row = 0;
 
         if (reader.HasRows)
@@ -201,9 +206,9 @@ public class my_db
 
         //my_con.Open();
         
-        OdbcCommand my_com = new OdbcCommand(sb.ToString(), my_con);       
+        MySqlCommand my_com = new MySqlCommand(sb.ToString(), my_con);       
 
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlDataReader reader = my_com.ExecuteReader();
         SortedList result = new SortedList();
 
         while (reader.Read())
@@ -238,10 +243,10 @@ public class my_db
         //string query = "SELECT * FROM `is_users` WHERE `name`='"+name+"'";
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(this.parseQuery(sb.ToString()), my_con);
+        MySqlCommand my_com = new MySqlCommand(this.parseQuery(sb.ToString()), my_con);
         
 
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlDataReader reader = my_com.ExecuteReader();
        
         if (reader.HasRows)
         {
@@ -296,7 +301,7 @@ public class my_db
         {
             my_con.Open();
 
-            OdbcCommand my_insert = new OdbcCommand(query, my_con);
+            MySqlCommand my_insert = new MySqlCommand(query, my_con);
 
             my_insert.ExecuteNonQuery();
           
@@ -365,7 +370,7 @@ public class my_db
         {
             my_con.Open();
 
-            OdbcCommand my_insert = new OdbcCommand(query, my_con);
+            MySqlCommand my_insert = new MySqlCommand(query, my_con);
 
             my_insert.ExecuteNonQuery();
 
@@ -393,7 +398,7 @@ public class my_db
         try
         {
             my_con.Open();
-            OdbcCommand sqlDelete = new OdbcCommand(query, my_con);
+            MySqlCommand sqlDelete = new MySqlCommand(query, my_con);
 
             sqlDelete.ExecuteNonQuery();
             my_con.Close();
@@ -414,9 +419,9 @@ public class my_db
         SortedList result = new SortedList();
         string query = "SELECT * FROM `" + table + "` WHERE `id`=" + id;
         my_con.Open();
-        OdbcCommand my_com = new OdbcCommand(query, my_con);
+        MySqlCommand my_com = new MySqlCommand(query, my_con);
 
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlDataReader reader = my_com.ExecuteReader();
 
         if (reader.HasRows)
         {
@@ -453,10 +458,10 @@ public class my_db
 
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(sb.ToString(), my_con);
+        MySqlCommand my_com = new MySqlCommand(sb.ToString(), my_con);
 
 
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlDataReader reader = my_com.ExecuteReader();
 
         string lbl_hlaskoSestr = Resources.Resource.odd_hlasko_sestry.ToString();
 
@@ -487,8 +492,8 @@ public class my_db
         sb.AppendFormat("SELECT `osirix` WHERE `id`={0}", id);
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(sb.ToString(), my_con);
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlCommand my_com = new MySqlCommand(sb.ToString(), my_con);
+        MySqlDataReader reader = my_com.ExecuteReader();
         if (reader.HasRows)
         {
             while (reader.Read())
@@ -522,8 +527,8 @@ public class my_db
 
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(sb.ToString(), my_con);
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlCommand my_com = new MySqlCommand(sb.ToString(), my_con);
+        MySqlDataReader reader = my_com.ExecuteReader();
         if (reader.HasRows)
         {
             while (reader.Read())
@@ -553,8 +558,8 @@ public class my_db
         //string query = "SELECT * FROM is_hlasko WHERE dat_hlas = '" + unix_date+"' AND type ='"+hlas_type+"'";
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(query.ToString(), my_con);
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlCommand my_com = new MySqlCommand(query.ToString(), my_con);
+        MySqlDataReader reader = my_com.ExecuteReader();
         string lbl_hlasko = Resources.Resource.odd_hlasko_html.ToString();
         if (reader.HasRows)
         {
@@ -603,10 +608,10 @@ public class my_db
 
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(query, my_con);
+        MySqlCommand my_com = new MySqlCommand(query, my_con);
 
 
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlDataReader reader = my_com.ExecuteReader();
 
         if (reader.HasRows)
         {
@@ -639,9 +644,9 @@ public class my_db
 
         my_con.Open();
         //my_con.Open();
-        OdbcCommand my_com = new OdbcCommand(query, my_con);
+        MySqlCommand my_com = new MySqlCommand(query, my_con);
 
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlDataReader reader = my_com.ExecuteReader();
         string tmp = "";
 
         if (reader.HasRows)
@@ -669,9 +674,9 @@ public class my_db
        // string query = "SELECT is_users.id,is_users.full_name,is_dovolenky.id,is_dovolenky.user_id,is_dovolenky.od,is_dovolenky.do FROM is_users INNER JOIN is_dovolenky on is_users.id = is_dovolenky.user_id WHERE is_dovolenky.od >= '"+od_datum+"' AND is_dovolenky.do <= '"+do_datum+"'";
 
         my_con.Open();
-        OdbcCommand my_com = new OdbcCommand(sb.ToString(), my_con);
+        MySqlCommand my_com = new MySqlCommand(sb.ToString(), my_con);
 
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlDataReader reader = my_com.ExecuteReader();
         
         //int j = 0;
         if (reader.HasRows)
@@ -688,18 +693,18 @@ public class my_db
         return result;
     }
 
-    public OdbcDataReader getAllStatusDov()
+    public MySqlDataReader getAllStatusDov()
     {
 
         string query = "SELECT is_users.id, is_users.full_name, is_dovolen_zost.id AS dovzost_id, is_dovolen_zost.user_id, is_dovolen_zost.zostatok, is_dovolen_zost.narok FROM is_users INNER JOIN is_dovolen_zost ON is_users.id = is_dovolen_zost.user_id";
         //SortedList result = new SortedList();
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(query, my_con);
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlCommand my_com = new MySqlCommand(query, my_con);
+        MySqlDataReader reader = my_com.ExecuteReader();
         //my_con.Close();
 
-        //OdbcDataReader result = reader;
+        //MySqlDataReader result = reader;
         //my_con.Close();
 
         return reader;
@@ -716,8 +721,8 @@ public class my_db
         try
         {
 
-            OdbcCommand my_com = new OdbcCommand(query, my_con);
-            OdbcDataReader reader = my_com.ExecuteReader();
+            MySqlCommand my_com = new MySqlCommand(query, my_con);
+            MySqlDataReader reader = my_com.ExecuteReader();
             if (reader.HasRows)
             {
                 while (reader.Read())
@@ -755,9 +760,9 @@ public class my_db
         query.AppendFormat("SELECT * FROM is_dovolenky WHERE user_id = {0} AND ((od >= DATE('{1}') AND do <= DATE('{2}')) OR (od <= DATE('{2}') AND do >= DATE('{1}')))", user_id, datOd, datDo);
 
         my_con.Open();  
-        OdbcCommand my_com = new OdbcCommand(query.ToString(), my_con);
+        MySqlCommand my_com = new MySqlCommand(query.ToString(), my_con);
 
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlDataReader reader = my_com.ExecuteReader();
 
         if (reader.HasRows)
         {
@@ -780,9 +785,9 @@ public class my_db
         //string query = "SELECT is_users.id,is_users.full_name,is_dovolenky.id AS dov_id,is_dovolenky.user_id,is_dovolenky.od,is_dovolenky.do FROM is_users INNER JOIN is_dovolenky on is_users.id = is_dovolenky.user_id WHERE is_dovolenky.od >= '" + od_datum + "' AND is_dovolenky.do <= '" + do_datum+"'";
 
         my_con.Open();
-        OdbcCommand my_com = new OdbcCommand(query.ToString(), my_con);
+        MySqlCommand my_com = new MySqlCommand(query.ToString(), my_con);
 
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlDataReader reader = my_com.ExecuteReader();
 
         //int j = 0;
         if (reader.HasRows)
@@ -821,9 +826,9 @@ public class my_db
         //string query = "SELECT is_users.id,is_users.full_name,is_dovolenky.id AS dov_id,is_dovolenky.user_id,is_dovolenky.od,is_dovolenky.do FROM is_users INNER JOIN is_dovolenky on is_users.id = is_dovolenky.user_id WHERE is_dovolenky.od >= '" + od_datum + "' AND is_dovolenky.do <= '" + do_datum+"'";
 
         my_con.Open();
-        OdbcCommand my_com = new OdbcCommand(this.parseQuery(query.ToString()), my_con);
+        MySqlCommand my_com = new MySqlCommand(this.parseQuery(query.ToString()), my_con);
 
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlDataReader reader = my_com.ExecuteReader();
 
         //int j = 0;
         if (reader.HasRows)
@@ -852,7 +857,7 @@ public class my_db
 
             my_con.Open();
 
-            OdbcCommand my_com = new OdbcCommand(query, my_con);
+            MySqlCommand my_com = new MySqlCommand(query, my_con);
 
             my_com.ExecuteNonQuery();
             my_con.Close();
@@ -871,8 +876,8 @@ public class my_db
         string query = "SELECT * FROM is_dovolenky WHERE id = "+id;
 
         my_con.Open();
-        OdbcCommand my_com = new OdbcCommand(query, my_con);
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlCommand my_com = new MySqlCommand(query, my_con);
+        MySqlDataReader reader = my_com.ExecuteReader();
         SortedList result = new SortedList();
 
         if (reader.HasRows)
@@ -899,10 +904,10 @@ public class my_db
 
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(query, my_con);
+        MySqlCommand my_com = new MySqlCommand(query, my_con);
 
 
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlDataReader reader = my_com.ExecuteReader();
 
         if (reader.HasRows)
         {
@@ -954,10 +959,10 @@ public class my_db
 
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(sb.ToString(), my_con);
+        MySqlCommand my_com = new MySqlCommand(sb.ToString(), my_con);
 
 
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlDataReader reader = my_com.ExecuteReader();
         SortedList result = new SortedList();
 
         if (reader.HasRows)
@@ -1010,10 +1015,10 @@ public class my_db
 
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(sb.ToString(), my_con);
+        MySqlCommand my_com = new MySqlCommand(sb.ToString(), my_con);
 
 
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlDataReader reader = my_com.ExecuteReader();
 
         if (reader.HasRows)
         {
@@ -1067,10 +1072,10 @@ public class my_db
 
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(sb.ToString(), my_con);
+        MySqlCommand my_com = new MySqlCommand(sb.ToString(), my_con);
 
 
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlDataReader reader = my_com.ExecuteReader();
 
         if (reader.HasRows)
         {
@@ -1104,10 +1109,10 @@ public class my_db
 
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(sb.ToString(), my_con);
+        MySqlCommand my_com = new MySqlCommand(sb.ToString(), my_con);
 
 
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlDataReader reader = my_com.ExecuteReader();
 
         if (reader.HasRows)
         {
@@ -1133,10 +1138,10 @@ public class my_db
 
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(sb.ToString(), my_con);
+        MySqlCommand my_com = new MySqlCommand(sb.ToString(), my_con);
 
 
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlDataReader reader = my_com.ExecuteReader();
 
         if (reader.HasRows)
         {
@@ -1173,10 +1178,10 @@ public class my_db
 
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(sb.ToString(), my_con);
+        MySqlCommand my_com = new MySqlCommand(sb.ToString(), my_con);
 
 
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlDataReader reader = my_com.ExecuteReader();
 
         if (reader.HasRows)
         {
@@ -1225,9 +1230,9 @@ public class my_db
 
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(sb.ToString(), my_con);
+        MySqlCommand my_com = new MySqlCommand(sb.ToString(), my_con);
 
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlDataReader reader = my_com.ExecuteReader();
 
         if (reader.HasRows)
         {
@@ -1277,8 +1282,8 @@ public class my_db
 
         List<string> result = new List<string>();
         my_con.Open();
-        OdbcCommand my_com = new OdbcCommand(this.parseQuery(query), my_con);
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlCommand my_com = new MySqlCommand(this.parseQuery(query), my_con);
+        MySqlDataReader reader = my_com.ExecuteReader();
         if (reader.HasRows)
         {
             while (reader.Read())
@@ -1302,9 +1307,9 @@ public class my_db
 
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(query, my_con);
+        MySqlCommand my_com = new MySqlCommand(query, my_con);
 
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlDataReader reader = my_com.ExecuteReader();
 
         if (reader.HasRows)
         {
@@ -1338,7 +1343,7 @@ public class my_db
         //string conn = @"Driver={MySQL ODBC 3.51 Driver};uid=root;password=aa;Server=127.0.0.1;Option=3;Database=kdch_sk;";
         my_con.Open();
        
-        OdbcDataAdapter da = new OdbcDataAdapter(query, conn);
+        MySqlDataAdapter da = new MySqlDataAdapter(query, conn);
         DataSet ds = new DataSet();
         da.Fill(ds);
         my_con.Close();
@@ -1357,7 +1362,7 @@ public class my_db
 
             my_con.Open();
 
-            OdbcCommand my_com = new OdbcCommand(sb.ToString(), my_con);
+            MySqlCommand my_com = new MySqlCommand(sb.ToString(), my_con);
 
             my_com.ExecuteNonQuery();
             my_con.Close();
@@ -1376,8 +1381,8 @@ public class my_db
     //    sb.AppendFormat("SELECT [cela_sprava],[cielova-skupina] FROM [is_news] WHERE [id]={0}", id);
     //    my_con.Open();
 
-    //    OdbcCommand my_com = new OdbcCommand(this.parseQuery(sb.ToString()), my_con);
-    //    OdbcDataReader reader = my_com.ExecuteReader();
+    //    MySqlCommand my_com = new MySqlCommand(this.parseQuery(sb.ToString()), my_con);
+    //    MySqlDataReader reader = my_com.ExecuteReader();
 
     //    if (reader.HasRows)
     //    {
@@ -1409,9 +1414,9 @@ public class my_db
         my_con.Open();
         SortedList result = new SortedList();
 
-        OdbcCommand my_com = new OdbcCommand(this.parseQuery(sb.ToString()), my_con);
+        MySqlCommand my_com = new MySqlCommand(this.parseQuery(sb.ToString()), my_con);
 
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlDataReader reader = my_com.ExecuteReader();
 
         if (reader.HasRows)
         {
@@ -1443,10 +1448,10 @@ public class my_db
 
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(query.ToString(), my_con);
+        MySqlCommand my_com = new MySqlCommand(query.ToString(), my_con);
 
 
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlDataReader reader = my_com.ExecuteReader();
 
         if (reader.HasRows)
         {
@@ -1489,10 +1494,10 @@ public class my_db
 
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(query.ToString(), my_con);
+        MySqlCommand my_com = new MySqlCommand(query.ToString(), my_con);
 
 
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlDataReader reader = my_com.ExecuteReader();
 
         if (reader.HasRows)
         {
@@ -1545,8 +1550,8 @@ public class my_db
 
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(query, my_con);
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlCommand my_com = new MySqlCommand(query, my_con);
+        MySqlDataReader reader = my_com.ExecuteReader();
 
         if (reader.HasRows)
         {
@@ -1580,7 +1585,7 @@ public class my_db
         //string conn = @"Driver={MySQL ODBC 3.51 Driver};uid=root;password=aa;Server=127.0.0.1;Option=3;Database=kdch_sk;";
         my_con.Open();
 
-        OdbcDataAdapter da = new OdbcDataAdapter(query, my_con);
+        MySqlDataAdapter da = new MySqlDataAdapter(query, my_con);
         DataSet ds = new DataSet();
         da.Fill(ds);
         my_con.Close();
@@ -1599,7 +1604,7 @@ public class my_db
 
             my_con.Open();
 
-            OdbcCommand my_com = new OdbcCommand(sb.ToString(), my_con);
+            MySqlCommand my_com = new MySqlCommand(sb.ToString(), my_con);
 
             my_com.ExecuteNonQuery();
             my_con.Close();
@@ -1619,9 +1624,9 @@ public class my_db
         sb.AppendFormat("SELECT * FROM `is_opprogram` WHERE `id`={0}", id);
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(sb.ToString(), my_con);
+        MySqlCommand my_com = new MySqlCommand(sb.ToString(), my_con);
 
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlDataReader reader = my_com.ExecuteReader();
 
         if (reader.HasRows)
         {
@@ -1656,9 +1661,9 @@ public class my_db
         my_con.Open();
         SortedList result = new SortedList();
 
-        OdbcCommand my_com = new OdbcCommand(sb.ToString(), my_con);
+        MySqlCommand my_com = new MySqlCommand(sb.ToString(), my_con);
 
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlDataReader reader = my_com.ExecuteReader();
 
         if (reader.HasRows)
         {
@@ -1722,9 +1727,9 @@ public class my_db
 
         List<string> result = new List<string>();
 
-        OdbcCommand my_com = new OdbcCommand(ss, my_con);
+        MySqlCommand my_com = new MySqlCommand(ss, my_con);
 
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlDataReader reader = my_com.ExecuteReader();
 
         if (reader.HasRows)
         {
@@ -1759,7 +1764,7 @@ public class my_db
 
         List<string> result = new List<string>();
 
-        OdbcCommand my_com = new OdbcCommand(ss, my_con);
+        MySqlCommand my_com = new MySqlCommand(ss, my_con);
 
         my_com.ExecuteNonQuery();
         my_con.Close();

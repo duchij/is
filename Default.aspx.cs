@@ -78,6 +78,8 @@ public partial class _Default : System.Web.UI.Page
 
             data = db_obj.getUserPasswd(userName);
 
+            
+
             if (data.Count != 0 && data["active"].ToString() == "1")
             {
 
@@ -93,7 +95,7 @@ public partial class _Default : System.Web.UI.Page
                 {
 
                     x2log.logData(data,"","first user login");
-
+                    this.loadYearMonthData();
                     Session.Add("tuisegumdrum", "activado");
                     Session.Add("user_id", data["id"].ToString());
                     Session.Add("rights", data["prava"].ToString());
@@ -156,6 +158,7 @@ public partial class _Default : System.Web.UI.Page
                     this.deleteFilesPerDays();
                     
                     Session.Add("tuisegumdrum", "activado");
+                    this.loadYearMonthData();
                     Session.Add("user_id", data["id"].ToString());
                     Session.Add("rights", data["prava"].ToString());
                     Session.Add("workgroup", data["work_group"].ToString());
@@ -322,6 +325,17 @@ public partial class _Default : System.Web.UI.Page
         return labels;
 
         
+    }
+
+
+    protected void loadYearMonthData()
+    {
+        string monthDl = @"date_januar,1;date_februar,2;date_march,3;date_april,4;date_maj,5;date_june,6;date_july,7;date_august,8;date_september,9;date_october,10;date_november,11;date_december,12";
+        string yearsDl = "2010,2020";
+
+        Session.Add("month_dl", monthDl);
+        Session.Add("years_dl", yearsDl);
+
     }
 
     protected void deleteFilesPerDays()

@@ -12,6 +12,8 @@ using System.Web.UI.HtmlControls;
 using System.Data;
 using System.Data.Odbc;
 using System.Text;
+using MySql.Data;
+using MySql.Data.MySqlClient;
 
 /// <summary>
 /// Summary description for sluzbyclass
@@ -33,8 +35,8 @@ public class sluzbyclass : my_db
 
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(query, my_con);
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlCommand my_com = new MySqlCommand(query, my_con);
+        MySqlDataReader reader = my_com.ExecuteReader();
 
         ArrayList result = new ArrayList();
         result.Add("0|-");
@@ -60,8 +62,8 @@ public class sluzbyclass : my_db
 
         my_con.Open();
 
-        OdbcCommand my_com = new OdbcCommand(query, my_con);
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlCommand my_com = new MySqlCommand(query, my_con);
+        MySqlDataReader reader = my_com.ExecuteReader();
 
         SortedList result = new SortedList();
         result.Add("0", "-");

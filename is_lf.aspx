@@ -9,14 +9,14 @@
     <hr />
 
     <asp:Literal ID="msg_lbl" runat="server" Text=""></asp:Literal>
-    <div id="tabs">
-        <asp:HiddenField ID="settab_hv" runat="server" Value="" />
+    <div id="lf_tabs">
+        <asp:HiddenField ID="setlftab_hv" runat="server" Value="" />
         <ul>
-            <li><a href="#tab1">Nahratie súboru</a></li>
-            <li><a href="#tab2">Praca s adresármi</a></li>
-            <li><a href="#tab3">Praca so súbormi</a></li>
+            <li><a href="#lf_tab1">Nahratie súboru</a></li>
+            <li><a href="#lf_tab2">Praca s adresármi</a></li>
+            <li><a href="#lf_tab3">Praca so súbormi</a></li>
         </ul>
-        <div id="tab1">
+        <div id="lf_tab1">
             <div class="row">
    
                 <div class="one half">
@@ -37,12 +37,12 @@
                         </div>
                 </div>
                 </div>
-    <h1>Zoznam súborov v adresári - <strong><asp:Label runat="server" ID="actual_folder_lbl" Text="" ></asp:Label></strong></h1>
+    <h1>Zoznam súborov v adresári - <strong><asp:Label runat="server" ID="actual_folder_lbl" Text="" CssClass="asphalt" ></asp:Label></strong></h1>
             <p><asp:Label runat="server" ID="folder_comment_lbl" Text=""></asp:Label></p> 
     <asp:table runat="server" ID="files_tbl"></asp:table>
             </div>
 
-        <div id="tab2">
+        <div id="lf_tab2">
            
             <div class="red box">
                 Názov nového adresára: <asp:TextBox ID="folder_name_txt" runat="server"></asp:TextBox><br />
@@ -50,24 +50,24 @@
                 
            
             <p>
-                <asp:radiobutton ID="see_me_chk" runat="server" GroupName="prava" />Viditeľný pre mnňa..  <br />
+                <asp:radiobutton ID="see_me_chk" runat="server" GroupName="prava" />Viditeľný pre mňa..  <br />
                 <asp:radiobutton ID="see_all_chk" runat="server" GroupName="prava" Checked="true"/> Viditeľný pre všetkých
                 </p>
                 <asp:Button ID="create_folder_btn" runat="server" Text="Vytvor" OnClick="create_folder_fnc" CssClass="button red" />
                 <hr />
                 <h2>Mazanie adresára</h2>
                 Vymaž adresár: <asp:DropDownList ID="del_folders_dl" runat="server" OnSelectedIndexChanged="changeFolderFnc" EnableViewState="true"></asp:DropDownList>
-                <asp:Button ID="delete_folder_btn" runat="server" Text="<%$ Resources:Resource,delete %>" CssClass="button medium yellow" onClick="deleteFolderFnc" OnClientClick="return confirm('Naozaj chcete zmazat? Pozor subory sa presunu ho hlavneho adresara!!!!');"/>
+                <asp:Button ID="delete_folder_btn" runat="server" Text="<%$ Resources:Resource,delete %>" CssClass="button medium yellow" onClick="deleteFolderFnc" OnClientClick="return confirm('Naozaj chcete zmazať? Pozor súbory sa presunú ho hlavného adresára!!!!');"/>
                 <hr />
                 <h2>Nastavenie viditeľnosti</h2>
-                <asp:radiobutton ID="edit_visibility_me" runat="server" GroupName="editPrava" OnCheckedChanged="setVisibilityFnc" />Viditeľný pre mnňa..  <br />
-                <asp:radiobutton ID="edit_visibility_all" runat="server" GroupName="editPrava" OnCheckedChanged="setVisibilityFnc" Checked="true"/> Viditeľný pre všetkých
+                <asp:radiobutton ID="edit_visibility_me" runat="server" GroupName="editPrava" OnCheckedChanged="setVisibilityFnc" AutoPostBack="true" />Viditeľný pre mnňa..  <br />
+                <asp:radiobutton ID="edit_visibility_all" runat="server" GroupName="editPrava" OnCheckedChanged="setVisibilityFnc" Checked="true" AutoPostBack="true"/> Viditeľný pre všetkých
             </div>
            
        
         </div>
 
-        <div id="tab3">
+        <div id="lf_tab3">
             Pripravuje sa....
         </div>
 </div>

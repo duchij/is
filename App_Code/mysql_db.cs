@@ -12,37 +12,8 @@ using System.Data;
 using System.Data.Odbc;
 using System.Text;
 using System.Text.RegularExpressions;
-/*
- * try
-        {
-            OdbcTransaction trans1 = null;
-
-            String sConString = "DRIVER={MySQL ODBC 3.51 Driver}; SERVER=192.168.10.69;DATABASE=wms; UID=root; PASSWORD=rmysql; OPTION=3";
-            OdbcConnection oConnection = new OdbcConnection(sConString);
-            oConnection.Open();
-             trans1 = oConnection.BeginTransaction();
-           try
-            {
-              
-           
-                OdbcCommand cmdtrans = new OdbcCommand();
-                cmdtrans.Connection = oConnection;
-                cmdtrans.Transaction = trans1;
-                try
-                {
-                    cmdtrans.CommandText = "update dynamos set fname='chandrak1' where dl_no ='DL000371'";
-                  int rowsaffected = cmdtrans.ExecuteNonQuery();
-                  if (rowsaffected > 0)
-                  {
-                    //-- trans1.Commit();
-                      trans1.Rollback();
-                  }
-                }
-
-catch(Excption ex)*/
-
-
-
+using MySql.Data;
+using MySql.Data.MySqlClient;
 
 /// <summary>
 /// Summary description for mysql_db
@@ -51,10 +22,11 @@ public class mysql_db
 {
     public log x2log = new log();
     x2_var x2 = new x2_var();
-    public OdbcConnection my_con = new OdbcConnection();
+   // public OdbcConnection my_con = new OdbcConnection();
+    public MySql.Data.MySqlClient.MySqlConnection my_con = new MySql.Data.MySqlClient.MySqlConnection();
     //public log x2log = new log();  
 
-	public mysql_db()
+    public mysql_db()
 	{
 		//
 		// TODO: Add constructor logic here
@@ -97,12 +69,15 @@ public class mysql_db
 
     public SortedList mysql_update(string table, SortedList data, string id)
     {
-        OdbcTransaction trans1 = null;
+        MySqlTransaction trans1 = null;
+
         my_con.Open();
 
         trans1 = my_con.BeginTransaction();
 
-        OdbcCommand cmdtrans = new OdbcCommand();
+        // MySqlCommand cmdtrans = new MySqlCommand();
+        MySqlCommand cmdtrans = new MySqlCommand();
+
         cmdtrans.Connection = my_con;
         cmdtrans.Transaction = trans1;
 
@@ -189,8 +164,8 @@ public class mysql_db
         StringBuilder sb = new StringBuilder();
         sb.AppendFormat("SELECT [file-name],[file-size],[file-type] FROM [is_data_2] WHERE [id]='{0}'", id);
         my_con.Open();
-        OdbcCommand my_com = new OdbcCommand(this.parseQuery(sb.ToString()), my_con);
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlCommand my_com = new MySqlCommand(this.parseQuery(sb.ToString()), my_con);
+        MySqlDataReader reader = my_com.ExecuteReader();
 
         if (reader.HasRows)
         {
@@ -220,7 +195,7 @@ public class mysql_db
         StringBuilder sb = new StringBuilder();
         sb.AppendFormat("SELECT [file-content] FROM [is_data] WHERE [id]='{0}'", id);
         my_con.Open();
-        OdbcCommand my_com = new OdbcCommand(this.parseQuery(sb.ToString()), my_con);
+        MySqlCommand my_com = new MySqlCommand(this.parseQuery(sb.ToString()), my_con);
        
         byte[] result = (byte[])my_com.ExecuteScalar();
         my_con.Close();
@@ -232,7 +207,7 @@ public class mysql_db
     {
         SortedList result = new SortedList();
 
-        OdbcCommand cmd = new OdbcCommand();
+        MySqlCommand cmd = new MySqlCommand();
         cmd.Connection = my_con;
         cmd.CommandType = CommandType.StoredProcedure;
         cmd.CommandText = "{CALL "+stored_proc+"()}";
@@ -267,55 +242,55 @@ public class mysql_db
     {
 
         SortedList result = new SortedList();
-        //OdbcTransaction trans1 = null;
+        //MySqlTransaction trans1 = null;
         //my_con.Open();
         //trans1 = my_con.BeginTransaction();
 
-        OdbcCommand cmd = new OdbcCommand();
+        MySqlCommand cmd = new MySqlCommand();
         cmd.Connection = my_con;
         cmd.CommandType = CommandType.StoredProcedure;
         cmd.CommandText = "{CALL FILL_NURSE_SHIFTS(?,?,?,?,?,@res)}";
 
-        OdbcParameter vstup = new OdbcParameter();
+        MySqlParameter vstup = new MySqlParameter();
         vstup.ParameterName = "dateGroup";
         vstup.Direction = ParameterDirection.Input;
-        vstup.OdbcType = OdbcType.Int;
+        vstup.MySqlDbType = MySqlDbType.Int32;
         vstup.Value = dategroup;
         cmd.Parameters.Add(vstup);
 
-        OdbcParameter vstup1 = new OdbcParameter();
+        MySqlParameter vstup1 = new MySqlParameter();
         vstup1.ParameterName = "days";
         vstup1.Direction = ParameterDirection.Input;
-        vstup1.OdbcType = OdbcType.Int;
+        vstup1.MySqlDbType = MySqlDbType.Int32;
         vstup1.Value = days;
         cmd.Parameters.Add(vstup1);
 
-        OdbcParameter vstup2 = new OdbcParameter();
+        MySqlParameter vstup2 = new MySqlParameter();
         vstup2.ParameterName = "mesiac";
         vstup2.Direction = ParameterDirection.Input;
-        vstup2.OdbcType = OdbcType.Int;
+        vstup2.MySqlDbType = MySqlDbType.Int32;
         vstup2.Value = mesiac;
         cmd.Parameters.Add(vstup2);
 
-        OdbcParameter vstup3 = new OdbcParameter();
+        MySqlParameter vstup3 = new MySqlParameter();
         vstup3.ParameterName = "rok";
         vstup3.Direction = ParameterDirection.Input;
-        vstup3.OdbcType = OdbcType.Int;
+        vstup3.MySqlDbType = MySqlDbType.Int32;
         vstup3.Value = rok;
         cmd.Parameters.Add(vstup3);
 
-        OdbcParameter vstup4 = new OdbcParameter();
+        MySqlParameter vstup4 = new MySqlParameter();
         vstup4.ParameterName = "odd";
         vstup4.Direction = ParameterDirection.Input;
-        vstup4.OdbcType = OdbcType.VarChar;
+        vstup4.MySqlDbType = MySqlDbType.VarChar;
         vstup4.Value = odd;
         cmd.Parameters.Add(vstup4);
 
 
-        OdbcParameter vstup5 = new OdbcParameter();
+        MySqlParameter vstup5 = new MySqlParameter();
         vstup5.ParameterName = "res";
         vstup5.Direction = ParameterDirection.Output;
-        vstup5.OdbcType = OdbcType.Int;
+        vstup5.MySqlDbType = MySqlDbType.Int32;
         //vstup3.Value = 2015;
         cmd.Parameters.Add(vstup5);
         my_con.Open();
@@ -342,10 +317,10 @@ public class mysql_db
     {
         SortedList result = new SortedList();
 
-        OdbcTransaction trans1 = null;
+        MySqlTransaction trans1 = null;
         my_con.Open();
 
-        OdbcCommand cmd = new OdbcCommand();
+        MySqlCommand cmd = new MySqlCommand();
         cmd.Connection = my_con;
         cmd.CommandType = CommandType.Text;
 
@@ -354,11 +329,11 @@ public class mysql_db
         cmd.Transaction = trans1;
         cmd.CommandText = "CALL CALC_NOCNA_PRACA(?,?,?,?);";
 
-        cmd.Parameters.Add("userID", OdbcType.BigInt).Value = user_id;
-        cmd.Parameters.Add("mesiac", OdbcType.Int).Value = mesiac;
-        cmd.Parameters.Add("rok", OdbcType.Int).Value = rok;
-        cmd.Parameters.Add("pocetDni", OdbcType.Int).Value = pocetDni;
-        //cmd.Parameters.Add("id", OdbcType.BigInt).Value = Convert.ToInt32(lfData["id"]);
+        cmd.Parameters.Add("userID", MySqlDbType.Int32).Value = user_id;
+        cmd.Parameters.Add("mesiac", MySqlDbType.Int32).Value = mesiac;
+        cmd.Parameters.Add("rok", MySqlDbType.Int32).Value = rok;
+        cmd.Parameters.Add("pocetDni", MySqlDbType.Int32).Value = pocetDni;
+        //cmd.Parameters.Add("id", MySqlDbType.Int32).Value = Convert.ToInt32(lfData["id"]);
         cmd.CommandText.ToString();
         try
         {
@@ -388,54 +363,54 @@ public class mysql_db
     {
 
         int result = 0;
-        //OdbcTransaction trans1 = null;
+        //MySqlTransaction trans1 = null;
         //my_con.Open();
         //trans1 = my_con.BeginTransaction();
 
-        OdbcCommand cmd = new OdbcCommand();
+        MySqlCommand cmd = new MySqlCommand();
         cmd.Connection = my_con;
         cmd.CommandType = CommandType.StoredProcedure;
         cmd.CommandText = "{CALL FILL_NKIM_SHIFTS(?,?,?,?,?,@res)}";
 
-        OdbcParameter vstup = new OdbcParameter();
+        MySqlParameter vstup = new MySqlParameter();
         vstup.ParameterName = "dateGroup";
         vstup.Direction = ParameterDirection.Input;
-        vstup.OdbcType = OdbcType.Int;
+        vstup.MySqlDbType = MySqlDbType.Int32;
         vstup.Value = dategroup;
         cmd.Parameters.Add(vstup);
 
-        OdbcParameter vstup1 = new OdbcParameter();
+        MySqlParameter vstup1 = new MySqlParameter();
         vstup1.ParameterName = "days";
         vstup1.Direction = ParameterDirection.Input;
-        vstup1.OdbcType = OdbcType.Int;
+        vstup1.MySqlDbType = MySqlDbType.Int32;
         vstup1.Value = days;
         cmd.Parameters.Add(vstup1);
 
-        OdbcParameter vstup2 = new OdbcParameter();
+        MySqlParameter vstup2 = new MySqlParameter();
         vstup2.ParameterName = "mesiac";
         vstup2.Direction = ParameterDirection.Input;
-        vstup2.OdbcType = OdbcType.Int;
+        vstup2.MySqlDbType = MySqlDbType.Int32;
         vstup2.Value = mesiac;
         cmd.Parameters.Add(vstup2);
 
-        OdbcParameter vstup3 = new OdbcParameter();
+        MySqlParameter vstup3 = new MySqlParameter();
         vstup3.ParameterName = "rok";
         vstup3.Direction = ParameterDirection.Input;
-        vstup3.OdbcType = OdbcType.Int;
+        vstup3.MySqlDbType = MySqlDbType.Int32;
         vstup3.Value = rok;
         cmd.Parameters.Add(vstup3);
 
-        OdbcParameter vstup4 = new OdbcParameter();
+        MySqlParameter vstup4 = new MySqlParameter();
         vstup4.ParameterName = "clinic";
         vstup4.Direction = ParameterDirection.Input;
-        vstup4.OdbcType = OdbcType.Int;
+        vstup4.MySqlDbType = MySqlDbType.Int32;
         vstup4.Value = clinic;
         cmd.Parameters.Add(vstup4);
 
-        OdbcParameter vstup5 = new OdbcParameter();
+        MySqlParameter vstup5 = new MySqlParameter();
         vstup5.ParameterName = "res";
         vstup5.Direction = ParameterDirection.Output;
-        vstup5.OdbcType = OdbcType.Int;
+        vstup5.MySqlDbType = MySqlDbType.Int32;
         //vstup3.Value = 2015;
         cmd.Parameters.Add(vstup5);
         my_con.Open();
@@ -458,54 +433,54 @@ public class mysql_db
     {
 
         int result = 0;
-        //OdbcTransaction trans1 = null;
+        //MySqlTransaction trans1 = null;
         //my_con.Open();
         //trans1 = my_con.BeginTransaction();
 
-        OdbcCommand cmd = new OdbcCommand();
+        MySqlCommand cmd = new MySqlCommand();
         cmd.Connection = my_con;
         cmd.CommandType = CommandType.StoredProcedure;
         cmd.CommandText = "{CALL FILL_NKIM_SHIFTS(?,?,?,?,?,@res)}";
 
-        OdbcParameter vstup = new OdbcParameter();
+        MySqlParameter vstup = new MySqlParameter();
         vstup.ParameterName = "dateGroup";
         vstup.Direction = ParameterDirection.Input;
-        vstup.OdbcType = OdbcType.Int;
+        vstup.MySqlDbType = MySqlDbType.Int32;
         vstup.Value = dategroup;
         cmd.Parameters.Add(vstup);
 
-        OdbcParameter vstup1 = new OdbcParameter();
+        MySqlParameter vstup1 = new MySqlParameter();
         vstup1.ParameterName = "days";
         vstup1.Direction = ParameterDirection.Input;
-        vstup1.OdbcType = OdbcType.Int;
+        vstup1.MySqlDbType = MySqlDbType.Int32;
         vstup1.Value = days;
         cmd.Parameters.Add(vstup1);
 
-        OdbcParameter vstup2 = new OdbcParameter();
+        MySqlParameter vstup2 = new MySqlParameter();
         vstup2.ParameterName = "mesiac";
         vstup2.Direction = ParameterDirection.Input;
-        vstup2.OdbcType = OdbcType.Int;
+        vstup2.MySqlDbType = MySqlDbType.Int32;
         vstup2.Value = mesiac;
         cmd.Parameters.Add(vstup2);
 
-        OdbcParameter vstup3 = new OdbcParameter();
+        MySqlParameter vstup3 = new MySqlParameter();
         vstup3.ParameterName = "rok";
         vstup3.Direction = ParameterDirection.Input;
-        vstup3.OdbcType = OdbcType.Int;
+        vstup3.MySqlDbType = MySqlDbType.Int32;
         vstup3.Value = rok;
         cmd.Parameters.Add(vstup3);
 
-        OdbcParameter vstup4 = new OdbcParameter();
+        MySqlParameter vstup4 = new MySqlParameter();
         vstup4.ParameterName = "clinic";
         vstup4.Direction = ParameterDirection.Input;
-        vstup4.OdbcType = OdbcType.Int;
+        vstup4.MySqlDbType = MySqlDbType.Int32;
         vstup4.Value = clinic;
         cmd.Parameters.Add(vstup4);
 
-        OdbcParameter vstup5 = new OdbcParameter();
+        MySqlParameter vstup5 = new MySqlParameter();
         vstup5.ParameterName = "res";
         vstup5.Direction = ParameterDirection.Output;
-        vstup5.OdbcType = OdbcType.Int;
+        vstup5.MySqlDbType = MySqlDbType.Int32;
         //vstup3.Value = 2015;
         cmd.Parameters.Add(vstup5);
         my_con.Open();
@@ -529,54 +504,54 @@ public class mysql_db
     {
        
         int result = 0;
-        //OdbcTransaction trans1 = null;
+        //MySqlTransaction trans1 = null;
         //my_con.Open();
         //trans1 = my_con.BeginTransaction();
 
-        OdbcCommand cmd = new OdbcCommand();
+        MySqlCommand cmd = new MySqlCommand();
         cmd.Connection = my_con;
         cmd.CommandType = CommandType.StoredProcedure;
         cmd.CommandText = "{CALL FILL_DOC_SHIFTS(?,?,?,?,?,@res)}";
 
-        OdbcParameter vstup = new OdbcParameter();
+        MySqlParameter vstup = new MySqlParameter();
         vstup.ParameterName = "dateGroup";
         vstup.Direction = ParameterDirection.Input;
-        vstup.OdbcType = OdbcType.Int;
+        vstup.MySqlDbType = MySqlDbType.Int32;
         vstup.Value = dategroup;
         cmd.Parameters.Add(vstup);
 
-        OdbcParameter vstup1 = new OdbcParameter();
+        MySqlParameter vstup1 = new MySqlParameter();
         vstup1.ParameterName = "days";
         vstup1.Direction = ParameterDirection.Input;
-        vstup1.OdbcType = OdbcType.Int;
+        vstup1.MySqlDbType = MySqlDbType.Int32;
         vstup1.Value = days;
         cmd.Parameters.Add(vstup1);
 
-        OdbcParameter vstup2 = new OdbcParameter();
+        MySqlParameter vstup2 = new MySqlParameter();
         vstup2.ParameterName = "mesiac";
         vstup2.Direction = ParameterDirection.Input;
-        vstup2.OdbcType = OdbcType.Int;
+        vstup2.MySqlDbType = MySqlDbType.Int32;
         vstup2.Value = mesiac;
         cmd.Parameters.Add(vstup2);
 
-        OdbcParameter vstup3 = new OdbcParameter();
+        MySqlParameter vstup3 = new MySqlParameter();
         vstup3.ParameterName = "rok";
         vstup3.Direction = ParameterDirection.Input;
-        vstup3.OdbcType = OdbcType.Int;
+        vstup3.MySqlDbType = MySqlDbType.Int32;
         vstup3.Value = rok;
         cmd.Parameters.Add(vstup3);
 
-        OdbcParameter vstup4 = new OdbcParameter();
+        MySqlParameter vstup4 = new MySqlParameter();
         vstup4.ParameterName = "clinic";
         vstup4.Direction = ParameterDirection.Input;
-        vstup4.OdbcType = OdbcType.Int;
+        vstup4.MySqlDbType = MySqlDbType.Int32;
         vstup4.Value = clinic;
         cmd.Parameters.Add(vstup4);
 
-        OdbcParameter vstup5 = new OdbcParameter();
+        MySqlParameter vstup5 = new MySqlParameter();
         vstup5.ParameterName = "res";
         vstup5.Direction = ParameterDirection.Output;
-        vstup5.OdbcType = OdbcType.Int;
+        vstup5.MySqlDbType = MySqlDbType.Int32;
         //vstup3.Value = 2015;
         cmd.Parameters.Add(vstup5);
         my_con.Open();
@@ -598,15 +573,15 @@ public class mysql_db
     public byte[] lfStoredData(int id, int size)
     {
         byte[] result = new byte[size];
-        OdbcCommand cmd = new OdbcCommand();
+        MySqlCommand cmd = new MySqlCommand();
         cmd.Connection = my_con;
         cmd.CommandText = "SELECT `file-content` FROM `is_data_2` WHERE `id` = ?";
 
-        cmd.Parameters.Add("id", OdbcType.BigInt).Value = id;
+        cmd.Parameters.Add("id", MySqlDbType.Int32).Value = id;
 
         my_con.Open();
 
-        OdbcDataReader reader = cmd.ExecuteReader();
+        MySqlDataReader reader = cmd.ExecuteReader();
 
         if (reader.HasRows)
         {
@@ -625,23 +600,23 @@ public class mysql_db
     public SortedList lfUpdateData(byte[] data, SortedList lfData)
     {
        SortedList result = new SortedList();
-        OdbcTransaction trans1 = null;
+        MySqlTransaction trans1 = null;
         my_con.Open();
 
-        OdbcCommand cmd = new OdbcCommand();
+        MySqlCommand cmd = new MySqlCommand();
         cmd.Connection = my_con;
         cmd.CommandType = CommandType.Text;
 
         trans1 = my_con.BeginTransaction();
 
         cmd.Transaction = trans1;
-        cmd.CommandText = "UPDATE `is_data_2` SET `file-name`=?,`file-size`=?,`file-type`=?,`file-content`=? WHERE `id`=?";
+        cmd.CommandText = "UPDATE `is_data_2` SET `file-name`=@filename,`file-size`=@filesize,`file-type`=@filetype,`file-content`=@filecontent WHERE `id`=@id";
 
-        cmd.Parameters.Add("filename", OdbcType.Text).Value = lfData["file-name"].ToString();
-        cmd.Parameters.Add("filesize", OdbcType.BigInt).Value = Convert.ToInt32(lfData["file-size"]);
-        cmd.Parameters.Add("filetype", OdbcType.VarChar).Value = lfData["file-type"].ToString();
-        cmd.Parameters.Add("filecontent", OdbcType.Binary).Value = data;
-        cmd.Parameters.Add("id", OdbcType.BigInt).Value = Convert.ToInt32(lfData["id"]);
+        cmd.Parameters.Add("filename", MySqlDbType.Text).Value = lfData["file-name"].ToString();
+        cmd.Parameters.Add("filesize", MySqlDbType.Int32).Value = Convert.ToInt32(lfData["file-size"]);
+        cmd.Parameters.Add("filetype", MySqlDbType.VarChar).Value = lfData["file-type"].ToString();
+        cmd.Parameters.Add("filecontent", MySqlDbType.Binary).Value = data;
+        cmd.Parameters.Add("id", MySqlDbType.Int32).Value = Convert.ToInt32(lfData["id"]);
         cmd.CommandText.ToString();
         try
         {
@@ -666,24 +641,25 @@ public class mysql_db
     public SortedList lfInsertData(byte[] data, SortedList lfData)     
     {
         SortedList result = new SortedList();
-        OdbcTransaction trans1 = null;
+        MySqlTransaction trans1 = null;
         my_con.Open();
 
-        OdbcCommand cmd = new OdbcCommand();
+        MySqlCommand cmd = new MySqlCommand();
         cmd.Connection = my_con;
         cmd.CommandType = CommandType.Text;
 
         trans1 = my_con.BeginTransaction();
 
         cmd.Transaction = trans1;
-        cmd.CommandText = "INSERT INTO `is_data_2`(`file-name`,`file-size`,`file-type`,`file-content`, `user_id`, `clinic_id`) VALUES (?,?,?,?,?,?)";
+        cmd.CommandText = @"INSERT INTO `is_data_2`(`file-name`,`file-size`,`file-type`,`file-content`, `user_id`, `clinic_id`) 
+                        VALUES (@filename,@filesize,@filetype,@filecontent,@userid,@clinicid)";
 
-        cmd.Parameters.Add("filename", OdbcType.Text).Value = lfData["file-name"].ToString();
-        cmd.Parameters.Add("filesize", OdbcType.BigInt).Value = Convert.ToInt32(lfData["file-size"]);
-        cmd.Parameters.Add("filetype", OdbcType.VarChar).Value = lfData["file-type"].ToString();
-        cmd.Parameters.Add("filecontent", OdbcType.Binary).Value = data;
-        cmd.Parameters.Add("userid",OdbcType.BigInt).Value=Convert.ToInt32(lfData["user_id"]);
-        cmd.Parameters.Add("clinicid", OdbcType.BigInt).Value = Convert.ToInt32(lfData["clinic_id"]);
+        cmd.Parameters.Add("filename", MySqlDbType.Text).Value = lfData["file-name"].ToString();
+        cmd.Parameters.Add("filesize", MySqlDbType.Int32).Value = Convert.ToInt32(lfData["file-size"]);
+        cmd.Parameters.Add("filetype", MySqlDbType.VarChar).Value = lfData["file-type"].ToString();
+        cmd.Parameters.Add("filecontent", MySqlDbType.Binary).Value = data;
+        cmd.Parameters.Add("userid",MySqlDbType.Int32).Value=Convert.ToInt32(lfData["user_id"]);
+        cmd.Parameters.Add("clinicid", MySqlDbType.Int32).Value = Convert.ToInt32(lfData["clinic_id"]);
         cmd.CommandText.ToString();
         try
         {
@@ -753,11 +729,11 @@ public class mysql_db
         sb.AppendFormat("INSERT INTO `{0}` ({1}) VALUES {2} ON DUPLICATE KEY UPDATE {3};", table, t_cols, t_cols_vals, t_vals);
         string query = sb.ToString();
 
-        OdbcTransaction trans1 = null;
+        MySqlTransaction trans1 = null;
         my_con.Open();
         trans1 = my_con.BeginTransaction();
 
-        OdbcCommand cmdtrans = new OdbcCommand();
+        MySqlCommand cmdtrans = new MySqlCommand();
         cmdtrans.Connection = my_con;
         cmdtrans.Transaction = trans1;
 
@@ -805,17 +781,17 @@ public class mysql_db
     /// <param name="table">string table name</param>
     /// <param name="data">SortedList data to insert</param>
     /// <param name="myCon">OdbcConnection v ktorej to je </param>
-    /// <param name="trans">OdbcTransaction v ktorej to je </param>
+    /// <param name="trans">MySqlTransaction v ktorej to je </param>
     /// <returns>SortedList kyes: status (true/false), msg(error),last_id(on succes),sql(sql in error)</returns>
 
-    public SortedList mysql_insert_nt(string table, SortedList data, OdbcConnection myCon, OdbcTransaction trans1)
+    public SortedList mysql_insert_nt(string table, SortedList data, ref MySqlCommand cmd)
     {
         SortedList result = new SortedList();
        // my_con.Open();
 
-        OdbcCommand cmdtrans = new OdbcCommand();
-        cmdtrans.Connection = myCon;
-        cmdtrans.Transaction = trans1;
+      //  MySqlCommand cmdtrans = new MySqlCommand();
+        //cmdtrans.Connection = myCon;
+        //cmdtrans.Transaction = trans1;
 
         StringBuilder sb = new StringBuilder();
 
@@ -857,10 +833,10 @@ public class mysql_db
         try
         {
             x2log.logData(query, "", "mysql insert_nt");
-            cmdtrans.CommandText = query;
-            cmdtrans.ExecuteNonQuery();
-            cmdtrans.CommandText = "SELECT last_insert_id();";
-            id = Convert.ToInt32(cmdtrans.ExecuteScalar());
+            cmd.CommandText = query;
+            cmd.ExecuteNonQuery();
+            cmd.CommandText = "SELECT last_insert_id();";
+            id = Convert.ToInt32(cmd.ExecuteScalar());
             result.Add("status", true);
             result.Add("last_id", id);
         }
@@ -888,11 +864,11 @@ public class mysql_db
     public SortedList mysql_insert(string table, SortedList data)
     {
         SortedList result = new SortedList();
-        OdbcTransaction trans1 = null;
+        MySqlTransaction trans1 = null;
         my_con.Open();
         trans1 = my_con.BeginTransaction();
 
-        OdbcCommand cmdtrans = new OdbcCommand();
+        MySqlCommand cmdtrans = new MySqlCommand();
         cmdtrans.Connection = my_con;
         cmdtrans.Transaction = trans1;
 
@@ -962,12 +938,12 @@ public class mysql_db
     public SortedList executeArr(string[] queries)
     {
         SortedList result = new SortedList();
-        OdbcTransaction trans1 = null;
+        MySqlTransaction trans1 = null;
         my_con.Open();
         trans1 = my_con.BeginTransaction();
         string loging = "";
         
-        OdbcCommand cmdtrans = new OdbcCommand();
+        MySqlCommand cmdtrans = new MySqlCommand();
         cmdtrans.Connection = my_con;
         cmdtrans.Transaction = trans1;
         try
@@ -1010,11 +986,11 @@ public class mysql_db
         query = this.parseQuery(query);
 
         SortedList result = new SortedList();
-        OdbcTransaction trans1 = null;
+        MySqlTransaction trans1 = null;
         my_con.Open();
         trans1 = my_con.BeginTransaction();
 
-        OdbcCommand cmdtrans = new OdbcCommand();
+        MySqlCommand cmdtrans = new MySqlCommand();
         cmdtrans.Connection = my_con;
         cmdtrans.Transaction = trans1;
         try
@@ -1044,54 +1020,54 @@ public class mysql_db
     public int fillDKShifts(int dategroup, int rok, int mesiac, int days, int clinic)
     {
         int result = 0;
-        //OdbcTransaction trans1 = null;
+        //MySqlTransaction trans1 = null;
         //my_con.Open();
         //trans1 = my_con.BeginTransaction();
 
-        OdbcCommand cmd = new OdbcCommand();
+        MySqlCommand cmd = new MySqlCommand();
         cmd.Connection = my_con;
         cmd.CommandType = CommandType.StoredProcedure;
         cmd.CommandText = "{CALL FILL_DK_SHIFTS(?,?,?,?,?,@res)}";
 
-        OdbcParameter vstup = new OdbcParameter();
+        MySqlParameter vstup = new MySqlParameter();
         vstup.ParameterName = "dateGroup";
         vstup.Direction = ParameterDirection.Input;
-        vstup.OdbcType = OdbcType.Int;
+        vstup.MySqlDbType = MySqlDbType.Int32;
         vstup.Value = dategroup;
         cmd.Parameters.Add(vstup);
 
-        OdbcParameter vstup1 = new OdbcParameter();
+        MySqlParameter vstup1 = new MySqlParameter();
         vstup1.ParameterName = "days";
         vstup1.Direction = ParameterDirection.Input;
-        vstup1.OdbcType = OdbcType.Int;
+        vstup1.MySqlDbType = MySqlDbType.Int32;
         vstup1.Value = days;
         cmd.Parameters.Add(vstup1);
 
-        OdbcParameter vstup2 = new OdbcParameter();
+        MySqlParameter vstup2 = new MySqlParameter();
         vstup2.ParameterName = "mesiac";
         vstup2.Direction = ParameterDirection.Input;
-        vstup2.OdbcType = OdbcType.Int;
+        vstup2.MySqlDbType = MySqlDbType.Int32;
         vstup2.Value = mesiac;
         cmd.Parameters.Add(vstup2);
 
-        OdbcParameter vstup3 = new OdbcParameter();
+        MySqlParameter vstup3 = new MySqlParameter();
         vstup3.ParameterName = "rok";
         vstup3.Direction = ParameterDirection.Input;
-        vstup3.OdbcType = OdbcType.Int;
+        vstup3.MySqlDbType = MySqlDbType.Int32;
         vstup3.Value = rok;
         cmd.Parameters.Add(vstup3);
 
-        OdbcParameter vstup4 = new OdbcParameter();
+        MySqlParameter vstup4 = new MySqlParameter();
         vstup4.ParameterName = "clinic";
         vstup4.Direction = ParameterDirection.Input;
-        vstup4.OdbcType = OdbcType.Int;
+        vstup4.MySqlDbType = MySqlDbType.Int32;
         vstup4.Value = clinic;
         cmd.Parameters.Add(vstup4);
 
-        OdbcParameter vstup5 = new OdbcParameter();
+        MySqlParameter vstup5 = new MySqlParameter();
         vstup5.ParameterName = "res";
         vstup5.Direction = ParameterDirection.Output;
-        vstup5.OdbcType = OdbcType.Int;
+        vstup5.MySqlDbType = MySqlDbType.Int32;
         //vstup3.Value = 2015;
         cmd.Parameters.Add(vstup5);
 
@@ -1123,26 +1099,30 @@ public class mysql_db
     /// <summary>
     /// returns row of SQL request in current Connection and transaction as SortedList if error the result[status],result[msg],result[sql]
     /// </summary>
-    /// <param name="query">SQL Format string</param>
-    /// <param name="my_con">Current ODBC Connection</param>
-    /// <param name="trans">Current ODBC transaction</param>
+    /// <param name="query">SQL string</param>
+   
   
-    public SortedList getRowInCon(string query, OdbcConnection my_con, OdbcTransaction trans)
+    public SortedList getRowInCon(string query)
     {
         if (query.IndexOf("LIMIT 1") == -1)
         {
             query += " LIMIT 1";
         }
         SortedList result = new SortedList();
-        //my_con.Open();
 
+        my_con.Open();
+
+        MySqlCommand icmd = new MySqlCommand(query,my_con);
 
         try
         {
-            OdbcCommand my_com = new OdbcCommand(this.parseQuery(query.ToString()), my_con, trans);
-            x2log.logData(this.parseQuery(query.ToString()), "", "mysql getrow");
-            OdbcDataReader reader = my_com.ExecuteReader();
-            // result.Add("status", true);
+            // MySqlCommand my_com = new MySqlCommand(this.parseQuery(query.ToString()), my_con, trans);
+            //icmd.CommandText = query;
+
+
+            x2log.logData(query, "", "mysql getrow");
+            MySqlDataReader reader = icmd.ExecuteReader();
+            // result.Add("status" , true);
 
             if (reader.HasRows)
             {
@@ -1181,8 +1161,8 @@ public class mysql_db
             result.Add("msg", e.ToString());
             result.Add("sql", this.parseQuery(query.ToString()));
         }
-        //my_con.Close();
-
+        my_con.Close();
+        //cmd.
 
         return result;
     }
@@ -1207,9 +1187,9 @@ public class mysql_db
         
         try
         {
-            OdbcCommand my_com = new OdbcCommand(this.parseQuery(query.ToString()), my_con);
+            MySqlCommand my_com = new MySqlCommand(this.parseQuery(query.ToString()), my_con);
             x2log.logData(this.parseQuery(query.ToString()),"","mysql getrow");
-            OdbcDataReader reader = my_com.ExecuteReader();
+            MySqlDataReader reader = my_com.ExecuteReader();
            // result.Add("status", true);
 
             if (reader.HasRows)
@@ -1272,9 +1252,9 @@ public class mysql_db
             }
 
             my_con.Open();
-            OdbcCommand my_com = new OdbcCommand(this.parseQuery(query.ToString()), my_con);
+            MySqlCommand my_com = new MySqlCommand(this.parseQuery(query.ToString()), my_con);
             x2log.logData(this.parseQuery(query.ToString()),"","mysql getTable");
-            OdbcDataReader reader = my_com.ExecuteReader();
+            MySqlDataReader reader = my_com.ExecuteReader();
             int row = 0;
 
             if (reader.HasRows)
@@ -1334,10 +1314,10 @@ public class mysql_db
         sb.AppendFormat("SELECT [idf],[label] FROM [is_labels] WHERE [clinic]='{0}'", clinic);
         my_con.Open();
         string query = this.parseQuery(sb.ToString());
-        OdbcCommand my_command = new OdbcCommand(query, my_con);
+        MySqlCommand my_command = new MySqlCommand(query, my_con);
         try
         {
-            OdbcDataReader reader = my_command.ExecuteReader();
+            MySqlDataReader reader = my_command.ExecuteReader();
 
             if (reader.HasRows)
             {
@@ -1362,9 +1342,9 @@ public class mysql_db
 
         my_con.Open();
         //x2log.logData(this.parseQuery(query.ToString()), "", "SQL from getTableSL");
-        OdbcCommand my_com = new OdbcCommand(this.parseQuery(query.ToString()), my_con);
+        MySqlCommand my_com = new MySqlCommand(this.parseQuery(query.ToString()), my_con);
 
-        OdbcDataReader reader = my_com.ExecuteReader();
+        MySqlDataReader reader = my_com.ExecuteReader();
         int row = 0;
         try
         {
@@ -1468,7 +1448,7 @@ public class mysql_db
         try
         {
             my_con.Open();
-            OdbcCommand my_com = new OdbcCommand(this.parseQuery(query.ToString()), my_con);
+            MySqlCommand my_com = new MySqlCommand(this.parseQuery(query.ToString()), my_con);
             my_com.CommandText = query;
             my_com.ExecuteNonQuery();
             // cmdtrans.CommandText = "SELECT last_insert_id();";

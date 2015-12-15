@@ -11,11 +11,6 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 using System.Web.Services;
-using System.Web.Script;
-using System.Web.Script.Serialization;
-
-
-
 
 public partial class is_lf : System.Web.UI.Page
 {
@@ -34,7 +29,11 @@ public partial class is_lf : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        
+        if (Session["lfSelTab"] != null)
+        {
+            //this.msg_lbl.Text = Session["hlaskoSelTab"].ToString();
+            this.setlftab_hv.Value = Session["lfSelTab"].ToString();
+        }
 
         if (!IsPostBack)
         {
@@ -46,22 +45,6 @@ public partial class is_lf : System.Web.UI.Page
             //this.loadFolders();
             this.loadFiles();
         }
-
-        if (Request.QueryString["dr"] != null)
-        {
-            try
-            {
-                int id = Convert.ToInt32(Request.QueryString["dr"].ToString());
-                this.deleteFile(id);
-            }
-            catch (Exception ex)
-            {
-                this.msg_lbl.Text = x2.errorMessage(ex.ToString());
-            }
-
-        }
-
-
     }
 
     protected void deleteFile(int id)
@@ -108,7 +91,6 @@ public partial class is_lf : System.Web.UI.Page
             SortedList res = x2lf.mysql_insert("is_structure", data);
             if (Convert.ToBoolean(res["status"]))
             {
-                this.settab_hv.Value = "tab2";
                 this.loadFolders();
             }
             
@@ -283,7 +265,7 @@ public partial class is_lf : System.Web.UI.Page
                 long size = this.lf_upf.PostedFile.InputStream.Length;
                 size = size / 1024000;
 
-                this.msg_lbl.Text = size.ToString();
+                //this.msg_lbl.Text = size.ToString();
 
                 if (size > 64)
                 {
@@ -342,14 +324,45 @@ public partial class is_lf : System.Web.UI.Page
         }
     }
 
-    protected void setVisibilityFnc(object sender, EventArgs e)
+    protected void editVisibility(string st)
     {
-          
+        string fId = this.del_folders_dl.SelectedValue.ToString();
+
+        string visibility = "0";
+        if (st=="me")
+        {
+            visibility = Session["user_id"].ToString();
+        }
+        string query = "UPDATE [is_structure] SET [visibility]={0} WHERE [item_id]={1}";
+
+        query = x2lf.buildSql(query, new string[] { visibility, fId });
+
+        SortedList res = x2lf.execute(query);
+        if ((Boolean)res["status"])
+        {
+            //this.loadFolders();
+
+        }
+        else
+        {
+            this.msg_lbl.Text = x2.errorMessage(res["msg"].ToString());
+        }
+        
     }
 
+    protected void setVisibilityFnc(object sender, EventArgs e)
+    {
+        RadioButton rb = (RadioButton)sender;
 
+        string id = rb.ID.ToString();
 
-
-
-
+        if (id == "edit_visibility_me")
+        {
+            this.editVisibility("me");
+        }
+        if (id == "edit_visibility_all")
+        {
+            this.editVisibility("all");
+        }
+    }
 }

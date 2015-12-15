@@ -3,13 +3,9 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
-    <button onclick="testFnc();return false;">Test</button>
-     
-    <input type="text" onkeyup="pisanie2();" id="pisanie_txt" />
-
-   <select id="test_dl"></select>
-
+   
     <h1> Hľadanie v operačnej knihe</h1>
+    <asp:HiddenField ID="opknihaTab_hv" runat="server" Value="" />
     <asp:Literal ID="msg_lbl" runat="server" Text=""></asp:Literal>
     <div class="dismissible info message">
     <p class="asphalt">Prinášam Vám možnosť hľadania v operačných knihách tak ako sú vedené od roku 2000. Hľadanie v nich je kostrbaté, pretože databáza nebola
@@ -29,13 +25,15 @@
          </div>
     <hr /> Roky 2000-2014 spolu -<strong> <asp:Label ID="row_counts" runat="server" Text=""></asp:Label> </strong>Operácii
     <hr />
-    <div id="tabs">
-    <div class="row">
+     <div class="row">
+    <div id="opkniha_tabs">
+   
         <ul>
-            <li><a href="#tab1">podľa Diagnóz</a></li>
-            <li><a href="#tab2">podľa Výkonov</a></li>
+            <li><a href="#opkniha_tab1">podľa Diagnóz</a></li>
+            <li><a href="#opkniha_tab2">podľa Výkonov</a></li>
+            <li><a href="#opkniha_tab3">Moje výkony</a></li>
         </ul>
-        <div id="tab1">
+        <div id="opkniha_tab1">
         <h3 class="blue"> Hľadanie v diagnózach</h3>
         <p class="small">Umožňuje, hľadanie v diagnózach, tieto sú uložené slovne, nie podľa MKCH 10, a nie vždy je dodržaný správny pravopis, preto môžete zadať viacero slov, oddelené len <b>medzerou.</b> <br />Zdávajte len spoločné základy slov. Napr. appen apen<br />
         Ak chcete veci len zobraziť stlačte len <b>Hľadaj</b>, v prípade exportu do excelu je tlačidlo <b>do Excelu</b> (musíte po prepnutí sa do excelu súhlásiť, že chcete daný súbor otvoriť) </p>
@@ -55,7 +53,7 @@
              <asp:Button ID="to_excel_btn" runat="server" Text="Do excelu" CssClass="green button" OnClick="searchToExcelFnc" />
        </div>
             </div> <!-- koniec tabu1 -->
-        <div id="tab2">
+        <div id="opkniha_tab2"> <!--zaciatok tabu2 -->
             <h3 class="blue"> Hľadanie vo výkonoch</h3>
         <p class="small">Umožňuje, hľadanie v operačných výkonoch, tieto sú uložené slovne, a nie vždy je dodržaný správny pravopis, preto môžete zadať viacero slov, oddelené len <b> medzerou.</b> <br />Zdávajte len spoločné základy slov. Napr. LSK apend append<br />
         Ak chcete veci len zobraziť stlačte len <b>Hľadaj</b>, v prípade exportu do excelu je tlačidlo <b>do Excelu</b> (musíte po prepnutí sa do excelu súhlásiť, že chcete daný súbor otvoriť) </p>
@@ -74,14 +72,19 @@
             <asp:Button ID="Button1" runat="server" Text="<%$ Resources:Resource,search %>" CssClass="blue button" OnClick="searchInOPFnc" />
              <asp:Button ID="Button2" runat="server" Text="Do excelu" CssClass="green button" OnClick="searchOPToExcelFnc" />
        </div>
-        </div>
-
-        <div id="tab3">
-           
-
+        </div> <!--zaciatok tabu3 -->
+        <div class="row">
+            <div id="opkniha_tab3"> <!--zaciatok tabu3 -->
+                    <h3 class="asphalt"> Výpis mojich výkonov </h3>
+                    <div class="one fourth">Meno:<asp:textbox id="menoMyOP_txt" runat="server"></asp:textbox></div>
+                    <div class="one fourth">Od roku:<asp:textbox id="fromYearMyOP_txt" runat="server"></asp:textbox></div>
+                    <div class="one fourth">Do roku:<asp:textbox id="toYearMyOP_txt" runat="server"></asp:textbox></div>
+                    <div class="one fourth">
+                        <asp:Button ID="Button3" runat="server" Text="<%$ Resources:Resource,search %>" CssClass="blue button" OnClick="searchInMyOPFnc" />
+             <asp:Button ID="Button4" runat="server" Text="Do excelu" CssClass="green button" OnClick="searchInMyExcelOPFnc" /></div>
             
-
-        </div>
+            </div>
+        </div><!--koniec tabu3 -->
 
 
          </div>

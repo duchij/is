@@ -96,7 +96,7 @@ public partial class MasterPage : System.Web.UI.MasterPage
         //this.loadLogo();
         //this.master_lbl.Text = this.gKlinika;
         this.shiftsOfCurrentUser();
-
+        this.seminarsOCurrentUser();
 
     }
 
@@ -290,6 +290,42 @@ public partial class MasterPage : System.Web.UI.MasterPage
             this.currentShifts_lbl.Text =String.Join(", ",shifts);
 
         }
+
+    }
+
+    protected void seminarsOCurrentUser()
+    {
+        int month = DateTime.Today.Month;
+        int year = DateTime.Today.Year;
+        int user_id = Convert.ToInt32(Session["user_id"].ToString());
+
+        string query = @"SELECT [is_seminars.date] AS [date],[is_seminars.tema] AS [tema] ,[users.name3] AS [name] FROM [is_seminars] 
+                            INNER JOIN [is_users] AS [users] ON [users.id] = [is_seminars.user_id]
+                            WHERE [is_seminars.user_id] = {0}
+                                AND YEAR([is_seminars.date])={1} AND MONTH([is_seminars.date])={2}";
+        query = x2Mysql.buildSql(query, new string[] { user_id.ToString(), year.ToString(), month.ToString() });
+
+        Dictionary<int, Hashtable> table = x2Mysql.getTable(query);
+
+        int tbLn = table.Count;
+
+        if (tbLn > 0)
+        {
+            this.seminars_lbl.Text = "<strong class='green'>Moje seminare: </strong>";
+            string sems="";
+            for (int s=0; s< tbLn; s++)
+            {
+                DateTime dt = Convert.ToDateTime(X2.MSDate(table[s]["date"].ToString()));
+
+                sems += "<strong class='red'>"+dt.ToShortDateString() + "</strong>- " + table[s]["tema"].ToString();
+            }
+            this.seminars_lbl.Text += sems;
+        }
+
+
+
+
+
 
     }
 }
