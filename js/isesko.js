@@ -1,7 +1,13 @@
 ﻿
 
-function sendData(fnc,data,callBack)
+
+function sendData(fnc,data,callBack,args)
 {
+    /// <summary>Funkcia na poslanie jQuery Ajaxu smerom na server</summary>
+    /// <param name="fnc" type="String">Funkcia na strane serveru vo WebService.asmx</param>
+    /// <param name="data" type="Object">JSON Objekt co sa ma poslat</param>
+    /// <param name="callBack" type="String">Javascript funkcia kam sa to ma vratit</param>
+    /// <param name="args" type="Mixed">Moze by objekt, pole, hocico co sa preposle do callback funkcie</param>
     $.ajax({
         url: "WebService.asmx/"+fnc,
         method: "POST",
@@ -17,7 +23,7 @@ function sendData(fnc,data,callBack)
             var xml = $.parseXML(data);
             var dtJson = xml.childNodes[0].innerHTML;
             var obj = JSON.parse(dtJson);
-            window[callBack](obj);
+            window[callBack](obj,args);
         }
 
     });
@@ -42,6 +48,84 @@ function openDropdown(elementId) {
 }
 
 
+
+function saveNurseShifts(ddl) {
+    var user_id = $("[id$=" + ddl + "]").val();
+    var tmp = ddl.split("_");
+    var deps = $("[id$=deps_dl]").val();
+    var year = $("[id$=rok_cb]").val();
+    var month = $("[id$=mesiac_cb]").val();
+
+    var data = { user_id: user_id, date: year + "-" + month + "-" + tmp[1], type: tmp[2],deps:deps };
+
+    this.sendData("saveNurseShifts", data, "afterSaveNurseShifts", ddl);
+    
+}
+
+
+
+function saveDocShifts(ddl)
+{
+    var user_id = $("[id$=" + ddl + "]").val();
+    var tmp = ddl.split("_");
+
+    var year = $("[id$=rok_cb]").val();
+    var month = $("[id$=mesiac_cb]").val();
+
+    var data = { user_id: user_id, date: year + "-" + month + "-" + tmp[1], type: tmp[2] };
+
+    this.sendData("saveDocShifts", data, "afterSaveKdhaoShifts");
+}
+
+
+
+function saveDocShiftComment(comment)
+{
+    var note =  $("[id$=" + comment + "]").val();
+    var tmp = comment.split("_");
+    var user_id = $("[id$=ddl_" + tmp[1]+"_"+tmp[2] + "]").val();
+
+    var year = $("[id$=rok_cb]").val();
+    var month = $("[id$=mesiac_cb]").val();
+   
+    var data = { user_id: user_id, date: year + "-" + month + "-" + tmp[1], type: tmp[2],comment:note };
+
+    this.sendData("saveDocShiftsComment", data, "afterSaveKdhaoShifts");
+}
+
+function saveNurseShiftComment(comment)
+{
+    var note = $("[id$=" + comment + "]").val();
+    var tmp = comment.split("_");
+    var user_id = $("[id$=ddl_" + tmp[1] + "_" + tmp[2] + "]").val();
+    var deps = $("[id$=deps_dl]").val();
+    var year = $("[id$=rok_cb]").val();
+    var month = $("[id$=mesiac_cb]").val();
+
+    var data = { user_id: user_id, date: year + "-" + month + "-" + tmp[1], type: tmp[2], comment: note,deps:deps };
+
+    this.sendData("saveNurseShiftsComment", data, "afterSaveNurseShifts",comment);
+}
+
+
+function afterSaveNurseShifts(result,obj)
+{
+    if (result.status == "false")
+    {
+        $("[id$=msg_dialog]").html("<h2 class='red'>CHYBA:</h2><p class='red'>"+result.msg+"</p>");
+        $("[id$=msg_dialog]").dialog();
+        $("[id$=" + obj + "]").val("0");
+    }
+}
+
+
+function afterSaveKdhaoShifts(result)
+{
+    if (result.status=="false")
+    {
+        alert(result.msg);
+    }
+}
 
 function hlaskoTabs()
 {
@@ -112,7 +196,7 @@ function lfTabs() {
 
     if (selTab != undefined && selTab.indexOf("lf_tab" != -1)) {
         switch (selTab) {
-            case "#lf_tab1":
+            case "#lf_tab1":    
                 $("#lf_tabs").tabs({ active: 0 });
                 break;
             case "#lf_tab2":

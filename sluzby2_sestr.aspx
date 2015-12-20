@@ -3,6 +3,11 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
+
+    <div id="msg_dialog" title="Info....">
+
+    </div>
+
     <asp:Literal ID="msg_lbl" runat="server" Text=""></asp:Literal>
     <h2> Plán služieb</h2><hr />
     <asp:PlaceHolder ID="editShiftView_pl" runat="server">

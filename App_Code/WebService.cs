@@ -67,7 +67,7 @@ public class WebService : System.Web.Services.WebService {
 
     mysql_db x2Mysql = new mysql_db();
     log x2log = new log();
-
+    x2_var x2 = new x2_var();
     //mysql_db db = new mysql_db();
 
     public WebService () {
@@ -104,6 +104,154 @@ public class WebService : System.Web.Services.WebService {
         Session["lfSelTab"] = obj["selTab"].ToString();
         return data;
     }
+
+    [WebMethod(EnableSession = true)]
+    public string saveNurseShiftsComment(string data)
+    {
+        JavaScriptSerializer js1 = new JavaScriptSerializer();
+
+        Dictionary<string, string> obj = js1.Deserialize<Dictionary<string, string>>(data);
+
+        SortedList shiftsData = new SortedList();
+       // shiftsData.Add("clinic", Session["klinika_id"]);
+
+        DateTime dt = x2.UnixToMsDateTime(obj["date"]);
+
+        shiftsData.Add("datum", x2.unixDate(dt));
+        shiftsData.Add("user_id", Convert.ToInt32(obj["user_id"]));
+        shiftsData.Add("typ", obj["type"].ToString());
+        shiftsData.Add("comment", obj["comment"].ToString());
+        shiftsData.Add("date_group", x2.makeDateGroup(dt.Year, dt.Month));
+        shiftsData.Add("deps", obj["deps"]);
+        SortedList res = x2Mysql.mysql_insert("is_sluzby_2_sestr", shiftsData);
+
+        Dictionary<string, string> rtData = new Dictionary<string, string>();
+
+        if ((Boolean)res["status"])
+        {
+            rtData["status"] = "true";
+        }
+        else
+        {
+            rtData["status"] = "false";
+            rtData["msg"] = res["msg"].ToString();
+        }
+        //Session["lfSelTab"] = obj["selTab"].ToString();
+        JavaScriptSerializer js2 = new JavaScriptSerializer();
+        return js2.Serialize(rtData).ToString();
+    }
+
+
+    [WebMethod(EnableSession = true)]
+    public string saveNurseShifts(string data)
+    {
+        JavaScriptSerializer js1 = new JavaScriptSerializer();
+
+        Dictionary<string, string> obj = js1.Deserialize<Dictionary<string, string>>(data);
+
+        SortedList shiftsData = new SortedList();
+        //shiftsData.Add("clinic", Session["klinika_id"]);
+
+        DateTime dt = x2.UnixToMsDateTime(obj["date"]);
+
+        shiftsData.Add("datum", x2.unixDate(dt));
+        shiftsData.Add("user_id", Convert.ToInt32(obj["user_id"]));
+        shiftsData.Add("typ", obj["type"].ToString());
+        shiftsData.Add("date_group", x2.makeDateGroup(dt.Year, dt.Month));
+        shiftsData.Add("deps", obj["deps"]);
+        SortedList res = x2Mysql.mysql_insert("is_sluzby_2_sestr", shiftsData);
+
+        Dictionary<string, string> rtData = new Dictionary<string, string>();
+
+        if ((Boolean)res["status"])
+        {
+            rtData["status"] = "true";
+        }
+        else
+        {
+            rtData["status"] = "false";
+            rtData["msg"] = res["msg"].ToString();
+        }
+        //Session["lfSelTab"] = obj["selTab"].ToString();
+        JavaScriptSerializer js2 = new JavaScriptSerializer();
+        return js2.Serialize(rtData).ToString();
+    }
+
+
+
+
+    [WebMethod(EnableSession = true)]
+    public string saveDocShiftsComment(string data)
+    {
+        JavaScriptSerializer js1 = new JavaScriptSerializer();
+
+        Dictionary<string, string> obj = js1.Deserialize<Dictionary<string, string>>(data);
+
+        SortedList shiftsData = new SortedList();
+        shiftsData.Add("clinic", Session["klinika_id"]);
+
+        DateTime dt = x2.UnixToMsDateTime(obj["date"]);
+
+        shiftsData.Add("datum", x2.unixDate(dt));
+        shiftsData.Add("user_id", Convert.ToInt32(obj["user_id"]));
+        shiftsData.Add("typ", obj["type"].ToString());
+        shiftsData.Add("comment", obj["comment"].ToString());
+        shiftsData.Add("date_group", x2.makeDateGroup(dt.Year, dt.Month));
+
+        SortedList res = x2Mysql.mysql_insert("is_sluzby_all", shiftsData);
+
+        Dictionary<string, string> rtData = new Dictionary<string, string>();
+
+        if ((Boolean)res["status"])
+        {
+            rtData["status"] = "true";
+        }
+        else
+        {
+            rtData["status"] = "false";
+            rtData["msg"] = res["msg"].ToString();
+        }
+        //Session["lfSelTab"] = obj["selTab"].ToString();
+        JavaScriptSerializer js2 = new JavaScriptSerializer();
+        return js2.Serialize(rtData).ToString();
+    }
+
+
+    [WebMethod(EnableSession = true)]
+    public string saveDocShifts(string data)
+    {
+        JavaScriptSerializer js1 = new JavaScriptSerializer();
+
+        Dictionary<string, string> obj = js1.Deserialize<Dictionary<string, string>>(data);
+
+        SortedList shiftsData = new SortedList();
+        shiftsData.Add("clinic", Session["klinika_id"]);
+
+        DateTime dt = x2.UnixToMsDateTime(obj["date"]);
+
+        shiftsData.Add("datum", x2.unixDate(dt));
+        shiftsData.Add("user_id", Convert.ToInt32(obj["user_id"]));
+        shiftsData.Add("typ", obj["type"].ToString());
+        shiftsData.Add("date_group", x2.makeDateGroup(dt.Year, dt.Month));
+        SortedList res = x2Mysql.mysql_insert("is_sluzby_all", shiftsData);
+
+        Dictionary<string, string> rtData = new Dictionary<string, string>();
+
+        if ((Boolean)res["status"])
+        {
+            rtData["status"] = "true";
+        }
+        else
+        {
+            rtData["status"] = "false";
+            rtData["msg"] = res["msg"].ToString();
+        }
+        //Session["lfSelTab"] = obj["selTab"].ToString();
+        JavaScriptSerializer js2 = new JavaScriptSerializer();
+        return js2.Serialize(rtData).ToString();
+    }
+
+
 
     [WebMethod(EnableSession = true)]
     public string OopknihaSelectedTab(string data)

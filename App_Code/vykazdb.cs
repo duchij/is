@@ -159,8 +159,9 @@ public class vykazdb : my_db
         {
             result.Add("nodata","1");
         }
+        reader.Close();
         my_con.Close();
-
+        my_con.Dispose();
         return result;
         
     }
@@ -193,8 +194,9 @@ public class vykazdb : my_db
         {
             result = reader[0].ToString();
         }
+        reader.Close();
         my_con.Close();
-        
+        my_con.Dispose();
 
         return result;
 

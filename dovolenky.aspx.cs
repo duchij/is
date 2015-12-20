@@ -355,6 +355,7 @@ public partial class dovolenky : System.Web.UI.Page
 
         int pocetDov = data.Count;
         this.zoznamUser_tbl.Width = Unit.Percentage(100);
+
         for (int i = 0; i < pocetDov; i++)
         {
            TableRow mojRiadok = new TableRow();
@@ -385,6 +386,10 @@ public partial class dovolenky : System.Web.UI.Page
             buttonCell.Controls.Add(mojeTlac);
             //mojeTlac.Click += new EventHandler(this.deleteDovolenka);
             mojRiadok.Controls.Add(buttonCell);
+
+            Button printPdf = new Button();
+            
+
         }
 
         Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");

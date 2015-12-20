@@ -52,7 +52,10 @@ public class sluzbyclass : my_db
         {
             result.Add("nodata");
         }
-        my_con.Close();
+        reader.Close();
+            my_con.Close();
+            my_con.Dispose();
+       
         return result;
     }
 
@@ -79,7 +82,10 @@ public class sluzbyclass : my_db
         {
             result["nodata"] = "1";
         }
-        my_con.Close();
+        reader.Close();
+            my_con.Close();
+            my_con.Dispose();
+        
         return result;
     }
 

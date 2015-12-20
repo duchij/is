@@ -47,16 +47,16 @@ public partial class controls_kdhao_shifts : System.Web.UI.UserControl
         this.deps = Session["oddelenie"].ToString();
         this.rights = Session["rights"].ToString();
         this.gKlinika = Session["klinika_id"].ToString().ToLower();
-       
+        this.editShiftView_pl.Visible = true;
         if (this.rights.IndexOf("admin") != -1 || this.rights == "poweruser")
         {
-            this.editShiftView_pl.Visible = true;
+            //this.editShiftView_pl.Visible = true;
             this.publish_btn.Visible = true;
             this.unpublish_btn.Visible = true;
         }
         else
         {
-            this.editShiftView_pl.Visible = false;
+            //this.editShiftView_pl.Visible = false;
             this.publish_btn.Visible = false;
             this.unpublish_btn.Visible = false;
         }
@@ -298,23 +298,24 @@ public partial class controls_kdhao_shifts : System.Web.UI.UserControl
 
                             int listLn = doctorList.Count;
                             System.Web.UI.WebControls.ListItem[] newItem = new System.Web.UI.WebControls.ListItem[listLn];
-
+                            
                             for (int doc = 0; doc < listLn; doc++)
                             {
                                 string[] tmp = doctorList[doc].ToString().Split('|');
                                 newItem[doc] = new System.Web.UI.WebControls.ListItem(tmp[1].ToString(), tmp[0].ToString());
                             }
                             dl.Items.AddRange(newItem);
-                            dl.AutoPostBack = true;
-                            dl.SelectedIndexChanged += new EventHandler(dItemChanged_2);
-                            
+                            //dl.AutoPostBack = true;
+                           // dl.SelectedIndexChanged += new EventHandler(dItemChanged_2);
+                            dl.Attributes.Add("onChange", "saveDocShifts('" + dl.ID.ToString()+"');");
                             dataCell.Controls.Add(dl);
 
                             TextBox comment = new TextBox();
                             comment.ID = "textBox_" + rDay.ToString() + "_" + ddls[cnt];
                             comment.Text = "-";
-                            comment.AutoPostBack = true;
-                            comment.TextChanged += new EventHandler(commentChanged_2);
+                            comment.Attributes.Add("onChange", "saveDocShiftComment('" + comment.ID.ToString() + "');");
+                           // comment.AutoPostBack = true;
+                           // comment.TextChanged += new EventHandler(commentChanged_2);
 
 
                             dataCell.Controls.Add(comment);
@@ -356,16 +357,17 @@ public partial class controls_kdhao_shifts : System.Web.UI.UserControl
                             newItem[doc] = new System.Web.UI.WebControls.ListItem(tmp[1].ToString(), tmp[0].ToString());
                         }
                         dl1.Items.AddRange(newItem);
-                        dl1.AutoPostBack = true;
-                        dl1.SelectedIndexChanged += new EventHandler(dItemChanged_2);
-
+                        //dl1.AutoPostBack = true;
+                        //dl1.SelectedIndexChanged += new EventHandler(dItemChanged_2);
+                        dl1.Attributes.Add("onChange", "saveDocShifts('" + dl1.ID.ToString() + "');");
                         dataCell.Controls.Add(dl1);
 
                         TextBox comment = new TextBox();
                         comment.ID = "textBox_" + rDay.ToString() + "_" + groups[col];
                         comment.Text = "-";
-                        comment.AutoPostBack = true;
-                        comment.TextChanged += new EventHandler(commentChanged_2);
+                        //comment.AutoPostBack = true;
+                        //comment.TextChanged += new EventHandler(commentChanged_2);
+                        comment.Attributes.Add("onChange", "saveDocShiftComment('" + comment.ID.ToString() + "');");
                         dataCell.Controls.Add(comment);
                         dataRow.Controls.Add(dataCell);
                     }
@@ -430,7 +432,8 @@ public partial class controls_kdhao_shifts : System.Web.UI.UserControl
                 [t_sluzb].[date_group] AS [dategroup]
                 FROM [is_sluzby_all] AS [t_sluzb]
                 LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]
-                    WHERE [t_sluzb].[date_group] = '{0}' AND [t_sluzb].[state]='active'
+                    WHERE [t_sluzb].[date_group] = '{0}' 
+                -- AND [t_sluzb].[state]='active'
                 AND [t_sluzb].[clinic] = '{1}' 
                 GROUP BY [t_sluzb].[datum]
                 ORDER BY [t_sluzb].[datum]";
@@ -486,12 +489,23 @@ public partial class controls_kdhao_shifts : System.Web.UI.UserControl
                         DropDownList ddl = (DropDownList)crtl;
 
                         ddl.SelectedValue = table[day]["users_ids"].ToString();
-                        ddl.SelectedIndexChanged += new EventHandler(dItemChanged_2);
+                       // ddl.SelectedIndexChanged += new EventHandler(dItemChanged_2);
+                        ddl.Attributes.Add("onChange", "saveDocShifts('" + ddl.ID.ToString() + "');");
+                        if (Session["user_id"].ToString() != table[day]["users_ids"].ToString())
+                        {
+                            ddl.Enabled = false;
+                        }
 
                         Control crtl1 = FindControl("textBox_" + rDay.ToString() + "_" + table[day]["type1"].ToString());
                         TextBox textBox = (TextBox)crtl1;
                         textBox.Text = table[day]["comment"].ToString();
-                        textBox.TextChanged += new EventHandler(commentChanged_2);
+                        textBox.Attributes.Add("onChange", "saveDocShiftComment('" + textBox .ID.ToString() + "');");
+                        if (Session["users_id"].ToString() != table[day]["users_ids"].ToString())
+                        {
+                            textBox.ReadOnly = true;
+                        }
+
+                        //textBox.TextChanged += new EventHandler(commentChanged_2);
                     }
                     else
                     {
@@ -614,7 +628,16 @@ public partial class controls_kdhao_shifts : System.Web.UI.UserControl
     protected ArrayList loadDoctors(string sDeps)
     {
         StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("SELECT [id],[name3] FROM [is_users] WHERE [work_group]='doctor' AND [active]='1' AND [klinika]='{0}' ORDER BY [name2]", this.gKlinika);
+
+        if (this.rights == "users")
+        {
+            sb.AppendFormat("SELECT [id],[name3] FROM [is_users] WHERE [id]='{0}'", Session["user_id"].ToString());
+        }
+        else
+        {
+            sb.AppendFormat("SELECT [id],[name3] FROM [is_users] WHERE [work_group]='doctor' AND [active]='1' AND [klinika]='{0}' ORDER BY [name2]", this.gKlinika);
+        }
+        
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
 

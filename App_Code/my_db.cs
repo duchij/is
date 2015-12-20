@@ -90,13 +90,11 @@ public class my_db
                 result.Add(reader[0].ToString()+"|"+reader[1].ToString());
             }
         }
+        reader.Close();
         my_con.Close();
+        my_con.Dispose();
 
         return result;
-
-
-
-
     }
 
     public SortedList getUserInfoByID(string id)
@@ -133,8 +131,9 @@ public class my_db
         {
             result.Add("result", "none");
         }
+        reader.Close();
         my_con.Close();
-
+        my_con.Dispose();
 
         return result;
     }
@@ -165,7 +164,9 @@ public class my_db
                 row++;
             }
         }
+        reader.Close();
         my_con.Close();
+        my_con.Dispose();
 
 
         return result;
@@ -219,9 +220,10 @@ public class my_db
                 result.Add("last_id", reader.GetValue(i).ToString());
             }
         }
-        
-        
-      // my_con.Close();
+
+        reader.Close();
+        my_con.Close();
+        my_con.Dispose();
 
         return result;
 
@@ -265,7 +267,9 @@ public class my_db
                 }
             }
         }
+        reader.Close();
         my_con.Close();
+        my_con.Dispose();
 
         return result;
 
@@ -437,7 +441,10 @@ public class my_db
         {
             result.Add("empty", "true");
         }
+
+        reader.Close();
         my_con.Close();
+        my_con.Dispose();
 
         return result;
         
@@ -481,7 +488,9 @@ public class my_db
             result.Add("id", 0);
             result.Add("hlasko", "...");
         }
+        reader.Close();
         my_con.Close();
+        my_con.Dispose();
         return result;
     }
 
@@ -500,12 +509,14 @@ public class my_db
             {
                 result = reader["osirix"].ToString();
             }
+            reader.Close();
             my_con.Close();
         }
         else
         {
             my_con.Close();
         }
+        my_con.Dispose();
         return result;
 
 
@@ -537,8 +548,11 @@ public class my_db
             }
             
         }
-        
+
+        reader.Close();
         my_con.Close();
+        my_con.Dispose();
+
         return result;
     }
 
@@ -576,7 +590,9 @@ public class my_db
         {
             result.Add("id", 0); 
         }
+        reader.Close();
         my_con.Close();
+        my_con.Dispose();
         return result;
     }
 
@@ -629,10 +645,12 @@ public class my_db
             result.Add("ziadna_sluzba", "true");
 
         }
-        
-        my_con.Close();
 
-       
+        reader.Close();
+        my_con.Close();
+        my_con.Dispose();
+
+
 
 
         return result;
@@ -656,7 +674,9 @@ public class my_db
                 tmp = reader["data"].ToString();
             }
         }
+        reader.Close();
         my_con.Close();
+        my_con.Dispose();
 
         string[] result = tmp.Split(',');
 
@@ -687,7 +707,9 @@ public class my_db
             }
             
         }
+        reader.Close();
         my_con.Close();
+        my_con.Dispose();
 
 
         return result;
@@ -706,9 +728,9 @@ public class my_db
 
         //MySqlDataReader result = reader;
         //my_con.Close();
-
-        return reader;
         my_con.Close();
+        return reader;
+        
     }
 
     public SortedList getDovolStatus(string table, string id)
@@ -735,6 +757,7 @@ public class my_db
                 }
 
             }
+            reader.Close();
             my_con.Close();
         }
         catch (Exception e)
@@ -744,7 +767,7 @@ public class my_db
         }
 
 
-      
+        my_con.Dispose();
 
         return result;
     }
@@ -768,6 +791,7 @@ public class my_db
         {
             result = true;
         }
+        reader.Close();
         my_con.Close();
 
 
@@ -798,8 +822,9 @@ public class my_db
             }
 
         }
+        reader.Close();
         my_con.Close();
-
+        my_con.Dispose();
 
         return result;
     }
@@ -839,7 +864,9 @@ public class my_db
             }
 
         }
+        reader.Close();
         my_con.Close();
+        my_con.Dispose();
 
 
         return result;
@@ -867,6 +894,11 @@ public class my_db
         {
             return e.ToString();
         }
+        finally
+        {
+            my_con.Close();
+            my_con.Dispose();
+        }
 
         //return result;
     }
@@ -889,7 +921,9 @@ public class my_db
                 result.Add("user_id", reader["user_id"].ToString());
             }
         }
+        reader.Close();
         my_con.Close();
+        my_con.Dispose();
 
         return result;
     }
@@ -925,8 +959,9 @@ public class my_db
             result.Add("ziadna_staze", "true");
 
         }
-
+        reader.Close();
         my_con.Close();
+        my_con.Dispose();
 
 
 
@@ -975,6 +1010,7 @@ public class my_db
                     result.Add(reader.GetName(i).ToString(), reader.GetValue(i).ToString());
                 }
             }
+            reader.Close();
             my_con.Close();
         }
         else
@@ -982,7 +1018,7 @@ public class my_db
             my_con.Close();
            result =  this.insert_rows(table, data);
         }
-
+        my_con.Dispose();
        
 
         if (result["id"] != null)
@@ -1029,10 +1065,12 @@ public class my_db
                     result.Add(reader.GetName(i).ToString(), reader.GetValue(i).ToString());
                 }
             }
+            reader.Close();
             my_con.Close();
         }
         else
         {
+            reader.Close();
             my_con.Close();
             result = this.insert_rows("is_poziadavky_info", data);
         }
@@ -1047,7 +1085,7 @@ public class my_db
         {
             result["info"] = data["info"].ToString();
         }
-
+        my_con.Dispose();
         return result; 
 
     }
@@ -1085,9 +1123,10 @@ public class my_db
                 result.Add(reader["full_name"].ToString()+"|"+reader["info"].ToString());
                 
             }
-            my_con.Close();
         }
-        
+        reader.Close();
+        my_con.Close();
+        my_con.Dispose();
 
         return result;
     }
@@ -1122,9 +1161,11 @@ public class my_db
                 result.Add(reader["full_name"].ToString()+"|"+reader["info"].ToString());
 
             }
-            my_con.Close();
+           
         }
-        
+        reader.Close();
+        my_con.Close();
+        my_con.Dispose();
 
         return result;
     }
@@ -1152,14 +1193,15 @@ public class my_db
                     result.Add(reader.GetName(i).ToString(), reader.GetValue(i).ToString());
                 }
             }
-            my_con.Close();
+            
         }
         else
         {
             result.Add("status", "empty");
         }
-
-
+        reader.Close();
+        my_con.Close();
+        my_con.Dispose();
 
         return result;
     }
@@ -1192,11 +1234,11 @@ public class my_db
                     result.Add(reader.GetName(i).ToString(), reader.GetValue(i).ToString());
                 }
             }
-            my_con.Close();
+           
         }
         else
         {
-            my_con.Close();
+           
             SortedList data = new SortedList();
             data.Add("mesiac", mesiac.ToString());
             data.Add("rok", rok.ToString());
@@ -1208,7 +1250,9 @@ public class my_db
 
 
         }
-
+        reader.Close();
+        my_con.Close();
+        my_con.Dispose();
 
         return result;
     }
@@ -1243,11 +1287,9 @@ public class my_db
                     result.Add(reader.GetName(i).ToString(), reader.GetValue(i).ToString());
                 }
             }
-            my_con.Close();
         }
         else
         {
-            my_con.Close();
           
           
 
@@ -1255,6 +1297,9 @@ public class my_db
 
 
         }
+        reader.Close();
+        my_con.Close();
+        my_con.Dispose();
 
         return result;
     }
@@ -1291,7 +1336,10 @@ public class my_db
                 result.Add(reader["id"].ToString());
             }
         }
+        reader.Close();
+
         my_con.Close();
+        my_con.Dispose();
         return result;
 
     }
@@ -1320,18 +1368,18 @@ public class my_db
                 //i++;  
 
             }
-            my_con.Close();
         }
         else
         {
-            my_con.Close();
 
 
             //result.Add("status", "empty");
 
 
         }
-
+        reader.Close();
+        my_con.Close();
+        my_con.Dispose();
         return result;
     }
 
@@ -1347,7 +1395,7 @@ public class my_db
         DataSet ds = new DataSet();
         da.Fill(ds);
         my_con.Close();
-
+        my_con.Dispose();
         return ds;
     }
 
@@ -1371,6 +1419,10 @@ public class my_db
         catch (Exception e)
         {
             return e.ToString();
+        }
+        finally
+        {
+            my_con.Close();
         }
     }
 
@@ -1432,7 +1484,9 @@ public class my_db
         {
             result.Add("status", "empty");
         }
+        reader.Close();
         my_con.Close();
+        my_con.Dispose();
         return result;
     }
 
@@ -1470,7 +1524,9 @@ public class my_db
 
         }
 
+        reader.Close();
         my_con.Close();
+        my_con.Dispose();
 
 
 
@@ -1519,7 +1575,9 @@ public class my_db
 
         }
 
+        reader.Close();
         my_con.Close();
+        my_con.Dispose();
 
 
 
@@ -1562,17 +1620,19 @@ public class my_db
                 //i++;  
 
             }
-            my_con.Close();
         }
         else
         {
-            my_con.Close();
 
 
             //result.Add("status", "empty");
 
 
         }
+
+        reader.Close();
+        my_con.Close();
+        my_con.Dispose();
 
         return result;
     }
@@ -1608,10 +1668,13 @@ public class my_db
 
             my_com.ExecuteNonQuery();
             my_con.Close();
+            my_con.Dispose();
             return "ok";
         }
         catch (Exception e)
         {
+            my_con.Close();
+            my_con.Dispose();
             return e.ToString();
         }
     }
@@ -1636,18 +1699,18 @@ public class my_db
                 result.Add("short_text", reader["kratka_sprava"].ToString());
 
             }
-            my_con.Close();
         }
         else
         {
-            my_con.Close();
 
 
             result.Add("status", "empty");
 
 
         }
-
+        reader.Close();
+        my_con.Close();
+        my_con.Dispose();
         return result;
     }
 
@@ -1675,14 +1738,15 @@ public class my_db
                 }
 
             }
-            my_con.Close();
         }
         else
         {
-            my_con.Close();
             result.Add("status", "empty");
 
         }
+        reader.Close();
+        my_con.Close();
+        my_con.Dispose();
 
         return result;
     }
@@ -1751,7 +1815,9 @@ public class my_db
             }
            
         }
+        reader.Close();
         my_con.Close();
+        my_con.Dispose();
         return result;
 
     }
@@ -1768,6 +1834,7 @@ public class my_db
 
         my_com.ExecuteNonQuery();
         my_con.Close();
+        my_con.Dispose();
     }
 
     public List<string> vacationsByID(int id, int mesiac, int rok)

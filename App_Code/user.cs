@@ -62,7 +62,10 @@ public class user: mysql_db
         {
             result.Add("result", "none");
         }
-        my_con.Close();
+        reader.Close();
+            my_con.Close();
+            my_con.Dispose();
+       
 
 
         return result;

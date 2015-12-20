@@ -144,7 +144,12 @@ public class mysql_db
             trans1.Rollback();
 
         }
-        my_con.Close();
+        finally
+        {
+            my_con.Close();
+            my_con.Dispose();
+        }
+        
         return result;
     }
 
@@ -185,6 +190,7 @@ public class mysql_db
 
             }
         }
+        reader.Close();
         my_con.Close();
         return result;
 
@@ -224,8 +230,13 @@ public class mysql_db
             result.Add("status", false);
             result.Add("msg", e.ToString());
         }
-
-        my_con.Close();
+        finally
+        {
+            my_con.Close();
+            my_con.Dispose();
+            
+        }
+       
 
         return result;
     }
@@ -307,8 +318,12 @@ public class mysql_db
             result.Add("status",false);
             result.Add("msg", ex.ToString());
         }
-
-        my_con.Close();
+        finally
+        {
+            my_con.Close();
+            my_con.Dispose();
+        }
+        
 
         return result;
     }
@@ -352,7 +367,12 @@ public class mysql_db
             result.Add("msg",ex.ToString());
             cmd.Transaction.Rollback();
         }
-        my_con.Close();
+        finally
+        {
+            my_con.Close();
+            my_con.Dispose();
+        }
+        
 
 
 
@@ -422,9 +442,11 @@ public class mysql_db
         {
             x2log.logData(cmd.CommandText.ToString(), ex.ToString(), "error fill nkim shifts");
         }
-
-
-        my_con.Close();
+        finally
+        {
+            my_con.Close();
+            my_con.Dispose();
+        }
 
         return result;
     }
@@ -492,9 +514,11 @@ public class mysql_db
         {
             x2log.logData(cmd.CommandText.ToString(), ex.ToString(), "error fill kdhao shifts");
         }
-
-
-        my_con.Close();
+        finally
+        {
+            my_con.Close();
+            my_con.Dispose();
+        }
 
         return result;
     }
@@ -563,9 +587,11 @@ public class mysql_db
         {
             x2log.logData(cmd.ToString(), ex.ToString(), "error fill doc shifts");
         }
-        
-
-        my_con.Close();
+        finally
+        {
+            my_con.Close();
+            my_con.Dispose();
+        }
 
         return result;
     }
@@ -590,7 +616,7 @@ public class mysql_db
                 reader.GetBytes(0,0,result,0, size);
             }
         }
-
+        reader.Close();
         my_con.Close();
 
         return result;
@@ -634,7 +660,11 @@ public class mysql_db
             result.Add("msg",ex.ToString());
             cmd.Transaction.Rollback();
         }
-        my_con.Close();
+        finally
+        {
+            my_con.Close();
+            my_con.Dispose();
+        }
         return result;
     }
 
@@ -678,7 +708,11 @@ public class mysql_db
             result.Add("msg",ex.ToString());
             cmd.Transaction.Rollback();
         }
-        my_con.Close();
+        finally
+        {
+            my_con.Close();
+            my_con.Dispose();
+        }
         return result;
     }
 
@@ -758,11 +792,15 @@ public class mysql_db
             trans1.Rollback();
 
         }
-        my_con.Close();
+        finally
+        {
+            my_con.Close();
+            my_con.Dispose();
+        }
 
 
 
-       return result;
+        return result;
     }
 
     
@@ -849,7 +887,7 @@ public class mysql_db
             result.Add("sql", query);
 
         }
-        //my_con.Close();
+        
         return result;
 
     }
@@ -929,8 +967,12 @@ public class mysql_db
             result.Add("sql", query);
             trans1.Rollback();
           
-        } 
-        my_con.Close();
+        }
+        finally
+        {
+            my_con.Close();
+            my_con.Dispose();
+        }
         return result;
 
     }
@@ -971,7 +1013,11 @@ public class mysql_db
             //result.Add("query", query);
             x2log.logData(result, e.ToString(), "error wrong sql in executeArr()");
         }
-        my_con.Close();
+        finally
+        {
+            my_con.Close();
+            my_con.Dispose();
+        }
 
         return result;
     }
@@ -1010,7 +1056,11 @@ public class mysql_db
             result.Add("query", query);
             x2log.logData(result, e.ToString(), "error wrong sql in execute()");
         }
-        my_con.Close();
+        finally
+        {
+            my_con.Close();
+            my_con.Dispose();
+        }
 
         return result;
 
@@ -1091,7 +1141,11 @@ public class mysql_db
         {
             x2log.logData(cmd.CommandText.ToString(), e.ToString(), "error in dk shifts");
         }
-        my_con.Close();
+        finally
+        {
+            my_con.Close();
+            my_con.Dispose();
+        }
 
         return result;
     }
@@ -1151,6 +1205,7 @@ public class mysql_db
                     }
 
                 }
+                reader.Close();
             }
 
         }
@@ -1161,7 +1216,12 @@ public class mysql_db
             result.Add("msg", e.ToString());
             result.Add("sql", this.parseQuery(query.ToString()));
         }
-        my_con.Close();
+        finally
+        {
+            
+            my_con.Close();
+            my_con.Dispose();
+        }
         //cmd.
 
         return result;
@@ -1229,7 +1289,11 @@ public class mysql_db
             result.Add("msg", e.ToString());
             result.Add("sql", this.parseQuery(query.ToString()));
         }
-        my_con.Close();
+        finally
+        {
+            my_con.Close();
+            my_con.Dispose();
+        }
 
 
         return result;
@@ -1300,7 +1364,12 @@ public class mysql_db
         {
             x2log.logData(this.parseQuery(query.ToString()), ex.ToString(), "error wrong sql in getTable()");
         }
-        my_con.Close();
+        finally
+        {
+            
+            my_con.Close();
+            my_con.Dispose();
+        }
 
 
         return result;
@@ -1326,11 +1395,17 @@ public class mysql_db
                     result.Add(reader["idf"].ToString(), reader["label"].ToString());
                 }
             }
+            
         }
         catch (Exception e)
         {
             x2log.logData(query, e.ToString(), "getLabels error");
             result.Add("status", false);
+        }
+        finally
+        {
+            my_con.Close();
+            my_con.Dispose();
         }
         return result;
     }
@@ -1396,7 +1471,11 @@ public class mysql_db
         {
             x2log.logData(this.parseQuery(query.ToString()), ex.ToString(), "error wrong sql in getTableSL()");
         }
-        my_con.Close();
+        finally
+        {
+            my_con.Close();
+            my_con.Dispose();
+        }
 
 
         return result;
@@ -1464,7 +1543,11 @@ public class mysql_db
             //result.Add("sql", query);
 
         }
-        my_con.Close();
+        finally
+        {
+            my_con.Close();
+            my_con.Dispose();
+        }
         return result;
 
     }

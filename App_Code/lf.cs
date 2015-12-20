@@ -35,6 +35,7 @@ public class lf : mysql_db
 
         byte[] result = (byte[])my_com.ExecuteScalar();
         my_con.Close();
+        my_con.Dispose();
         return result;
 
     }
@@ -66,7 +67,9 @@ public class lf : mysql_db
 
             }
         }
+        reader.Close();
         my_con.Close();
+        my_con.Dispose();
         return result;
 
     }
@@ -108,7 +111,12 @@ public class lf : mysql_db
             result.Add("msg", ex.ToString());
             cmd.Transaction.Rollback();
         }
-        my_con.Close();
+        finally
+        {
+            my_con.Close();
+            my_con.Dispose();
+        }
+        
         return result;
     }
 
@@ -132,9 +140,9 @@ public class lf : mysql_db
                 reader.GetBytes(0, 0, result, 0, size);
             }
         }
-
+        reader.Close();
         my_con.Close();
-
+        my_con.Dispose();
         return result;
 
     }
@@ -179,7 +187,12 @@ public class lf : mysql_db
             result.Add("msg", ex.ToString());
             cmd.Transaction.Rollback();
         }
-        my_con.Close();
+        finally
+        {
+            my_con.Close();
+            my_con.Dispose();
+        }
+       
         return result;
     }
 
@@ -245,6 +258,7 @@ public class lf : mysql_db
 
             cmd.Transaction.Rollback();
             my_con.Close();
+            my_con.Dispose();
             x2log.logData(query, ex.ToString(), "error to delete folder step1");
             status = false;
             result.Add("status", false);
@@ -265,6 +279,7 @@ public class lf : mysql_db
             {
                 cmd.Transaction.Rollback();
                 my_con.Close();
+                my_con.Dispose();
                 status = false;
                 x2log.logData(query, ex.ToString(), "error to delete folder step2");
                 result.Add("status", false);
@@ -277,6 +292,7 @@ public class lf : mysql_db
         {
             cmd.Transaction.Commit();
             my_con.Close();
+            my_con.Dispose();
             result.Add("status", true);
             
         }
@@ -385,7 +401,7 @@ public class lf : mysql_db
 
         return result;
     }
-
+     
 
     public SortedList storeLfData(byte[] content, SortedList lfData, SortedList isStruct)
     {
@@ -465,7 +481,11 @@ public class lf : mysql_db
             result.Add("msg", ex.ToString());
             cmd.Transaction.Rollback();
         }
-        my_con.Close();
+        finally
+        {
+            my_con.Close();
+            my_con.Dispose();
+        }
 
         return result;
     }

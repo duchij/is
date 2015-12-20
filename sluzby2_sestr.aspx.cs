@@ -327,17 +327,20 @@ public partial class sluzby2_sestr : System.Web.UI.Page
                                 newItem[doc] = new System.Web.UI.WebControls.ListItem(tmp[1].ToString(), tmp[0].ToString());
                             }
                             dl.Items.AddRange(newItem);
-                            dl.AutoPostBack = true;
-                            dl.SelectedIndexChanged += new EventHandler(dItemChanged_2);
-                            
+                            //dl.AutoPostBack = true;
+                            //dl.SelectedIndexChanged += new EventHandler(dItemChanged_2);
+
+                            dl.Attributes.Add("onChange", "saveNurseShifts('" + dl.ID.ToString() + "');");
+
                             dataCell.Controls.Add(dl);
 
                             TextBox comment = new TextBox();
                             comment.ID = "textBox_" + rDay.ToString() + "_" + ddls[cnt];
                             comment.Text = "-";
-                            comment.AutoPostBack = true;
-                            comment.TextChanged += new EventHandler(commentChanged_2);
+                           // comment.AutoPostBack = true;
+                           // comment.TextChanged += new EventHandler(commentChanged_2);
 
+                            comment.Attributes.Add("onChange", "saveNurseShiftComment('" + comment.ID.ToString() + "');");
 
                             dataCell.Controls.Add(comment);
 
@@ -378,16 +381,18 @@ public partial class sluzby2_sestr : System.Web.UI.Page
                             newItem[doc] = new System.Web.UI.WebControls.ListItem(tmp[1].ToString(), tmp[0].ToString());
                         }
                         dl1.Items.AddRange(newItem);
-                        dl1.AutoPostBack = true;
-                        dl1.SelectedIndexChanged += new EventHandler(dItemChanged_2);
-
+                        //dl1.AutoPostBack = true;
+                        //dl1.SelectedIndexChanged += new EventHandler(dItemChanged_2);
+                        dl1.Attributes.Add("onChange", "saveNurseShifts('" + dl1.ID.ToString() + "');");
                         dataCell.Controls.Add(dl1);
 
                         TextBox comment = new TextBox();
                         comment.ID = "textBox_" + rDay.ToString() + "_" + groups[col];
                         comment.Text = "-";
-                        comment.AutoPostBack = true;
-                        comment.TextChanged += new EventHandler(commentChanged_2);
+                        //comment.AutoPostBack = true;
+                        //comment.TextChanged += new EventHandler(commentChanged_2);
+                        comment.Attributes.Add("onChange", "saveNurseShiftComment('" + comment.ID.ToString() + "');");
+
                         dataCell.Controls.Add(comment);
                         dataRow.Controls.Add(dataCell);
                     }
@@ -512,12 +517,12 @@ public partial class sluzby2_sestr : System.Web.UI.Page
                         DropDownList ddl = (DropDownList)crtl;
 
                         ddl.SelectedValue = table[day]["users_ids"].ToString();
-                        ddl.SelectedIndexChanged += new EventHandler(dItemChanged_2);
+                        //ddl.SelectedIndexChanged += new EventHandler(dItemChanged_2);
 
                         Control crtl1 = ctpl.FindControl("textBox_" + rDay.ToString() + "_" + table[day]["type1"].ToString());
                         TextBox textBox = (TextBox)crtl1;
                         textBox.Text = table[day]["comment"].ToString();
-                        textBox.TextChanged += new EventHandler(commentChanged_2);
+                        //textBox.TextChanged += new EventHandler(commentChanged_2);
                     }
                     else
                     {
@@ -549,12 +554,12 @@ public partial class sluzby2_sestr : System.Web.UI.Page
                             DropDownList ddl = (DropDownList)crtl;
 
                             ddl.SelectedValue = userId[col];
-                            ddl.SelectedIndexChanged += new EventHandler(dItemChanged_2);
+                            //ddl.SelectedIndexChanged += new EventHandler(dItemChanged_2);
 
                             Control crtl1 = ctpl.FindControl("textBox_" + rDay.ToString() + "_" + type[col]);
                             TextBox textBox = (TextBox)crtl1;
                             textBox.Text = comments[col];
-                            textBox.TextChanged += new EventHandler(commentChanged_2);
+                            //textBox.TextChanged += new EventHandler(commentChanged_2);
                         }
                         else
                         {
