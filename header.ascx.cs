@@ -161,18 +161,14 @@ public partial class header : System.Web.UI.UserControl
         if (this.wgroup == "doctor" || this.wgroup == "op" || this.wgroup == "other")
         {
 
-            query = @"SELECT 
-                            [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],
-                            [t_sluzb].[state] AS [state],
-                            GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [users_ids],
-                            GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],
-                            GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [comment],
-                            [t_sluzb].[date_group] AS [dategroup]
-                        FROM [is_sluzby_2] AS [t_sluzb]
-                                LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]
-                        WHERE [t_sluzb].[datum]='{0}' OR [t_sluzb].[datum]='{1}'
-                        GROUP BY [t_sluzb].[datum]
-                        ORDER BY [t_sluzb].[datum] DESC";
+            query = @"
+                        SELECT 
+                                GROUP_CONCAT(CONCAT_WS(';',[t_sluz.typ],[t_user.name3],[t_sluz.comment]) SEPARATOR '|') AS [sluzba]
+                                FROM [is_sluzby_2] AS [t_sluz] 
+                            INNER JOIN [is_users] AS [t_user] ON [t_user.id] = [t_sluz.user_id]
+                                WHERE [t_sluz.datum]='{0}' OR  [t_sluz.datum]='{1}'
+                                    GROUP BY [t_sluz.datum]
+                                    ORDER BY [t_sluz.datum] DESC";
 
             query = x2Mysql.buildSql(query, new string[] { my_x2.unixDate(vcera), my_x2.unixDate(dnes) });
 
@@ -198,18 +194,73 @@ public partial class header : System.Web.UI.UserControl
         {
             if (this.wgroup == "doctor" || this.wgroup=="other")
             {
-                string[] docBefore = table[0]["users_names"].ToString().Split(';');
-                string[] comments = table[0]["comment"].ToString().Split('|');
                 
-                // string[] docAfter = table[1]["users_names"].ToString().Split(';');
+                this.oup_lbl.Text = "";
+                this.odda_lbl.Text = "";
+                this.oddb_lbl.Text = "";
+                this.op_lbl.Text = "";
+                this.trp_lbl.Text = "";
+                string[] sluzbDnes = table[0]["sluzba"].ToString().Split('|');
 
-                this.oup_lbl.Text = docBefore[0].ToString() + "<br>" + comments[0].ToString();
-                this.odda_lbl.Text = docBefore[1].ToString() + "<br>" + comments[1].ToString();
-                this.oddb_lbl.Text = docBefore[2].ToString() + "<br>" + comments[2].ToString();
-                this.op_lbl.Text = docBefore[3].ToString() + "<br>" + comments[3].ToString();
-                this.trp_lbl.Text = docBefore[4].ToString() + "<br>" + comments[4].ToString();
+                int sluzLn = sluzbDnes.Length;
 
-                this.po_lbl.Text = table[1]["users_names"].ToString();
+                SortedList sluzba = new SortedList();
+                SortedList notes = new SortedList();
+                for (int s=0; s< sluzLn; s++)
+                {
+                    string[] tmp = sluzbDnes[s].Split(';');
+                    sluzba.Add(tmp[0], tmp[1]);
+                    notes.Add(tmp[0], tmp[2]);
+                }
+
+                if (sluzba["OUP"] != null)
+                {
+                    this.oup_lbl.Text = sluzba["OUP"].ToString() + "<br>" + notes["OUP"].ToString();
+                }
+                if (sluzba["OddA"] != null)
+                {
+                    this.odda_lbl.Text = sluzba["OddA"].ToString() + "<br>" + notes["OddA"].ToString();
+                }
+               
+                if (sluzba["OddB"] != null)
+                {
+                    this.oddb_lbl.Text = sluzba["OddB"].ToString() + "<br>" + notes["OddB"].ToString();
+                }
+                    
+                if (sluzba["OP"] != null)
+                {
+                    this.op_lbl.Text = sluzba["OP"].ToString() + "<br>" + notes["OP"].ToString();
+                }
+
+                if (sluzba["Prijm"]!=null)
+                {
+                    this.trp_lbl.Text = "Prijm:"+sluzba["Prijm"].ToString() + "<br>" + notes["Prijm"].ToString();
+                }
+                if (sluzba["Vseob"] != null)
+                {
+                    this.trp_lbl.Text +="<br>Vseob:"+ sluzba["Vseob"].ToString() + "<br>" + notes["Vseob"].ToString();
+                }
+                if (sluzba["Uraz"] != null)
+                {
+                    this.trp_lbl.Text += "<br>Uraz:" + sluzba["Uraz"].ToString() + "<br>" + notes["Uraz"].ToString();
+                }
+
+                string[] sluzbaVcera = table[1]["sluzba"].ToString().Split('|');
+                int vceraLn = sluzbaVcera.Length;
+
+                sluzba.Clear();
+                
+                for (int v=0; v<vceraLn; v++)
+                {
+                    string[] tmp = sluzbaVcera[v].Split(';');
+                    sluzba.Add(tmp[0], tmp[1] + "<em> /" + tmp[2] + "/</em>");
+                }
+                this.po_lbl.Text = "<p class='small'>";
+                foreach (DictionaryEntry row in sluzba)
+                {
+                    this.po_lbl.Text += row.Value.ToString()+"("+row.Key.ToString()+"), ";
+                }
+                this.po_lbl.Text += "</p>";
 
                 date_lbl.Text = DateTime.Today.ToLongDateString();
 

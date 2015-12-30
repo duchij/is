@@ -9,17 +9,24 @@
     <link href="http://is.kdch.sk/css/style.css" rel="stylesheet" type="text/css" />
 <link href="http://is.kdch.sk/css/print.css" rel="stylesheet" type="text/css" media="print"/>
     <style type="text/css">
+
+        body {
+            font-size:10px;
+        }
         .menoLbl {
             font-size: 11px;
         }
         .commentLbl {
             font-size: 9px;
         }
+        .small {
+            font-size:small;
+        }
 
 
     </style>
 </head>
-<body style="font-family:Arial, Helvetica, sans-serif,arial; font-size:11px;">
+<body>
     <form id="form1" runat="server">
 
 

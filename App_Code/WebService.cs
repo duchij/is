@@ -216,6 +216,53 @@ public class WebService : System.Web.Services.WebService {
         return js2.Serialize(rtData).ToString();
     }
 
+    [WebMethod(EnableSession = true)]
+    public string saveKDCHDocShiftsComment(string data)
+    {
+        JavaScriptSerializer js1 = new JavaScriptSerializer();
+
+        Dictionary<string, string> obj = js1.Deserialize<Dictionary<string, string>>(data);
+
+        SortedList shiftsData = new SortedList();
+        shiftsData.Add("clinic", Session["klinika_id"]);
+
+        DateTime dt = x2.UnixToMsDateTime(obj["date"]);
+
+        shiftsData.Add("datum", x2.unixDate(dt));
+        int user_id = Convert.ToInt32(obj["user_id"]);
+
+        if (user_id == 0)
+        {
+            shiftsData.Add("user_id", null);
+        }
+        else
+        {
+            shiftsData.Add("user_id", user_id);
+        }
+        
+        shiftsData.Add("typ", obj["type"].ToString());
+        shiftsData.Add("comment", obj["comment"].ToString());
+        shiftsData.Add("date_group", x2.makeDateGroup(dt.Year, dt.Month));
+
+        SortedList res = x2Mysql.mysql_insert("is_sluzby_2", shiftsData);
+
+        Dictionary<string, string> rtData = new Dictionary<string, string>();
+
+        if ((Boolean)res["status"])
+        {
+            rtData["status"] = "true";
+        }
+        else
+        {
+            rtData["status"] = "false";
+            rtData["msg"] = res["msg"].ToString();
+        }
+        //Session["lfSelTab"] = obj["selTab"].ToString();
+        JavaScriptSerializer js2 = new JavaScriptSerializer();
+        return js2.Serialize(rtData).ToString();
+    }
+
+
 
     [WebMethod(EnableSession = true)]
     public string saveDocShifts(string data)
@@ -233,7 +280,54 @@ public class WebService : System.Web.Services.WebService {
         shiftsData.Add("user_id", Convert.ToInt32(obj["user_id"]));
         shiftsData.Add("typ", obj["type"].ToString());
         shiftsData.Add("date_group", x2.makeDateGroup(dt.Year, dt.Month));
-        SortedList res = x2Mysql.mysql_insert("is_sluzby_all", shiftsData);
+        SortedList res = new SortedList();
+        if (Session["rights"].ToString() == "users" && (Session["user_id"].ToString() != obj["user_id"]))
+        {
+            res["status"] = false;
+            res["msg"] = "Nemozete druhemu naplanovat sluzbu nemate pristupove pravo...";
+        }
+        else
+        {
+            res = x2Mysql.mysql_insert("is_sluzby_all", shiftsData);
+        }
+
+        Dictionary<string, string> rtData = new Dictionary<string, string>();
+
+        if ((Boolean)res["status"])
+        {
+            rtData["status"] = "true";
+        }
+        else
+        {
+            rtData["status"] = "false";
+            rtData["msg"] = res["msg"].ToString();
+        }
+        //Session["lfSelTab"] = obj["selTab"].ToString();
+        JavaScriptSerializer js2 = new JavaScriptSerializer();
+        return js2.Serialize(rtData).ToString();
+    }
+
+
+    [WebMethod(EnableSession = true)]
+    public string saveKDCHDocShifts(string data)
+    {
+        JavaScriptSerializer js1 = new JavaScriptSerializer();
+
+        Dictionary<string, string> obj = js1.Deserialize<Dictionary<string, string>>(data);
+
+        SortedList shiftsData = new SortedList();
+        shiftsData.Add("clinic", Session["klinika_id"]);
+
+        DateTime dt = x2.UnixToMsDateTime(obj["date"]);
+
+        shiftsData.Add("datum", x2.unixDate(dt));
+        shiftsData.Add("user_id", Convert.ToInt32(obj["user_id"]));
+        shiftsData.Add("typ", obj["type"].ToString());
+        shiftsData.Add("date_group", x2.makeDateGroup(dt.Year, dt.Month));
+        SortedList res = new SortedList();
+       
+        res = x2Mysql.mysql_insert("is_sluzby_2", shiftsData);
+        
 
         Dictionary<string, string> rtData = new Dictionary<string, string>();
 
@@ -264,22 +358,6 @@ public class WebService : System.Web.Services.WebService {
     }
 
 
-    //[WebMethod]
-    ////[System.Web.Script.Services.ScriptMethod(UseHttpGet = true)]
-    //public string HelloWorld(List<data> kilo) {
-
-    //    foreach (var row in kilo){
-
-    //    }
-
-    //    JavaScriptSerializer js = new JavaScriptSerializer();
-    //    data ds = new data();
-    //    ds.test = "23";
-    //    ds.pokus = "test";
-
-    //   // return "{'lalal':'test'}"; 
-    //    return js.Serialize(ds).ToString();
-    //}
 
     [WebMethod]
     public string loadNews(string data)

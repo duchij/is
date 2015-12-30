@@ -56,90 +56,6 @@
     <asp:Table ID="dovolenky_tab" runat="server" CssClass="responsive" data-max="15"></asp:Table>
     <br />
 
-
-     <%-- <asp:PlaceHolder ID="vkladanie_dov" runat="server">
-
-        <hr />
-
-
-
-
-      <table width="99%">
-
-            <td valign="top">Pracovník</td>
-
-
-            </tr>
-                 <tr>
-                     <td valign="top">
-                         <asp:DropDownList ID="zamestnanci" runat="server" AutoPostBack="True" OnSelectedIndexChanged="changeDovStatus_fnc">
-                         </asp:DropDownList>
-                     </td>
-                     <td>Právo na dovolenku:<br />
-                         <asp:TextBox ID="dovolenkaPravo_txt" runat="server" Width="60px"></asp:TextBox>
-                     </td>
-                     <td>Zostatok:<br />
-                         <asp:TextBox ID="dovolenkaZost_txt" runat="server" ReadOnly="true" Width="60px"></asp:TextBox>
-                         <asp:Button ID="check_btn" runat="server" Text="<%$ Resources:Resource, dov_prepoc %>" OnClick="checkDovStatusFnc" />
-                     </td>
-                 </tr>
-            <tr>
-                <td></td>
-                <td valign="top">Od:</td>
-                <td valign="top">Do:</td>
-            </tr>
-            <tr>
-                <td></td>
-                <td valign="top">
-                    <asp:Calendar ID="od_cal" runat="server" BackColor="White"
-                        BorderColor="#999999" CellPadding="4" DayNameFormat="Shortest"
-                        Font-Names="Verdana" Font-Size="8pt" ForeColor="Black" Height="180px"
-                        Width="200px">
-                        <SelectedDayStyle BackColor="#CCCCFF" Font-Bold="True" />
-                        <SelectorStyle BackColor="#FFCC66" />
-                        <TodayDayStyle BackColor="#FFCC66" ForeColor="White" />
-                        <OtherMonthDayStyle ForeColor="#CC9966" />
-                        <NextPrevStyle Font-Size="9pt" ForeColor="#FFFFCC" />
-                        <DayHeaderStyle BackColor="#FFCC66" Font-Bold="True" Height="1px" />
-                        <TitleStyle BackColor="#990000" Font-Bold="True" Font-Size="9pt"
-                            ForeColor="#FFFFCC" />
-                    </asp:Calendar>
-                </td>
-                <td valign="top">
-                    <asp:Calendar ID="do_cal" runat="server" BackColor="White"
-                        BorderColor="#999999" CellPadding="4" DayNameFormat="Shortest"
-                        Font-Names="Verdana" Font-Size="8pt" ForeColor="Black" Height="180px"
-                        Width="200px">
-                        <SelectedDayStyle BackColor="#CCCCFF" Font-Bold="True" />
-                        <SelectorStyle BackColor="#FFCC66" />
-                        <TodayDayStyle BackColor="#FFCC66" ForeColor="White" />
-                        <OtherMonthDayStyle ForeColor="#CC9966" />
-                        <NextPrevStyle Font-Size="9pt" ForeColor="#FFFFCC" />
-                        <DayHeaderStyle BackColor="#FFCC66" Font-Bold="True" Height="1px" />
-                        <TitleStyle BackColor="#990000" Font-Bold="True" Font-Size="9pt"
-                            ForeColor="#FFFFCC" />
-                    </asp:Calendar>
-                </td>
-                <td></td>
-            </tr>
-
-            <tr>
-                <td colspan="3" align="right">
-                    <asp:Button ID="save_btn" runat="server" Text="Uloz" OnClick="save_btn_Click" />
-                </td>
-            </tr>
-
-        </table>
-        <asp:Label ID="warning_lbl" runat="server" Visible="false"></asp:Label>
-        <hr />
-        <h2>
-            <asp:Label ID="all_vacations" runat="server" Text="<%$ Resources:Resource, vacation_all %>"></asp:Label><asp:Label ID="month_lbl" runat="server" Text=""></asp:Label></h2>
-        <asp:Table ID="zoznam_tbl" runat="server">
-        </asp:Table>
-        <hr />
-    </asp:PlaceHolder>--%>
-
-
     <asp:PlaceHolder ID="uziv_dovolenka" runat="server">
 
         <hr />
@@ -191,7 +107,7 @@
 
                 <div class="row">
                     <div class="one fourth">
-                        <asp:DropDownList ID="nurses_dl" runat="server" AutoPostBack="true" OnSelectedIndexChanged="loadDovByIdFnc"></asp:DropDownList></div>
+                        Sestra:<asp:DropDownList ID="nurses_dl" runat="server" AutoPostBack="true" OnSelectedIndexChanged="loadDovByIdFnc" Width="150" CssClass="mojInline"></asp:DropDownList></div>
                     <div class="one fourth">
                     <asp:DropDownList ID="freeType_dl" runat="server">
                          <asp:ListItem Value="do" Text="<%$ Resources:Resource,free_do %>"></asp:ListItem>
@@ -202,7 +118,7 @@
                          <asp:ListItem Value="le" Text="<%$ Resources:Resource,free_le %>"></asp:ListItem>
                         </asp:DropDownList>
                         </div>
-                    <div class="one fourth"> Poznamka:<asp:TextBox ID="comment_txt" runat="server" CssClass="mojInline" Width="200"></asp:TextBox></div>
+                    <div class="one fourth"><asp:TextBox ID="comment_txt" runat="server" CssClass="mojInline" Width="250" placeholder="Poznamka"></asp:TextBox></div>
                     <div class="one fourth align-right">
                     <asp:Button ID="Button2" runat="server" CssClass="large button blue" Text="<%$ Resources:Resource, save %>" OnClick="save_user_btn_Click" />
                         </div>         <asp:Label ID="statusInfo_lbl" runat="server" Visible="true" Text=""></asp:Label>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Text;
 using System.Globalization;
 using System.Collections;
@@ -11,142 +12,842 @@ using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
 
-public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
+public partial class controls_kdch_shifts : System.Web.UI.UserControl
 {
     public mysql_db x2Mysql = new mysql_db();
     public x2_var x2 = new x2_var();
     public sluzbyclass x2Sluzby = new sluzbyclass();
     log x2log = new log();
-    public string rights = "";
+
+    public string  rights = "";
+    public string deps = "";
     public string[] shiftType;
-    public string wgroup = "";
+    public string gKlinika = "";
+    public string clinicIdf="kdch";
+
+    private string state = "";
+    Boolean userControl = false;
+
 
     protected void Page_Init(object sender, EventArgs e)
     {
-         if (Session["tuisegumdrum"] == null)
-        {
-            Response.Redirect("error.html");
-        }
+       
     }
-    
 
     protected void Page_Load(object sender, EventArgs e)
     {
-       
+        if (Session["tuisegumdrum"] == null)
+        {
+            Response.Redirect("error.html");
+        }
+
+        x2.fillYearMonth(ref this.mesiac_cb, ref this.rok_cb, Session["month_dl"].ToString(), Session["years_dl"].ToString());
 
         this.msg_lbl.Text = "";
 
+        this.deps = Session["oddelenie"].ToString();
         this.rights = Session["rights"].ToString();
-        this.wgroup = Session["workgroup"].ToString();
+        this.gKlinika = Session["klinika_id"].ToString().ToLower();
+       // this.editShiftView_pl.Visible = true;
 
-        //this.gKlinika = Session["klinika"].ToString().ToLower();
-
-        this.initLabels();
-
-        if ((this.rights.IndexOf("admin")!=-1 || this.rights == "poweruser") && this.wgroup == "doctor")
+        if (this.rights.IndexOf("admin") != -1 || this.rights == "poweruser")
         {
-            this.kdch_pl.Visible = true;
-            this.edit_chk.Visible = true;
-
+            this.editShiftView_pl.Visible = true;
+            this.publish_btn.Visible = true;
+            this.unpublish_btn.Visible = true;
         }
         else
         {
-            this.kdch_pl.Visible = false;
-            this.edit_chk.Visible = false;
+            this.editShiftView_pl.Visible = false;
+            this.publish_btn.Visible = false;
+            this.unpublish_btn.Visible = false;
         }
+        this.state = this.getState();
+       
 
-        string type = this.getShiftStateKDCH();
-
-        if (!IsPostBack)
+        if (IsPostBack == false)
         {
             this.setMonthYear();
-            
 
-            if (type == "active")
+            if (this.state == "active")
             {
-                this.edit_chk.Checked = false;
+                this.editShift_chk.Checked = false;
             }
             else
             {
-                this.edit_chk.Checked = true;
+                this.editShift_chk.Checked = true;
             }
 
-            if (type == "active" || (this.rights.IndexOf("admin") != -1 || this.rights == "poweruser"))
-            {
 
-                this.generateShiftTable();
-            }
 
+            this.drawTable();
+        }
+        else
+        {
+            this.shiftTable.Controls.Clear();
+            this.drawTable();
+        }
+
+        
+    }
+
+    protected string getState()
+    {
+        string query = @"SELECT [state] FROM [is_sluzby_2] WHERE [date_group]='{0}' AND [clinic]='{1}' GROUP BY [state]";
+
+        int rok = Convert.ToInt32(this.rok_cb.SelectedValue.ToString());
+        int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue.ToString());
+
+        int dateGroup = x2.makeDateGroup(rok, mesiac);
+
+
+        query = x2Mysql.buildSql(query, new string[] {dateGroup.ToString(),this.gKlinika.ToString()});
+
+        SortedList row = x2Mysql.getRow(query);
+        string result;
+        if (row["state"] != null)
+        {
+            result = row["state"].ToString();
 
         }
         else
         {
-            if (type == "active" || (this.rights.IndexOf("admin") != -1 || this.rights == "poweruser"))
-            {
-
-                this.generateShiftTable();
-            }
-            //this.shiftTable.Controls.Clear();
-            //Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
-
-            //ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
-            // CheckBox chk = (CheckBox)FindControl("edit_chk");
-            // this.msg_lbl.Text = this.edit_chk.Checked.ToString();
-            //this.loadSluzby();
+            result = "draft";
         }
-        //this.generateShiftTable();
-    }
 
-    protected void initLabels()
-    {
-        this.editChk_lbl.Text = "Editovat";
+        return result;
     }
 
     protected void changeSluzba(object sender, EventArgs e)
     {
-        this.shiftTable.Controls.Clear();
-        string type = this.getShiftStateKDCH();
-        if (type == "active")
+        string state = this.getState();
+        if (state == "active")
         {
-            this.edit_chk.Checked = false;
+            this.editShift_chk.Checked = true;
         }
         else
         {
-            this.edit_chk.Checked = true;
+            this.editShift_chk.Checked = false;
         }
+		
+		int rok = Convert.ToInt32(this.rok_cb.SelectedValue.ToString());
+		int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue.ToString());
+		int days = DateTime.DaysInMonth(rok, mesiac);
+		this.days_lbl.Text = days.ToString();
+        this.shiftTable.Controls.Clear();
+        this.drawTable();
+        
+    }
 
-        this.generateShiftTable();
+    protected void changeDeps_fnc(object sender, EventArgs e)
+    {
+        string state = this.getState();
+        if (state == "active")
+        {
+            this.editShift_chk.Checked = true;
+        }
+        else
+        {
+            this.editShift_chk.Checked = false;
+        }
+        this.editShift_chk.Checked = false;
+        this.drawTable();
     }
 
     protected void setMonthYear()
     {
         DateTime dnes = DateTime.Today;
+		
+		//int days = Date
+		
         int mesiac = dnes.Month;
         int rok = dnes.Year;
-
+		int days = DateTime.DaysInMonth(rok, mesiac);
+		this.days_lbl.Text = days.ToString();
         this.mesiac_cb.SelectedValue = mesiac.ToString();
         this.rok_cb.SelectedValue = rok.ToString();
     }
 
-    protected string getShiftStateKDCH()
+    protected void loadDeps()
     {
-        int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue);
-        int rok = Convert.ToInt32(this.rok_cb.SelectedValue);
-
-        int dateGroup = x2.makeDateGroup(rok, mesiac);
-
         StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("SELECT [state] FROM [is_sluzby_2] WHERE [date_group]='{0}' AND [clinic]='{1}' GROUP BY [state]", dateGroup,Session["klinika_id"]);
+        sb.AppendFormat("SELECT * FROM [is_deps] WHERE [clinic_id]='{0}'", Session["klinika_id"]);
 
-        SortedList row = x2Mysql.getRow(sb.ToString());
-        if (row.Count == 0)
+        Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
+
+        this.deps_dl.Items.Clear();
+        int depsLn = table.Count;
+        System.Web.UI.WebControls.ListItem[] newItem = new System.Web.UI.WebControls.ListItem[depsLn];
+       // this.deps_dl.Items.Clear();
+        for (int dep = 0; dep < depsLn; dep++)
         {
-            row["state"] = "draft";
+            if (this.rights == "admin" || this.rights == "poweruser")
+            {
+                this.deps_dl.Items.Add(new System.Web.UI.WebControls.ListItem(table[dep]["label"].ToString(), table[dep]["idf"].ToString()));
+            }
+            else
+            {
+                if (this.deps == table[dep]["idf"].ToString() && this.rights == "users")
+                {
+                    this.deps_dl.Items.Add(new System.Web.UI.WebControls.ListItem(table[dep]["label"].ToString(), table[dep]["idf"].ToString()));
+                }
+            }
         }
-        return row["state"].ToString();
+       // this.deps_dl.Items.AddRange(newItem);
+
 
     }
+
+    protected void drawTable()
+    {
+        string query = @"SELECT [name],[data] FROM [is_settings] WHERE [name]='{0}'";
+
+        string idf = this.clinicIdf + "_shift_doctors";
+
+        query = x2Mysql.buildSql(query, new string[] { idf });
+
+        SortedList row = x2Mysql.getRow(query);
+
+        string data = row["data"].ToString();
+        
+        this.parseMultiTable(data);
+        
+    }
+
+    protected void parseMultiTable(string data)
+    {
+        string[] freeDays = Session["freedays"].ToString().Split(',');
+
+        this.shiftTable.Controls.Clear();
+        string mesiac = this.mesiac_cb.SelectedValue.ToString();
+        string rok = this.rok_cb.SelectedValue.ToString();
+
+
+        int daysMonth = DateTime.DaysInMonth(Convert.ToInt32(rok), Convert.ToInt32(mesiac));
+
+        if (mesiac.Length == 1)
+        {
+            mesiac = "0" + mesiac;
+        }
+
+        string dateGroup = rok + mesiac;
+        Session.Add("aktDateGroup", dateGroup);
+
+
+        string[] groups = data.Split(';');
+        ArrayList doctorList = this.loadDoctors(this.deps_dl.SelectedValue.ToString());
+        int grps = groups.Length;
+        TableHeaderRow headRow = new TableHeaderRow();
+
+        TableHeaderCell dayHeadCell = new TableHeaderCell();
+        dayHeadCell.Text = "Datum";
+        headRow.Controls.Add(dayHeadCell);
+
+        for (int i=0; i<grps;i++)
+        {
+            //string[] head = groups[i].Split('_');
+
+            TableHeaderCell headCell = new TableHeaderCell();
+            headCell.HorizontalAlign = HorizontalAlign.Center;
+            string headLbl = groups[i];
+            if (headLbl.IndexOf(",")!=-1)
+            {
+                   headLbl = headLbl.Replace(",", "<br>");
+            }
+            headCell.Text = "<center><strong>" + headLbl + "</center></strong>";
+            
+            headRow.Controls.Add(headCell);
+        }
+        this.shiftTable.Controls.Add(headRow);
+
+        for (int day=0; day<daysMonth; day++)
+        {
+
+            TableRow dataRow = new TableRow();
+
+            TableCell dayCell = new TableCell();
+            int rDay = day+1;
+
+            DateTime myDate = new DateTime(Convert.ToInt32(rok), Convert.ToInt32(mesiac), rDay);
+            int dnesJe = (int)myDate.DayOfWeek;
+            string nazov = CultureInfo.CurrentCulture.DateTimeFormat.DayNames[dnesJe];
+            string sviatok = rDay.ToString() + "." + myDate.Month.ToString();
+            int jeSviatok = Array.IndexOf(freeDays, sviatok);
+
+
+
+            dayCell.Text = rDay.ToString()+". "+nazov;
+            dataRow.Controls.Add(dayCell);
+
+            for (int col=0; col<grps; col++)
+            {
+                TableCell dataCell = new TableCell();
+
+                if (dnesJe == 0 || dnesJe == 6)
+                {
+                    dataCell.CssClass = "box red";
+                }
+
+                if (jeSviatok != -1 && dnesJe != 0 && dnesJe != 6)
+                {
+                    dataCell.CssClass = "box yellow";
+                }
+
+
+                string[] ddls = groups[col].Split(',');
+                if (ddls.Length > 0)
+                {
+                    int dCount = ddls.Length;
+                    for (int cnt = 0; cnt < dCount; cnt++)
+                    {
+
+                        if (this.editShift_chk.Checked && (this.rights.IndexOf("admin") != -1 || this.rights == "poweruser"))
+                        {
+                            DropDownList dl = new DropDownList();
+                            dl.ID = "ddl_" + rDay.ToString() + "_" + ddls[cnt];
+
+                            int listLn = doctorList.Count;
+                            System.Web.UI.WebControls.ListItem[] newItem = new System.Web.UI.WebControls.ListItem[listLn];
+                            
+                            for (int doc = 0; doc < listLn; doc++)
+                            {
+                                string[] tmp = doctorList[doc].ToString().Split('|');
+                                newItem[doc] = new System.Web.UI.WebControls.ListItem(tmp[1].ToString(), tmp[0].ToString());
+                            }
+                            dl.ToolTip = ddls[cnt];
+                            dl.Items.AddRange(newItem);
+                            
+                            //dl.AutoPostBack = true;
+                           // dl.SelectedIndexChanged += new EventHandler(dItemChanged_2);
+                            dl.Attributes.Add("onChange", "saveKDCHDocShifts('" + dl.ID.ToString()+"');");
+                            dataCell.Controls.Add(dl);
+
+                            TextBox comment = new TextBox();
+                            comment.ID = "textBox_" + rDay.ToString() + "_" + ddls[cnt];
+                            comment.Text = "-";
+                            comment.Attributes.Add("onChange", "saveKDCHDocShiftComment('" + comment.ID.ToString() + "');");
+                           // comment.AutoPostBack = true;
+                           // comment.TextChanged += new EventHandler(commentChanged_2);
+
+
+                            dataCell.Controls.Add(comment);
+
+                            dataRow.Controls.Add(dataCell);
+                        }
+                        else
+                        {
+                            Label dl = new Label();
+                            dl.ID = "name_" + rDay.ToString() + "_" + ddls[cnt];
+                            dl.Text = "-";
+                            
+                            dataCell.Controls.Add(dl);
+
+                            Label comment = new Label();
+                            comment.ID = "comment_" + rDay.ToString() + "_" + ddls[cnt];
+                            comment.Text = "-";
+                            dataCell.Controls.Add(comment);
+
+                            dataRow.Controls.Add(dataCell);
+                        }
+                            
+                        
+                    }
+                }
+                else
+                {
+                    if (this.editShift_chk.Checked && (this.rights.IndexOf("admin") != -1 || this.rights == "poweruser"))
+                    {
+                        DropDownList dl1 = new DropDownList();
+                        dl1.ID = "ddl_" + rDay.ToString() + "_" + groups[col];
+
+                        int listLn = doctorList.Count;
+                        System.Web.UI.WebControls.ListItem[] newItem = new System.Web.UI.WebControls.ListItem[listLn];
+
+                        for (int doc = 0; doc < listLn; doc++)
+                        {
+                            string[] tmp = doctorList[doc].ToString().Split('|');
+                            newItem[doc] = new System.Web.UI.WebControls.ListItem(tmp[1].ToString(), tmp[0].ToString());
+                        }
+                        dl1.Items.AddRange(newItem);
+                        //dl1.AutoPostBack = true;
+                        //dl1.SelectedIndexChanged += new EventHandler(dItemChanged_2);
+                        dl1.Attributes.Add("onChange", "saveKDCHDocShifts('" + dl1.ID.ToString() + "');");
+                        dataCell.Controls.Add(dl1);
+
+                        TextBox comment = new TextBox();
+                        comment.ID = "textBox_" + rDay.ToString() + "_" + groups[col];
+                        comment.Text = "-";
+                        //comment.AutoPostBack = true;
+                        //comment.TextChanged += new EventHandler(commentChanged_2);
+                        comment.Attributes.Add("onChange", "saveKDCHDocShiftComment('" + comment.ID.ToString() + "');");
+                        dataCell.Controls.Add(comment);
+                        dataRow.Controls.Add(dataCell);
+                    }
+                    else
+                    {
+                        Label dl = new Label();
+                        dl.ID = "name_" + rDay.ToString() + "_" + groups[col];
+                        dl.Text = "-";
+
+                        dataCell.Controls.Add(dl);
+
+                        Label comment = new Label();
+                        comment.ID = "comment_" + rDay.ToString() + "_" + groups[col];
+                        comment.Text = "-";
+                        dataCell.Controls.Add(comment);
+
+                        dataRow.Controls.Add(dataCell);
+                    }
+                }
+            }
+            if (rDay==DateTime.Today.Day && mesiac==DateTime.Today.Month.ToString())
+            {
+                dataRow.BorderWidth = Unit.Pixel(3);
+                dataRow.BorderStyle = BorderStyle.Solid;
+                dataRow.BorderColor = System.Drawing.Color.Red;
+            }
+
+            this.shiftTable.Controls.Add(dataRow);
+        }
+       this.setShifts();
+    }
+
+    protected void setShifts()
+    {
+        string query = "";
+        string depsIdf = this.deps_dl.SelectedValue.ToString();
+
+        int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue.ToString());
+        int rok = Convert.ToInt32(this.rok_cb.SelectedValue.ToString());
+
+        int dateGroup = x2.makeDateGroup(rok,mesiac);
+
+       // Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+        //ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
+
+        if (this.rights.IndexOf("admin")!=-1 || this.rights == "poweruser")
+        {
+
+            query =  @"SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],
+                            [t_sluzb].[state] AS [state],
+                            GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [users_ids],
+                            GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],
+            GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [comment],
+            [t_sluzb].[date_group] AS [dategroup] 
+            FROM [is_sluzby_2] AS [t_sluzb]
+            LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id] 
+            WHERE [t_sluzb].[date_group] = '{0}' 
+            AND [t_sluzb].[clinic] = '{1}' 
+            GROUP BY [t_sluzb].[datum]
+            ORDER BY [t_sluzb].[datum]";
+        }
+        else
+        {
+            query = @"SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],
+                [t_sluzb].[state] AS [state],
+                GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [users_ids],
+                GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],
+                GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [comment],
+                [t_sluzb].[date_group] AS [dategroup]
+                FROM [is_sluzby_2] AS [t_sluzb]
+                LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]
+                    WHERE [t_sluzb].[date_group] = '{0}' 
+                -- AND [t_sluzb].[state]='active'
+                AND [t_sluzb].[clinic] = '{1}' 
+                GROUP BY [t_sluzb].[datum]
+                ORDER BY [t_sluzb].[datum]";
+        }
+
+        int daysMonth = DateTime.DaysInMonth(rok, mesiac);
+
+
+        query = x2Mysql.buildSql(query,new string[] {dateGroup.ToString(), this.gKlinika});
+
+        Dictionary<int,Hashtable> table = x2Mysql.getTable(query);
+
+        int tblCnt = table.Count;
+        if (tblCnt > 0)
+        {
+
+        
+            if (this.rights == "admin" || this.rights == "poweruser")
+            {
+                string state = table[0]["state"].ToString();
+
+                if (state == "active")
+                {
+                    this.shiftState_lbl.Text = Resources.Resource.shifts_see_all;
+                    //this.publish_cb.ch
+                }
+                else
+                {
+                    this.shiftState_lbl.Text = Resources.Resource.shifts_see_limited;
+                }
+            }
+
+            for (int day=0; day<tblCnt; day++)
+            {
+                
+                int rDay = Convert.ToDateTime(x2.UnixToMsDateTime(table[day]["datum"].ToString())).Day;
+                string[] names = table[day]["users_names"].ToString().Split(';');
+                string[] userId = table[day]["users_ids"].ToString().Split('|');
+                string[] comments = table[day]["comment"].ToString().Split('|');
+                string[] type = table[day]["type1"].ToString().Split(';');
+
+                int tpLn = type.Length;
+
+                if (names.Length != userId.Length)
+                {
+                    x2.errorMessage2(ref this.msg_lbl,"Inkonzistencia v datach prosim opravit.....");
+                }
+                if (tpLn == 0)
+                {
+                    if (this.editShift_chk.Checked && (this.rights.IndexOf("admin") != -1 || this.rights == "poweruser"))
+                    {
+                        Control crtl = FindControl("ddl_" + rDay.ToString() + "_" + table[day]["type1"].ToString());
+                        DropDownList ddl = (DropDownList)crtl;
+
+                        ddl.SelectedValue = table[day]["users_ids"].ToString();
+                       // ddl.SelectedIndexChanged += new EventHandler(dItemChanged_2);
+                        ddl.Attributes.Add("onChange", "saveKDCHDocShifts('" + ddl.ID.ToString() + "');");
+
+                        if (this.userControl)
+                        {
+                            if (this.rights == "users" && (Session["user_id"].ToString() != table[day]["users_ids"].ToString()))
+                            {
+                                ddl.Enabled = false;
+                            }
+                            else
+                            {
+                                if (this.rights == "users")
+                                {
+                                    System.Web.UI.WebControls.ListItem data = ddl.Items.FindByValue(Session["user_id"].ToString());
+                                    ddl.Items.Clear();
+                                    ddl.Items.Add(new System.Web.UI.WebControls.ListItem("-", "0"));
+                                    ddl.Items.Add(data);
+                                }
+
+                            }
+                        }
+                        
+
+                        Control crtl1 = FindControl("textBox_" + rDay.ToString() + "_" + table[day]["type1"].ToString());
+                        TextBox textBox = (TextBox)crtl1;
+                        textBox.Text = table[day]["comment"].ToString();
+                        textBox.Attributes.Add("onChange", "saveKDCHDocShiftComment('" + textBox .ID.ToString() + "');");
+
+                        if (this.userControl)
+                        {
+                            if (this.rights == "users" && (Session["user_id"].ToString() != table[day]["users_ids"].ToString()))
+                            {
+                                textBox.ReadOnly = true;
+                            }
+                        }
+                        
+
+                        //textBox.TextChanged += new EventHandler(commentChanged_2);
+                    }
+                    else
+                    {
+                        Control crtl = FindControl("name_" + rDay.ToString() + "_" + table[day]["type1"].ToString());
+
+                        Label ddl = (Label)crtl;
+
+                        try
+                        {
+                            ddl.Text = table[day]["user_names"].ToString() +"<br>";
+                        }
+                        catch (Exception ex)
+                        {
+                            ddl.Text = "-<br>";
+                        }
+
+                        Control crtl1 = FindControl("comment_" + rDay.ToString() + "_" + table[day]["type1"].ToString());
+                        Label textBox = (Label)crtl1;
+                        try
+                        {
+                            textBox.Text ="<p class='small'>"+ table[day]["comment"].ToString() + "</p>";
+                        }
+                        catch(Exception ex)
+                        {
+                            textBox.Text = "<p class='small'>-</p>";
+                        }
+
+
+                        
+                    }
+                }
+                else
+                {
+                    for (int col = 0; col < tpLn; col++)
+                    {
+                        if (this.editShift_chk.Checked && (this.rights.IndexOf("admin") != -1 || this.rights == "poweruser"))
+                        {
+                            Control crtl = FindControl("ddl_" + rDay.ToString() + "_" + type[col]);
+                            DropDownList ddl = (DropDownList)crtl;
+
+                            ddl.SelectedValue = userId[col];
+                            if (this.userControl)
+                            {
+                                if (this.rights == "users" && (Session["user_id"].ToString() != userId[col].ToString()))
+                                {
+                                    ddl.Enabled = false;
+                                }
+                                else
+                                {
+                                    if (this.rights == "users")
+                                    {
+                                        System.Web.UI.WebControls.ListItem data = ddl.Items.FindByValue(Session["user_id"].ToString());
+                                        ddl.Items.Clear();
+                                        ddl.Items.Add(new System.Web.UI.WebControls.ListItem("-", "0"));
+                                        ddl.Items.Add(data);
+                                    }
+
+                                }
+                            }
+
+
+
+                            //ddl.SelectedIndexChanged += new EventHandler(dItemChanged_2);
+
+                            ddl.Attributes.Add("onChange", "saveKDCHDocShifts('" + ddl.ID.ToString() + "');");
+
+
+                            Control crtl1 = FindControl("textBox_" + rDay.ToString() + "_" + type[col]);
+                            TextBox textBox = (TextBox)crtl1;
+                            textBox.Text = comments[col];
+                            if (this.userControl)
+                            {
+                                if (this.rights == "users" && (Session["user_id"].ToString() != userId[col]))
+                                {
+                                    textBox.ReadOnly = true;
+                                }
+                            }
+
+                            // textBox.TextChanged += new EventHandler(commentChanged_2);
+                            textBox.Attributes.Add("onChange", "saveKDCHDocShiftComment('" + textBox.ID.ToString() + "');");
+                        }
+                        else
+                        {
+                            Control crtl = FindControl("name_" + rDay.ToString() + "_" + type[col]);
+                            Label ddl = (Label)crtl;
+
+                            try
+                            {
+                                ddl.Text = names[col] +"<br><em>("+type[col]+ ")</em><br>";
+                            }
+                            catch (Exception ex)
+                            {
+                                ddl.Text = "-<br>";
+                            }
+
+                            Control crtl1 = FindControl("comment_" + rDay.ToString() + "_" + type[col]);
+                            Label textBox = (Label)crtl1;
+                            textBox.Text = comments[col] + "<br>";
+                        }
+                    }
+                }
+                
+            }
+        } 
+        else
+        {
+            if (this.rights != "admin" || this.rights != "poweruser")
+            {
+                this.msg_lbl.Text = Resources.Resource.shifts_not_done;
+                // this.publish_cb.Visible = false;
+            }
+        }
+    }
+
+
+   
+
+    protected void selectDoctors(Dictionary<int, Hashtable>table, int days, int colsNum)
+    {
+        ContentPlaceHolder ctpl = new ContentPlaceHolder();
+        Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+
+        ctpl = (ContentPlaceHolder)tmpControl;
+        for (int row = 0; row < days; row++)
+        {
+            string[] userId = table[row]["users_ids"].ToString().Split('|');
+
+            for (int col=0; col < colsNum; col++)
+            {
+                Control controlList = new Control();
+                controlList = ctpl.FindControl("dlistBox_"+row.ToString()+"_"+col.ToString());
+
+                DropDownList doctors_lb = new DropDownList();
+
+                doctors_lb = (DropDownList)controlList;
+                doctors_lb.SelectedValue = userId[col];
+            }
+        }
+    }
+
+    protected string returnString(string data)
+    {
+        string result = "";
+        
+        if (data.GetType() == typeof(System.Byte[]))
+        {
+           // result = reader.GetValue(i).ToString();
+            byte[] buffer = Encoding.UTF8.GetBytes(data);
+            result = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
+        }
+        else
+        {
+            result = data;
+        }
+
+        return result;        
+    }
+
+    protected void reDrawTableFnc(object sender, EventArgs e)
+    {
+    }
+
+    protected ArrayList loadDoctors(string sDeps)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        //if (this.rights == "users")
+        //{
+        //    sb.AppendFormat("SELECT [id],[name3] FROM [is_users] WHERE [id]='{0}'", Session["user_id"].ToString());
+       // }
+        //else
+        //{
+            sb.AppendFormat("SELECT [id],[name3] FROM [is_users] WHERE [work_group]='doctor' AND [active]='1' AND [klinika]='{0}' ORDER BY [name2]", this.gKlinika);
+        //}
+        
+
+        Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
+
+        int dataLn = table.Count;
+
+        ArrayList result = new ArrayList();
+        //result.Add("-", "-");
+        result.Add("0|-");
+        for (int i=1; i <= dataLn; i++)
+        {
+            result.Add(table[i-1]["id"].ToString()+"|"+table[i-1]["name3"].ToString());
+        }
+
+        return result;
+
+    }
+       
+
+    protected void commentChanged_2(object sender, EventArgs e)
+    {
+
+        TextBox tbox = (TextBox)sender;
+
+        string[] tmp = tbox.ID.ToString().Split('_');
+
+       // Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+
+        //ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
+
+        //Control controlList1 = ctpl.FindControl("textBox_" + tmp[1] + "_" + tmp[2]);
+        Control controlList1 = FindControl("textBox_" + tmp[1] + "_" + tmp[2]);
+       // Control controlList2 = ctpl.FindControl("ddl_" + tmp[1] + "_" + tmp[2]);
+        Control controlList2 = FindControl("ddl_" + tmp[1] + "_" + tmp[2]);
+
+        TextBox tBoxF = (TextBox)controlList1;
+        DropDownList doctor_lb = (DropDownList)controlList2;
+
+
+        SortedList data = new SortedList();
+        data.Add("user_id", doctor_lb.SelectedValue.ToString());
+
+        //int col = Convert.ToInt32(tmp[2]);
+        data.Add("typ", tmp[2]);
+        //data.Add("ordering", col + 1);
+        //data.Add("deps", this.deps);
+        string mesiac = this.mesiac_cb.SelectedValue.ToString();
+        string rok = this.rok_cb.SelectedValue.ToString();
+        int dateGroup = x2.makeDateGroup(Convert.ToInt32(rok), Convert.ToInt32(mesiac));
+        data.Add("date_group", dateGroup);
+        data.Add("clinic", this.gKlinika);
+        int den = Convert.ToInt32(tmp[1]);
+
+        data.Add("datum", this.rok_cb.SelectedValue.ToString() + "-" + this.mesiac_cb.SelectedValue.ToString() + "-" + den.ToString());
+
+        string com = tBoxF.Text.ToString().Trim();
+
+        if (com.Length == 0) com = "-";
+        
+        if (tBoxF.Text.ToString().Trim().Length == 0)
+        {
+            data.Add("comment", "-");
+        }
+        else
+        {
+            data.Add("comment", tBoxF.Text.ToString());
+        }
+        
+
+        SortedList result = x2Mysql.mysql_insert("is_sluzby_all", data);
+
+        if (!(Boolean)result["status"])
+        {
+            this.msg_lbl.Text = x2.errorMessage(result["msg"].ToString());
+        }
+    }
+
+ 
+
+    protected void dItemChanged_2(object sender, EventArgs e)
+    {
+
+        DropDownList ddl = (DropDownList)sender;
+
+        string[] tmp = ddl.ID.ToString().Split('_');
+
+
+        //Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+
+      //  ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
+        //Control controlList = ctpl.FindControl("ddl_" + tmp[1] + "_" + tmp[2]);
+        Control controlList = FindControl("ddl_" + tmp[1] + "_" + tmp[2]);
+        DropDownList doctor_lb = (DropDownList)controlList;
+
+        SortedList data = new SortedList();
+        data.Add("user_id", doctor_lb.SelectedValue.ToString());
+
+        //int col = Convert.ToInt32(tmp[2]);
+        data.Add("typ", tmp[2]);
+        data.Add("clinic", this.gKlinika);
+        //data.Add("ordering", col + 1);
+
+        string mesiac = this.mesiac_cb.SelectedValue.ToString();
+        string rok = this.rok_cb.SelectedValue.ToString();
+
+        int dateGroup = x2.makeDateGroup(Convert.ToInt32(rok), Convert.ToInt32(mesiac));
+
+        //data.Add("deps", this.deps);
+        data.Add("date_group", dateGroup);
+        int den = Convert.ToInt32(tmp[1]);
+        //den = den + 1;
+
+        data.Add("datum", this.rok_cb.SelectedValue.ToString() + "-" + this.mesiac_cb.SelectedValue.ToString() + "-" + den.ToString());
+
+        SortedList result = x2Mysql.mysql_insert("is_sluzby_all", data);
+
+        if (!(Boolean)result["status"])
+        {
+            this.msg_lbl.Text = x2.errorMessage(result["msg"].ToString());
+        }
+ 
+
+    }
+
+
 
     protected void publishOnFnc(object sender, EventArgs e)
     {
@@ -154,23 +855,18 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
         string rok = this.rok_cb.SelectedValue.ToString();
         string mesiac = this.mesiac_cb.SelectedValue.ToString();
 
-        if (mesiac.Length == 1)
-        {
-            mesiac = "0" + mesiac;
-        }
+        int dateGroup = x2.makeDateGroup(Convert.ToInt32(rok), Convert.ToInt32(mesiac));
 
-        sb.AppendFormat("UPDATE [is_sluzby_2] SET [state]='active' WHERE [date_group]='{0}{1}'", rok, mesiac);
+        sb.AppendFormat("UPDATE [is_sluzby_2] SET [state]='active' WHERE [date_group]='{0}' AND [clinic]='{1}'", dateGroup,this.gKlinika);
         SortedList res = x2Mysql.execute(sb.ToString());
 
-        Boolean result = Convert.ToBoolean(res["status"].ToString());
-
-        if (!result)
+        if (!(Boolean)res["status"])
         {
-            this.msg_lbl.Text = res["msg"].ToString();
+            this.msg_lbl.Text = x2.errorMessage(res["msg"].ToString());
         }
         else
         {
-            if (this.rights.IndexOf("admin")!=-1 || this.rights == "poweruser")
+            if (this.rights == "admin" || this.rights == "poweruser")
             {
                 this.shiftState_lbl.Text = Resources.Resource.shifts_see_all;
             }
@@ -183,446 +879,25 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
         string rok = this.rok_cb.SelectedValue.ToString();
         string mesiac = this.mesiac_cb.SelectedValue.ToString();
 
-        if (mesiac.Length == 1)
-        {
-            mesiac = "0" + mesiac;
-        }
+        int dateGroup = x2.makeDateGroup(Convert.ToInt32(rok), Convert.ToInt32(mesiac));
 
-        sb.AppendFormat("UPDATE [is_sluzby_2] SET [state]='draft' WHERE [date_group]='{0}{1}'", rok, mesiac);
+        sb.AppendFormat("UPDATE [is_sluzby_2] SET [state]='draft' WHERE [date_group]='{0}' AND [clinic]='{1}'", dateGroup, this.gKlinika);
         SortedList res = x2Mysql.execute(sb.ToString());
 
-        Boolean result = Convert.ToBoolean(res["status"].ToString());
-
-        if (!result)
+        if (!(Boolean)res["status"])
         {
-            this.msg_lbl.Text = res["msg"].ToString();
+            this.msg_lbl.Text = x2.errorMessage(res["msg"].ToString());
         }
         else
         {
-            if (this.rights.IndexOf("admin") != -1 || this.rights == "poweruser")
+            if (this.rights == "admin" || this.rights == "poweruser")
             {
                 this.shiftState_lbl.Text = Resources.Resource.shifts_see_limited;
             }
         }
     }
 
-    protected void generateShiftTable()
-    {
-        string mesiac = this.mesiac_cb.SelectedValue.ToString();
-        string rok = this.rok_cb.SelectedValue.ToString();
-
-        int daysMonth = DateTime.DaysInMonth(Convert.ToInt32(rok), Convert.ToInt32(mesiac));
-        this.days_lbl.Text = daysMonth.ToString();
-
-        if (mesiac.Length == 1)
-        {
-            mesiac = "0" + mesiac;
-        }
-
-        string dateGroup = rok + mesiac;
-        Session.Add("aktDateGroup", dateGroup);
-        
-        SortedList res = x2Mysql.getRow("SELECT * FROM [is_settings] WHERE [name] = 'kdch_shift_doctors'");
-
-        // Boolean status = Convert.ToBoolean(res["status"].ToString());
-
-        string[] shifts = res["data"].ToString().Split(',');
-        this.shiftType = shifts;
-
-
-       
-        if (this.rights.IndexOf("admin") != -1 || this.rights == "poweruser")
-        {
-            string state = this.getShiftStateKDCH();
-
-            if (state == "active")
-            {
-                this.shiftState_lbl.Text = Resources.Resource.shifts_see_all;
-                //this.publish_cb.ch
-            }
-            else
-            {
-                this.shiftState_lbl.Text = Resources.Resource.shifts_see_limited;
-            }
-        }
-
-        string[] header = shifts;
-
-            int days = daysMonth;
-            int colsNum = header.Length;
-
-            TableHeaderRow headRow = new TableHeaderRow();
-
-            TableHeaderCell headCell = new TableHeaderCell();
-            headCell.ID = "headCell_date";
-            headCell.Text = "<strong>Datum</strong>";
-            // headCell.Style
-            headRow.Controls.Add(headCell);
-
-            for (int head = 0; head < colsNum; head++)
-            {
-                TableHeaderCell headCell1 = new TableHeaderCell();
-                headCell1.ID = "headCell_" + head;
-                headCell1.Text = "<strong><center>" + x2.setLabel(header[head].ToString()) + "</center></strong>";
-                // headCell1.
-                headRow.Controls.Add(headCell1);
-            }
-            /* TableHeaderCell headCellSave = new TableHeaderCell();
-             headCellSave.ID = "headCellSave_" + colsNum;
-             headCellSave.Text = "<strong>Ulozit</strong>";
-             headRow.Controls.Add(headCellSave);*/
-
-            shiftTable.Controls.Add(headRow);
-
-            string[] freeDays = x2Sluzby.getFreeDays();
-            ArrayList doctorList = this.loadDoctors();
-
-            int aktDenMesiac = DateTime.Today.Day;
-
-
-            for (int row = 0; row < days; row++)
-            {
-                TableRow tblRow = new TableRow();
-                shiftTable.Controls.Add(tblRow);
-
-                //string[] names = table[row]["users_names"].ToString().Split(';');
-                //string[] userId = table[row]["users_ids"].ToString().Split('|');
-                //string[] comments = table[row]["comment"].ToString().Split('|');
-
-                DateTime myDate = new DateTime(Convert.ToInt32(rok), Convert.ToInt32(mesiac), row + 1);
-                int dnesJe = (int)myDate.DayOfWeek;
-                string nazov = CultureInfo.CurrentCulture.DateTimeFormat.DayNames[dnesJe];
-                string sviatok = (row + 1).ToString() + "." + myDate.Month.ToString();
-                int jeSviatok = Array.IndexOf(freeDays, sviatok);
-
-
-
-                TableCell cellDate = new TableCell();
-                tblRow.Controls.Add(cellDate);
-                // cellDate.ID = "cellDate_" + row;
-                if (dnesJe == 0 || dnesJe == 6)
-                {
-                    cellDate.CssClass = "box red";
-                }
-
-                if (jeSviatok != -1 && dnesJe != 0 && dnesJe != 6)
-                {
-                    cellDate.CssClass = "box yellow";
-                }
-                string text = (row + 1).ToString();
-                cellDate.Text = text + ". " + nazov;
-
-
-                for (int cols = 0; cols < colsNum; cols++)
-                {
-                    TableCell dataCell = new TableCell();
-                    // tblRow.Controls.Add(dataCell);
-                    // dataCell.ID = "dataCell_" + row.ToString() + "_" + cols.ToString();
-
-                    // if (cols < colsNum)
-                    //  {
-
-
-                    if ((this.rights.IndexOf("admin") != -1 || this.rights == "poweruser") && this.wgroup == "doctor" && this.edit_chk.Checked == true)
-                    {
-                        DropDownList doctors_lb = new DropDownList();
-                        doctors_lb.ID = "ddl_" + row.ToString() + "_" + cols.ToString();
-                        //doctors_lb.CssClass = "no-pad-mobile no-gap-mobile";
-
-                        int listLn = doctorList.Count;
-                        ListItem[] newItem = new ListItem[listLn];
-
-                        for (int doc = 0; doc < listLn; doc++)
-                        {
-                            string[] tmp = doctorList[doc].ToString().Split('|');
-                            newItem[doc] = new ListItem(tmp[1].ToString(), tmp[0].ToString());
-                        }
-                        doctors_lb.Items.AddRange(newItem);
-
-                        //string dd = userId[cols].ToString();
-
-                       // doctors_lb.SelectedValue = dd; // userId[cols].ToString();
-                        dataCell.Controls.Add(doctors_lb);
-                        //doctors_lb.SelectedIndex = doctors_lb.Items.IndexOf(doctors_lb.Items.FindByValue(userId[cols]));
-
-                        doctors_lb.AutoPostBack = true;
-                        doctors_lb.SelectedIndexChanged += new EventHandler(dItemChanged);
-                        //doctors_lb.SelectedValue = "-";
-
-                        TextBox textBox = new TextBox();
-                        dataCell.Controls.Add(textBox);
-                        textBox.ID = "textBox_" + row.ToString() + "_" + cols.ToString();
-                       // textBox.Text = comments[cols];
-                        textBox.AutoPostBack = true;
-                        textBox.TextChanged += new EventHandler(commentChanged);
-                    }
-                    else
-                    {
-                        Label name = new Label();
-                        dataCell.Controls.Add(name);
-                        name.ID = "name_" + row.ToString() + "_" + cols.ToString();
-                        //name.Text = names[cols] + "<br>";
-
-                        Label comment = new Label();
-                        dataCell.Controls.Add(comment);
-                        comment.ID = "label_" + row.ToString() + "_" + cols.ToString();
-                        comment.Font.Italic = true;
-                        //comment.Text = comments[cols];
-
-                    }
-                    if (dnesJe == 0 || dnesJe == 6)
-                    {
-                        dataCell.CssClass = "box red";
-                    }
-                    if (jeSviatok != -1 && dnesJe != 0 && dnesJe != 6)
-                    {
-                        dataCell.CssClass = "box yellow";
-                    }
-                    if (aktDenMesiac == (row + 1))
-                    {
-                        dataCell.BorderColor = System.Drawing.Color.Red;
-                        dataCell.BorderWidth = Unit.Point(5);
-                    }
-                    tblRow.Controls.Add(dataCell);
-                }
-            }
-            this.loadSluzby();
-    }
-
-    protected void loadSluzby()
-    {
-
-        //this.shiftTable.Controls.Clear();
-        string mesiac = this.mesiac_cb.SelectedValue.ToString();
-        string rok = this.rok_cb.SelectedValue.ToString();
-
-        int daysMonth = DateTime.DaysInMonth(Convert.ToInt32(rok), Convert.ToInt32(mesiac));
-        //this.days_lbl.Text = daysMonth.ToString();
-        SortedList res = x2Mysql.getRow("SELECT * FROM [is_settings] WHERE [name] = 'kdch_shift_doctors'");
-        StringBuilder sb = new StringBuilder();
-
-        int dateGroup = x2.makeDateGroup(Convert.ToInt32(rok), Convert.ToInt32(mesiac));
-        
-        if ((this.rights.IndexOf("admin")!=-1 || this.rights == "poweruser") && this.wgroup == "doctor")
-        {
-
-            sb.Append("SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],");
-            sb.Append("[t_sluzb].[state] AS [state],");
-            sb.Append("GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [users_ids],");
-            sb.Append("GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],");
-            sb.Append("GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [comment],");
-            sb.Append("[t_sluzb].[date_group] AS [dategroup]");
-            sb.Append("FROM [is_sluzby_2] AS [t_sluzb]");
-            sb.Append("LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]");
-            sb.AppendFormat("WHERE [t_sluzb].[date_group] = '{0}'", dateGroup);
-            sb.Append("GROUP BY [t_sluzb].[datum]");
-            sb.Append("ORDER BY [t_sluzb].[datum]");
-        }
-        else
-        {
-            sb.Append("SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],");
-            sb.Append("[t_sluzb].[state] AS [state],");
-            sb.Append("GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [users_ids],");
-            sb.Append("GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],");
-            sb.Append("GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [comment],");
-            sb.Append("[t_sluzb].[date_group] AS [dategroup]");
-            sb.Append("FROM [is_sluzby_2] AS [t_sluzb]");
-            sb.Append("LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]");
-            sb.AppendFormat("WHERE [t_sluzb].[date_group] = '{0}' AND [t_sluzb].[state]='active'", dateGroup);
-            sb.Append("GROUP BY [t_sluzb].[datum]");
-            sb.Append("ORDER BY [t_sluzb].[datum]");
-        }
-
-        //  this.msg_lbl.Text = sb.ToString();
-
-        Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
-        int cols = this.shiftType.Length;
-        if (table.Count == daysMonth)
-        {
-            for (int row = 0; row < daysMonth; row++)
-            {
-                //TableRow tblRow = new TableRow();
-                //shiftTable.Controls.Add(tblRow);
-
-                string[] names = table[row]["users_names"].ToString().Split(';');
-                string[] userId = table[row]["users_ids"].ToString().Split('|');
-                string[] comments = table[row]["comment"].ToString().Split('|');
-
-                for (int col=0;col<cols;col++)
-                {
-                    if (this.edit_chk.Checked == true)
-                    {
-                        Control __textBox = FindControl("textBox_" + row + "_" + col);
-                        Control __ddlBox = FindControl("ddl_" + row + "_" + col);
-
-                        TextBox txtBox = (TextBox)__textBox;
-                        DropDownList ddlBox = (DropDownList)__ddlBox;
-
-
-                        txtBox.Text = comments[col].ToString();
-                        ddlBox.SelectedValue = userId[col];
-                    }
-                    else
-                    {
-                        Control __comment = FindControl("label_" + row + "_" + col);
-                        Control __name = FindControl("name_" + row + "_" + col);
-
-                        Label name = (Label)__name;
-                        Label comment = (Label)__comment;
-
-
-                        name.Text = names[col]+"</br>";
-                        comment.Text = comments[col];
-                    }
-                    
-                }
-            }
-        }
-        else
-        {
-            if (table.Count == 0)
-            {
-                if (this.rights.IndexOf("admin") == -1 || this.rights != "poweruser")
-                {
-                    this.msg_lbl.Text = Resources.Resource.shifts_not_done;
-                    // this.publish_cb.Visible = false;
-                }
-                if ((this.rights.IndexOf("admin") != -1 || this.rights == "poweruser") && this.wgroup == "doctor")
-                {
-                    int daysTmp = x2Mysql.fillDocShifts(Convert.ToInt32(dateGroup), Convert.ToInt32(daysMonth), Convert.ToInt32(mesiac), Convert.ToInt32(rok),Convert.ToInt32(Session["klinika_id"]));
-                    this.shiftTable.Controls.Clear();
-
-                    this.loadSluzby();
-                }
-            }
-        }
-    }
-
-    protected ArrayList loadDoctors()
-    {
-        StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("SELECT [id],[name3] FROM [is_users] WHERE ([work_group]='doctor') AND [active]='1' AND [klinika]={0}  ORDER BY [name2]",Session["klinika_id"]);
-
-        Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
-
-        int dataLn = table.Count;
-
-        ArrayList result = new ArrayList();
-        //result.Add("-", "-");
-        result.Add("0|-");
-        for (int i = 1; i <= dataLn; i++)
-        {
-            result.Add(table[i - 1]["id"].ToString() + "|" + table[i - 1]["name3"].ToString());
-        }
-
-        return result;
-
-    }
-
-    protected void commentChanged(object sender, EventArgs e)
-    {
-
-        TextBox tbox = (TextBox)sender;
-
-        string[] tmp = tbox.ID.ToString().Split('_');
-
-        //Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
-
-        //ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
-
-        Control controlList1 = FindControl("textBox_" + tmp[1] + "_" + tmp[2]);
-        Control controlList2 = FindControl("ddl_" + tmp[1] + "_" + tmp[2]);
-
-        TextBox tBoxF = (TextBox)controlList1;
-        DropDownList doctor_lb = (DropDownList)controlList2;
-
-
-        SortedList data = new SortedList();
-        data.Add("user_id", doctor_lb.SelectedValue.ToString());
-
-        int col = Convert.ToInt32(tmp[2]);
-        data.Add("typ", this.shiftType[col]);
-        data.Add("ordering", col + 1);
-        data.Add("clinic", Session["klinika_id"]);
-        string mesiac = this.mesiac_cb.SelectedValue.ToString();
-        string rok = this.rok_cb.SelectedValue.ToString();
-
-        if (mesiac.Length == 1)
-        {
-            mesiac = "0" + mesiac;
-        }
-
-
-        data.Add("date_group", rok + mesiac);
-        int den = Convert.ToInt32(tmp[1]);
-        den = den + 1;
-
-        data.Add("datum", this.rok_cb.SelectedValue.ToString() + "-" + this.mesiac_cb.SelectedValue.ToString() + "-" + den.ToString());
-        data.Add("comment", tBoxF.Text.ToString());
-
-        SortedList result = x2Mysql.mysql_insert("is_sluzby_2", data);
-
-        Boolean res = Convert.ToBoolean(result["status"].ToString());
-
-        if (!res)
-        {
-            this.msg_lbl.Text = result["msg"].ToString();
-        }
-
-
-
-        // this.msg_lbl.Text = e.ToString() + "..." + tBoxF.Text.ToString();
-    }
-
-
-    protected void dItemChanged(object sender, EventArgs e)
-    {
-        // this.msg_lbl.Text = e.ToString();
-
-        DropDownList ddl = (DropDownList)sender;
-
-        string[] tmp = ddl.ID.ToString().Split('_');
-
-
-       // Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
-
-        //ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
-        Control controlList = FindControl("ddl_" + tmp[1] + "_" + tmp[2]);
-
-        DropDownList doctor_lb = (DropDownList)controlList;
-
-        SortedList data = new SortedList();
-        data.Add("user_id", doctor_lb.SelectedValue.ToString());
-
-        int col = Convert.ToInt32(tmp[2]);
-        data.Add("typ", this.shiftType[col]);
-        data.Add("ordering", col + 1);
-        data.Add("clinic", Session["klinika_id"].ToString());
-        string mesiac = this.mesiac_cb.SelectedValue.ToString();
-        string rok = this.rok_cb.SelectedValue.ToString();
-
-        if (mesiac.Length == 1)
-        {
-            mesiac = "0" + mesiac;
-        }
-
-
-        data.Add("date_group", rok + mesiac);
-        int den = Convert.ToInt32(tmp[1]);
-        den = den + 1;
-
-        data.Add("datum", this.rok_cb.SelectedValue.ToString() + "-" + this.mesiac_cb.SelectedValue.ToString() + "-" + den.ToString());
-
-        SortedList result = x2Mysql.mysql_insert("is_sluzby_2", data);
-
-        Boolean res = Convert.ToBoolean(result["status"].ToString());
-
-        if (!res)
-        {
-            this.msg_lbl.Text = result["msg"].ToString();
-        }
-
-    }
+    
 
     protected void publishSluzby(object sender, EventArgs e)
     {
@@ -633,7 +908,9 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
 
         Session.Add("aktSluzMesiac", this.mesiac_cb.SelectedValue.ToString());
         Session.Add("aktSluzRok", this.rok_cb.SelectedValue.ToString());
-        // Session.Add)"aktSluzMesLbl", DateTime.Today.m
+        Session.Add("aktSluzClinic", this.gKlinika);
+
+       // Session.Add)"aktSluzMesLbl", DateTime.Today.m
 
         if (ID == "toWord_btn")
         {
@@ -645,8 +922,6 @@ public partial class controls_shifts_kdch_shifts : System.Web.UI.UserControl
             Session.Add("toWord", 0);
             Response.Redirect("sltoword.aspx");
         }
-
+        
     }
-
-
 }

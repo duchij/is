@@ -3,6 +3,7 @@
 
 function sendData(fnc,data,callBack,args)
 {
+    $("#commBall").css("display", "block");
     /// <summary>Funkcia na poslanie jQuery Ajaxu smerom na server</summary>
     /// <param name="fnc" type="String">Funkcia na strane serveru vo WebService.asmx</param>
     /// <param name="data" type="Object">JSON Objekt co sa ma poslat</param>
@@ -17,12 +18,17 @@ function sendData(fnc,data,callBack,args)
         // contentType: "application/x-www-form-urlencoded",
         //contentType: "text/html",
         data: "data=" + JSON.stringify(data),
+        error: function (jqXHR,errorText) {
+            messageBox(errorText, "error");
+        },
         success: function (data) {
             console.log(data);
             //showNewsText(data);
             var xml = $.parseXML(data);
-            var dtJson = xml.childNodes[0].innerHTML;
+            console.log(xml);
+            var dtJson = xml.childNodes[0].textContent;
             var obj = JSON.parse(dtJson);
+            $("#commBall").css("display", "none");
             window[callBack](obj,args);
         }
 
@@ -77,6 +83,18 @@ function saveDocShifts(ddl)
     this.sendData("saveDocShifts", data, "afterSaveKdhaoShifts");
 }
 
+function saveKDCHDocShifts(ddl) {
+    var user_id = $("[id$=" + ddl + "]").val();
+    var tmp = ddl.split("_");
+
+    var year = $("[id$=rok_cb]").val();
+    var month = $("[id$=mesiac_cb]").val();
+
+    var data = { user_id: user_id, date: year + "-" + month + "-" + tmp[1], type: tmp[2] };
+
+    this.sendData("saveKDCHDocShifts", data, "afterSaveKDCHShifts");
+}
+
 
 
 function saveDocShiftComment(comment)
@@ -93,6 +111,70 @@ function saveDocShiftComment(comment)
     this.sendData("saveDocShiftsComment", data, "afterSaveKdhaoShifts");
 }
 
+
+function saveKDCHDocShiftComment(comment) {
+    var note = $("[id$=" + comment + "]").val();
+    var tmp = comment.split("_");
+
+    var user_id = $("[id$=ddl_" + tmp[1] + "_" + tmp[2] + "]").val();
+    
+    var month = $("[id$=mesiac_cb]").val();
+
+    var data = { user_id: user_id, date: year + "-" + month + "-" + tmp[1], type: tmp[2], comment: note };
+
+    this.sendData("saveKDCHDocShiftsComment", data, "afterSaveKDCHShifts");
+    
+}
+
+
+function afterSaveKDCHShifts(result)
+{
+    if (result.status == "false") {
+        $("[id$=msg_dialog]").html("<h2 class='red'>CHYBA:</h2><p class='red'>" + result.msg + "</p>");
+        $("[id$=msg_dialog]").dialog();
+        //$("[id$=" + obj + "]").val("0");
+    }
+}
+
+function messageBox(text,type)
+{
+    switch (type)
+    {
+        case "error":
+            $("[id$=msg_dialog]").html("<h2 class='red'>CHYBA:</h2><p class='red'>" + text + "</p>");
+            $("[id$=msg_dialog]").dialog({
+
+                closeOnEscape: true
+
+            });
+
+
+            $("[id$=msg_dialog]").dialog();
+            break;
+        case "warning":
+            $("[id$=msg_dialog]").html("<h2 class='green'>Upozornenie:</h2><p class='green'>" + text + "</p>");
+            $("[id$=msg_dialog]").dialog({
+
+                closeOnEscape: true
+
+            });
+            $("[id$=msg_dialog]").dialog();
+            break;
+        default:
+            $("[id$=msg_dialog]").html("<h2 class='blue'>Info:</h2><p class='blue'>" + text + "</p>");
+            $("[id$=msg_dialog]").dialog({
+
+                closeOnEscape: true
+
+            });
+            $("[id$=msg_dialog]").dialog();
+            break;
+    }
+   
+    
+}
+
+
 function saveNurseShiftComment(comment)
 {
     var note = $("[id$=" + comment + "]").val();
@@ -101,10 +183,20 @@ function saveNurseShiftComment(comment)
     var deps = $("[id$=deps_dl]").val();
     var year = $("[id$=rok_cb]").val();
     var month = $("[id$=mesiac_cb]").val();
+    note = note.trim();
+    if (note.length > 0)
+    {
+        var data = { user_id: user_id, date: year + "-" + month + "-" + tmp[1], type: tmp[2], comment: note, deps: deps };
+        this.sendData("saveNurseShiftsComment", data, "afterSaveNurseShifts", comment);
+    }
+    else
+    {
+        $("[id$=" + comment + "]").val("-");
+        messageBox("Prazdny retazec...", "warning");
+        
+    }
 
-    var data = { user_id: user_id, date: year + "-" + month + "-" + tmp[1], type: tmp[2], comment: note,deps:deps };
-
-    this.sendData("saveNurseShiftsComment", data, "afterSaveNurseShifts",comment);
+    
 }
 
 
@@ -185,7 +277,7 @@ function lfTabs() {
         activate: function (event) {
 
             var tab = event.currentTarget.hash;
-            console.log(tab);
+ //           console.log(tab);
 
             sendData("lfSelectedTab", { selTab: tab }, "afterLfSelectTab");
         }

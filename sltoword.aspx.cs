@@ -41,7 +41,7 @@ public partial class sltoword : System.Web.UI.Page
         switch (this.gKlinika)
         {
             case "kdch":
-                this.loadSluzby();
+                this.drawTable("kdch");
                 break;
             case "2dk":
                 this.generate2DK();
@@ -50,7 +50,7 @@ public partial class sltoword : System.Web.UI.Page
                 this.loadSluzby();
                 break;
             case "kdhao":
-                this.drawTable();
+                this.drawTable("kdhao");
                 break;
         }
 
@@ -492,11 +492,11 @@ public partial class sltoword : System.Web.UI.Page
     }
 
 
-    protected void drawTable()
+    protected void drawTable(string dep)
     {
         string query = @"SELECT [name],[data] FROM [is_settings] WHERE [name]='{0}'";
-
-        query = x2Mysql.buildSql(query, new string[] { "kdhao_shift_doctors" });
+        
+        query = x2Mysql.buildSql(query, new string[] { dep+"_shift_doctors" });
 
         SortedList row = x2Mysql.getRow(query);
 
@@ -631,6 +631,9 @@ public partial class sltoword : System.Web.UI.Page
         int rok = Convert.ToInt32(Session["aktSluzRok"].ToString());
 
         int dateGroup = my_x2.makeDateGroup(rok, mesiac);
+
+        if (this.gKlinika == "kdhao")
+        {
             query = @"SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],
                 [t_sluzb].[state] AS [state],
                 GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [users_ids],
@@ -643,6 +646,23 @@ public partial class sltoword : System.Web.UI.Page
                 AND [t_sluzb].[clinic] = '{1}' 
                 GROUP BY [t_sluzb].[datum]
                 ORDER BY [t_sluzb].[datum]";
+        }
+        if (this.gKlinika == "kdch")
+        {
+            query = @"SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],
+                [t_sluzb].[state] AS [state],
+                GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [users_ids],
+                GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],
+                GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [comment],
+                [t_sluzb].[date_group] AS [dategroup]
+                FROM [is_sluzby_2] AS [t_sluzb]
+                LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]
+                    WHERE [t_sluzb].[date_group] = '{0}' 
+                    -- AND [t_sluzb].[state]='active'
+                AND [t_sluzb].[clinic] = '{1}' 
+                GROUP BY [t_sluzb].[datum]
+                ORDER BY [t_sluzb].[datum]";
+        }   
 
         int daysMonth = DateTime.DaysInMonth(rok, mesiac);
 
@@ -678,7 +698,7 @@ public partial class sltoword : System.Web.UI.Page
 
                         try
                         {
-                            ddl.Text = table[day]["user_names"].ToString() + "<br>";
+                            ddl.Text = table[day]["user_names"].ToString() + "<br><span class='small'>("+ table[day]["type1"].ToString()+")</span><br>";
                         }
                         catch (Exception ex)
                         {
@@ -699,7 +719,7 @@ public partial class sltoword : System.Web.UI.Page
 
                         try
                         {
-                            ddl.Text = names[col] + "<br>";
+                            ddl.Text = names[col] + "<br><span class='small'>("+ type[col]+")</span><br>";
                         }
                         catch (Exception ex)
                         {

@@ -488,19 +488,38 @@ public partial class controls_kdhao_shifts : System.Web.UI.UserControl
                         Control crtl = FindControl("ddl_" + rDay.ToString() + "_" + table[day]["type1"].ToString());
                         DropDownList ddl = (DropDownList)crtl;
 
-                        ddl.SelectedValue = table[day]["users_ids"].ToString();
+                        //if (this.rights.IndexOf("admin")!=-1)
+                        //{
+                            ddl.SelectedValue = table[day]["users_ids"].ToString();
+                        //}                     
+                        
+                       
+                        
                        // ddl.SelectedIndexChanged += new EventHandler(dItemChanged_2);
                         ddl.Attributes.Add("onChange", "saveDocShifts('" + ddl.ID.ToString() + "');");
-                        if (Session["user_id"].ToString() != table[day]["users_ids"].ToString())
+
+                        if (this.rights=="users" && (Session["user_id"].ToString() != table[day]["users_ids"].ToString()))
                         {
                             ddl.Enabled = false;
+                        }
+                        else
+                        {
+                            if (this.rights=="users")
+                            {
+                                System.Web.UI.WebControls.ListItem data = ddl.Items.FindByValue(Session["user_id"].ToString());
+                                ddl.Items.Clear();
+                                ddl.Items.Add(new System.Web.UI.WebControls.ListItem("-", "0"));
+                                ddl.Items.Add(data);
+                            }
+                            
                         }
 
                         Control crtl1 = FindControl("textBox_" + rDay.ToString() + "_" + table[day]["type1"].ToString());
                         TextBox textBox = (TextBox)crtl1;
                         textBox.Text = table[day]["comment"].ToString();
                         textBox.Attributes.Add("onChange", "saveDocShiftComment('" + textBox .ID.ToString() + "');");
-                        if (Session["users_id"].ToString() != table[day]["users_ids"].ToString())
+
+                        if (this.rights == "users" && (Session["user_id"].ToString() != table[day]["users_ids"].ToString()))
                         {
                             textBox.ReadOnly = true;
                         }
@@ -537,11 +556,33 @@ public partial class controls_kdhao_shifts : System.Web.UI.UserControl
                             DropDownList ddl = (DropDownList)crtl;
 
                             ddl.SelectedValue = userId[col];
+
+                            if (this.rights=="users" && (Session["user_id"].ToString() != userId[col].ToString()))
+                            {
+                                ddl.Enabled = false;
+                            }
+                            else
+                            {
+                                if (this.rights=="users")
+                                {
+                                    System.Web.UI.WebControls.ListItem data = ddl.Items.FindByValue(Session["user_id"].ToString());
+                                    ddl.Items.Clear();
+                                    ddl.Items.Add(new System.Web.UI.WebControls.ListItem("-", "0"));
+                                    ddl.Items.Add(data);
+                                }
+                                
+                            }
+
+
                             ddl.SelectedIndexChanged += new EventHandler(dItemChanged_2);
 
                             Control crtl1 = FindControl("textBox_" + rDay.ToString() + "_" + type[col]);
                             TextBox textBox = (TextBox)crtl1;
                             textBox.Text = comments[col];
+                            if (this.rights=="users" && (Session["user_id"].ToString() != userId[col]))
+                            {
+                                textBox.ReadOnly = true;
+                            }
                             textBox.TextChanged += new EventHandler(commentChanged_2);
                         }
                         else
@@ -629,14 +670,14 @@ public partial class controls_kdhao_shifts : System.Web.UI.UserControl
     {
         StringBuilder sb = new StringBuilder();
 
-        if (this.rights == "users")
-        {
-            sb.AppendFormat("SELECT [id],[name3] FROM [is_users] WHERE [id]='{0}'", Session["user_id"].ToString());
-        }
-        else
-        {
+        //if (this.rights == "users")
+        //{
+        //    sb.AppendFormat("SELECT [id],[name3] FROM [is_users] WHERE [id]='{0}'", Session["user_id"].ToString());
+       // }
+        //else
+        //{
             sb.AppendFormat("SELECT [id],[name3] FROM [is_users] WHERE [work_group]='doctor' AND [active]='1' AND [klinika]='{0}' ORDER BY [name2]", this.gKlinika);
-        }
+        //}
         
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());

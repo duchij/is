@@ -36,6 +36,7 @@
 	   	 <link type="text/css" rel="stylesheet" href="css/jquery-ui.min.css" />
         <link type="text/css" rel="stylesheet" href="css/jquery-ui.structure.min.css" />
         <link type="text/css" rel="stylesheet" href="css/jquery-ui.theme.min.css" />
+        <link type="text/css" rel="stylesheet" href="css/n_style.css" />
     <title>ISESKO</title>
     <asp:ContentPlaceHolder id="head" runat="server">
     </asp:ContentPlaceHolder>
@@ -110,7 +111,7 @@
 </head>
 
 <body>
-    
+    <div id="commBall"><img src="img/ajax-loader.gif" ></div>
     <form id="form1" runat="server">
         
         <asp:Label ID="master_lbl" runat="server" Text=""></asp:Label>

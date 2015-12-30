@@ -219,4 +219,14 @@ h1 .myTitle {
    line-height:120px;
    padding-top:20px;
 }
+
+#commBall{
+	position:fixed;
+	top: 0px;
+	right:10px;
+	width:30px;
+	height:30px; 
+	z-index:999999;
+    display:none; 
+}
 	
