@@ -74,7 +74,7 @@
     <asp:Label ID="shiftState_lbl" runat="server" Text=""></asp:Label>  
     <div class="row">
     <asp:Button ID="Button1" runat="server" Text="Plán služieb" OnClick="generate_nurse_plan_fnc" CssClass="button green large"/>
-    <p><small>Po kliknutí sa Vám zobrazí Váš klasický plán služieb vo formáte pdf a môžete si ho vytlačiť...</small></p>
+    <p><small>Po kliknutí sa Vám zobrazí Váš klasický plán služieb vo formáte pdf a môžete si ho vytlačiť... <br />T.č obsahuje už aj Dovolenky,PNky a pod Pozri Dovolenky...</small></p>
         </div>          
     <asp:Table ID="shiftTable" EnableViewState="false" runat="server" CssClass="responsive" data-max="14">                 
                 </asp:Table>

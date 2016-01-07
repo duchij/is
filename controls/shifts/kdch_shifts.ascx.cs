@@ -65,12 +65,13 @@ public partial class controls_kdch_shifts : System.Web.UI.UserControl
             this.publish_btn.Visible = false;
             this.unpublish_btn.Visible = false;
         }
-        this.state = this.getState();
+        
        
 
         if (IsPostBack == false)
         {
             this.setMonthYear();
+            this.state = this.getState();
 
             if (this.state == "active")
             {
@@ -87,6 +88,8 @@ public partial class controls_kdch_shifts : System.Web.UI.UserControl
         }
         else
         {
+           
+
             this.shiftTable.Controls.Clear();
             this.drawTable();
         }
@@ -280,6 +283,17 @@ public partial class controls_kdch_shifts : System.Web.UI.UserControl
 
 
             dayCell.Text = rDay.ToString()+". "+nazov;
+
+            if (dnesJe == 0 || dnesJe == 6)
+            {
+                dayCell.CssClass = "box red";
+            }
+
+            if (jeSviatok != -1 && dnesJe != 0 && dnesJe != 6)
+            {
+                dayCell.CssClass = "box yellow";
+            }
+
             dataRow.Controls.Add(dayCell);
 
             for (int col=0; col<grps; col++)
@@ -403,7 +417,8 @@ public partial class controls_kdch_shifts : System.Web.UI.UserControl
                     }
                 }
             }
-            if (rDay==DateTime.Today.Day && mesiac==DateTime.Today.Month.ToString())
+            int month = Convert.ToInt32(mesiac);
+            if (rDay==DateTime.Today.Day && month == DateTime.Today.Month )
             {
                 dataRow.BorderWidth = Unit.Pixel(3);
                 dataRow.BorderStyle = BorderStyle.Solid;

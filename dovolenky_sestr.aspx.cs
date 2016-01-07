@@ -59,9 +59,21 @@ public partial class dovolenky_sestr : System.Web.UI.Page
             Response.Redirect("error.html");
         }
 
+        this.msg_lbl.Text = "";
+
+        
+
         this.rights = Session["rights"].ToString();
         this.wgroup = Session["workgroup"].ToString();
         this.department = Session["oddelenie"].ToString();
+
+
+        if (this.rights == "users")
+        {
+            this.uziv_dovolenka.Visible = false;
+        }
+
+        my_x2.fillYearMonth(ref this.mesiac_cb,ref this.rok_cb, Session["month_dl"].ToString(), Session["years_dl"].ToString());
 
 
         if (!IsPostBack)
@@ -81,7 +93,10 @@ public partial class dovolenky_sestr : System.Web.UI.Page
         else
         {
             this.dovolenky_tab.Controls.Clear();
+            // this.loadNurses();
+            
             this.drawDovolenTab();
+            this.drawUserActDovolenky(Convert.ToInt32(this.nurses_dl.SelectedValue.ToString()));
         }
 
     }
@@ -139,7 +154,8 @@ public partial class dovolenky_sestr : System.Web.UI.Page
         sb.AppendLine("SELECT [is_users].[id],[is_users].[full_name],[t_dov].[id] AS [dov_id],[t_dov].[user_id],[t_dov].[od], ");
         sb.AppendLine("[t_dov].[do] FROM [is_users] ");
         sb.AppendLine("INNER JOIN [is_dovolenky_sestr] AS [t_dov] ON [is_users].[id]=[t_dov].[user_id] ");
-        sb.AppendFormat("WHERE [t_dov].[od] BETWEEN '{0}-{1}-01 00:00:00' AND '{0}-{1}-{2} 23:59:00'",tc_rok,tc_month,pocetDni);
+        sb.AppendFormat("WHERE ([t_dov].[od] BETWEEN '{0}-{1}-01 00:00:00' AND '{0}-{1}-{2} 23:59:00'",tc_rok,tc_month,pocetDni);
+        sb.AppendFormat("OR [t_dov].[do] BETWEEN '{0}-{1}-01 00:00:00' AND '{0}-{1}-{2} 23:59:00') ", tc_rok, tc_month, pocetDni);
         sb.AppendFormat(" AND [t_dov].[type]='{0}' AND [t_dov].[clinics]='{1}' ORDER BY [t_dov].[do] ASC",typ,Session["klinika_id"]);
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
@@ -281,28 +297,37 @@ public partial class dovolenky_sestr : System.Web.UI.Page
         else
         {
             int id = Convert.ToInt32(this.nurses_dl.SelectedValue.ToString());
-            SortedList data = new SortedList();
-            data.Add("od", my_x2.unixDate(this.dovOd_user.SelectedDate) + " 00:00:00");
-            // if (do_cal.s
-            data.Add("do", my_x2.unixDate(this.dovDo_user.SelectedDate) + " 23:59:00");
-            data.Add("type", this.freeType_dl.SelectedValue);
-            data.Add("clinics", Session["klinika_id"]);
-            data.Add("comment", this.comment_txt.Text.ToString().Trim());
-            data.Add("user_id", id);
 
-            SortedList res = x2Mysql.mysql_insert("is_dovolenky_sestr", data);
-
-            if (!Convert.ToBoolean(res["status"]))
+            if (id > 0)
             {
-                msg_lbl.Text = res["msg"].ToString();
-                x2log.logData(res, res["msg"].ToString(), "query error");
+                SortedList data = new SortedList();
+                data.Add("od", my_x2.unixDate(this.dovOd_user.SelectedDate) + " 00:00:00");
+                // if (do_cal.s
+                data.Add("do", my_x2.unixDate(this.dovDo_user.SelectedDate) + " 23:59:00");
+                data.Add("type", this.freeType_dl.SelectedValue);
+                data.Add("clinics", Session["klinika_id"]);
+                data.Add("comment", this.comment_txt.Text.ToString().Trim());
+                data.Add("user_id", id);
+
+                SortedList res = x2Mysql.mysql_insert("is_dovolenky_sestr", data);
+
+                if (!Convert.ToBoolean(res["status"]))
+                {
+                    my_x2.errorMessage2(ref this.msg_lbl, res["msg"].ToString());
+                    x2log.logData(res, res["msg"].ToString(), "query error");
+                }
+                else
+                {
+                    dovolenky_tab.Controls.Clear();
+                    this.drawDovolenTab();
+                    this.drawUserActDovolenky(id);
+                }
             }
             else
             {
-                dovolenky_tab.Controls.Clear();
-                this.drawDovolenTab();
-                this.drawUserActDovolenky(id);
+                my_x2.errorMessage2(ref this.msg_lbl, "Pozor nie je vybrana sestricka !!!");
             }
+            
          }
     }
 
@@ -345,12 +370,11 @@ public partial class dovolenky_sestr : System.Web.UI.Page
 
         if (Convert.ToBoolean(res["status"]))
         {
-            Response.Redirect("dovolenky.aspx");
+            //Response.Redirect("dovolenky_sestr.aspx");
         }
         else
         {
-            this.msg_lbl.Visible = true;
-            this.msg_lbl.Text = res["msg"].ToString();
+            my_x2.errorMessage2(ref this.msg_lbl, res["msg"].ToString());
         }
     }
 
@@ -367,7 +391,8 @@ public partial class dovolenky_sestr : System.Web.UI.Page
         query.AppendLine("SELECT [is_users].[id],[is_users].[full_name] AS [full_name],");
         query.AppendLine("[t_dov].[id] AS [dov_id], [t_dov].[user_id],[t_dov].[od],[t_dov].[do], [t_dov].[type],[t_dov].[comment] ");
         query.AppendLine("FROM [is_users] INNER JOIN [is_dovolenky_sestr] AS [t_dov] ON [is_users].[id] = [t_dov].[user_id] ");
-        query.AppendFormat("WHERE [t_dov].[od] BETWEEN '{0}-{1}-01 00:00:00' AND '{0}-{1}-{2} 23:59:00' ", tc_year, tc_month, pocetDni);
+        query.AppendFormat("WHERE ([t_dov].[od] BETWEEN '{0}-{1}-01 00:00:00' AND '{0}-{1}-{2} 23:59:00' ", tc_year, tc_month, pocetDni);
+        query.AppendFormat("OR [t_dov].[do] BETWEEN '{0}-{1}-01 00:00:00' AND '{0}-{1}-{2} 23:59:00') ", tc_year, tc_month, pocetDni);
         query.AppendFormat("AND [t_dov].[user_id] = '{0}' ",id);
         query.AppendLine("ORDER BY [t_dov].[od]");
 
@@ -378,6 +403,7 @@ public partial class dovolenky_sestr : System.Web.UI.Page
         for (int i = 0; i < pocetDov; i++)
         {
            TableRow mojRiadok = new TableRow();
+           mojRiadok.ID = "dovriadok_" + data[i]["dov_id"].ToString();
            mojRiadok.Width = Unit.Pixel(300);
            this.zoznamUser_tbl.Controls.Add(mojRiadok);
            TableCell info = new TableCell();
@@ -393,11 +419,16 @@ public partial class dovolenky_sestr : System.Web.UI.Page
 
             TableCell buttonCell = new TableCell();
             buttonCell.Width = Unit.Percentage(20);
+           
             Button mojeTlac = new Button();
             mojeTlac.CssClass = "button red width-300";
 
-            //mojeTlac.Command += new CommandEventHandler(this.deleteDovolenka);
-            mojeTlac.Click += new EventHandler(deleteDovolenka);
+            mojeTlac.Click += new EventHandler(this.deleteDovolenka);
+            //comment.Attributes.Add("onChange", "saveNurseShiftComment('" + comment.ID.ToString() + "');");
+            //mojeTlac.OnClientClick = "deleteNurseActivity('" + data[i]["dov_id"].ToString() + "'); return false;";
+
+            mojeTlac.OnClientClick = "confirm('Zmazat danu dovoleku?');";
+           // mojeTlac.Attributes.Add("onClick", "deleteNurseActivity('" + data[i]["dov_id"].ToString() + "'");
             mojeTlac.ID = "Button_" + data[i]["dov_id"].ToString();
             mojeTlac.Text = Resources.Resource.erase.ToString();
 

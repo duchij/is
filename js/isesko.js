@@ -114,12 +114,16 @@ function saveDocShiftComment(comment)
 
 function saveKDCHDocShiftComment(comment) {
     var note = $("[id$=" + comment + "]").val();
+    if (note.trim().length == 0)
+    {
+        note = "-";
+    }
     var tmp = comment.split("_");
 
     var user_id = $("[id$=ddl_" + tmp[1] + "_" + tmp[2] + "]").val();
     
     var month = $("[id$=mesiac_cb]").val();
-
+    var year = $("[id$=rok_cb]").val();
     var data = { user_id: user_id, date: year + "-" + month + "-" + tmp[1], type: tmp[2], comment: note };
 
     this.sendData("saveKDCHDocShiftsComment", data, "afterSaveKDCHShifts");
@@ -174,6 +178,31 @@ function messageBox(text,type)
     
 }
 
+function deleteNurseActivity(id)
+{
+    alert(id);
+    var st = confirm("Naozaj zmazať danú dovolenku?");
+    if (st)
+    {
+        this.sendData("deleteNurseActivity", { dovId: id }, "afterActivityDelete");
+    }
+
+}
+
+function afterActivityDelete(result) 
+{
+    if (result.status=="false")
+    {
+        this.messageBox(result.msg, "warning");
+    }
+    else
+    {
+        window.location("dovolenky_sestr.aspx");
+    }
+    
+}
+
+
 
 function saveNurseShiftComment(comment)
 {
@@ -184,7 +213,11 @@ function saveNurseShiftComment(comment)
     var year = $("[id$=rok_cb]").val();
     var month = $("[id$=mesiac_cb]").val();
     note = note.trim();
-    if (note.length > 0)
+
+
+
+
+    if (note.length > 0 && user_id!="0")
     {
         var data = { user_id: user_id, date: year + "-" + month + "-" + tmp[1], type: tmp[2], comment: note, deps: deps };
         this.sendData("saveNurseShiftsComment", data, "afterSaveNurseShifts", comment);
@@ -192,7 +225,7 @@ function saveNurseShiftComment(comment)
     else
     {
         $("[id$=" + comment + "]").val("-");
-        messageBox("Prazdny retazec...", "warning");
+        messageBox("Prazdny retazec, alebo sluzba nema priradeneho pracovnika", "warning");
         
     }
 

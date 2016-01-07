@@ -1807,9 +1807,6 @@ public class my_db
                 {
                     result.Add(reader["file_name"].ToString());
                 }
-
-
-                
                 //result.Add()
 
             }

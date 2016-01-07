@@ -465,4 +465,7 @@
   <data name="diagnose" xml:space="preserve">
     <value>Diagnóza</value>
   </data>
+  <data name="holiday_for_users" xml:space="preserve">
+    <value>Zoznam dovoleniek</value>
+  </data>
 </root>

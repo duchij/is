@@ -9,9 +9,9 @@ using System.Collections.Generic;
 public class lf_view : IHttpHandler {
 
     mysql_db x2Mysql = new mysql_db();
-    
+
     public void ProcessRequest (HttpContext context) {
-        
+
         if (context.Request.QueryString["id"] != null)
         {
             int picId = Convert.ToInt32(context.Request.QueryString["id"]);
@@ -28,22 +28,25 @@ public class lf_view : IHttpHandler {
                 case "tiff":
                     context.Response.ContentType = "image/tiff";
                     break;
-                    
+                case "gif":
+                    context.Response.ContentType = "image/gif";
+                    break;
+
             }
             byte[] lfData = x2Mysql.lfStoredData(picId, Convert.ToInt32(picData["file-size"]));
-            context.Response.BinaryWrite(lfData); 
+            context.Response.BinaryWrite(lfData);
             
-            
+
         }
-        
-       
-        
+
+
+
         //context.Response.ContentType = "text/plain";
         //context.Response.Write("Hello World");
-        
-        
+
+
     }
- 
+
     public bool IsReusable {
         get {
             return false;

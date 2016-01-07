@@ -401,6 +401,44 @@ public class lf : mysql_db
 
         return result;
     }
+
+    public SortedList updateLfData(byte[] content,SortedList lfData,int itemId)
+    {
+        SortedList result = new SortedList();
+        my_con.Open();
+        try
+        {
+            string query = "SELECT [item_lf_id] FROM [is_structure] WHERE [item_id]={0}";
+            query = this.buildSql(query, new string[] { itemId.ToString() });
+
+            MySqlCommand cmd = new MySqlCommand();
+            cmd.Connection = my_con;
+            cmd.CommandText = query;
+            int lfId = Convert.ToInt32(cmd.ExecuteScalar());
+
+            cmd.CommandText = @"UPDATE `is_data_2` SET `file-type`=@fileType, `file-content`=@fileContent, `file-size`=@fileSize WHERE `id`=@lfId";
+            cmd.Parameters.Add("fileType", MySqlDbType.Text).Value = lfData["file-type"].ToString();
+            cmd.Parameters.Add("fileContent", MySqlDbType.Binary).Value = content;
+            cmd.Parameters.Add("fileSize", MySqlDbType.Int32).Value = Convert.ToInt32(lfData["file-size"]);
+            cmd.Parameters.Add("lfId", MySqlDbType.Int32).Value = lfId;
+
+            cmd.ExecuteNonQuery();
+            result["status"] = "true";
+
+        }
+        catch (Exception ex)
+        {
+            result["status"] = false;
+            result["msg"] = ex.ToString();
+        }
+        finally
+        {
+            my_con.Close();
+            my_con.Dispose();
+        }
+
+        return result;
+    }
      
 
     public SortedList storeLfData(byte[] content, SortedList lfData, SortedList isStruct)

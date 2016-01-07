@@ -229,4 +229,8 @@ h1 .myTitle {
 	z-index:999999;
     display:none; 
 }
+
+.fileUpload {
+    width:30px;
+}
 	

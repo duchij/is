@@ -287,7 +287,7 @@ public partial class _Default : System.Web.UI.Page
                     }
                     else if (Session["workgroup"].ToString() == "other")
                     {
-                        Response.Redirect(@"sluzby2.aspx");
+                        Response.Redirect(@"sluzby3.aspx");
                     }
                     else if (Session["workgroup"].ToString() == "op")
                     {

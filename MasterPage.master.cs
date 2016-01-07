@@ -308,7 +308,7 @@ public partial class MasterPage : System.Web.UI.MasterPage
 
         string query = @"SELECT [is_seminars.date] AS [date],[is_seminars.tema] AS [tema] ,[users.name3] AS [name] FROM [is_seminars] 
                             INNER JOIN [is_users] AS [users] ON [users.id] = [is_seminars.user_id]
-                            WHERE [is_seminars.user_id] = {0}
+                            WHERE [is_seminars.user_id] = {0} OR [users.name]='admin'
                                 AND YEAR([is_seminars.date])={1} AND MONTH([is_seminars.date])={2}";
         query = x2Mysql.buildSql(query, new string[] { user_id.ToString(), year.ToString(), month.ToString() });
 

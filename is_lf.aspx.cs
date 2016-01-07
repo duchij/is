@@ -132,8 +132,21 @@ public partial class is_lf : System.Web.UI.Page
             TableRow riadok = new TableRow();
 
             TableCell nameCell = new TableCell();
-            nameCell.Text = files[i]["item_name"].ToString();
+            Label linkName = new Label();
+            linkName.Text = files[i]["item_name"].ToString();
+            linkName.CssClass = "large asphalt";
+            nameCell.Controls.Add(linkName); 
+
+            HyperLink hlink = new HyperLink();
+            hlink.NavigateUrl = "lf.aspx?id=" + files[i]["item_lf_id"].ToString();
+            hlink.Text= "<br>lf.aspx?id=" + files[i]["item_lf_id"].ToString();
+            hlink.CssClass = "blue";
+            nameCell.Controls.Add(hlink);
+
             riadok.Controls.Add(nameCell);
+
+            
+
 
             TableCell noteCell = new TableCell();
             noteCell.Text = x2.getStr(files[i]["item_comment"].ToString());
@@ -150,13 +163,28 @@ public partial class is_lf : System.Web.UI.Page
             if (files[i]["user_id"].ToString() == Session["user_id"].ToString())
             {
                 Button delBtn = new Button();
-                delBtn.Text = "Zmaz";
+                delBtn.Text = Resources.Resource.delete;
                 delBtn.ID = "delBtn_" + files[i]["item_id"].ToString();
                 delBtn.OnClientClick = "return confirm('Zmazať " + files[i]["item_name"].ToString() + "?');";
                 delBtn.Click += new EventHandler(deleteFile_fnc);
                 delBtn.CssClass = "button red";
 
                 actionCell.Controls.Add(delBtn);
+
+                FileUpload upFile = new FileUpload();
+                upFile.ID = "upFile_"+ files[i]["item_id"].ToString();
+                upFile.Attributes.Add("size", "10px");
+                
+                actionCell.Controls.Add(upFile);
+
+                Button upDateFileBtn = new Button();
+                upDateFileBtn.Text = "Novšia verzia";
+                upDateFileBtn.CssClass = "button asphalt";
+                upDateFileBtn.ID = "upFileBtn_"+ files[i]["item_id"].ToString();
+                upDateFileBtn.Click += new EventHandler(this.updateFile_fnc);
+
+                actionCell.Controls.Add(upDateFileBtn);
+
             }
             
 
@@ -167,6 +195,90 @@ public partial class is_lf : System.Web.UI.Page
         }
 
     }
+
+    protected void updateFile_fnc(object sender, EventArgs e)
+    {
+        Button upBtn = (Button)sender;
+        string[] btnData = upBtn.ID.Split('_');
+
+        Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+        ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
+
+        Control flc = ctpl.FindControl("upFile_" + btnData[1]);
+
+        FileUpload fulp = (FileUpload)flc;
+        SortedList res = new SortedList();
+
+        if (fulp.HasFile)
+        {
+            try
+            {
+                long size = fulp.PostedFile.InputStream.Length;
+                size = size / 1024000;
+
+                int itemId = Convert.ToInt32(btnData[1]);
+
+                //this.msg_lbl.Text = size.ToString();
+
+                if (size > 64)
+                {
+                    throw new System.Exception("Subor ma viac ako 64M !!!!!");
+                }
+
+                //string fileLabel = this.file_user_name_txt.Text.ToString().Trim();
+
+                /*if (fileLabel.Length == 0)
+                {
+                    fileLabel = this.lf_upf.FileName.ToString();
+                }*/
+
+                SortedList dataFile = new SortedList();
+                string fileEx = System.IO.Path.GetExtension(fulp.FileName);
+
+                byte[] dataB = new byte[fulp.PostedFile.InputStream.Length];
+
+                fulp.PostedFile.InputStream.Read(dataB, 0, fulp.PostedFile.ContentLength);
+
+                //dataFile.Add("file-name", this.lf_upf.FileName.ToString());
+                dataFile.Add("file-size", fulp.PostedFile.InputStream.Length);
+                dataFile.Add("file-type", fileEx);
+               // dataFile.Add("user_id", Session["user_id"]);
+                //dataFile.Add("clinic_id", Session["klinika_id"]);
+
+                SortedList isStruct = new SortedList();
+              //  isStruct.Add("item_name", fileLabel);
+
+               // isStruct.Add("item_parent_id", this.folders_dl.SelectedValue.ToString());
+               // isStruct.Add("item_hash", x2.makeByteHash(dataB));
+               // isStruct.Add("user_id", Session["use r_id"]);
+               // isStruct.Add("clinic_id", Session["klinika_id"]);
+
+                res = x2lf.updateLfData(dataB, dataFile, itemId );
+
+                if (Convert.ToBoolean(res["status"]))
+                {
+                    this.loadFiles();
+                }
+                else
+                {
+                    //this.msg_lbl.Text = res["msg"].ToString();
+                    throw new System.Exception(res["msg"].ToString());
+                }
+
+                // dataFile.Add("file-content", Convert.ToBase64String(dataB));
+
+
+            }
+            catch (Exception ex)
+            {
+                x2.errorMessage2(ref this.msg_lbl,"Súbor sa nenahral...!!!!<br>"+res["msg"].ToString()+"<br>"+ex.ToString());
+            }
+        }
+
+
+
+    }
+
 
     protected void onPickUp( object sender, EventArgs e)
     {

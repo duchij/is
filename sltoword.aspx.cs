@@ -429,7 +429,7 @@ public partial class sltoword : System.Web.UI.Page
 
 
                 TableCell cellDate = new TableCell();
-                tblRow.Controls.Add(cellDate);
+                
                 // cellDate.ID = "cellDate_" + row;
                 if (dnesJe == 0 || dnesJe == 6)
                 {
@@ -445,6 +445,7 @@ public partial class sltoword : System.Web.UI.Page
                 string text = (row + 1).ToString();
                 cellDate.Text = text + ". " + nazov;
                 cellDate.BorderWidth = 1;
+                tblRow.Controls.Add(cellDate);
 
                 for (int cols = 0; cols < colsNum; cols++)
                 {
@@ -466,7 +467,7 @@ public partial class sltoword : System.Web.UI.Page
                     Label comment = new Label();
                     dataCell.Controls.Add(comment);
                     comment.ID = "label_" + row.ToString() + "_" + cols.ToString();
-                    comment.Text = "<div style='font-size:10px;'>"+ comments[cols]+"</div>";
+                    comment.Text = comments[cols];
                     if (dnesJe == 0 || dnesJe == 6)
                     {
                         dataCell.BackColor = System.Drawing.Color.Gray;
@@ -532,7 +533,7 @@ public partial class sltoword : System.Web.UI.Page
 
         TableHeaderCell dayHeadCell = new TableHeaderCell();
         dayHeadCell.Text = "Datum";
-        dayHeadCell.Width = 140;
+        //dayHeadCell.Width = 140;
         headRow.Controls.Add(dayHeadCell);
 
         for (int i = 0; i < grps; i++)
@@ -560,6 +561,16 @@ public partial class sltoword : System.Web.UI.Page
             string nazov = CultureInfo.CurrentCulture.DateTimeFormat.DayNames[dnesJe];
             string sviatok = rDay.ToString() + "." + myDate.Month.ToString();
             int jeSviatok = Array.IndexOf(freeDays, sviatok);
+
+            if (dnesJe == 0 || dnesJe == 6)
+            {
+                dayCell.BackColor = System.Drawing.Color.LightGray;
+            }
+
+            if (jeSviatok != -1 && dnesJe != 0 && dnesJe != 6)
+            {
+                dayCell.BackColor = System.Drawing.Color.LightGray;
+            }
 
 
 
@@ -589,13 +600,13 @@ public partial class sltoword : System.Web.UI.Page
                     {
                         Label dl = new Label();
                         dl.ID = "name_" + rDay.ToString() + "_" + ddls[cnt];
-                        dl.Text = "-";
+                     //   dl.Text = "-";
 
                         dataCell.Controls.Add(dl);
 
                         Label comment = new Label();
                         comment.ID = "comment_" + rDay.ToString() + "_" + ddls[cnt];
-                        comment.Text = "-";
+                      //  comment.Text = "-";
                         dataCell.Controls.Add(comment);
 
                         dataRow.Controls.Add(dataCell);
@@ -606,13 +617,13 @@ public partial class sltoword : System.Web.UI.Page
                     
                     Label dl = new Label();
                     dl.ID = "name_" + rDay.ToString() + "_" + groups[col];
-                    dl.Text = "-";
+                  //  dl.Text = "-";
 
                     dataCell.Controls.Add(dl);
 
                     Label comment = new Label();
                     comment.ID = "comment_" + rDay.ToString() + "_" + groups[col];
-                    comment.Text = "-";
+                   // comment.Text = "-";
                     dataCell.Controls.Add(comment);
 
                     dataRow.Controls.Add(dataCell);
@@ -698,16 +709,23 @@ public partial class sltoword : System.Web.UI.Page
 
                         try
                         {
-                            ddl.Text = table[day]["user_names"].ToString() + "<br><span class='small'>("+ table[day]["type1"].ToString()+")</span><br>";
+                            ddl.Text = table[day]["user_names"].ToString() + "<span class='small'>("+ table[day]["type1"].ToString()+")</span><br>";
                         }
                         catch (Exception ex)
                         {
-                            ddl.Text = "-<br>";
+                            //ddl.Text = "-";
                         }
 
-                        Control crtl1 = FindControl("comment_" + rDay.ToString() + "_" + table[day]["type1"].ToString());
-                        Label textBox = (Label)crtl1;
-                        textBox.Text = "<i>"+table[day]["comment"].ToString() + "</i><br>";
+                        if (table[day]["comment"]!=null && table[day]["comment"].ToString() != "-")
+                        {
+                            Control crtl1 = FindControl("comment_" + rDay.ToString() + "_" + table[day]["type1"].ToString());
+                            Label textBox = (Label)crtl1;
+
+
+                            textBox.Text = "<i>" + table[day]["comment"].ToString() + "</i>";
+                    
+                        }    
+                        
                 }
                 else
                 {
@@ -719,17 +737,22 @@ public partial class sltoword : System.Web.UI.Page
 
                         try
                         {
-                            ddl.Text = names[col] + "<br><span class='small'>("+ type[col]+")</span><br>";
+                            ddl.Text = names[col] + "<span class='small'>("+ type[col]+")</span><br>";
                         }
                         catch (Exception ex)
                         {
-                            ddl.Text = "-<br>";
+                           // ddl.Text = "-";
                         }
 
-                        Control crtl1 = FindControl("comment_" + rDay.ToString() + "_" + type[col]);
-                        Label textBox = (Label)crtl1;
-                       
-                        textBox.Text = "<i>"+comments[col] + "</i><br>";
+                        if (comments[col]!=null && comments[col]!="-")
+                        {
+                            Control crtl1 = FindControl("comment_" + rDay.ToString() + "_" + type[col]);
+                            Label textBox = (Label)crtl1;
+
+                            textBox.Text = "<i>" + comments[col] + "</i>";
+                        }
+
+                        
                     }
                 }
 

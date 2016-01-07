@@ -978,23 +978,40 @@ public partial class sluzby2_sestr : System.Web.UI.Page
 
     }
 
-    protected void getVacations(int user_id, int mesiac, int rok)
+    protected Dictionary<string, ArrayList> getVacations(int mesiac, int rok)
     {
         int days = DateTime.DaysInMonth(rok, mesiac);
 
         string query = @"SELECT [user_id],[od],
                             [do],[type] FROM [is_dovolenky_sestr]
                             WHERE [od] BETWEEN '{0}-{1}-01 00:00:00' AND '{0}-{1}-{2} 23:59:00'
-                            AND [user_id]='{3}' ORDER BY [do] ASC";
+                            OR [do] BETWEEN '{0}-{1}-01 00:00:00' AND '{0}-{1}-{2} 23:59:00'
+                            ORDER BY [do] ASC";
 
-        query = x2Mysql.buildSql(query, new string[] { rok.ToString(), mesiac.ToString(), days.ToString(), user_id.ToString() });
+        query = x2Mysql.buildSql(query, new string[] { rok.ToString(), mesiac.ToString(), days.ToString()});
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(query);
-        Dictionary<string, Hashtable> result = new Dictionary<string, Hashtable>;
-        foreach (KeyValuePair<int,Hashtable> row in table)
+        Dictionary<string, ArrayList> result = new Dictionary<string,ArrayList>();
+
+        int tblLn = table.Count;
+
+        for (int i=0; i< tblLn; i++)
         {
+            if (result.ContainsKey(table[i]["user_id"].ToString()) == false)
+            {
+                result.Add(table[i]["user_id"].ToString(), new ArrayList());
+            }
+
            
+           string tmp = table[i]["od"].ToString() + ";" + table[i]["do"].ToString() + ";" + table[i]["type"].ToString();
+
+
+            result[table[i]["user_id"].ToString()].Add(tmp);
+
+
         }
+
+        return result;
 
     }
 
@@ -1063,6 +1080,7 @@ public partial class sluzby2_sestr : System.Web.UI.Page
         cb.ShowText(Session["clinic_label"].ToString()); ;
         cb.EndText();
 
+        Dictionary<string, ArrayList> vacations = this.getVacations(mesiac, rok);
 
 
         int days = DateTime.DaysInMonth(rok, mesiac);
@@ -1206,6 +1224,76 @@ public partial class sluzby2_sestr : System.Web.UI.Page
 
                     }
                     cb.EndText();
+                }
+            }
+            if (vacations.ContainsKey(table[j]["user_id"].ToString()))
+            {
+                ArrayList userVacations = vacations[table[j]["user_id"].ToString()];
+
+                int uVLn = userVacations.Count;
+
+                for (int v = 0; v < uVLn; v++)
+                {
+                    string[] tmp = userVacations[v].ToString().Split(';');
+
+                    DateTime dtStart = Convert.ToDateTime(tmp[0]);
+                    DateTime dtStop = Convert.ToDateTime(tmp[1]);
+
+                    int mStart = dtStart.Month;
+                    int mStop = dtStop.Month;
+
+                    if (mStart != mStop)
+                    {
+                        if (mStart < mesiac)
+                        {
+                            int daysInMonth = DateTime.DaysInMonth(rok, mesiac);
+                            //string endDt = days.ToString() + "." + mesiac.ToString() + "." + rok.ToString();
+                            string DtStr = "1." + mesiac.ToString() + "." + rok.ToString();
+                            dtStart = Convert.ToDateTime(DtStr);
+                        }
+                        if (mStop > mesiac )
+                        {
+                            int daysInMonth = DateTime.DaysInMonth(rok, mesiac);
+                            string DtStr = days.ToString() + "." + mesiac.ToString() + "." + rok.ToString();
+                            dtStop = Convert.ToDateTime(DtStr);
+                        }
+                    }
+
+                   
+
+                    while (dtStart <= dtStop)
+                    {
+                        
+                        int day = dtStart.Day;
+
+                        int dW = (int)dtStart.DayOfWeek;
+
+                        string denStr = day.ToString() + "." + mesiac.ToString();
+                        if (Array.IndexOf(freeDays, denStr) == -1 && dW != 0 && dW != 6)
+                        {
+                            cb.BeginText();
+                            cb.MoveText(startPlanX + ((day - 1) * planDistance), startRowY - (position * nameDistance));
+                            switch (tmp[2])
+                            {
+                                case "do":
+                                    cb.ShowText("Dv");
+                                    break;
+                                case "pn":
+                                    cb.ShowText("PN");
+                                    break;
+                                case "le":
+                                    cb.ShowText("Le");
+                                    break;
+                                default:
+                                    cb.ShowText(tmp[2]);
+                                    break;
+
+                            }
+
+                            cb.EndText();
+                        }
+                        dtStart = dtStart.AddDays(1);
+                    }
                 }
             }
             position++;   
