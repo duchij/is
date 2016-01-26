@@ -96,7 +96,7 @@ public class mysql_db
             }
             else
             {
-                strArr[i] = "[" + tmp.Key.ToString() + "] ='" + tmp.Value.ToString() + "'";
+                strArr[i] = "[" + tmp.Key.ToString() + "] ='" + tmp.Value.ToString().Trim() + "'";
             }
             i++;
            // parse_str = parse_str.Replace("'", "*");

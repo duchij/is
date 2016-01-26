@@ -47,7 +47,7 @@ public partial class sltoword : System.Web.UI.Page
                 this.generate2DK();
                 break;
             case "nkim":
-                this.loadSluzby();
+                this.drawTable("nkim");
                 break;
             case "kdhao":
                 this.drawTable("kdhao");
@@ -642,6 +642,24 @@ public partial class sltoword : System.Web.UI.Page
         int rok = Convert.ToInt32(Session["aktSluzRok"].ToString());
 
         int dateGroup = my_x2.makeDateGroup(rok, mesiac);
+
+
+        if (this.gKlinika == "nkim")
+        {
+            query = @"SELECT [t_sluzb].[datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [type1],
+                [t_sluzb].[state] AS [state],
+                GROUP_CONCAT([t_sluzb].[user_id] ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [users_ids],
+                GROUP_CONCAT(IF([t_sluzb].[user_id]=0,'-',[t_users].[name3]) ORDER BY [t_sluzb].[ordering] SEPARATOR ';') AS [users_names],
+                GROUP_CONCAT(IF([t_sluzb].[comment]=NULL,'-',[t_sluzb].[comment]) ORDER BY [t_sluzb].[ordering] SEPARATOR '|') AS [comment],
+                [t_sluzb].[date_group] AS [dategroup]
+                FROM [is_sluzby_all] AS [t_sluzb]
+                LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]
+                    WHERE [t_sluzb].[date_group] = '{0}' AND [t_sluzb].[state]='active'
+                AND [t_sluzb].[clinic] = '{1}' 
+                GROUP BY [t_sluzb].[datum]
+                ORDER BY [t_sluzb].[datum]";
+        }
+
 
         if (this.gKlinika == "kdhao")
         {

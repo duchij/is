@@ -45,6 +45,7 @@
         td {
             font-size:9px;
             height:auto;
+            text-align:center;
         }
         th { 
             font-size:10px;

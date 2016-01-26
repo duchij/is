@@ -244,7 +244,9 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
 
         DateTime dateTmp = Convert.ToDateTime(this.hl_datum_cb.SelectedValue.ToString());
 
-        data.Add("work_start", x2.unixDate(dateTmp) + " " + this.jsWorkstarttxt.Text.ToString());
+        string tmpDt = x2.unixDate(dateTmp) + " " + this.jsWorkstarttxt.Text.ToString();
+
+        data.Add("work_start",tmpDt.TrimEnd());
         data.Add("work_time", this.jsWorktimetxt.Text.ToString());
         // data.Add("work_time", this.calcAfter19());
         data.Add("work_type", this.worktype_cb.SelectedValue.ToString());

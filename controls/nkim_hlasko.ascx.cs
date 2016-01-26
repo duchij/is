@@ -8,7 +8,7 @@ using System.Web.UI.WebControls;
 
 public partial class nkim_hlasko : System.Web.UI.UserControl
 {
-    mysql_db x2Mysql = new mysql_db();
+    mysql_db x2Mysql = new mysql_db(); 
     x2_var x2 = new x2_var();
     log x2log = new log();
     my_db x2dbold = new my_db();
@@ -18,6 +18,12 @@ public partial class nkim_hlasko : System.Web.UI.UserControl
         if (Session["tuisegumdrum"] == null)
         {
             Response.Redirect("error.html");
+        }
+
+        if (Session["nkimHlaskoSelTab"] != null)
+        {
+            //this.msg_lbl.Text = Session["hlaskoSelTab"].ToString();
+            this.nkimHlasko_hv.Value = Session["nkimHlaskoSelTab"].ToString();
         }
 
         if (!IsPostBack)

@@ -150,7 +150,7 @@ public partial class is_seminar : System.Web.UI.Page
             tblRow.Controls.Add(dateCell);
 
             TableCell seminCell = new TableCell();
-            seminCell.Text = table[i]["tema"].ToString();
+            seminCell.Text = x2.getStr(table[i]["tema"].ToString());
             tblRow.Controls.Add(seminCell);
 
             TableCell nameCell = new TableCell();

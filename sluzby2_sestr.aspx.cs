@@ -964,7 +964,7 @@ public partial class sluzby2_sestr : System.Web.UI.Page
                            ,GROUP_CONCAT([t_sluzb.typ] ORDER BY [t_sluzb.datum] SEPARATOR ';' ) AS [plan] 
                            ,GROUP_CONCAT(DATE_FORMAT([t_sluzb.datum],'%Y-%c-%e') ORDER BY [t_sluzb.datum] SEPARATOR ';' ) AS [datum]
                         FROM [is_sluzby_2_sestr] AS [t_sluzb]
-                            INNER JOIN [is_users] AS [t_users] ON [t_users.id] = [t_sluzb.user_id]
+                            LEFT JOIN [is_users] AS [t_users] ON [t_users.id] = [t_sluzb.user_id]
                         WHERE [t_sluzb.date_group]='{0}' AND [deps]='{1}' 
                         GROUP BY [t_sluzb.user_id]
                         ORDER BY [t_users.work_group] 
@@ -983,7 +983,7 @@ public partial class sluzby2_sestr : System.Web.UI.Page
         int days = DateTime.DaysInMonth(rok, mesiac);
 
         string query = @"SELECT [user_id],[od],
-                            [do],[type] FROM [is_dovolenky_sestr]
+                            [do],[type] FROM [is_dovolenky_sestr] 
                             WHERE [od] BETWEEN '{0}-{1}-01 00:00:00' AND '{0}-{1}-{2} 23:59:00'
                             OR [do] BETWEEN '{0}-{1}-01 00:00:00' AND '{0}-{1}-{2} 23:59:00'
                             ORDER BY [do] ASC";
@@ -1296,6 +1296,7 @@ public partial class sluzby2_sestr : System.Web.UI.Page
                     }
                 }
             }
+            
             position++;   
         }
         //return cb;

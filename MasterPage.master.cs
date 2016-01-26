@@ -324,7 +324,7 @@ public partial class MasterPage : System.Web.UI.MasterPage
             {
                 DateTime dt = Convert.ToDateTime(X2.MSDate(table[s]["date"].ToString()));
 
-                sems += "<strong class='red'>"+dt.ToShortDateString() + "</strong>- " + table[s]["tema"].ToString();
+                sems += " <strong class='red'>"+dt.ToShortDateString() + "</strong>- " + X2.getStr(table[s]["tema"].ToString());
             }
             this.seminars_lbl.Text += sems;
         }

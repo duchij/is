@@ -95,6 +95,19 @@ function saveKDCHDocShifts(ddl) {
     this.sendData("saveKDCHDocShifts", data, "afterSaveKDCHShifts");
 }
 
+function saveAllDocShifts(ddl) {
+    var user_id = $("[id$=" + ddl + "]").val();
+    var tmp = ddl.split("_");
+
+    var year = $("[id$=rok_cb]").val();
+    var month = $("[id$=mesiac_cb]").val();
+
+    var data = { user_id: user_id, date: year + "-" + month + "-" + tmp[1], type: tmp[2] };
+
+    this.sendData("saveAllDocShifts", data, "afterSaveAllShifts");
+}
+
+
 
 
 function saveDocShiftComment(comment)
@@ -131,6 +144,25 @@ function saveKDCHDocShiftComment(comment) {
 }
 
 
+function saveAllDocShiftComment(comment) {
+    var note = $("[id$=" + comment + "]").val();
+    if (note.trim().length == 0) {
+        note = "-";
+    }
+    var tmp = comment.split("_");
+
+    var user_id = $("[id$=ddl_" + tmp[1] + "_" + tmp[2] + "]").val();
+
+    var month = $("[id$=mesiac_cb]").val();
+    var year = $("[id$=rok_cb]").val();
+    var data = { user_id: user_id, date: year + "-" + month + "-" + tmp[1], type: tmp[2], comment: note };
+
+    this.sendData("saveAllDocShiftsComment", data, "afterSaveAllShifts");
+
+}
+
+
+
 function afterSaveKDCHShifts(result)
 {
     if (result.status == "false") {
@@ -139,6 +171,16 @@ function afterSaveKDCHShifts(result)
         //$("[id$=" + obj + "]").val("0");
     }
 }
+
+
+function afterSaveAllShifts(result) {
+    if (result.status == "false") {
+        $("[id$=msg_dialog]").html("<h2 class='red'>CHYBA:</h2><p class='red'>" + result.msg + "</p>");
+        $("[id$=msg_dialog]").dialog();
+        //$("[id$=" + obj + "]").val("0");
+    }
+}
+
 
 function messageBox(text,type)
 {
@@ -335,6 +377,47 @@ function lfTabs() {
 
 }
 
+
+function nkimTabs() {
+
+    $("#nkim_hlasko_tabs").tabs();
+
+    $("#nkim_hlasko_tabs").tabs({
+        activate: function (event) {
+
+            var tab = event.currentTarget.hash;
+            //           console.log(tab);
+
+            sendData("nkimHlaskoSelectedTab", { selTab: tab }, "afterNkimSelectTab");
+        }
+    });
+
+
+    var selTab = $("input[id$=nkimHlasko_hv]").val();
+
+    if (selTab != undefined && selTab.indexOf("nkim_hlasko_tab" != -1)) {
+        switch (selTab) {
+            case "#nkim_hlasko_tab1":
+                $("#nkim_hlasko_tabs").tabs({ active: 0 });
+                break;
+            case "#nkim_hlasko_tab2":
+                $("#nkim_hlasko_tabs").tabs({ active: 1 });
+                break;
+            case "#nkim_hlasko_tab3":
+                $("#nkim_hlasko_tabs").tabs({ active: 2 });
+                break;
+        }
+    }
+
+}
+
+function afterNkimSelectTab(data)
+{
+    var tab = data.selTab;
+    $("input[id$=nkimHlasko_hv]").val(tab);
+}
+
+
 function afterLfSelectTab(data) {
     var tab = data.selTab;
     $("input[id$=setlftab_hv]").val(tab);
@@ -363,6 +446,8 @@ $(document).ready(function () {
     hlaskoTabs();
     opKnihaTabs();
     lfTabs();
+
+    nkimTabs();
 
 
     if ($("input[id$=isSeminarsPage]").val() == "1")
@@ -403,7 +488,7 @@ $(document).ready(function () {
     $("input[id$=_jsWorkstarttxt]").change(function (e) {
 
         var str = $("input[id$=_jsWorkstarttxt]").val();
-        var re = new RegExp("^([01]?[0-9]|2[0-3]):[0-5][0-9]","ig");
+        var re = new RegExp("^([01]?[0-9]|2[0-3]):[0-5][0-9]$","ig");
         //alert(str);
         if (!re.test(str)) {
             var dt = new Date();
