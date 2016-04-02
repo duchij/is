@@ -14,6 +14,7 @@ using System.Web.UI.HtmlControls;
 
 //public delegate void setWebState (object sender,System.EventArgs e);
 
+
 public partial class MasterPage : System.Web.UI.MasterPage
 {
     //public event setWebState doSetWebState;
@@ -256,7 +257,7 @@ public partial class MasterPage : System.Web.UI.MasterPage
         
             if (this.wgroup == "doctor")
             {
-                sb.AppendFormat("SELECT [datum],[typ] FROM [is_sluzby_dk] WHERE [date_group] ='{0}' AND [user_id] = '{1}' ORDER BY [datum]", dateGroup, Session["user_id"]);
+                sb.AppendFormat("SELECT [datum],[typ] FROM [is_sluzby_all] WHERE [date_group] ='{0}' AND [user_id] = '{1}' ORDER BY [datum]", dateGroup, Session["user_id"]);
             }
             break;
             case "nkim":
@@ -304,13 +305,17 @@ public partial class MasterPage : System.Web.UI.MasterPage
     {
         int month = DateTime.Today.Month;
         int year = DateTime.Today.Year;
+
+        int days = DateTime.DaysInMonth(year, month);
         int user_id = Convert.ToInt32(Session["user_id"].ToString());
 
+        string dateStart = year.ToString() + "-" + month.ToString() + "-1";
+        string dateEnd = year.ToString() + "-" + month.ToString() + "-" + days.ToString();
         string query = @"SELECT [is_seminars.date] AS [date],[is_seminars.tema] AS [tema] ,[users.name3] AS [name] FROM [is_seminars] 
                             INNER JOIN [is_users] AS [users] ON [users.id] = [is_seminars.user_id]
-                            WHERE [is_seminars.user_id] = {0} OR [users.name]='admin'
-                                AND YEAR([is_seminars.date])={1} AND MONTH([is_seminars.date])={2}";
-        query = x2Mysql.buildSql(query, new string[] { user_id.ToString(), year.ToString(), month.ToString() });
+                            WHERE ([is_seminars.user_id] = {0} OR [users.name]='admin')
+                                AND [is_seminars.date] BETWEEN '{1}' AND '{2}'";
+        query = x2Mysql.buildSql(query, new string[] { user_id.ToString(), dateStart,dateEnd });
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(query);
 
@@ -323,8 +328,12 @@ public partial class MasterPage : System.Web.UI.MasterPage
             for (int s=0; s< tbLn; s++)
             {
                 DateTime dt = Convert.ToDateTime(X2.MSDate(table[s]["date"].ToString()));
-
-                sems += " <strong class='red'>"+dt.ToShortDateString() + "</strong>- " + X2.getStr(table[s]["tema"].ToString());
+                string tema = X2.getStr(table[s]["tema"].ToString());
+                if (tema.Length == 0)
+                {
+                    tema = "Seminar";
+                }
+                sems += " <strong class='red'>"+dt.ToShortDateString() + "</strong>- " +tema ;
             }
             this.seminars_lbl.Text += sems;
         }

@@ -872,7 +872,7 @@ public partial class controls_kdch_shifts : System.Web.UI.UserControl
 
         int dateGroup = x2.makeDateGroup(Convert.ToInt32(rok), Convert.ToInt32(mesiac));
 
-        sb.AppendFormat("UPDATE [is_sluzby_2] SET [state]='active' WHERE [date_group]='{0}' AND [clinic]='{1}'", dateGroup,this.gKlinika);
+        sb.AppendFormat("UPDATE [is_sluzby_all] SET [state]='active' WHERE [date_group]='{0}' AND [clinic]='{1}'", dateGroup,this.gKlinika);
         SortedList res = x2Mysql.execute(sb.ToString());
 
         if (!(Boolean)res["status"])

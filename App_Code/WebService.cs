@@ -270,7 +270,7 @@ public class WebService : System.Web.Services.WebService {
         else
         {
             rtData["status"] = "false";
-            rtData["msg"] = res["msg"].ToString();
+            rtData["msg"] = "<b>Nemozete dat poznamku bez zadania mena lekara!!!!</b><p class='small'>"+res["msg"].ToString()+"</p>";
         }
         //Session["lfSelTab"] = obj["selTab"].ToString();
         JavaScriptSerializer js2 = new JavaScriptSerializer();
@@ -297,7 +297,7 @@ public class WebService : System.Web.Services.WebService {
         {
             //shiftsData.Add("user_id", null);
             rtData["status"] = "false";
-            rtData["msg"] = "Nie je mozne dat poznamku bez vybraneho lekara p re dany den a typ...";
+            rtData["msg"] = "Nie je mozne dat poznamku bez vybraneho lekara pre dany den a typ...";
         }
         else
         {
@@ -407,34 +407,16 @@ public class WebService : System.Web.Services.WebService {
         shiftsData.Add("date_group", x2.makeDateGroup(dt.Year, dt.Month));
         SortedList res = new SortedList();
         Dictionary<string, string> rtData = new Dictionary<string, string>();
-
-        if (userId == 0)
+        SortedList free = this.isFree(shiftsData);
+        
+        if ((Boolean)free["status"])
         {
-            string query = "DELETE FROM [is_sluzby_all] WHERE [datum]='{0}' AND [typ]='{1}' AND [clinic]={2}";
-            query = x2Mysql.buildSql(query, new string[] { x2.unixDate(dt).ToString(), obj["type"].ToString(), Session["klinika_id"].ToString() });
+            if (userId == 0)
+            {
+                string query = "DELETE FROM [is_sluzby_all] WHERE [datum]='{0}' AND [typ]='{1}' AND [clinic]={2}";
+                query = x2Mysql.buildSql(query, new string[] { x2.unixDate(dt).ToString(), obj["type"].ToString(), Session["klinika_id"].ToString() });
 
-            res = x2Mysql.execute(query);
-
-            if ((Boolean)res["status"])
-            {
-                rtData["status"] = "true";
-            }
-            else
-            {
-                rtData["status"] = "false";
-                rtData["msg"] = res["msg"].ToString();
-            }
-        }
-        else
-        {
-            if (Session["rights"].ToString() == "users" && (Session["user_id"].ToString() != obj["user_id"]))
-            {
-                res["status"] = "false";
-                res["msg"] = "Nemozete druhemu naplanovat sluzbu nemate pristupove pravo...";
-            }
-            else
-            {
-                res = x2Mysql.mysql_insert("is_sluzby_all", shiftsData);
+                res = x2Mysql.execute(query);
 
                 if ((Boolean)res["status"])
                 {
@@ -446,7 +428,39 @@ public class WebService : System.Web.Services.WebService {
                     rtData["msg"] = res["msg"].ToString();
                 }
             }
+            else
+            {
+                if (Session["rights"].ToString() == "users" && (Session["user_id"].ToString() != obj["user_id"]))
+                {
+                    rtData["status"] = "false";
+                    rtData["msg"] = "Nemozete druhemu naplanovat sluzbu nemate pristupove pravo...";
+                }
+                else
+                {
+                    res = x2Mysql.mysql_insert("is_sluzby_all", shiftsData);
+
+                    if ((Boolean)res["status"])
+                    {
+                        rtData["status"] = "true";
+                    }
+                    else
+                    {
+                        rtData["status"] = "false";
+                        rtData["msg"] = res["msg"].ToString();
+                    }
+                }
+            }
         }
+        else
+        {
+            rtData["status"] = "false";
+            rtData["msg"] = "Miesto je uz obsadene !!!!";
+            rtData["user_id"] = free["user_id"].ToString();
+        }
+
+        
+
+        
 
         
         //Session["lfSelTab"] = obj["selTab"].ToString();
@@ -511,6 +525,25 @@ public class WebService : System.Web.Services.WebService {
         return js2.Serialize(rtData).ToString();
     }
 
+    private SortedList isFree(SortedList data)
+    {
+        string query = "SELECT [user_id] FROM [is_sluzby_all] WHERE [datum]='{0}' AND [typ]='{1}' AND [clinic]='{2}'";
+
+        query = x2Mysql.buildSql(query, new string[] { data["datum"].ToString(), data["typ"].ToString(), Session["klinika_id"].ToString() });
+        SortedList row = x2Mysql.getRow(query);
+
+        SortedList result = new SortedList();
+        result["status"] = true; 
+        if (row["user_id"] != null)
+        {
+            result["status"] = false;
+            result["user_id"] = row["user_id"];
+        }
+
+        return result;
+
+    }
+
     [WebMethod(EnableSession = true)]
     public string saveAllDocShifts(string data)
     {
@@ -527,42 +560,55 @@ public class WebService : System.Web.Services.WebService {
         shiftsData.Add("user_id", userId);
         shiftsData.Add("typ", obj["type"].ToString());
         shiftsData.Add("date_group", x2.makeDateGroup(dt.Year, dt.Month));
-        SortedList res = new SortedList();
+
+       
         Dictionary<string, string> rtData = new Dictionary<string, string>();
 
-        if (userId == 0)
+        SortedList free = this.isFree(shiftsData);
+
+        if ((Boolean)free["status"])
         {
-            string query = "DELETE FROM [is_sluzby_all] WHERE [datum]='{0}' AND [typ]='{1}' AND [clinic]={2}";
-            query = x2Mysql.buildSql(query, new string[] { x2.unixDate(dt).ToString(), obj["type"].ToString(), Session["klinika_id"].ToString() });
+            SortedList res = new SortedList();
 
-            res = x2Mysql.execute(query);
-
-            if ((Boolean)res["status"])
+            if (userId == 0)
             {
-                rtData["status"] = "true";
+                string query = "DELETE FROM [is_sluzby_all] WHERE [datum]='{0}' AND [typ]='{1}' AND [clinic]={2}";
+                query = x2Mysql.buildSql(query, new string[] { x2.unixDate(dt).ToString(), obj["type"].ToString(), Session["klinika_id"].ToString() });
+
+                res = x2Mysql.execute(query);
+
+                if ((Boolean)res["status"])
+                {
+                    rtData["status"] = "true";
+                }
+                else
+                {
+                    rtData["status"] = "false";
+                    rtData["msg"] = res["msg"].ToString();
+                }
             }
             else
             {
-                rtData["status"] = "false";
-                rtData["msg"] = res["msg"].ToString();
+                res = x2Mysql.mysql_insert("is_sluzby_all", shiftsData);
+
+                if ((Boolean)res["status"])
+                {
+                    rtData["status"] = "true";
+                }
+                else
+                {
+                    rtData["status"] = "false";
+                    rtData["msg"] = res["msg"].ToString();
+                }
             }
         }
         else
         {
-            res = x2Mysql.mysql_insert("is_sluzby_all", shiftsData);
-
-            if ((Boolean)res["status"])
-            {
-                rtData["status"] = "true";
-            }
-            else
-            {
-                rtData["status"] = "false";
-                rtData["msg"] = res["msg"].ToString();
-            }
+            rtData["status"] = "false";
+            rtData["msg"] = "Miesto je uz obsadene !!!!";
+            rtData["user_id"] = free["user_id"].ToString();
         }
 
-        //Session["lfSelTab"] = obj["selTab"].ToString();
         JavaScriptSerializer js2 = new JavaScriptSerializer();
         return js2.Serialize(rtData).ToString();
     }

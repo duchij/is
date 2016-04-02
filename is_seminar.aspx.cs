@@ -80,7 +80,14 @@ public partial class is_seminar : System.Web.UI.Page
         SortedList data = new SortedList();
         data.Add("date", this.date_txt.Text.ToString());
         data.Add("user_id", this.doctors_dl.SelectedValue.ToString());
-        data.Add("tema", this.tema_txt.Text.ToString());
+
+        string tema = this.tema_txt.Text.ToString();
+
+        if (tema.Length == 0)
+        {
+            tema = "Seminar";
+        }
+        data.Add("tema", tema);
         data.Add("clinic_id", this.gKlinika);
 
         SortedList res = x2Mysql.mysql_insert("is_seminars", data); 
@@ -107,7 +114,7 @@ public partial class is_seminar : System.Web.UI.Page
 
         string query = @"SELECT [is_seminars].*,[users.name3] AS [name] FROM [is_seminars] 
                             INNER JOIN [is_users] AS [users] ON [users.id] = [is_seminars.user_id]
-                            WHERE [date] BETWEEN '{0}-{1}-1' AND '{0}-{1}-{2}' AND [clinic_id]={3}";
+                            WHERE [date] BETWEEN '{0}-{1}-1' AND '{0}-{1}-{2}' AND [clinic_id]={3} ORDER BY [date] ASC";
 
         query = x2Mysql.buildSql(query, new string[] { year.ToString(), month.ToString(), days.ToString(),this.gKlinika });
 
@@ -150,7 +157,12 @@ public partial class is_seminar : System.Web.UI.Page
             tblRow.Controls.Add(dateCell);
 
             TableCell seminCell = new TableCell();
-            seminCell.Text = x2.getStr(table[i]["tema"].ToString());
+            string tema = x2.getStr(table[i]["tema"].ToString());
+            if (tema.Length==0)
+            {
+                tema = "Seminar";
+            }
+            seminCell.Text = tema;
             tblRow.Controls.Add(seminCell);
 
             TableCell nameCell = new TableCell();

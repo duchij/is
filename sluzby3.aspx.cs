@@ -40,7 +40,7 @@ public partial class sluzby3: System.Web.UI.Page
                 ctpl.Controls.Add(Page.LoadControl("~/controls/shifts/nkim_shifts.ascx"));
                 break;
             case "2dk":
-                ctpl.Controls.Add(Page.LoadControl("~/controls/shifts/dk_shifts.ascx"));
+                ctpl.Controls.Add(Page.LoadControl("~/controls/shifts/dk_shifts_2.ascx"));
                 break;
             case "kdhao":
                 ctpl.Controls.Add(Page.LoadControl("~/controls/shifts/kdhao_shifts.ascx"));

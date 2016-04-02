@@ -1284,6 +1284,9 @@ public partial class sluzby2_sestr : System.Web.UI.Page
                                 case "le":
                                     cb.ShowText("Le");
                                     break;
+                                case "oc":
+                                    cb.ShowText("Oc");
+                                    break;
                                 default:
                                     cb.ShowText(tmp[2]);
                                     break;

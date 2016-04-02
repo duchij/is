@@ -1022,7 +1022,8 @@ public partial class vykaz2 : System.Web.UI.Page
 
         StringBuilder query = new StringBuilder();
         int dateGroup = my_x2.makeDateGroup(rok, mesiac);
-        query.AppendFormat("SELECT [datum] FROM [is_sluzby_2] WHERE [user_id] = '{0}' AND [date_group]='{1}' AND [typ]<>'Prijm' ORDER BY [datum] ASC", Session["user_id"].ToString(), dateGroup);
+        //query.AppendFormat("SELECT [datum] FROM [is_sluzby_2] WHERE [user_id] = '{0}' AND [date_group]='{1}' AND ([typ]<>'Prijm' OR [typ]<>'Uraz' OR [typ]<>'Vseob') ORDER BY [datum] ASC", Session["user_id"].ToString(), dateGroup);
+        query.AppendFormat("SELECT [datum] FROM [is_sluzby_2] WHERE [user_id] = '{0}' AND [date_group]='{1}' AND [typ] NOT IN('Prijm','Uraz','Vseob','GFS') ORDER BY [datum] ASC", Session["user_id"].ToString(), dateGroup);
         Dictionary<int, Hashtable> table = x2Mysql.getTable(query.ToString());
 
         
@@ -1505,7 +1506,7 @@ public partial class vykaz2 : System.Web.UI.Page
                         if (dovolenky[i]["type"].ToString() == "do") { my_text_box.Text = "D"; my_text_box1.Text = "D"; my_text_box2.Text = "0"; my_text_box3.Text = "0"; }
                         if (dovolenky[i]["type"].ToString() == "pn") { my_text_box.Text = "PN"; my_text_box1.Text = "PN"; my_text_box2.Text = "0"; my_text_box3.Text = "0"; }
                         if (dovolenky[i]["type"].ToString() == "sk") { my_text_box.Text = "SK"; my_text_box1.Text = "SK"; my_text_box2.Text = "0"; my_text_box3.Text = "0"; }
-                        if (dovolenky[i]["type"].ToString() == "le") { my_text_box.Text = "Le"; my_text_box1.Text = "Le"; my_text_box2.Text = "0"; my_text_box3.Text = "0"; }
+                        if (dovolenky[i]["type"].ToString() == "le") { my_text_box.Text = "SK"; my_text_box1.Text = "Le"; my_text_box2.Text = "0"; my_text_box3.Text = "0"; }
 
                         
                     }
@@ -1811,7 +1812,7 @@ public partial class vykaz2 : System.Web.UI.Page
         this.msg_lbl.Text = oldFile;
         // open the reader
         PdfReader reader = new PdfReader(oldFile);
-        Rectangle size = reader.GetPageSizeWithRotation(1);
+        Rectangle size = reader.GetPageSizeWithRotation(1); 
         Document myDoc = new Document(PageSize.A4);
 
         //1cm == 28.3pt

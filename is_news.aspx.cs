@@ -9,6 +9,26 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 
+
+class NewsObj
+{
+    private mysql_db _mysql;
+    private int _gKlinika;
+
+    public int gKlinika
+    {
+        get { return _gKlinika; }
+        set { _gKlinika = value; }
+    }
+
+    public mysql_db mysql
+    {
+        get { return _mysql; }
+        set { _mysql = value; }
+    }
+
+} 
+
 public partial class is_news : System.Web.UI.Page
 {
 
@@ -18,26 +38,17 @@ public partial class is_news : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        // SortedList akt_user_info = x_db.getUserInfoByID("is_users", Request.Cookies["user_id"].Value.ToString());
-        //  user.Text = akt_user_info["full_name"].ToString();
 
         if (Session["tuisegumdrum"] == null)
         {
             Response.Redirect("error.html");
         }
-        // full_text.ImageGalleryPath = "img/";
 
-
-        if (!IsPostBack)
-        {
-            news_gv.DataSource = x_db.getData_News();
-            news_gv.DataBind();
-        }
-        else
-        {
-            news_gv.DataSource = x_db.getData_News();
-            news_gv.DataBind();
-        }
+        int klinikaId = Convert.ToInt32(Session["klinika_id"].ToString());
+       
+        news_gv.DataSource = x_db.getData_News(klinikaId);
+        news_gv.DataBind();
+       
 
     }
 
@@ -58,6 +69,7 @@ public partial class is_news : System.Web.UI.Page
             data.Add("datum_txt", DateTime.Today.ToShortDateString());
             data.Add("user", Session["user_id"].ToString());
             data.Add("cielova_skupina", this.targetGroup_dl.SelectedValue.ToString());
+            data.Add("klinika", Session["klinika_id"].ToString());
 
             SortedList res = x2Mysql.mysql_insert("is_news", data);
 
@@ -73,12 +85,11 @@ public partial class is_news : System.Web.UI.Page
         else
         {
             data.Add("kratka_sprava", this.small_text.Text.ToString());
-
             data.Add("cela_sprava", text64);
-            
             data.Add("cielova_skupina", this.targetGroup_dl.SelectedValue.ToString());
 
             SortedList res = x2Mysql.mysql_update("is_news", data, Session["news_edit_id"].ToString());
+
             if (Convert.ToBoolean(res["status"]))
             {
                Session.Remove("news_edit_id");
@@ -93,17 +104,8 @@ public partial class is_news : System.Web.UI.Page
 
     }
 
-
-
-
     protected void news_gv_RowDeleting(object sender, GridViewDeleteEventArgs e)
     {
-        //GridView gv = (GridView)sender;
-
-        //LinkButton db = (LinkButton)this.news_gv.Rows[e.RowIndex].Cells[4].Controls[0];
-
-        //db.OnClientClick = "return confirm('Zmazat?');";
-
         string result = x_db.DeleteNewsRow(Convert.ToInt32(news_gv.Rows[e.RowIndex].Cells[1].Text.ToString()));
 
         if (result == "ok")
@@ -114,17 +116,11 @@ public partial class is_news : System.Web.UI.Page
         {
             msg_lbl.Text = result;
         }
-        //msg_lbl.Text = Convert.ToString(news_gv.SelectedRow.Cells[0].Text);
-
-        //news_gv.DataBind();
 
     }
 
     protected void news_gv_selectRow(object sender, GridViewSelectEventArgs e)
     {
-        //msg_lbl.Text = "tu";
-        // msg_lbl.Text += news_gv.Rows[e.NewSelectedIndex].Cells[1].Text.ToString();
-
         SortedList data = x_db.getInfoNewsData(Convert.ToInt32(news_gv.Rows[e.NewSelectedIndex].Cells[1].Text.ToString()));
         string text = "";
         if (data["status"] == null)
@@ -141,14 +137,9 @@ public partial class is_news : System.Web.UI.Page
             {
                 text = data["kratka_sprava"].ToString();
             }
-            
-
-
             this.full_text.Text = text;
             Session["news_edit_id"] = data["id"];
-
         }
-
     }
 
    

@@ -52,7 +52,7 @@ public partial class news : System.Web.UI.UserControl
         }
         
             
-         List<String> data = x_db.getNews();
+         List<String> data = x_db.getNews(Convert.ToInt32(Session["klinika_id"].ToString()));
          int cnt = data.Count;
          sb.Length = 0;
         if (cnt > 0)

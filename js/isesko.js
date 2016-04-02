@@ -103,14 +103,14 @@ function saveAllDocShifts(ddl) {
     var month = $("[id$=mesiac_cb]").val();
 
     var data = { user_id: user_id, date: year + "-" + month + "-" + tmp[1], type: tmp[2] };
-
-    this.sendData("saveAllDocShifts", data, "afterSaveAllShifts");
+    console.log(data);
+    this.sendData("saveDocShifts", data, "afterSaveAllShifts",ddl);
 }
 
 
 
 
-function saveDocShiftComment(comment)
+function saveAllDocShiftComment(comment)
 {
     var note =  $("[id$=" + comment + "]").val();
     var tmp = comment.split("_");
@@ -157,7 +157,7 @@ function saveAllDocShiftComment(comment) {
     var year = $("[id$=rok_cb]").val();
     var data = { user_id: user_id, date: year + "-" + month + "-" + tmp[1], type: tmp[2], comment: note };
 
-    this.sendData("saveAllDocShiftsComment", data, "afterSaveAllShifts");
+    this.sendData("saveDocShiftsComment", data, "afterSaveAllShiftsComment",comment);
 
 }
 
@@ -172,9 +172,29 @@ function afterSaveKDCHShifts(result)
     }
 }
 
+function afterSaveAllShiftsComment(result, comment) {
 
-function afterSaveAllShifts(result) {
     if (result.status == "false") {
+
+        $("[id$=" + comment + "]").val("-");
+        $("[id$=msg_dialog]").html("<h2 class='red'>CHYBA:</h2><p class='red'>" + result.msg + "</p>");
+        $("[id$=msg_dialog]").dialog();
+        //$("[id$=" + obj + "]").val("0");
+    }
+}
+
+function afterSaveAllShifts(result,ddl) {
+
+    if (result.status == "false") {
+
+        if (result.user_id != undefined)
+        {
+            $("[id$=" + ddl + "] option[value='"+result.user_id+"']").prop("selected",true);
+        }
+        else {
+            $("[id$=" + ddl + "]").val("0");
+        }
+        
         $("[id$=msg_dialog]").html("<h2 class='red'>CHYBA:</h2><p class='red'>" + result.msg + "</p>");
         $("[id$=msg_dialog]").dialog();
         //$("[id$=" + obj + "]").val("0");
@@ -446,7 +466,6 @@ $(document).ready(function () {
     hlaskoTabs();
     opKnihaTabs();
     lfTabs();
-
     nkimTabs();
 
 
@@ -454,6 +473,10 @@ $(document).ready(function () {
     {
         setSeminar();
     }
+
+   
+
+
 
 
     $("#delPasswdBtn").click(function (e) {

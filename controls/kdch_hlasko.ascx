@@ -96,6 +96,7 @@ Vytvoril:<asp:Label ID="creatUser_lbl" runat="server" Text="" Font-Bold="true"><
             
             Priezvisko pacienta (len priezvisko!!!!):
             <asp:TextBox ID="patientname_txt" runat="server"></asp:TextBox>
+            <p class="yellow small">Ak nevypíšete meno, systém automaticky vloží slovo pacient !!!!</p>
 
         </div>
         <div class="one half">

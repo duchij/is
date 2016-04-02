@@ -44,7 +44,7 @@ public partial class sltoword : System.Web.UI.Page
                 this.drawTable("kdch");
                 break;
             case "2dk":
-                this.generate2DK();
+                this.drawTable("2dk");
                 break;
             case "nkim":
                 this.drawTable("nkim");

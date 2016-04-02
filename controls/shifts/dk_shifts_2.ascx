@@ -1,9 +1,25 @@
-﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="kdhao_shifts.ascx.cs" Inherits="controls_kdhao_shifts" %>
+﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="dk_shifts_2.ascx.cs" Inherits="controls_shifts_dk_shifts_2" %>
 <asp:Literal ID="msg_lbl" runat="server" Text=""></asp:Literal>
+
+<asp:HiddenField ID="tempWeek_0" runat="server" />
+    <asp:HiddenField ID="tempWeek_1" runat="server" />
+    <asp:HiddenField ID="tempWeek_2" runat="server" />
+    <asp:HiddenField ID="tempWeek_3" runat="server" />
+    <asp:HiddenField ID="tempWeek_4" runat="server" />
+    <asp:HiddenField ID="tempWeek_5" runat="server" />
+
 <div id="msg_dialog"></div>
     <h2> Plán služieb</h2><hr />
+
+ 
     <asp:PlaceHolder ID="editShiftView_pl" runat="server">
         <div class="row">
+            <div class="one">
+                    <asp:Table ID="weekState_tbl" runat="server" CssClass="responsive" data-max="14"></asp:Table>
+                </div>
+            </div>
+        <div class="row">
+           
             <div class="one half">
                 <div class="blue box"">
                     <asp:CheckBox ID="editShift_chk" runat="server" AutoPostBack="true" Checked="false" EnableViewState="true" />
@@ -29,37 +45,20 @@
             
             <div class="one third">
              <div style="display:none;">Oddelenie: </div>         
-                <asp:DropDownList ID="deps_dl" runat="server" OnSelectedIndexChanged="changeDeps_fnc" EnableViewState="true" AutoPostBack="true" Visible="false"></asp:DropDownList>
+                <%--<asp:DropDownList ID="deps_dl" runat="server" OnSelectedIndexChanged="changeDeps_fnc" EnableViewState="true" AutoPostBack="true" Visible="false"></asp:DropDownList>--%>
 
             </div>
             <div class="one third">
                  Mesiac:<asp:DropDownList ID="mesiac_cb" runat="server" 
                         AutoPostBack="True" onselectedindexchanged="changeSluzba" EnableViewState="true" >
-                        <asp:ListItem Value="1">Január</asp:ListItem>
-                        <asp:ListItem Value="2">Február</asp:ListItem>
-                        <asp:ListItem Value="3">Marec</asp:ListItem>
-                        <asp:ListItem Value="4">Apríl</asp:ListItem>
-                        <asp:ListItem Value="5">Máj</asp:ListItem>
-                        <asp:ListItem Value="6">Jún</asp:ListItem>
-                        <asp:ListItem Value="7">Júl</asp:ListItem>
-                        <asp:ListItem Value="8">August</asp:ListItem>   
-                        <asp:ListItem Value="9">September</asp:ListItem>
-                        <asp:ListItem Value="10">Október</asp:ListItem>
-                        <asp:ListItem Value="11">November</asp:ListItem>
-                        <asp:ListItem Value="12">December</asp:ListItem>
+                        
                     </asp:DropDownList> 
                     </div>
                     <div class="one third">
                     Rok: 
                 <asp:DropDownList ID="rok_cb" runat="server" AutoPostBack="True" 
                         onselectedindexchanged="changeSluzba" EnableViewState="true" >
-                    <asp:ListItem Value="2010">Rok 2010</asp:ListItem>
-                    <asp:ListItem Value="2011">Rok 2011</asp:ListItem>
-                    <asp:ListItem Value="2012">Rok 2012</asp:ListItem>
-                    <asp:ListItem Value="2013">Rok 2013</asp:ListItem>
-					<asp:ListItem Value="2014">Rok 2014</asp:ListItem>
-					<asp:ListItem Value="2015">Rok 2015</asp:ListItem>
-					<asp:ListItem Value="2016">Rok 2016</asp:ListItem>
+                   
                 </asp:DropDownList>
                 </div> 
             </div>
@@ -76,8 +75,8 @@
                 </asp:Table>
                 <div class="row">
                     <div class="one whole padded">
-                    <asp:Button ID="publish_btn" runat="server" Text="Sprístupniť všetkým" CssClass="green button" OnClick="publishOnFnc"  />
-                     <asp:Button ID="unpublish_btn" runat="server" Text="Zblokovať prístup všetkým" CssClass="red button"  OnClick="publishOffFnc"/>
+                    <asp:Button ID="publish_btn" runat="server" Text="Sprístupniť všetkým" CssClass="green button" OnClick="publishStateFnc"  />
+                     <asp:Button ID="unpublish_btn" runat="server" Text="Zblokovať prístup všetkým" CssClass="red button"  OnClick="publishStateFnc"/>
                         </div>
                     <asp:Button ID="toWord_btn" runat="server" Text="do Wordu" OnClick="publishSluzby"/>
                 

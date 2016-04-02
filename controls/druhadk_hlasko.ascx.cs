@@ -443,7 +443,7 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
 
         DateTime dt = this.Calendar1.SelectedDate;
 
-        sb.AppendFormat("SELECT [typ] FROM [is_sluzby_dk] WHERE [datum]='{0}' ORDER BY [ordering] ASC", x2.unixDate(dt));
+        sb.AppendFormat("SELECT [typ] FROM [is_sluzby_all] WHERE [datum]='{0}' ORDER BY [ordering] ASC", x2.unixDate(dt));
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
         int tableCn = table.Count;

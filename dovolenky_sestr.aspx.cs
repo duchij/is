@@ -354,6 +354,9 @@ public partial class dovolenky_sestr : System.Web.UI.Page
             case "le":
                 result = Resources.Resource.free_le;
                 break;
+            case "oc":
+                result = "Ocerka";
+                break;
         }
 
         return result;
@@ -427,7 +430,7 @@ public partial class dovolenky_sestr : System.Web.UI.Page
             //comment.Attributes.Add("onChange", "saveNurseShiftComment('" + comment.ID.ToString() + "');");
             //mojeTlac.OnClientClick = "deleteNurseActivity('" + data[i]["dov_id"].ToString() + "'); return false;";
 
-            mojeTlac.OnClientClick = "confirm('Zmazat danu dovoleku?');";
+            mojeTlac.OnClientClick = "return confirm('Zmazat danu dovoleku?');";
            // mojeTlac.Attributes.Add("onClick", "deleteNurseActivity('" + data[i]["dov_id"].ToString() + "'");
             mojeTlac.ID = "Button_" + data[i]["dov_id"].ToString();
             mojeTlac.Text = Resources.Resource.erase.ToString();

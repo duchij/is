@@ -213,7 +213,7 @@ public partial class _Default : System.Web.UI.Page
                     Response.Cookies["email"].Value = data["email"].ToString(); */
 
                   
-                    List<string> news = db_obj.getLastNews();
+                    List<string> news = db_obj.getLastNews(Convert.ToInt32(Session["klinika_id"].ToString()));
 
                     if (news.Count > 0)
                     {

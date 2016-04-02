@@ -37,12 +37,11 @@ public partial class dovkompl : System.Web.UI.Page
                 this.loadShifts(rok, mesiac);
                 break;
             case "kdhao":
-
                 this.dovkomplTitel_lbl.Text = x2.setLabel("kdhao_dovkompl_titel") + ", " + dt.ToLongDateString();
                 this.init(rok, mesiac);
 
                 this.loadActivities(rok, mesiac);
-                this.loadShifts(rok, mesiac);
+                this.loadShiftsKDHAO(rok, mesiac);
                 break;
             case "2dk":
                 this.dovkomplTitel_lbl.Text = x2.setLabel("2dk_dovkompl_titel") + ", " + dt.ToLongDateString();
@@ -190,7 +189,113 @@ public partial class dovkompl : System.Web.UI.Page
         }
 
     }
+    protected void loadShiftsKDHAO(int rok, int mesiac)
+    {
+        int dateGroup = x2.makeDateGroup(rok, mesiac);
 
+        string query = @"   SELECT  [t_sluz.datum] AS [datum], 
+                                    GROUP_CONCAT([t_sluz.typ]) AS [type], 
+                                    GROUP_CONCAT([t_sluz.user_id]) AS [user_ids] 
+                            FROM [is_sluzby_all] AS [t_sluz]
+                            INNER JOIN [is_users] AS [t_users] ON [t_users.id] = [t_sluz.user_id]
+                            WHERE [t_sluz.date_group] = '{0}' AND [t_sluz.state]='active' AND [t_users.worker]='int'  
+                                  GROUP BY [datum] 
+                        ";
+
+        query = x2Mysql.buildSql(query, new string[] { dateGroup.ToString() });
+
+        Dictionary<int, Hashtable> table = x2Mysql.getTable(query);
+
+        int tableCn = table.Count;
+        int days = DateTime.DaysInMonth(rok, mesiac);
+        if (tableCn > 0)
+        {
+            for (int row = 0; row < tableCn; row++)
+            {
+                string[] typArr = table[row]["type"].ToString().Split(',');
+                string[] idArr = table[row]["user_ids"].ToString().Split(',');
+
+                DateTime dt = Convert.ToDateTime(x2.UnixToMsDateTime(table[row]["datum"].ToString()));
+
+                int den = dt.Day;
+                int dayOfWeek = (int)dt.DayOfWeek;
+
+                int cnUsers = idArr.Length;
+                for (int i = 0; i < cnUsers; i++)
+                {
+                    if (idArr[i] != "0")
+                    {
+                        Control crtl = FindControl("stCell_" + den.ToString() + "_" + idArr[i]);
+                        TableCell stCell = (TableCell)crtl;
+                        switch (typArr[i])
+                        {
+                            case "OddAB":
+                                stCell.BackColor = System.Drawing.Color.FromArgb(0xed7669);
+                                stCell.ToolTip += "Oddelenie prac.den" + "\r\n";
+                                break;
+                            case "OddAVikB":
+                                stCell.BackColor = System.Drawing.Color.FromArgb(0x5faee3);
+                                stCell.ToolTip += "Oddelenie vikend" + "\r\n";
+                                break;
+                            case "Transplant":
+                                stCell.BackColor = System.Drawing.Color.FromArgb(0x54d98c);
+                                stCell.ToolTip += "Transplantacne oddelenie" + "\r\n";
+                                break;
+                           /* case "OP":
+                                stCell.BackColor = System.Drawing.Color.FromArgb(0x46627f);
+                                stCell.ToolTip += "Operačná pohotovosť" + "\r\n";
+                                break;
+                            case "Prijm":
+                                stCell.BackColor = System.Drawing.Color.FromArgb(0xb07cc6);
+                                stCell.ToolTip += "Príjmová ambulancia" + "\r\n";
+                                break;*/
+                        }
+                        string tmpStCell = stCell.Text.ToString();
+                        if (tmpStCell.Length > 0)
+                        {
+                            stCell.Text += "\r\n" + typArr[i];
+                        }
+                        else
+                        {
+                            stCell.Text = typArr[i];
+                        }
+                    }
+
+                    if (typArr[i] != "Prijm")
+                    {
+                        if (dayOfWeek == 0 || dayOfWeek == 6)
+                        {
+
+                            Control crtl1 = FindControl("stCell_" + (den + 1).ToString() + "_" + idArr[i]);
+                            if (crtl1 != null)
+                            {
+                                TableCell stCell1 = (TableCell)crtl1;
+                                stCell1.BackColor = System.Drawing.Color.LightGray;
+                                stCell1.ToolTip += "Po sluzbe \r\n";
+                            }
+                            Control crtl2 = FindControl("stCell_" + (den + 2).ToString() + "_" + idArr[i]);
+                            if (crtl2 != null)
+                            {
+                                TableCell stCell2 = (TableCell)crtl2;
+                                stCell2.BackColor = System.Drawing.Color.LightGray;
+                                stCell2.ToolTip += "Po sluzbe \r\n";
+                            }
+                        }
+                        else
+                        {
+                            Control crtl3 = FindControl("stCell_" + (den + 1).ToString() + "_" + idArr[i]);
+                            if (crtl3 != null)
+                            {
+                                TableCell stCell3 = (TableCell)crtl3;
+                                stCell3.BackColor = System.Drawing.Color.LightGray;
+                                stCell3.ToolTip += "Po sluzbe \r\n";
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     protected void loadShifts(int rok, int mesiac)
     {
@@ -296,11 +401,6 @@ public partial class dovkompl : System.Web.UI.Page
                         }
                     }
                 }
-
-               
-                
-
-
             }
         }
     }
@@ -443,9 +543,11 @@ public partial class dovkompl : System.Web.UI.Page
 
         string query = @"SELECT 
                                 [id],[name],[name2],[name3],[titul_pred],[full_name],[titul_za] FROM [is_users] 
-                            WHERE ([active]='1' AND [klinika] = '{0}' AND [work_group]='doctor' AND [worker]='int') 
-                                AND [name] <> 'admin' 
-                                AND [name] <> 'vtablet'
+                            WHERE [active]='1' 
+                            AND [klinika] = '{0}' 
+                            AND [work_group]='doctor' 
+                            AND [worker]='int' 
+                            AND [name] NOT IN ('admin','vtablet')
                             ORDER BY [name2] ASC
                         ";
         query = x2Mysql.buildSql(query, new string[] { Session["klinika_id"].ToString() });

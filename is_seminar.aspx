@@ -7,8 +7,9 @@
     <asp:Literal ID="msg_lbl" runat="server" Text=""></asp:Literal>
     <asp:HiddenField ID="isSeminarsPage" runat="server" Value="1" />
     <asp:PlaceHolder ID="editSection" runat="server">
-
+        
          <div class="blue box"><!--Zaciatok modreho boxu--> 
+             <p class="white">K semináru, ktorý má byť viditeľný pre všetkých musí byť pridelený uživateľ admin !!!!! </p>
              <h2 class="black">Pridanie seminára</h2>
         <div class="row">
                

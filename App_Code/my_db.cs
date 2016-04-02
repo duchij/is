@@ -1321,9 +1321,9 @@ public class my_db
 
   
 
-    public List<string> getLastNews()
+    public List<string> getLastNews(int id)
     {
-        string query = "SELECT [id] FROM [is_news] WHERE DATE_ADD([datum],INTERVAL -7 DAY) ORDER BY [datum] DESC LIMIT 1";
+        string query = "SELECT [id] FROM [is_news] WHERE DATE_ADD([datum],INTERVAL -7 DAY) AND [klinika]="+id.ToString()+" ORDER BY [datum] DESC LIMIT 1";
 
         List<string> result = new List<string>();
         my_con.Open();
@@ -1344,9 +1344,9 @@ public class my_db
 
     }
 
-    public List<string> getNews()
+    public List<string> getNews(int klinikaId)
     {
-        string query = "SELECT *, DATE(`datum`) as `n_d` FROM `is_news` ORDER BY `datum` DESC LIMIT 5";
+        string query = "SELECT *, DATE(`datum`) as `n_d` FROM `is_news` WHERE `klinika`="+klinikaId.ToString()+" ORDER BY `datum` DESC LIMIT 5";
 
         //SortedList result = new SortedList();
 
@@ -1383,10 +1383,10 @@ public class my_db
         return result;
     }
 
-    public DataSet getData_News()
+    public DataSet getData_News(int klinika)
     {
        
-        string query = "SELECT * FROM `is_news` ORDER BY DATE(datum) DESC";
+        string query = "SELECT * FROM `is_news` WHERE `klinika`="+klinika.ToString()+" ORDER BY DATE(datum) DESC";
         string conn = my_con.ConnectionString.ToString();
         //string conn = @"Driver={MySQL ODBC 3.51 Driver};uid=root;password=aa;Server=127.0.0.1;Option=3;Database=kdch_sk;";
         my_con.Open();

@@ -250,7 +250,16 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
         data.Add("work_time", this.jsWorktimetxt.Text.ToString());
         // data.Add("work_time", this.calcAfter19());
         data.Add("work_type", this.worktype_cb.SelectedValue.ToString());
-        data.Add("patient_name", this.patientname_txt.Text.ToString());
+
+        string meno = this.patientname_txt.Text.ToString().Trim();
+
+        if (meno.Length == 0)
+        {
+            meno = "pacient";
+        }
+        
+        data.Add("patient_name", meno);
+
         data.Add("work_text", x2.EncryptString(this.activity_txt.Text.ToString(), Session["passphrase"].ToString()));
         data.Add("osirix", this.check_osirix.Checked);
         data.Add("work_place", this.clinicDep_dl.SelectedValue);

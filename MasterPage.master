@@ -261,6 +261,7 @@
 	<script type="text/javascript" src="gdw/js/groundwork.all.js"></script>
     <script type="text/javascript" src="js/jquery-ui.min.js"></script>
     <script type="text/javascript" src="js/isesko.js"></script> 
+    <script type="text/javascript" src="js/is_staze2.js"></script> 
      
      
 </body>

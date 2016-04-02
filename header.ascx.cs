@@ -66,80 +66,110 @@ public partial class header : System.Web.UI.UserControl
         string dnesStr = dnes.ToShortDateString();
         string vceraStr = vcera.ToShortDateString();
         this.date_lbl.Text = DateTime.Today.ToLongDateString();
-        StringBuilder sb = new StringBuilder();
-
-        sb.Append("SELECT GROUP_CONCAT([t_s_dk].[typ] ORDER BY [t_s_dk].[ordering] SEPARATOR ';') AS [shift_type],");
-        sb.AppendLine("GROUP_CONCAT(IFNULL([t_users].[name3],'-') ORDER BY [t_s_dk].[ordering] SEPARATOR ';') AS [doc_names],");
-        sb.AppendLine("GROUP_CONCAT([t_s_dk].[comment] ORDER BY [t_s_dk].[ordering] SEPARATOR '|') AS [doc_comments]");
-        sb.AppendLine("FROM [is_sluzby_dk] AS [t_s_dk]");
-        sb.AppendLine("LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_s_dk].[user_id]");
-        sb.AppendFormat("WHERE [t_s_dk].[datum] ='{0}' OR [t_s_dk].[datum]='{1}'", my_x2.unixDate(dnes), my_x2.unixDate(vcera));
-        sb.AppendFormat("AND [t_s_dk].[clinic]='{0}' GROUP BY [t_s_dk].[datum] ORDER BY [t_s_dk].[datum] DESC", Session["klinika_id"]);
-
-        Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
-
-        if (table.Count == 2)
+        string query = "";
+        if (this.wgroup == "doctor")
         {
-            string[] shiftType = table[0]["shift_type"].ToString().Split(';');
-            string[] docBefore = table[0]["doc_names"].ToString().Split(';');
-            string[] comments = table[0]["doc_comments"].ToString().Split('|');
-            this.head1_lbl.Text = "";
-            this.head2_lbl.Text = "";
-            this.head3_lbl.Text = "";
-            this.head4_lbl.Text = "";
-            this.head5_lbl.Text = "";
 
-            if (shiftType.Length == 6)
-            {
-                this.oup_lbl.Text = docBefore[0] + "(" + shiftType[0] + ") <br>" + comments[0];
-                this.oup_lbl.Text += "<br>" + docBefore[1] + "(" + shiftType[1] + ") <br>" + comments[1];
-
-                this.odda_lbl.Text = docBefore[2] + "(" + shiftType[2] + ") <br>" + comments[2];
-                this.odda_lbl.Text += "<br>" + docBefore[3] + "(" + shiftType[3] + ") <br>" + comments[3];
-
-                this.oddb_lbl.Text = docBefore[4] + "(" + shiftType[4] + ") <br>" + comments[4];
-
-                this.op_lbl.Text = docBefore[5] + "(" + shiftType[5] + ") <br>" + comments[5];
-
-                this.trp_lbl.Text = "...";
-            }
-
-            if (shiftType.Length == 5)
-            {
-                this.oup_lbl.Text = docBefore[0] + "(" + shiftType[0] + ") <br>" + comments[0];
-                //this.oup_lbl.Text += "<br>" + docBefore[1] + "(" + shiftType[1] + ") <br>" + comments[1];
-
-                this.odda_lbl.Text = docBefore[1] + "(" + shiftType[1] + ") <br>" + comments[1];
-                // this.odda_lbl.Text += "<br>" + docBefore[3] + "(" + shiftType[3] + ") <br>" + comments[3];
-
-                this.oddb_lbl.Text = docBefore[2] + "(" + shiftType[2] + ") <br>" + comments[2];
-
-                this.op_lbl.Text = docBefore[3] + "(" + shiftType[3] + ") <br>" + comments[3];
-
-                this.trp_lbl.Text = docBefore[4] + "(" + shiftType[4] + ") <br>" + comments[4];
-            }
-
-
-
-            this.po_lbl.Text = table[1]["doc_names"].ToString();
-
-            
-            //this.trp_lbl.Text = docBefore[4].ToString() + "<br>" + comments[4].ToString();
-
-            //this.po_lbl.Text = table[1]["users_names"].ToString();
-
-            //date_lbl.Text = DateTime.Today.ToLongDateString();
-
-            //            SELECT 
-            //GROUP_CONCAT(`t_s_dk`.`typ` ORDER BY `t_s_dk`.`ordering` SEPARATOR ';') AS `shift_type`, 
-            //GROUP_CONCAT(IFNULL(`t_users`.`name3`,'-') ORDER BY `t_s_dk`.`ordering` SEPARATOR ';') AS `doc_names`
-            //FROM `is_sluzby_dk` AS `t_s_dk`
-            //LEFT JOIN `is_users` AS `t_users` ON `t_users`.`omega_ms_item_id` = `t_s_dk`.`user_id`
-            //WHERE `t_s_dk`.`datum`='2015-2-25' OR `t_s_dk`.`datum`='2015-2-24 23:59:00'
-            //AND `t_s_dk`.`clinic`=4 
-            //GROUP BY `t_s_dk`.`datum` 
+            query = @"
+                        SELECT 
+                                GROUP_CONCAT(CONCAT_WS(';',[t_sluz.typ],[t_user.name3],[t_sluz.comment]) SEPARATOR '|') AS [sluzba]
+                                FROM [is_sluzby_all] AS [t_sluz] 
+                            INNER JOIN [is_users] AS [t_user] ON [t_user.id] = [t_sluz.user_id]
+                                WHERE [t_sluz.datum] BETWEEN '{0}' AND '{1}'
+                                    AND [clinic]={2}
+                                    GROUP BY [t_sluz.datum]
+                                    ORDER BY [t_sluz.datum] DESC";
         }
-        else
+
+        query = x2Mysql.buildSql(query, new string[] { my_x2.unixDate(vcera), my_x2.unixDate(dnes), Session["klinika_id"].ToString() });
+       
+
+        Dictionary<int, Hashtable> table = x2Mysql.getTable(query);
+        this.head1_lbl.Text = "Odd: ";
+        this.head2_lbl.Text = "OupA:";
+        this.head3_lbl.Text = "OupB:";
+        this.head4_lbl.Text = "Expe:";
+        this.head5_lbl.Text = "KlAmb:";
+
+
+        if (table.Count >0 )
+        {
+            this.oup_lbl.Text = "";
+            this.odda_lbl.Text = "";
+            this.oddb_lbl.Text = "";
+            this.op_lbl.Text = "";
+            this.trp_lbl.Text = "";
+
+            string[] sluzbDnes = table[0]["sluzba"].ToString().Split('|');
+
+            int sluzLn = sluzbDnes.Length;
+
+            SortedList sluzba = new SortedList();
+            SortedList notes = new SortedList();
+            for (int s = 0; s < sluzLn; s++)
+            {
+                string[] tmp = sluzbDnes[s].Split(';');
+                sluzba.Add(tmp[0], tmp[1]);
+                notes.Add(tmp[0], tmp[2]);
+            }
+
+            if (sluzba["Odd"] != null)
+            {
+                this.oup_lbl.Text = "Odd: "+sluzba["Odd"].ToString() + "<br>" + notes["Odd"].ToString();
+            }
+
+            if (sluzba["Odd2"] != null)
+            {
+                this.oup_lbl.Text += "<br>Odd2"+sluzba["Odd2"].ToString() + "<br>" + notes["Odd2"].ToString();
+            }
+
+            if (sluzba["OupA"] != null)
+            {
+                this.odda_lbl.Text += sluzba["OupA"].ToString() + "<br>" + notes["OupA"].ToString();
+            }
+
+            if (sluzba["OupB"] != null)
+            {
+                this.oddb_lbl.Text += sluzba["OupB"].ToString() + "<br>" + notes["OupB"].ToString();
+            }
+
+            if (sluzba["Expe"] != null)
+            {
+                this.op_lbl.Text += sluzba["Expe"].ToString() + "<br>" + notes["Expe"].ToString();
+            }
+
+            if (sluzba["KlAmb"] != null)
+            {
+                this.trp_lbl.Text += sluzba["KlAmb"].ToString() + "<br>" + notes["KlAmb"].ToString();
+            }
+            if (table.Count>1)
+            {
+                string[] sluzbaVcera = table[1]["sluzba"].ToString().Split('|');
+                int vceraLn = sluzbaVcera.Length;
+
+                sluzba.Clear();
+
+                for (int v = 0; v < vceraLn; v++)
+                {
+                    string[] tmp = sluzbaVcera[v].Split(';');
+                    sluzba.Add(tmp[0], tmp[1] + "<em> /" + tmp[2] + "/</em>");
+                }
+                this.po_lbl.Text = "<p class='small'>";
+                foreach (DictionaryEntry row in sluzba)
+                {
+                    this.po_lbl.Text += row.Value.ToString() + "(" + row.Key.ToString() + "), ";
+                }
+                this.po_lbl.Text += "</p>";
+            }
+            
+
+            date_lbl.Text = DateTime.Today.ToLongDateString();
+
+            SortedList data = x_db.getNextPozDatum(DateTime.Today);
+            poziadav_lbl.Text = data["datum"].ToString();
+
+        }
+        else 
         {
             this.msg_lbl.Text = Resources.Resource.shifts_not_done; 
         }
@@ -381,7 +411,7 @@ public partial class header : System.Web.UI.UserControl
                                 GROUP_CONCAT(CONCAT_WS(';',[t_sluz.typ],[t_user.name3],[t_sluz.comment]) SEPARATOR '|') AS [sluzba]
                                 FROM [is_sluzby_all] AS [t_sluz] 
                             INNER JOIN [is_users] AS [t_user] ON [t_user.id] = [t_sluz.user_id]
-                                WHERE [t_sluz.datum]='{0}' OR  [t_sluz.datum]='{1}'
+                                WHERE ([t_sluz.datum]='{0}' OR  [t_sluz.datum]='{1}')
                                     AND [clinic]={2}
                                     GROUP BY [t_sluz.datum]
                                     ORDER BY [t_sluz.datum] DESC";
@@ -482,64 +512,87 @@ public partial class header : System.Web.UI.UserControl
         string dnesStr = dnes.ToShortDateString();
         string vceraStr = vcera.ToShortDateString();
 
-        StringBuilder sb = new StringBuilder();
+        string query = "";
         this.date_lbl.Text = DateTime.Today.ToLongDateString();
+
         if (this.wgroup == "doctor")
         {
 
-            sb.Append(" SELECT [t_sluzb.datum] , GROUP_CONCAT([typ] ORDER BY [t_sluzb.ordering] SEPARATOR ';') AS [type1],");
-            sb.Append(" [t_sluzb.state] AS [state],");
-            sb.Append(" GROUP_CONCAT([t_sluzb.user_id] ORDER BY [t_sluzb.ordering] SEPARATOR '|') AS [users_ids],");
-            sb.Append(" GROUP_CONCAT(IF([t_sluzb.user_id]=0,'-',[t_users.name3]) ORDER BY [t_sluzb.ordering] SEPARATOR ';') AS [users_names],");
-            sb.Append(" GROUP_CONCAT(IF([t_sluzb.comment]=NULL,'-',[t_sluzb.comment]) ORDER BY [t_sluzb.ordering] SEPARATOR '|') AS [comment],");
-            sb.Append(" [t_sluzb.date_group] AS [dategroup]");
-            sb.Append(" FROM [is_sluzby_all] AS [t_sluzb]");
-            sb.Append(" LEFT JOIN [is_users] AS [t_users] ON [t_users.id] = [t_sluzb.user_id]");
-            sb.AppendFormat(" WHERE [t_sluzb.datum]='{0}' OR [t_sluzb.datum]='{1}'", my_x2.unixDate(vcera), my_x2.unixDate(dnes));
-            sb.AppendFormat("AND [clinic]={0}", Session["klinika_id"]);
-            sb.Append(" GROUP BY [t_sluzb.datum]");
-            sb.Append(" ORDER BY [t_sluzb.datum] DESC");
+            query = @"
+                        SELECT 
+                                GROUP_CONCAT(CONCAT_WS(';',[t_sluz.typ],[t_user.name3],[t_sluz.comment]) SEPARATOR '|') AS [sluzba]
+                                FROM [is_sluzby_all] AS [t_sluz] 
+                            INNER JOIN [is_users] AS [t_user] ON [t_user.id] = [t_sluz.user_id]
+                                WHERE ([t_sluz.datum]='{0}' OR  [t_sluz.datum]='{1}')
+                                    AND [clinic]={2}
+                                    GROUP BY [t_sluz.datum]
+                                    ORDER BY [t_sluz.datum] DESC";
         }
-        
 
-        Dictionary<int, Hashtable> table = x2Mysql.getTable(sb.ToString());
+        query = x2Mysql.buildSql(query, new string[] { my_x2.unixDate(vcera), my_x2.unixDate(dnes), Session["klinika_id"].ToString() });
+
+        Dictionary<int, Hashtable> table = x2Mysql.getTable(query);
         this.head1_lbl.Text = "OddAB: ";
         this.head2_lbl.Text = "OddABVik:";
-        this.head3_lbl.Text = "TTransplant: ";
+        this.head3_lbl.Text = "Transplant: ";
         this.head4_lbl.Text = "-";
         this.head5_lbl.Text = "-";
+
         if (table.Count == 2)
         {
-            string[] docBefore = table[0]["users_names"].ToString().Split(';');
-            int docLn = docBefore.Length;
-            string[] comments = table[0]["comment"].ToString().Split('|');
+           
 
             if (this.wgroup == "doctor" || this.wgroup == "other")
             {
                  
-                // string[] docAfter = table[1]["users_names"].ToString().Split(';');
-                
-                if (docLn >0 && docBefore[0] != null)
-                {
-                    this.oup_lbl.Text = docBefore[0].ToString() + "<br>" + comments[0].ToString();
-                }
-                
-              
-                if (docLn>1 && docBefore[1] != null)
-                {
-                    this.odda_lbl.Text = docBefore[1].ToString() + "<br>" + comments[1].ToString();
-                }
-                
-                if (docLn >2  && docBefore[2] != null)
-                {
-                    this.oddb_lbl.Text = docBefore[2].ToString() + "<br>" + comments[2].ToString();
-                }
-                
-                this.op_lbl.Text = "-";
-                
-                this.trp_lbl.Text = "-";
+                this.oup_lbl.Text = "";
+                this.odda_lbl.Text = "";
+                this.oddb_lbl.Text = "";
+                this.op_lbl.Text = "";
+                this.trp_lbl.Text = "";
+                string[] sluzbDnes = table[0]["sluzba"].ToString().Split('|');
 
-                this.po_lbl.Text = table[1]["users_names"].ToString();
+                int sluzLn = sluzbDnes.Length;
+
+                SortedList sluzba = new SortedList();
+                SortedList notes = new SortedList();
+                for (int s = 0; s < sluzLn; s++)
+                {
+                    string[] tmp = sluzbDnes[s].Split(';');
+                    sluzba.Add(tmp[0], tmp[1]);
+                    notes.Add(tmp[0], tmp[2]);
+                }
+
+                if (sluzba["OddAB"] != null)
+                {
+                    this.oup_lbl.Text = sluzba["OddAB"].ToString() + "<br>" + notes["OddAB"].ToString();
+                }
+                if (sluzba["OddABVik"] != null)
+                {
+                    this.odda_lbl.Text = sluzba["OddABVik"].ToString() + "<br>" + notes["OddABVik"].ToString();
+                }
+
+                if (sluzba["Transplant"] != null)
+                {
+                    this.oddb_lbl.Text = sluzba["Transplant"].ToString() + "<br>" + notes["Transplant"].ToString();
+                }
+
+                string[] sluzbaVcera = table[1]["sluzba"].ToString().Split('|');
+                int vceraLn = sluzbaVcera.Length;
+
+                sluzba.Clear();
+
+                for (int v = 0; v < vceraLn; v++)
+                {
+                    string[] tmp = sluzbaVcera[v].Split(';');
+                    sluzba.Add(tmp[0], tmp[1] + "<em> /" + tmp[2] + "/</em>");
+                }
+                this.po_lbl.Text = "<p class='small'>";
+                foreach (DictionaryEntry row in sluzba)
+                {
+                    this.po_lbl.Text += row.Value.ToString() + "(" + row.Key.ToString() + "), ";
+                }
+                this.po_lbl.Text += "</p>";
 
                 date_lbl.Text = DateTime.Today.ToLongDateString();
 
