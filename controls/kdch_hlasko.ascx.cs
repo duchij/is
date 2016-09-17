@@ -61,11 +61,33 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
         if (hour >= 9)
         {
             this.Calendar1.SelectedDate = DateTime.Today;
+            this.hlaskoCal_cal.SelectedDate = DateTime.Today;
         }
         else
         {
             this.Calendar1.SelectedDate = DateTime.Today.AddDays(-1);
+            this.hlaskoCal_cal.SelectedDate = DateTime.Today.AddDays(-1);
         }
+
+    }
+    protected void hlasko_SelectionChanged(object sender, EventArgs e)
+    {
+        this.Calendar1.SelectedDate = this.hlaskoCal_cal.SelectedDate;
+
+        if (sender.GetType() == typeof(Calendar))
+        {
+
+            //this.setShiftTypes();
+            this.loadHlasko();
+            this.loadEPCData(false);
+            this.setEPC_init();
+        }
+        if (sender.GetType() == typeof(DropDownList))
+        {
+            this.loadHlasko();
+            this.loadEPCData(false);
+        }
+
 
     }
 
@@ -507,7 +529,7 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
 
     protected void Calendar1_SelectionChanged(object sender, EventArgs e)
     {
-        
+        this.hlaskoCal_cal.SelectedDate = this.Calendar1.SelectedDate;
         if (sender.GetType() == typeof(Calendar))
         {
 
@@ -728,7 +750,9 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
                 this.osirix_tbl.Controls.Add(osirixRow);
 
                 TableCell dataCell = new TableCell();
-                dataCell.Text = "<p class='align-center'><a class='blue button' href='http://10.10.2.49:3333/studyList?search=" + table[i]["patient_name"] + "' target='_blank' >" + table[i]["patient_name"].ToString().ToUpper() + "</a></p>";
+                dataCell.Text = "<p class='align-center'><a class='blue button' href='"+Resources.Resource.osirix_url + x2_var.UTFtoASCII(table[i]["patient_name"].ToString()) + "*' target='_blank' >" + table[i]["patient_name"].ToString().ToUpper() + "</a></p>";
+                tags_lit.Text += "<a class='asphalt button' href='"+Resources.Resource.osirix_url + x2_var.UTFtoASCII(table[i]["patient_name"].ToString()) + "*' target='_blank' >" + table[i]["patient_name"].ToString().ToUpper() + "</a>";
+
                 osirixRow.Controls.Add(dataCell);
             }
 

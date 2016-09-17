@@ -146,16 +146,35 @@ Vytvoril:<asp:Label ID="creatUser_lbl" runat="server" Text="" Font-Bold="true"><
     <div id="hlasko_tab3"><!--zaciatok tab3-->
         <h3>Zobraz hlasenia</h3>
         <div class="row">
+            <div class="one third">
+            <asp:Calendar CssClass="responsive" data-max="12" runat="server" OnSelectionChanged="hlasko_SelectionChanged" ID="hlaskoCal_cal" BackColor="White" BorderColor="#d9edf7" CellPadding="4" DayNameFormat="Shortest" Font-Names="Verdana" Font-Size="8pt" ForeColor="Black" Height="180px" Width="200px" >
+                <DayHeaderStyle BackColor="#ffe5c7" Font-Bold="True" Font-Size="7pt" />
+                <NextPrevStyle VerticalAlign="Bottom" />
+                <OtherMonthDayStyle ForeColor="#808080" />
+                <SelectedDayStyle BackColor="#46627f" Font-Bold="True" ForeColor="White" />
+                <SelectorStyle BackColor="#46627f" />
+                <TitleStyle BackColor="#d9edf7" BorderColor="Black" Font-Bold="True" />
+                <TodayDayStyle BackColor="#f0e6f4" ForeColor="Black" />
+                <WeekendDayStyle BackColor="#dff0d8" />
+            </asp:Calendar>
+                </div>
+            <div class="two third">
             <asp:Button CssClass="medium button red" runat="server" ID="showOup_btn" OnClick="showHlasko_fnc" Text="OUP" />
             <asp:Button CssClass="medium button blue" runat="server" ID="showOddA_btn" OnClick="showHlasko_fnc" Text="OddA" />
             <asp:Button CssClass="medium button green" runat="server" ID="showOddB_btn" OnClick="showHlasko_fnc" Text="OddB" />
             <asp:Button CssClass="medium button asphalt" runat="server" ID="showOp_btn" OnClick="showHlasko_fnc" Text="Op. pohotovost" />
             <asp:TextBox ID="hlasenie" CssClass="dtextbox" runat="server"  Width="90%" Rows="30" Height="500" TextMode="MultiLine"> </asp:TextBox>
+            
             <asp:Button ID="saveHlasko_btn" runat="server" Text="Ulož zmenu" OnClick="saveHlaskoFnc" CssClass="button green" />
                 <asp:Button ID="print_btn" runat="server" Text="Vytlač" CssClass="button blue" OnClick="printFnc" />
                 <asp:Button ID="toWord_btn" runat="server" Text="Tlač/Word"  />
                 <asp:Button ID="def_lock_btn" runat="server" Text="Uzavrieť a vytlačiť hlásko" 
-                    CssClass="button red" />          
+                    CssClass="button red" />  
+                </div>  
+                  
+        </div>
+        <div class="row">
+            <div class="info box"><h3>RTG/CT/MR etc...</h3><asp:Literal runat="server" ID="tags_lit"></asp:Literal></div>
         </div>
     </div><!--koniec tab3-->
 
