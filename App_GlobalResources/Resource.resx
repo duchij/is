@@ -468,4 +468,7 @@
   <data name="holiday_for_users" xml:space="preserve">
     <value>Zoznam dovoleniek</value>
   </data>
+  <data name="orthanc_url" xml:space="preserve">
+    <value>http://10.10.2.49/dicom/index.php?c=dicom&amp;m=searchOrthanc&amp;query=</value>
+  </data>
 </root>

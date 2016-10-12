@@ -22,6 +22,7 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
             this.hlaskoSelectedTab.Value = Session["hlaskoSelTab"].ToString();
         }
 
+        this.tags_lit.Text = "";
        if (!IsPostBack)
         {
            
