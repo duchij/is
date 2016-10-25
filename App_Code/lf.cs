@@ -528,7 +528,94 @@ public class lf : mysql_db
         return result;
     }
 
-    
+    public SortedList cameraLfData(byte[] content, SortedList lfData, SortedList isStruct)
+    {
+        SortedList result = new SortedList();
+
+        int tmp = this.sameContent(isStruct["item_hash"].ToString());
+
+        MySqlTransaction trans1 = null;
+        my_con.Open();
+
+        MySqlCommand cmd = new MySqlCommand();
+        cmd.Connection = my_con;
+        cmd.CommandType = CommandType.Text;
+
+        trans1 = my_con.BeginTransaction();
+
+        cmd.Transaction = trans1;
+
+        // cmd.CommandText.ToString();
+
+        try
+        {
+
+            int id = 0;
+
+            if (tmp == 0)
+            {
+                cmd.CommandText = @"INSERT INTO `is_data_2`(`file-name`,`file-size`,`file-type`,`file-content`, `user_id`, `clinic_id`, `hash`)
+                                        VALUES (@filename,@filesize,@filetype,@filecontent,@userid,@clinicid,@hash)";
+
+                cmd.Parameters.Add("filename", MySqlDbType.Text).Value = lfData["file-name"].ToString();
+                cmd.Parameters.Add("filesize", MySqlDbType.Int32).Value = Convert.ToInt32(lfData["file-size"]);
+                cmd.Parameters.Add("filetype", MySqlDbType.VarChar).Value = lfData["file-type"].ToString();
+                cmd.Parameters.Add("filecontent", MySqlDbType.Binary).Value = content;
+                cmd.Parameters.Add("userid", MySqlDbType.Int32).Value = Convert.ToInt32(lfData["user_id"]);
+                cmd.Parameters.Add("clinicid", MySqlDbType.Int32).Value = Convert.ToInt32(lfData["clinic_id"]);
+                cmd.Parameters.Add("hash", MySqlDbType.VarChar).Value = isStruct["item_hash"].ToString();
+
+
+                cmd.ExecuteNonQuery();
+                cmd.CommandText = "SELECT LAST_INSERT_ID();";
+
+                id = Convert.ToInt32(cmd.ExecuteScalar());
+            }
+            else
+            {
+                id = tmp;
+            }
+
+
+
+            isStruct.Add("lf_id", id);
+
+            SortedList res = this.mysql_insert_nt("is_gallery", isStruct, ref cmd);
+
+            if (Convert.ToBoolean(res["status"]))
+            {
+                result.Add("status", true);
+
+                cmd.Transaction.Commit();
+            }
+            else
+            {
+                x2log.logData(res["sql"].ToString(), res["msg"].ToString(), "error wrong sql in cameraLfData() insert in structure");
+                // x2log.logData(lfData, "chyba vystup lf data", "error in lfinsert");
+                result.Add("status", false);
+                result.Add("msg", res["msg"].ToString());
+
+                cmd.Transaction.Rollback();
+            }
+        }
+        catch (Exception ex)
+        {
+            x2log.logData(cmd.CommandText.ToString(), ex.ToString(), "error wrong sql in lfInsertData()");
+            x2log.logData(lfData, "chyba vystup lf data", "error in lfinsert");
+            result.Add("status", false);
+            result.Add("msg", ex.ToString());
+            cmd.Transaction.Rollback();
+        }
+        finally
+        {
+            my_con.Close();
+            my_con.Dispose();
+        }
+
+        return result;
+    }
+
+
 
 
 
