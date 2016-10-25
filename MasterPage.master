@@ -159,8 +159,9 @@
                     <%--</li>--%></asp:PlaceHolder>
                 <li><button class="red">Pomôcky</button>
                          <ul>
+                             <li><a href="is_gallery.aspx" target="_self" class="green button">Galéria kamery</a></li>
                               <li class="yellow"><a href="is_opkniha.aspx" target="_self">Operačná kniha</a></li>
-                            <li><a href="is_lf.aspx" target="_self">Priložené súbory</a> <div class="small red">Pozor nepôjdu nahrať, len na prezeranie</div></li>
+                                <li><a href="is_lf.aspx" target="_self">Priložené súbory</a> <div class="small red">Pozor nepôjdu nahrať, len na prezeranie</div></li>
 
                          </ul>
                     </li>
@@ -183,6 +184,7 @@
                             <li><a role="medium button" href="http://10.10.2.49:3333" target="_blank">OSIRIX Portal</a></li>
                         </ul>
                     </li>
+                      <li class="align-right"><a href="utils/camera.html" class="button green " target="_self"><i class="icon-camera"></i>Odfoť to</a></li>
                     <li class="align-right"><asp:Button ID="log_out_nav" runat="server"  OnClick="log_out_Click" Text="<%$ Resources:Resource, logout %>" class="button red " /></li>
 			</ul>
     	</nav>

@@ -20,8 +20,16 @@ public partial class is_gallery : System.Web.UI.Page
             Response.Redirect("error.html");
         }
 
-        if (!IsPostBack){
+        if (!IsPostBack)
+        {
             this.loadFirstTen();
+        }else
+        {
+            if (this.searchBy.SelectedValue.ToString() == "ten")
+            {
+                this.loadFirstTen();
+            }
+            
         }
 
     }
@@ -45,8 +53,16 @@ public partial class is_gallery : System.Web.UI.Page
                         ORDER BY [t_gallery.photo_date] DESC
                         LIMIT 10
                                 ";
+        sql = x2.sprintf(sql, new string[] { Session["klinika_id"].ToString() });
+        this.showResults(sql);
+        
+    }
 
-        sql = x2lf.buildSql(sql,new string[] { Session["klinika_id"].ToString()});
+    protected void showResults(string sql)
+    {
+        this.files_tbl.Controls.Clear();
+
+        sql = x2lf.buildSql(sql, new string[] { });
 
         Dictionary<int, Hashtable> files = x2lf.getTable(sql);
 
@@ -94,10 +110,11 @@ public partial class is_gallery : System.Web.UI.Page
                 nameCell.Controls.Add(linkName);
 
                 Image img = new Image();
-                img.ImageUrl = "http://is.kdch.sk/controls/lf_view.ashx?id=" + files[i]["lf_id"].ToString();
+
+                img.ImageUrl = "http://" + HttpContext.Current.Request.Url.Authority + "/controls/lf_view.ashx?id=" + files[i]["lf_id"].ToString();
                 img.ImageAlign = ImageAlign.Left;
                 img.Width = new Unit(50);
-                
+
                 nameCell.Controls.Add(img);
 
                 HyperLink hlink = new HyperLink();
@@ -141,24 +158,24 @@ public partial class is_gallery : System.Web.UI.Page
                     delBtn.Text = Resources.Resource.delete;
                     delBtn.ID = "delBtn_" + files[i]["item_id"].ToString();
                     delBtn.OnClientClick = "return confirm('Zmazať " + files[i]["patient_name"].ToString() + "?');";
-                    delBtn.Click += new EventHandler(deleteFile_fnc);
+                    delBtn.Click += new EventHandler(this.deleteFile_fnc);
                     delBtn.CssClass = "button red";
 
                     actionCell.Controls.Add(delBtn);
 
-                   /* FileUpload upFile = new FileUpload();
-                    upFile.ID = "upFile_" + files[i]["lf_id"].ToString();
-                    upFile.Attributes.Add("size", "10px");
+                    /* FileUpload upFile = new FileUpload();
+                     upFile.ID = "upFile_" + files[i]["lf_id"].ToString();
+                     upFile.Attributes.Add("size", "10px");
 
-                    actionCell.Controls.Add(upFile);
+                     actionCell.Controls.Add(upFile);
 
-                    Button upDateFileBtn = new Button();
-                    upDateFileBtn.Text = "Novšia verzia";
-                    upDateFileBtn.CssClass = "button asphalt";
-                    upDateFileBtn.ID = "upFileBtn_" + files[i]["lf_id"].ToString();
-                    upDateFileBtn.Click += new EventHandler(this.updateFile_fnc);
+                     Button upDateFileBtn = new Button();
+                     upDateFileBtn.Text = "Novšia verzia";
+                     upDateFileBtn.CssClass = "button asphalt";
+                     upDateFileBtn.ID = "upFileBtn_" + files[i]["lf_id"].ToString();
+                     upDateFileBtn.Click += new EventHandler(this.updateFile_fnc);
 
-                    actionCell.Controls.Add(upDateFileBtn);*/
+                     actionCell.Controls.Add(upDateFileBtn);*/
 
                 }
 
@@ -169,8 +186,61 @@ public partial class is_gallery : System.Web.UI.Page
             }
 
         }
+    }
 
-        
+    protected void searchGalleryFnc(object sender, EventArgs e)
+    {
+        string queryBy = this.searchBy.SelectedValue.ToString();
+        string key = this.queryString.Text.ToString().Trim();
+        string sqlPart = "";
+        if (key.Length == 0)
+        {
+            x2.errorMessage2(ref this.msg_lit, "Nezadany retazec....");
+        }
+        else
+        {
+            switch (queryBy)
+            {
+                case "name":
+                    this.searchTitle_lbl.Text = "Hľadanie podľa mena.";
+                    sqlPart = x2.sprintf("AND [patient_name] LIKE '%{0}%'", new string[] { key }); 
+                     break;
+                case "bin_num":
+                    this.searchTitle_lbl.Text = "Hľadanie podľa rodného čísla.";
+                    sqlPart = x2.sprintf("AND [bin_num] LIKE '{0}%'", new string[] { key });
+                    break;
+                case "diagnose":
+                    this.searchTitle_lbl.Text = "Hľadanie podľa diagnózy.";
+                    sqlPart = x2.sprintf("AND [diagnose] LIKE '{0}%'", new string[] { key });
+                    break;
+
+            }
+
+
+
+          string  sql = @"SELECT   
+                                [t_gallery.item_id] AS [item_id],
+                                [t_gallery.patient_name] AS [patient_name], 
+                                [t_gallery.diagnose] AS [diagnose], 
+                                [t_gallery.bin_num] AS [bin_num],
+                                [t_gallery.photo_date] AS [photo_date],
+                                [t_gallery.note] AS [note], 
+                                [t_gallery.lf_id] AS [lf_id],
+                                [t_pics.user_id] AS [user_id],
+                                [t_pics.clinic_id] AS [clinic_id]
+                        FROM [is_gallery] AS [t_gallery]
+                        INNER JOIN [is_data_2] as [t_pics] ON [t_pics.id] = [t_gallery.lf_id]
+                        WHERE [t_pics.clinic_id] = {0}
+                        {1}    
+                        ORDER BY [t_gallery.photo_date] DESC";
+
+            sql = x2.sprintf(sql, new string[] { Session["klinika_id"].ToString(), sqlPart });
+
+            this.showResults(sql);
+
+        }
+
+
 
     }
 
@@ -183,7 +253,7 @@ public partial class is_gallery : System.Web.UI.Page
 
         if ((Boolean)(res["status"]))
         {
-            //this.loadFiles();
+            this.loadFirstTen();
         }
         else
         {
@@ -196,8 +266,8 @@ public partial class is_gallery : System.Web.UI.Page
     {
         Button btn = (Button)sender;
         string[] idStr = btn.ID.ToString().Split('_');
-        SortedList row = x2lf.getRow("SELECT [lf_id] AS [id] FROM [is_gallery] WHERE [item_id]=" + idStr[1]);
-        int id = Convert.ToInt32(row["id"].ToString());
+      //  SortedList row = x2lf.getRow("SELECT [lf_id] AS [id] FROM [is_gallery] WHERE [item_id]=" + idStr[1]);
+        int id = Convert.ToInt32(idStr[1].ToString());
         Response.Redirect("lf.aspx?id=" + id.ToString());
     }
 

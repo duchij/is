@@ -27,14 +27,6 @@ public partial class utils_upload : System.Web.UI.Page
            this.uploadData();
         }
 
-        
-
-        
-
-       // HttpContext.Current.Response.Write("Upload successfully!");
-
-
-
     }
 
     protected void uploadData()
@@ -101,7 +93,7 @@ public partial class utils_upload : System.Web.UI.Page
             }
             else
             {
-                this.resultLit.Text = "Subor sa nahral v poriadku....";
+                this.resultLit.Text = "Súbor sa nahral v poriadku....";
             }
 
 

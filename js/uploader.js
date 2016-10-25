@@ -71,7 +71,30 @@ function uploadFile() {
 
    // return;
     try {
-        var xhr = new XMLHttpRequest();
+
+        var xhr;
+
+        if (window.XMLHttpRequest) {
+            xhr = new XMLHttpRequest();
+        }
+        else if (window.ActiveXObject) {
+            try {
+                xhr = new ActiveXObject("Msxml2.XMLHTTP");
+            }
+            catch (e) {
+                try {
+                    xhr = new ActiveXObject("Microsoft.XMLHTTP");
+                }
+                catch (e) {
+                }
+            }
+        }
+
+        if (!xhr) {
+            alert("Error no XMLHttpRequest or ActiveXObject possibility");
+            return false;
+        }
+
         xhr.upload.addEventListener("progress", uploadProgress, false);
         xhr.addEventListener("load", uploadComplete, false);
         xhr.addEventListener("error", uploadFailed, false);
@@ -82,7 +105,7 @@ function uploadFile() {
         
     } catch (exc) {
 
-        throw new Error("No XMLHttpRequest Possible");
+        throw new Error("No XMLHttpRequest or MS ActiveXMLHttp Possible");
 
     }
     

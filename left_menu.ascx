@@ -79,7 +79,8 @@
     <div class="box green half-padded"> 
          <h3 class="white"><asp:label ID="utility_lbl" runat="server" Text="Pomôcky"></asp:label></h3>
      </div>
-     <ul>               
+     <ul>   
+         <li><a href="is_gallery.aspx" target="_self" class="asphalt"><i class="icon-camera"></i> Galléria kamery</a></li>            
         <li><a href="is_lf.aspx" target="_self">Priložené súbory</a></li>
          <li><a href="is_opkniha.aspx" target="_self" style="color:red;" >Operačná kniha</a></li>
      </ul>
