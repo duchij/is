@@ -13,7 +13,7 @@
         <strong>Pozor !!!!</strong> Ak nejdete cez WiFi, tak sa Vám používajú dáta z Vášho mobilného paušálu......
     </p>
     <hr />
-    <table>
+    <table class="responsive" data-max="15">
         <tr>
             <td>Hľadaj podľa:</td>
             <td>

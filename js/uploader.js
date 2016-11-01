@@ -34,10 +34,10 @@ function uploadFile() {
     var note = $("input[id$=note_txt]").val().trim();
     var binNum = $("input[id$=patientBinNum]").val().trim();
 
-    var reg = new RegExp(/[a-zA-Z]([0-9]{2})\.([0-9])+/gi);
+    var reg = new RegExp(/[a-zA-Z][0-9]{2,4}/gi);
 
     if (!reg.test(diagnose)) {
-        alert("Prosím zadajte diagnózu vo formáte napr K35.9 nie len K36...");
+        alert("Prosím zadajte diagnózu vo formáte napr. K36...");
         return;
     }
 

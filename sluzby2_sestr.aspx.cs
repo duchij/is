@@ -26,6 +26,8 @@ public partial class sluzby2_sestr : System.Web.UI.Page
     public string deps = "";
     public string[] shiftType;
 
+    public Boolean editable = false;
+
 
 
     protected void Page_Init(object sender, EventArgs e)
@@ -50,6 +52,7 @@ public partial class sluzby2_sestr : System.Web.UI.Page
             this.editShiftView_pl.Visible = true;
             this.publish_btn.Visible = true;
             this.unpublish_btn.Visible = true;
+            this.editable = true;
         }
         else
         {
@@ -63,7 +66,7 @@ public partial class sluzby2_sestr : System.Web.UI.Page
             this.deps = this.deps_dl.SelectedValue.ToString();
         }*/
         
-        if (IsPostBack == false)
+        if (!IsPostBack)
         {
             this.setMonthYear();
 
@@ -78,14 +81,14 @@ public partial class sluzby2_sestr : System.Web.UI.Page
 
             string state = this.getState();
             
-            if (state == "active")
+           /* if (state == "active")
             {
                 this.editShift_chk.Checked = false;
             }
             else
             {
                 this.editShift_chk.Checked = true;
-            }
+            }*/
 
             this.drawTable();
             
@@ -313,7 +316,7 @@ public partial class sluzby2_sestr : System.Web.UI.Page
                     for (int cnt=0; cnt<dCount; cnt++)
                     {
                         
-                        if (this.editShift_chk.Checked)
+                        if (this.editable && this.editShift_chk.Checked)
                         {
                             DropDownList dl = new DropDownList();
                             dl.ID = "ddl_" + rDay.ToString() + "_" + ddls[cnt];
@@ -367,7 +370,7 @@ public partial class sluzby2_sestr : System.Web.UI.Page
                 }
                 else
                 {
-                    if (this.editShift_chk.Checked)
+                    if (this.editable && this.editShift_chk.Checked)
                     {
                         DropDownList dl1 = new DropDownList();
                         dl1.ID = "ddl_" + rDay.ToString() + "_" + groups[col];
@@ -431,7 +434,7 @@ public partial class sluzby2_sestr : System.Web.UI.Page
         Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
         ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
 
-        if (this.rights == "admin" || this.rights == "poweruser")
+        if (this.editable)
         {
 
             query = @"   SELECT 
@@ -461,7 +464,8 @@ public partial class sluzby2_sestr : System.Web.UI.Page
                                 [t_sluzb].[date_group] AS [dategroup]
                             FROM [is_sluzby_2_sestr] AS [t_sluzb]
                         LEFT JOIN [is_users] AS [t_users] ON [t_users].[id] = [t_sluzb].[user_id]
-                            WHERE [t_sluzb].[date_group] = '{0}' AND [t_sluzb].[state]='active'
+                            WHERE [t_sluzb].[date_group] = '{0}' 
+                            -- AND [t_sluzb].[state]='active'
                             AND [t_sluzb].[deps]='{1}'
                         GROUP BY [t_sluzb].[datum]
                         ORDER BY [t_sluzb].[datum]";
@@ -479,7 +483,7 @@ public partial class sluzby2_sestr : System.Web.UI.Page
         {
 
         
-            if (this.rights == "admin" || this.rights == "poweruser")
+            if (this.editable)
             {
                 string state = table[0]["state"].ToString();
 
@@ -511,7 +515,7 @@ public partial class sluzby2_sestr : System.Web.UI.Page
                 }
                 if (tpLn == 0)
                 {
-                    if (this.editShift_chk.Checked)
+                    if (this.editable && this.editShift_chk.Checked)
                     {
                         Control crtl = ctpl.FindControl("ddl_" + rDay.ToString() + "_" + table[day]["type1"].ToString());
                         DropDownList ddl = (DropDownList)crtl;
@@ -556,7 +560,7 @@ public partial class sluzby2_sestr : System.Web.UI.Page
                 {
                     for (int col = 0; col < tpLn; col++)
                     {
-                        if (this.editShift_chk.Checked)
+                        if (this.editable && this.editShift_chk.Checked)
                         {
                             Control crtl = ctpl.FindControl("ddl_" + rDay.ToString() + "_" + type[col]);
                             DropDownList ddl = (DropDownList)crtl;
@@ -602,7 +606,7 @@ public partial class sluzby2_sestr : System.Web.UI.Page
         } 
         else
         {
-            if (this.rights != "admin" || this.rights != "poweruser")
+            if (!this.editable)
             {
                 this.msg_lbl.Text = Resources.Resource.shifts_not_done;
                 // this.publish_cb.Visible = false;

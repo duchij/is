@@ -103,11 +103,19 @@ public partial class is_gallery : System.Web.UI.Page
                 TableRow riadok = new TableRow();
 
                 TableCell nameCell = new TableCell();
+                nameCell.ColumnSpan = 6;
                 Label linkName = new Label();
-                linkName.Text = files[i]["patient_name"].ToString();
+                linkName.Text = "<span class='info block box'><strong>"+files[i]["patient_name"].ToString()+"</strong></span>";
                 linkName.CssClass = "large asphalt";
 
                 nameCell.Controls.Add(linkName);
+                 riadok.Controls.Add(nameCell);
+                this.files_tbl.Controls.Add(riadok);
+
+
+                TableRow riadok1 = new TableRow();
+
+                TableCell nameCell1 = new TableCell();
 
                 Image img = new Image();
 
@@ -115,31 +123,31 @@ public partial class is_gallery : System.Web.UI.Page
                 img.ImageAlign = ImageAlign.Left;
                 img.Width = new Unit(50);
 
-                nameCell.Controls.Add(img);
+                nameCell1.Controls.Add(img);
 
                 HyperLink hlink = new HyperLink();
                 hlink.NavigateUrl = "lf.aspx?id=" + files[i]["lf_id"].ToString();
                 hlink.Text = "<br>lf.aspx?id=" + files[i]["lf_id"].ToString();
                 hlink.CssClass = "blue";
-                nameCell.Controls.Add(hlink);
+                nameCell1.Controls.Add(hlink);
 
-                riadok.Controls.Add(nameCell);
+                riadok1.Controls.Add(nameCell1);
 
                 TableCell binNum = new TableCell();
                 binNum.Text = x2.getStr(files[i]["bin_num"].ToString());
-                riadok.Controls.Add(binNum);
+                riadok1.Controls.Add(binNum);
 
                 TableCell photoDate = new TableCell();
                 photoDate.Text = x2.getStr(files[i]["photo_date"].ToString());
-                riadok.Controls.Add(photoDate);
+                riadok1.Controls.Add(photoDate);
 
                 TableCell diagnose = new TableCell();
                 diagnose.Text = x2.getStr(files[i]["diagnose"].ToString());
-                riadok.Controls.Add(diagnose);
+                riadok1.Controls.Add(diagnose);
 
                 TableCell noteCell = new TableCell();
                 noteCell.Text = x2.getStr(files[i]["note"].ToString());
-                riadok.Controls.Add(noteCell);
+                riadok1.Controls.Add(noteCell);
 
 
 
@@ -180,9 +188,9 @@ public partial class is_gallery : System.Web.UI.Page
                 }
 
 
-                riadok.Controls.Add(actionCell);
+                riadok1.Controls.Add(actionCell);
 
-                this.files_tbl.Controls.Add(riadok);
+                this.files_tbl.Controls.Add(riadok1);
             }
 
         }

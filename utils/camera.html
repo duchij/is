@@ -59,7 +59,7 @@
         }
 
         .fileUploader {
-            visibility:hidden;
+            display:none;
         }
 
 
@@ -68,40 +68,56 @@
 <body>
     
     <div class="row">
-        
+        <label for="fileToUpload" class="fixed top right"><img src="../img/camera.png" style="width:80px;text-align:left;"  /></label>
         <form id="form1" enctype="multipart/form-data" method="post" action="upload.aspx">
             <div id="one third">
                 <h2>Kamera pre IS</h2>
-                <p class="small blue">
+                
+                <div class="small blue" style="width:80%; text-align:left;">
                     Stlačením ikony fotoaparátu sa spustí kamera na Vašom mobilnom zariadení a budete môcť nahrať danú fotografiu 
-                    do systému. <br />
+                    do systému.
                     Je nutné zadanie mena <strong>pacienta, dátumu, diagnózy</strong>, tieto údaje sú povinné. Poznámka je dodatočná.<br />
                     <strong class="reg"> Uložené fotografie môžete potom vyhľadávať v <a href="http://is.kdch.sk/is_gallery.aspx" target="_self" class="green button">Galérii</a> (ľavé menu)...</strong>
-                </p> 
+                </div> 
+                
                     <table class="responsive" data-max="15">
                         <tr>
-                            <td>Meno pacienta:</td>
-                            <td><input type="text" name="patientName" id="patientName" value="" /></td>
+                            <td class="red">Meno pacienta:</td>
+                            <td><input type="text" name="patientName" id="patientName" value="" placeholder="priezvisko" /></td>
                         </tr>
                         <tr>
-                            <td>Rodné číslo:</td>
-                            <td><input type="text" name="patientBinNum" id="patientBinNum" value="" /></td>
+                            <td class="red">Rodné číslo:</td>
+                            <td><input type="text" name="patientBinNum" id="patientBinNum" value="" placeholder="rodné číslo" /></td>
                         </tr>
                         <tr>
                             <td>Dátum fotky:</td>
                             <td><input type="text" name="photoDate" id="photoDate" /></td>
                         </tr>
                         <tr>
-                            <td>Diagnóza (MKCH10):</td>
-                            <td><input type="text" name="diagnose_txt" id="diagnose_txt" /></td>
+                            <td class="red">Diagnóza (MKCH10):</td>
+                            <td><input type="text" name="diagnose_txt" id="diagnose_txt" placeholder="K3590" /></td>
                         </tr>
                         <tr>
                             <td>Poznámka:</td>
-                            <td><input type="text" name="note_txt" id="note_txt" /></td>
+                            <td><input type="text" name="note_txt" id="note_txt" placeholder="stručný popis" /></td>
                         </tr>
 
                     </table>
-                
+                <div id="one third">
+                    <table class="responsive blue" data-max="15">
+                        <tbody>
+                            <tr>
+                                <td valign="middle">
+                                    
+                                    <input type="file" alt="Sub" name="fileToUpload" id="fileToUpload" onchange="fileSelected();" accept="image/*" capture="camera" class="fileUploader" />
+                                </td>
+                                
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div id="progress-label"></div><div id="progress"></div>
+                    <input type="button" class="blue large block button" onclick="uploadFile();" value="Nahraj" />
+                </div>
                
             </div>
 
@@ -109,23 +125,11 @@
                 <h3>Zoznam súborov....</h3>
                 <hr />
                 <div id="details"></div>
-                <div id="progress-label"></div><div id="progress"></div>
+                
                 
             </div>
 
-            <div id="one third">
-                <table class="responsive blue" data-max="15">
-                    <tbody>
-                        <tr>
-                            <td valign="middle">
-                                <label for="fileToUpload"><img src="../img/camera.png" style="width:80px;" /></label>
-                                <input type="file" alt="Sub" name="fileToUpload" id="fileToUpload" onchange="fileSelected();" accept="image/*" capture="camera" class="fileUploader" />
-                            </td>
-                            <td valign="middle"><input type="button" class="blue large button" onclick="uploadFile();" value="Nahraj" /></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            
           
         </form>
     </div>

@@ -80,7 +80,15 @@ public class x2_var
     {
         StringBuilder sb = new StringBuilder();
 
-        sb.AppendFormat(str, args);
+        if (args.Length > 0) {
+            sb.AppendFormat(str, args);
+        }
+        else
+        {
+            sb.Append(str);
+        }
+
+        
 
         return sb.ToString();
     }
