@@ -266,7 +266,7 @@ public partial class is_vykaz_s : System.Web.UI.Page
         }
 
         this.fillShiftsForNurses(nurseShifts);
-        //this.fillInVacations(mesiac, rok, Session["user_id"].ToString());
+        this.fillInVacations(mesiac, rok, Session["user_id"].ToString());
 
     }
 
@@ -287,9 +287,9 @@ public partial class is_vykaz_s : System.Web.UI.Page
             int res = Array.IndexOf(freeD, dt.Day.ToString() + "." + dt.Month.ToString());
             Boolean sviatok = (res != -1) ? true : false;
 
-            string week = data[row]["tyzden"].ToString();
+            //string week = data[row]["tyzden"].ToString();
             string typ = data[row]["typ"].ToString();
-            if (typ != "KlAmb") this.calcRow(sviatok, vikend, week, typ, dt);
+            if (typ != "KlAmb") this.calcRow(sviatok, vikend, typ, dt);
 
         }
 
@@ -297,7 +297,7 @@ public partial class is_vykaz_s : System.Web.UI.Page
 
 
 
-    protected void calcRow(Boolean sviatok, Boolean vikend, string week, string typ, DateTime dt)
+    protected void calcRow(Boolean sviatok, Boolean vikend, string typ, DateTime dt)
     {
         Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
         ContentPlaceHolder ctpl = (ContentPlaceHolder)tmpControl;
@@ -314,7 +314,7 @@ public partial class is_vykaz_s : System.Web.UI.Page
         int cols = vykaz.vykazHeader.Length;
 
         string endHour = "";
-        Boolean epcYes = false;
+        Boolean epcYes = true;
 
         int daysAfter = 0;
 
@@ -411,77 +411,71 @@ public partial class is_vykaz_s : System.Web.UI.Page
             txtB.Font.Bold = true;
         }*/
 
-        if (epcYes)
+        Control prichod = ctpl.FindControl("textBox_" + row.ToString() + "_0");
+        TextBox prichod_txt = (TextBox)prichod;
+        prichod_txt.Text = rowData[0];
+
+
+        Control obed_zac = ctpl.FindControl("textBox_" + row.ToString() + "_1");
+        TextBox obed_zac_txt = (TextBox)obed_zac;
+        obed_zac_txt.Text = rowData[1];
+
+        Control obed_konc = ctpl.FindControl("textBox_" + row.ToString() + "_2");
+        TextBox obed_konc_txt = (TextBox)obed_konc;
+        obed_konc_txt.Text = rowData[2];
+
+        Control odchod = ctpl.FindControl("textBox_" + row.ToString() + "_3");
+        TextBox odchod_txt = (TextBox)odchod;
+        odchod_txt.Text = rowData[3];
+
+        Control hodiny = ctpl.FindControl("textBox_" + row.ToString() + "_4");
+        TextBox hodiny_txt = (TextBox)hodiny;
+        hodiny_txt.Text = rowData[4];
+
+
+        if (vikend || sviatok)
         {
-            StringBuilder sb = new StringBuilder();
-
-            sb.AppendLine("SELECT [hlasko].[dat_hlas] AS [datum],[hlasko].[type] AS [sluzba_typ],[hlasko_epc].[user_id], SUM([hlasko_epc].[work_time]) AS [worktime], SUM([hlasko_epc].[work_night]) AS [worknight]");
-            sb.AppendLine("FROM [is_hlasko_epc] as [hlasko_epc]");
-            sb.AppendLine("LEFT JOIN [is_hlasko] AS [hlasko] ON [hlasko].[id]=[hlasko_epc].[hlasko_id]");
-            sb.AppendFormat("WHERE [hlasko_epc].[work_start] BETWEEN '{0} 00:00:00' AND '{1} {2}'", zacDt, koncDt, endHour);
-            sb.AppendFormat("AND [user_id]='{0}'", Session["user_id"]);
-            sb.AppendLine("GROUP BY [hlasko_epc].[hlasko_id]");
-            sb.AppendLine("ORDER BY [hlasko_epc].[work_start] ASC");
-
-            Dictionary<int, Hashtable> epc = vykaz.mysql.getTable(sb.ToString());
-            vykaz.x2log.logData(epc, "", "epc_data");
-
-            for (int dd = 0; dd < epc.Count; dd++)
-            {
-
-                Control nightbox = ctpl.FindControl("textBox_" + day.ToString() + "_5");
-                TextBox nightTBOX = (TextBox)nightbox;
-                decimal night_work = Convert.ToDecimal(epc[dd]["worknight"]);
-
-                nightTBOX.Text = (Math.Round(night_work / 60, 1)).ToString();
 
 
-                int aktivna = Convert.ToInt32(epc[dd]["worktime"]);
-                decimal hodiny = aktivna / 60;
-                decimal neaktivna = 12 - hodiny;
+            Control tbox1 = ctpl.FindControl("textBox_" + day.ToString() + "_9");
+            TextBox mTBox1 = (TextBox)tbox1;
 
-                if (neaktivna < 0)
-                {
-                    hodiny = 12;
-                    neaktivna = 0;
-                }
 
-                if (vikend || sviatok)
-                {
-                    Control tbox1 = ctpl.FindControl("textBox_" + day.ToString() + "_9");
-                    TextBox mTBox1 = (TextBox)tbox1;
-                    Control tbox2 = ctpl.FindControl("textBox_" + day.ToString() + "_11");
-                    TextBox mTBox2 = (TextBox)tbox2;
+            Control tbox2 = ctpl.FindControl("textBox_" + day.ToString() + "_11");
+            TextBox mTBox2 = (TextBox)tbox2;
 
-                    Control hodTmp = ctpl.FindControl("textBox_" + day.ToString() + "_4");
-                    TextBox zucHodTxt = (TextBox)hodTmp;
+            Control hodTmp = ctpl.FindControl("textBox_" + day.ToString() + "_4");
+            TextBox zucHodTxt = (TextBox)hodTmp;
 
-                    Control mzvyhTmp = ctpl.FindControl("textBox_" + day.ToString() + "_7");
-                    TextBox mzvyhTxt = (TextBox)mzvyhTmp;
+            Control mzvyhTmp = ctpl.FindControl("textBox_" + day.ToString() + "_7");
+            TextBox mzvyhTxt = (TextBox)mzvyhTmp;
 
-                    Control mzvyhTmpSv = ctpl.FindControl("textBox_" + day.ToString() + "_6");
-                    TextBox mzvyhTxtSv = (TextBox)mzvyhTmpSv;
+            Control mzvyhTmpSv = ctpl.FindControl("textBox_" + day.ToString() + "_6");
+            TextBox mzvyhTxtSv = (TextBox)mzvyhTmpSv;
 
-                    decimal zuctHodinyFLOAT = Convert.ToDecimal(zucHodTxt.Text.ToString(), CultureInfo.InvariantCulture.NumberFormat);
-                    decimal defZuc = zuctHodinyFLOAT + hodiny;
-                    mzvyhTxt.Text = defZuc.ToString();
-                    mzvyhTxtSv.Text = defZuc.ToString();
+           // decimal zuctHodinyFLOAT = Convert.ToDecimal(zucHodTxt.Text.ToString(), CultureInfo.InvariantCulture.NumberFormat);
+           // decimal defZuc = zuctHodinyFLOAT + hodiny;
+           // mzvyhTxt.Text = defZuc.ToString();
+            //mzvyhTxtSv.Text = defZuc.ToString();
 
-                    mTBox1.Text = hodiny.ToString();
-                    mTBox2.Text = neaktivna.ToString();
-                }
-                else
-                {
-                    Control tbox1 = ctpl.FindControl("textBox_" + day.ToString() + "_8");
-                    TextBox mTBox1 = (TextBox)tbox1;
-                    Control tbox2 = ctpl.FindControl("textBox_" + day.ToString() + "_10");
-                    TextBox mTBox2 = (TextBox)tbox2;
-
-                    mTBox1.Text = hodiny.ToString();
-                    mTBox2.Text = neaktivna.ToString();
-                }
-            }
+            //mTBox1.Text = hodiny.ToString();
+            //mTBox2.Text = neaktivna.ToString();
         }
+        else
+        {
+
+
+
+            Control tbox1 = ctpl.FindControl("textBox_" + day.ToString() + "_8");
+            TextBox mTBox1 = (TextBox)tbox1;
+            Control tbox2 = ctpl.FindControl("textBox_" + day.ToString() + "_10");
+            TextBox mTBox2 = (TextBox)tbox2;
+
+        //    mTBox1.Text = hodiny.ToString();
+        //    mTBox2.Text = neaktivna.ToString();
+        }
+            
+        
 
         if (daysAfter > 0)
         {
@@ -502,7 +496,16 @@ public partial class is_vykaz_s : System.Web.UI.Page
                 {
                     Control crtl = ctpl.FindControl("textBox_" + row.ToString() + "_" + tt.ToString());
                     TextBox txtB = (TextBox)crtl;
-                    txtB.Text = rowData[tt].ToString();
+                    if (tt == 3)
+                    {
+                        if (txtB.Text.ToString().Trim() == "0")
+                        {
+                            txtB.Text = rowData[tt].ToString();
+                        }
+                        
+                    }
+
+                    
                     //txtB.BackColor = System.Drawing.Color.LightGray;
                     //txtB.Font.Bold = true;
                 }
@@ -684,12 +687,12 @@ public partial class is_vykaz_s : System.Web.UI.Page
         int dateGroup = vykaz.x2.makeDateGroup(rok, mesiac);
         string query = @"SELECT 
                                 [datum],
-                                [typ],
+                                [typ]
                                 
-                            FROM [is_sluzby_2_sestry] 
+                            FROM [is_sluzby_2_sestr] 
                         WHERE [user_id] = '{0}' 
                         AND [date_group]='{1}'
-                        AND [deps] = {2} 
+                        AND [deps] = '{2}' 
                         ORDER BY [datum] ASC";
 
         string dep = Session["oddelenie"].ToString();
@@ -703,10 +706,96 @@ public partial class is_vykaz_s : System.Web.UI.Page
         query = vykaz.mysql.buildSql(query, new string[] { Session["user_id"].ToString(), dateGroup.ToString(),dep });              
                         
                        
-        Dictionary<int, Hashtable> result = vykaz.mysql.getTable(query.ToString());
+        Dictionary<int, Hashtable> result = vykaz.mysql.getTable(query);
 
         return result;
     }
+
+    protected Dictionary<int, Hashtable> getActivities(int mesiac, int rok, string id)
+    {
+        //Dictionary<int, Hashtable> result = 
+        int days = DateTime.DaysInMonth(rok, mesiac);
+
+        string query = @"
+                        SELECT  [t_dov.id] AS [dov_id], [t_dov.user_id] AS [user_id], [t_dov.od] AS [od],
+                                [t_dov.do] AS [do], [t_dov.type] AS [type] FROM [is_dovolenky_sestr] AS [t_dov]
+                            WHERE [t_dov.od] BETWEEN '{0}-{1}-01 00:00:00' AND '{0}-{1}-{2} 23:59:00'
+                            AND [t_dov.user_id]={3}
+                            ORDER BY [t_dov.do] ASC";
+
+        query = vykaz.mysql.buildSql(query, new string[] { rok.ToString(), mesiac.ToString(), days.ToString(), id.ToString() });
+
+        Dictionary<int, Hashtable> table = vykaz.mysql.getTable(query);
+
+        return table;
+    }
+
+
+
+    protected void fillInVacations(int mesiac, int rok, string id)
+    {
+        //ArrayList dovolenky = x_db.getDovolenkyByID(mesiac, rok, Convert.ToInt32(id));
+        Dictionary<int, Hashtable> dovolenky = this.getActivities(mesiac, rok, id);
+        int dovCnt = dovolenky.Count;
+
+        ContentPlaceHolder ctpl = new ContentPlaceHolder();
+
+        Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+
+        ctpl = (ContentPlaceHolder)tmpControl;
+
+        for (int i = 0; i < dovCnt; i++)
+        {
+            //string[] data = dovolenky[i].ToString().Split(';');
+
+            //string dd1 = my_x2.MSDate(data[1].ToString());
+            //string dd2 = my_x2.MSDate(data[2].ToString());
+
+            DateTime odDov = Convert.ToDateTime(vykaz.x2.UnixToMsDateTime(dovolenky[i]["od"].ToString()));
+            DateTime doDov = Convert.ToDateTime(vykaz.x2.UnixToMsDateTime(dovolenky[i]["do"].ToString()));
+            string[] freeDays = Session["freedays"].ToString().Split(',');
+
+            for (DateTime ddStart = odDov; ddStart <= doDov; ddStart += TimeSpan.FromDays(1))
+            {
+                if (ddStart.Month == mesiac && ddStart.Year == rok)
+                {
+                    int vikend = (int)ddStart.DayOfWeek;
+
+
+                    string mesDen = ddStart.Day.ToString() + "." + mesiac;
+
+                    int rs_tmp = Array.IndexOf(freeDays, mesDen);
+
+                    if (vikend != 0 && vikend != 6 && rs_tmp == -1)
+                    {
+
+                        int ddTemp = ddStart.Day - 1;
+                        Control tbox = ctpl.FindControl("textBox_" + ddTemp.ToString() + "_0");
+                        Control tbox1 = ctpl.FindControl("textBox_" + ddTemp.ToString() + "_3");
+
+                        Control tbox2 = ctpl.FindControl("textBox_" + ddTemp.ToString() + "_1");
+                        Control tbox3 = ctpl.FindControl("textBox_" + ddTemp.ToString() + "_2");
+
+
+                        TextBox my_text_box = (TextBox)tbox;
+                        TextBox my_text_box1 = (TextBox)tbox1;
+
+                        TextBox my_text_box2 = (TextBox)tbox2;
+                        TextBox my_text_box3 = (TextBox)tbox3;
+
+                        if (dovolenky[i]["type"].ToString() == "do") { my_text_box.Text = "D"; my_text_box1.Text = "D"; my_text_box2.Text = "0"; my_text_box3.Text = "0"; }
+                        if (dovolenky[i]["type"].ToString() == "pn") { my_text_box.Text = "PN"; my_text_box1.Text = "PN"; my_text_box2.Text = "0"; my_text_box3.Text = "0"; }
+                        if (dovolenky[i]["type"].ToString() == "sk") { my_text_box.Text = "SK"; my_text_box1.Text = "SK"; my_text_box2.Text = "0"; my_text_box3.Text = "0"; }
+                        if (dovolenky[i]["type"].ToString() == "le") { my_text_box.Text = "SK"; my_text_box1.Text = "Le"; my_text_box2.Text = "0"; my_text_box3.Text = "0"; }
+
+
+                    }
+                }
+            }
+        }
+    }
+
+
 
     protected void newVykaz_fnc(object sender, EventArgs e)
     {
