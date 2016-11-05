@@ -40,14 +40,14 @@
         <div class="one third">
             
          <asp:Button ID="generateVykaz_btn" runat="server" CssClass="button green"  Text="Vytvor vykaz" OnClick="generateVykaz_fnc" />    
-            <asp:Button ID="generateEPC_btn" runat="server" CssClass="button blue"  Text="<%$ Resources:Resource,generate_epc %>" OnClick="generateEpc_fnc" />
+           <!-- <asp:Button ID="generateEPC_btn" runat="server" CssClass="button blue"  Text="<%$ Resources:Resource,generate_epc %>" OnClick="generateEpc_fnc" /> -->
         </div>
         <asp:PlaceHolder ID="vykazInfoHours_pl" runat="server" Visible="false">
              
          <div class="row">
             <div class="one">
                     <hr />
-                        <asp:Label ID="predchMes_lbl" runat="server" Text="Prenos z predchadzajuceho mesiaca:" ></asp:Label><asp:TextBox ID="predMes_txt" runat="server" Width="50" CssClass="mojInline"></asp:TextBox>
+                        <asp:Label ID="predchMes_lbl" runat="server" Text="Prenos z predchadzajuceho mesiaca:" ></asp:Label><asp:TextBox ID="predMes_txt" runat="server" Width="50" CssClass="mojInline" Text="0"></asp:TextBox>
                         <asp:Button ID="calcData_btn" runat="server" onclick="calcData_Click" Text="Vypocitaj" CssClass="mojInline" />
                         <asp:Button ID="createPdf_btn" runat="server" Text="Tlac" OnClick="createPdf_btn_fnc" Enabled="false" CssClass="mojInline" />
                     <hr />
@@ -55,14 +55,14 @@
         </div>
 
         <div class="row">
-            <div class="one">
-                        Pocet prac. dni:<asp:TextBox ID="ine_p_dni_txt" runat="server" Width="50"></asp:TextBox>
+           <div class="one">
+                        <!--Pocet prac. dni:<asp:TextBox ID="ine_p_dni_txt" runat="server" Width="50"></asp:TextBox>-->
                         Pocet hodin podla dni:<asp:TextBox ID="pocetHod_txt" runat="server" Width="50" CssClass="mojInline"></asp:TextBox>
-                        <%--<asp:Label ID="pocetHod_lbl" runat="server"></asp:Label> --%>
+                        <asp:Label ID="pocetHod_lbl" runat="server"></asp:Label>
                         Rozdiel medzi: <strong><asp:Label ID="rozdiel_lbl" runat="server" CssClass="mojInline"></asp:Label></strong>
-                
+              
                 <hr />
-            </div>
+            </div>  
         </div>
         </asp:PlaceHolder>
         <div class="row">

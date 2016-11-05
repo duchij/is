@@ -1184,8 +1184,9 @@ public partial class vykaz2 : System.Web.UI.Page
         decimal prenos = Convert.ToDecimal(prenosStr);
 
         this.rozdiel_lbl.Text = (real-pocetPracHod).ToString();
+       
         //this.
-        this.saveData();
+       // this.saveData();
 
     }
 

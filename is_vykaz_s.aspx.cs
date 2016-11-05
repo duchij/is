@@ -100,7 +100,7 @@ class VykazClass
 
 public partial class is_vykaz_s : System.Web.UI.Page
 {
-    private VykazClass vykaz = new VykazClass(); 
+    VykazClass vykaz = new VykazClass(); 
 
 
     protected void Page_Load(object sender, EventArgs e)
@@ -125,10 +125,12 @@ public partial class is_vykaz_s : System.Web.UI.Page
         if (vykaz.editable)
         {
             this.anotherUser_pl.Visible = true;
+            this.vykazInfoHours_pl.Visible = true;
         }
         else
         {
             this.anotherUser_pl.Visible = false;
+            this.vykazInfoHours_pl.Visible = true;
         }
 
 
@@ -145,8 +147,15 @@ public partial class is_vykaz_s : System.Web.UI.Page
             }
             
         }
+        else
+        {
+            this.vykaz_tbl.Controls.Clear();
+        }
 
-       
+        int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue);
+        int rok = Convert.ToInt32(this.rok_cb.SelectedValue);
+
+        this.generateVykazNurse(mesiac,rok,true);
     }
 
     
@@ -204,6 +213,7 @@ public partial class is_vykaz_s : System.Web.UI.Page
         string query = "SELECT * FROM `is_settings`  WHERE `name`='vykaz_nurse_header'";
        // query = vykaz.mysql.buildSql(query, new string[] { });
         SortedList row = vykaz.mysql.getRow(query);
+
         vykaz.vykazHeader = row["data"].ToString().Split(',');
 
         int cols = vykaz.vykazHeader.Length;
@@ -411,6 +421,12 @@ public partial class is_vykaz_s : System.Web.UI.Page
             txtB.Font.Bold = true;
         }*/
 
+        Control workType = ctpl.FindControl("workType_" + row.ToString());
+        Label workType_lbl = (Label)workType;
+        workType_lbl.Text = typ;
+
+
+
         Control prichod = ctpl.FindControl("textBox_" + row.ToString() + "_0");
         TextBox prichod_txt = (TextBox)prichod;
         prichod_txt.Text = rowData[0];
@@ -424,57 +440,40 @@ public partial class is_vykaz_s : System.Web.UI.Page
         TextBox obed_konc_txt = (TextBox)obed_konc;
         obed_konc_txt.Text = rowData[2];
 
-        Control odchod = ctpl.FindControl("textBox_" + row.ToString() + "_3");
-        TextBox odchod_txt = (TextBox)odchod;
-        odchod_txt.Text = rowData[3];
+
+        
+        
+        
 
         Control hodiny = ctpl.FindControl("textBox_" + row.ToString() + "_4");
         TextBox hodiny_txt = (TextBox)hodiny;
         hodiny_txt.Text = rowData[4];
 
+        Control nocPrac = ctpl.FindControl("textBox_" + row.ToString() + "_5");
+        TextBox nocPrac_txt = (TextBox)nocPrac;
+        nocPrac_txt.Text = rowData[5];
 
-        if (vikend || sviatok)
+        if (vikend && sviatok)
         {
-
-
-            Control tbox1 = ctpl.FindControl("textBox_" + day.ToString() + "_9");
-            TextBox mTBox1 = (TextBox)tbox1;
-
-
-            Control tbox2 = ctpl.FindControl("textBox_" + day.ToString() + "_11");
-            TextBox mTBox2 = (TextBox)tbox2;
-
-            Control hodTmp = ctpl.FindControl("textBox_" + day.ToString() + "_4");
-            TextBox zucHodTxt = (TextBox)hodTmp;
-
-            Control mzvyhTmp = ctpl.FindControl("textBox_" + day.ToString() + "_7");
+            Control mzvyhTmp = ctpl.FindControl("textBox_" + row.ToString() + "_7");
             TextBox mzvyhTxt = (TextBox)mzvyhTmp;
+            mzvyhTxt.Text = rowData[4];
 
-            Control mzvyhTmpSv = ctpl.FindControl("textBox_" + day.ToString() + "_6");
+            Control mzvyhTmpSv = ctpl.FindControl("textBox_" + row.ToString() + "_6");
             TextBox mzvyhTxtSv = (TextBox)mzvyhTmpSv;
-
-           // decimal zuctHodinyFLOAT = Convert.ToDecimal(zucHodTxt.Text.ToString(), CultureInfo.InvariantCulture.NumberFormat);
-           // decimal defZuc = zuctHodinyFLOAT + hodiny;
-           // mzvyhTxt.Text = defZuc.ToString();
-            //mzvyhTxtSv.Text = defZuc.ToString();
-
-            //mTBox1.Text = hodiny.ToString();
-            //mTBox2.Text = neaktivna.ToString();
+            mzvyhTxtSv.Text = rowData[4];
         }
-        else
+        else if (vikend && !sviatok)
         {
-
-
-
-            Control tbox1 = ctpl.FindControl("textBox_" + day.ToString() + "_8");
-            TextBox mTBox1 = (TextBox)tbox1;
-            Control tbox2 = ctpl.FindControl("textBox_" + day.ToString() + "_10");
-            TextBox mTBox2 = (TextBox)tbox2;
-
-        //    mTBox1.Text = hodiny.ToString();
-        //    mTBox2.Text = neaktivna.ToString();
+            Control mzvyhTmp = ctpl.FindControl("textBox_" + row.ToString() + "_7");
+            TextBox mzvyhTxt = (TextBox)mzvyhTmp;
+            mzvyhTxt.Text = rowData[4];
+        } else if (!vikend && sviatok)
+        {
+            Control mzvyhTmpSv = ctpl.FindControl("textBox_" + row.ToString() + "_6");
+            TextBox mzvyhTxtSv = (TextBox)mzvyhTmpSv;
+            mzvyhTxtSv.Text = rowData[4];
         }
-            
         
 
         if (daysAfter > 0)
@@ -496,7 +495,7 @@ public partial class is_vykaz_s : System.Web.UI.Page
                 {
                     Control crtl = ctpl.FindControl("textBox_" + row.ToString() + "_" + tt.ToString());
                     TextBox txtB = (TextBox)crtl;
-                    if (tt == 3)
+                    if (tt ==3)
                     {
                         if (txtB.Text.ToString().Trim() == "0")
                         {
@@ -541,7 +540,15 @@ public partial class is_vykaz_s : System.Web.UI.Page
             }
 
 
-            dateCell.Text = (den + 1).ToString();
+            //dateCell.Text = (den + 1).ToString();
+
+            Label day_lbl = new Label();
+            day_lbl.Text = "<strong>"+(den + 1).ToString()+"</strong> ";
+            dateCell.Controls.Add(day_lbl);
+
+            Label workType_lbl = new Label();
+            workType_lbl.ID = "workType_" + den.ToString();
+            dateCell.Controls.Add(workType_lbl);
 
             riadok.Controls.Add(dateCell);
 
@@ -806,7 +813,7 @@ public partial class is_vykaz_s : System.Web.UI.Page
     {
         int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue.ToString());
         int rok = Convert.ToInt32(this.rok_cb.SelectedValue.ToString());
-
+        this.vykaz_tbl.Controls.Clear();
         this.generateVykazNurse(mesiac,rok,true);
     }
 
@@ -818,12 +825,408 @@ public partial class is_vykaz_s : System.Web.UI.Page
 
     protected void calcData_Click(object sender, EventArgs e)
     {
+        this._calcData();
+    }
+
+    protected decimal verifyNumber(string number)
+    {
+        decimal num;
+        bool status = Decimal.TryParse(number, out num);
+        if (!status)
+        {
+            num = 0;
+        }
+        return num;
+    }
+
+
+    protected void _calcData()
+    {
+        //this.createVykaz(false);
+
+        int cols = vykaz.vykazHeader.Length;
+
+        int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue.ToString());
+        int rok = Convert.ToInt32(this.rok_cb.SelectedValue.ToString());
+
+        int days = DateTime.DaysInMonth(rok, mesiac);
+        ContentPlaceHolder ctpl = new ContentPlaceHolder();
+        Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+
+        ctpl = (ContentPlaceHolder)tmpControl;
+        decimal suma = 0;
+        for (int col = 4; col < cols; col++)
+        {
+            suma = 0;
+            for (int den = 0; den < days; den++)
+            {
+                Control Tbox = ctpl.FindControl("textBox_" + den.ToString() + "_" + col.ToString());
+                TextBox sumBox = (TextBox)Tbox;
+                string sum = sumBox.Text.ToString();
+                sum = sum.Replace('.', ',');
+
+
+                suma += this.verifyNumber(sum);
+            }
+            Control resTbox = ctpl.FindControl("head_tbox_" + col.ToString());
+            TextBox resTxt = (TextBox)resTbox;
+
+            if (col == 4)
+            {
+                float prn = Convert.ToSingle(this.predMes_txt.Text.ToString().Replace(',', '.'), CultureInfo.InvariantCulture.NumberFormat);
+
+                suma = suma + (decimal)prn;
+                resTxt.Text = suma.ToString();
+
+            }
+            else
+            {
+                resTxt.Text = suma.ToString();
+            }
+
+        }
+        DateTime od_date = new DateTime(rok, mesiac, 1);
+        DateTime do_date = new DateTime(rok, mesiac, days);
+
+        int pocetVolnychDni = vykaz.x2.pocetVolnychDniBezSviatkov(od_date, do_date);
+
+        int pocetPracdni = days - pocetVolnychDni;
+
+        string ineDni = this.ine_p_dni_txt.Text.ToString();
+
+        if (ineDni.Trim().Length > 0)
+        {
+            try
+            {
+                pocetPracdni = Convert.ToInt32(ineDni);
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+        }
+
+        decimal pocetPracHod = 0;
+
+        if (Session["pracdoba"].ToString().Length != 0)
+        {
+            Session["pracdoba"] = Session["pracdoba"].ToString().Replace(".", ",");
+            pocetPracHod = pocetPracdni * Convert.ToDecimal(Session["pracdoba"]);
+        }
+        else
+        {
+            pocetPracHod = pocetPracdni * Convert.ToDecimal("7,5");
+        }
+
+        this.pocetHod_txt.Text = pocetPracHod.ToString();
+        Control resTbox_roz = ctpl.FindControl("head_tbox_" + "4");
+        TextBox resTxt_roz = (TextBox)resTbox_roz;
+
+        decimal real = Convert.ToDecimal(resTxt_roz.Text.ToString());
+
+        string prenosStr = this.predMes_txt.Text.ToString();
+        prenosStr = prenosStr.Replace('.', ',');
+        decimal prenos = Convert.ToDecimal(prenosStr);
+
+        this.rozdiel_lbl.Text = (real - pocetPracHod).ToString();
+        this.createPdf_btn.Enabled = true;
+        //this.
+        // this.saveData();
 
     }
 
     protected void createPdf_btn_fnc(object sender, EventArgs e)
     {
+        int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue.ToString());
+        int rok = Convert.ToInt32(this.rok_cb.SelectedValue.ToString());
 
+        //this.createVykaz();
+
+        //this.calcData_Click(sender, e);
+        //this.createEmptyVykaz();
+        this.createPdf(rok, mesiac);
+    }
+
+
+    protected void createPdf(int rok, int mesiac)
+    {
+        //int rok = Convert.ToInt32(this.rok_cb.SelectedValue.ToString());
+        //int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue.ToString());
+        int milis = DateTime.Now.Millisecond;
+        string path = Server.MapPath("App_Data");
+        string imagepath = Server.MapPath("App_Data");
+        string oldFile = @path + "\\vykaz.pdf";
+        string hash = vykaz.x2.makeFileHash(Session["login"].ToString() + milis.ToString());
+        string newFile = @path + "\\vykaz_" + hash + ".pdf";
+        this.msg_lbl.Text = oldFile;
+        // open the reader
+        PdfReader reader = new PdfReader(oldFile);
+        Rectangle size = reader.GetPageSizeWithRotation(1);
+        Document myDoc = new Document(PageSize.A4);
+
+        //1cm == 28.3pt
+
+
+
+        // open the writer
+        FileStream fs = new FileStream(newFile, FileMode.Create, FileAccess.Write);
+        PdfWriter writer = PdfWriter.GetInstance(myDoc, fs);
+        myDoc.Open();
+
+        // the pdf content
+        //PdfWriter pw = writer.DirectContent;
+        PdfContentByte cb = writer.DirectContent;
+
+        double[] koor = new double[14];
+        koor[0] = 34; //typ
+        koor[1] = 69; //prichod
+        koor[2] = 100; //obed zaciatok
+        koor[3] = 130; //obed koniec
+        koor[4] = 167; //odchod
+        koor[5] = 199; //zuctovac hodiny
+        koor[6] = 300; //nocna praca
+        koor[7] = 329.55; //mzdove zvyhod
+        koor[8] = 356.84; //sviatok
+        koor[9] = 390.75; //aktivna1
+        koor[10] = 420.42; //aktivna2
+        koor[11] = 451.26; //neaktivna1
+        koor[12] = 482.09; //neaktivna2
+        koor[13] = 511.76; //neaktivna4
+                           // koor[13] = 507.37; //neaktivna3
+
+        double odHora = 218;
+
+
+        //string lila = "hura";
+        BaseFont mojFont = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1250, false);
+        cb.SetFontAndSize(mojFont, 10);
+
+        //cb.SetColorStroke(new CMYKColor(1f, 0f, 0f, 0f));
+        //cb.SetColorFill(new CMYKColor(0f, 0f, 1f, 0f));
+
+        cb.SetColorStroke(BaseColor.LIGHT_GRAY);
+        cb.SetColorFill(BaseColor.LIGHT_GRAY);
+
+        string[] freeDays = Session["freedays"].ToString().Split(',');
+
+
+
+        int days = DateTime.DaysInMonth(rok, mesiac);
+        double kof = 12.4;
+        for (int i = 0; i < days; i++)
+        {
+            int den = i + 1;
+            /*if (i == 1)
+            {
+                cb.Rectangle(46, size.Height-(float)odHora, 10, 10);
+                cb.Fill();
+            }*/
+
+            string mesDen = den.ToString() + "." + mesiac.ToString();
+
+            int rs_tmp = Array.IndexOf(freeDays, mesDen);
+
+            DateTime my_date = new DateTime(Convert.ToInt32(rok), Convert.ToInt32(mesiac), den);
+            int dnesJe = (int)my_date.DayOfWeek;
+
+            if (dnesJe == 0 || dnesJe == 6 || rs_tmp != -1)
+            {
+                //173.22
+                //vyska stlpca je 11
+                //od lava 46
+                //dlzka je 423.7
+
+                /* cb.MoveTo(46, size-odHora +(11*i));
+                 cb.LineTo(469, size - odHora + (11 * i));
+                 cb.LineTo(469, size - odHora + (11 * i)-11);
+                 cb.LineTo(46, size - odHora + (11 * i) - 11);
+                 //Path closed, stroked and filled
+                 cb.ClosePathFillStroke();*/
+                double recY = (size.Height - (odHora + 0)) - (kof * i);
+
+                float recYY = (float)recY;
+
+                cb.Rectangle(34, recYY, 540, 11);
+                //cb.Stroke();
+                cb.Fill();
+            }
+
+
+        }
+        cb.SetColorStroke(BaseColor.BLACK);
+        cb.SetColorFill(BaseColor.BLACK);
+
+        cb.BeginText();
+        cb.MoveText(291, size.Height - 68);
+        cb.ShowText(this.mesiac_cb.SelectedItem.ToString());
+        cb.EndText();
+
+        cb.BeginText();
+        cb.MoveText(416, size.Height - 68);
+        cb.ShowText(rok.ToString());
+        cb.EndText();
+
+        cb.BeginText();
+        cb.MoveText(233, size.Height - 97);
+        if (Session["klinika_label"].ToString().Length > 0)
+        {
+            cb.ShowText(Session["klinika_label"].ToString());
+        }
+        else
+        {
+            cb.ShowText("");
+        }
+        cb.EndText();
+
+        cb.BeginText();
+        cb.MoveText(26, size.Height - 97);
+        cb.ShowText(Session["titul_pred"].ToString() + Session["fullname"].ToString() + " " + Session["titul_za"].ToString());
+        cb.EndText();
+
+        cb.BeginText();
+        cb.MoveText(388, size.Height - 97);
+        cb.ShowText(Session["zaradenie"].ToString());
+        cb.EndText();
+
+        cb.BeginText();
+        cb.MoveText(166, size.Height - 203);
+        cb.ShowText(this.predMes_txt.Text.ToString());
+        cb.EndText();
+
+        cb.BeginText();
+        cb.MoveText((float)koor[5], size.Height - 628);
+        cb.ShowText(this.rozdiel_lbl.Text.ToString());
+        cb.EndText();
+
+        cb.BeginText();
+        string osobcisl = Session["osobcisl"].ToString();
+        cb.MoveText(480, size.Height - 68);
+
+        if (osobcisl.Length > 0)
+        {
+            cb.ShowText(osobcisl);
+        }
+        else
+        {
+            cb.ShowText("");
+        }
+        cb.EndText();
+
+        cb.BeginText();
+        cb.MoveText(388, size.Height - 127);
+        cb.ShowText(this.pocetHod_txt.Text.ToString());
+        cb.EndText();
+
+        cb.BeginText();
+        cb.MoveText(130, size.Height - 127);
+        String tyzdoba = Session["tyzdoba"].ToString();
+        if (tyzdoba.Length > 0)
+        {
+            tyzdoba = tyzdoba.Replace(',', '.');
+            cb.ShowText(tyzdoba);
+        }
+        else
+        {
+            cb.ShowText("37.5");
+        }
+
+        cb.EndText();
+
+        //int days = DateTime.DaysInMonth(rok, mesiac);
+        ContentPlaceHolder ctpl = new ContentPlaceHolder();
+        Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+
+        ctpl = (ContentPlaceHolder)tmpControl;
+
+        int cols = vykaz.vykazHeader.Length;
+
+        for (int col = 5; col < cols; col++)
+        {
+            Control THbox = ctpl.FindControl("head_tbox_" + col.ToString());
+            TextBox hBox = (TextBox)THbox;
+            cb.BeginText();
+            string num = hBox.Text.ToString();
+            cb.MoveText((float)koor[col], size.Height - 604);
+            cb.ShowText(num);
+
+
+            cb.EndText();
+        }
+        kof = 12.3;
+        for (int den = 0; den < days; den++)
+        {
+            for (int col = 0; col < cols; col++)
+            {
+
+                double recY = (size.Height - (odHora + 0)) - (kof * den);
+                float recYY = (float)recY;
+
+                if (col == 0)
+                {
+                    Control workType = ctpl.FindControl("workType_" + den.ToString());
+                    Label workType_lbl = (Label)workType;
+
+                    string typ = workType_lbl.Text.ToString();
+                    cb.BeginText();
+                    cb.MoveText((float)koor[col], recYY);
+                    cb.ShowText(typ);
+                    cb.EndText();
+                }
+                else
+                {
+                    Control Tbox = ctpl.FindControl("textbox_" + den.ToString() + "_" +(col-1).ToString());
+                    TextBox mBox = (TextBox)Tbox;
+                    cb.BeginText();
+                    string num = mBox.Text.ToString();
+                    if (num == "0") num = "";
+
+                    cb.MoveText((float)koor[col], recYY);
+                    cb.ShowText(num);
+
+                    cb.EndText();
+                }
+                
+            }
+        }
+
+        PdfImportedPage page = writer.GetImportedPage(reader, 1);
+        cb.AddTemplate(page, 0, 0);
+
+
+        myDoc.Close();
+        fs.Close();
+        writer.Close();
+        reader.Close();
+
+        //Response.Redirect(@path + "\\vykaz_new.pdf");
+        SortedList res = vykaz.mysql.registerTempFile("vykaz_" + hash + ".pdf", 5,@"~/App_Data/");
+
+
+        if ((Boolean)res["status"])
+        {
+
+            Response.ContentType = "Application/pdf";
+            Response.AppendHeader("Content-Disposition", "attachment; filename=vykaz_" + hash + ".pdf");
+            Response.TransmitFile(@path + "\\vykaz_" + hash + ".pdf");
+            Response.End();
+        }
+        else
+        {
+            this.msg_lbl.Text = ",,,,,,=" + res["msg"].ToString();
+        }
+
+
+    }
+
+    protected float cmPt(double number)
+    {
+        string unit = "28,3464";
+        double res = number * Convert.ToDouble(unit);
+
+        float result = (float)res;
+
+        return result;
     }
 
 }
