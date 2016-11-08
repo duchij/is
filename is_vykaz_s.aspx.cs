@@ -26,8 +26,24 @@ class VykazClass
 
     private string _department;
 
+    private string _userId;
+
     private Boolean _editable;
     private string[] _vykazHeader;
+
+    private SortedList _userData;
+
+    public SortedList userData
+    {
+        get { return _userData; }
+        set { _userData = value; }
+    }
+
+    public string userId
+    {
+        get { return _userId; }
+        set { _userId = value; }
+    }
 
     public string department
     {
@@ -118,7 +134,9 @@ public partial class is_vykaz_s : System.Web.UI.Page
         vykaz.mysql = new mysql_db();
         vykaz.x2 = new x2_var();
         vykaz.x2log = new log();
+
         vykaz.department = Session["oddelenie"].ToString();
+        this.setDepsNurse();
 
         vykaz.x2.fillYearMonth(ref this.mesiac_cb, ref this.rok_cb, Session["month_dl"].ToString(), Session["years_dl"].ToString());
 
@@ -133,6 +151,11 @@ public partial class is_vykaz_s : System.Web.UI.Page
             this.vykazInfoHours_pl.Visible = true;
         }
 
+        if (vykaz.editable)
+        {
+            this.loadDeps();
+           // this.loadNurses_fnc(sender, e);
+        }
 
 
         if (!IsPostBack)
@@ -141,68 +164,122 @@ public partial class is_vykaz_s : System.Web.UI.Page
             this.mesiac_cb.SelectedValue = dnesJe.Month.ToString();
             this.rok_cb.SelectedValue = dnesJe.Year.ToString();
 
-            if (vykaz.editable)
-            {
-                this.loadDeps();
-            }
+            this.loadDeps();
+
+            
             
         }
         else
         {
-            this.vykaz_tbl.Controls.Clear();
+            //this.vykaz_tbl.Controls.Clear();
+            int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue.ToString());
+            int rok = Convert.ToInt32(this.rok_cb.SelectedValue.ToString());
+            this.generateVykazNurse(mesiac, rok, true);
         }
 
-        int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue);
-        int rok = Convert.ToInt32(this.rok_cb.SelectedValue);
-
-        this.generateVykazNurse(mesiac,rok,true);
+       
     }
 
     
+    protected void setDepsNurse()
+    {
+        string deps = this.deps_dl.SelectedValue.ToString();
+        string nurse = this.nurses_dl.SelectedValue.ToString();
+
+        if (deps!= "0" && nurse != "0")
+        {
+            vykaz.department = deps;
+            vykaz.userId = nurse;
+
+            SortedList res = this.getUserData(nurse);
+
+            if (res["status"] != null)
+            {
+                vykaz.x2.errorMessage2(ref this.msg_lbl, res["msg"].ToString());
+            }
+            else
+            {
+                vykaz.userData = res;
+            }
+
+        }
+        else
+        {
+            vykaz.department = Session["oddelenie"].ToString();
+            vykaz.userId = Session["user_id"].ToString();
+        }
+
+    }
+
+    protected SortedList getUserData(string id)
+    {
+        string sql = "SELECT [pracdoba],[tyzdoba],[zaradenie],[osobcislo] FROM [is_users] WHERE [id]={0}";
+
+        sql = vykaz.mysql.buildSql(sql, new string[] { id });
+
+        SortedList res = vykaz.mysql.getRow(sql);
+
+        return res;
+
+    }
 
     protected void loadNurses_fnc(object sender, EventArgs e)
     {
-        string dep = this.deps_dl.SelectedValue.ToString();
-
-        string query = "SELECT [id], [name3] FROM [kdch_nurse] WHERE [idf]='{0}'";
-
-        query = vykaz.mysql.buildSql(query, new string[] { dep });
-
-        Dictionary<int, Hashtable> table = vykaz.mysql.getTable(query);
-
-        int nurseLn = table.Count;
-        this.nurses_dl.Items.Clear();
-        for (int nurse = 0; nurse < nurseLn; nurse++)
+        if (IsPostBack)
         {
+            string dep = this.deps_dl.SelectedValue.ToString();
 
-            this.nurses_dl.Items.Add(new System.Web.UI.WebControls.ListItem(table[nurse]["name3"].ToString(), table[nurse]["id"].ToString()));
+            string query = "SELECT [id], [name3] FROM [kdch_nurse] WHERE [idf]='{0}'";
 
+            query = vykaz.mysql.buildSql(query, new string[] { dep });
+
+            Dictionary<int, Hashtable> table = vykaz.mysql.getTable(query);
+
+            int nurseLn = table.Count;
+            this.nurses_dl.Items.Clear();
+            this.nurses_dl.Items.Add(new System.Web.UI.WebControls.ListItem("-", "0"));
+            for (int nurse = 0; nurse < nurseLn; nurse++)
+            {
+
+                this.nurses_dl.Items.Add(new System.Web.UI.WebControls.ListItem(table[nurse]["name3"].ToString(), table[nurse]["id"].ToString()));
+
+            }
         }
+        
 
 
     }
 
     protected void loadDeps()
     {
-        StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("SELECT * FROM [is_deps] WHERE [clinic_id]='{0}'", Session["klinika_id"]);
+        
 
-        Dictionary<int, Hashtable> table = vykaz.mysql.getTable(sb.ToString());
-
-
-        int depsLn = table.Count;
-       // this.deps_dl.Items.Add(new System.Web.UI.WebControls.ListItem("-", "-"));
-        for (int dep = 0; dep < depsLn; dep++)
+        
+        if (!IsPostBack)
         {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("SELECT * FROM [is_deps] WHERE [clinic_id]='{0}'", Session["klinika_id"]);
+
+            Dictionary<int, Hashtable> table = vykaz.mysql.getTable(sb.ToString());
+
+
+            int depsLn = table.Count;
+
+            this.deps_dl.Items.Clear();
+            this.deps_dl.Items.Add(new System.Web.UI.WebControls.ListItem("-", "0"));
+            for (int dep = 0; dep < depsLn; dep++)
+            {
             
-            this.deps_dl.Items.Add(new System.Web.UI.WebControls.ListItem(table[dep]["label"].ToString(), table[dep]["idf"].ToString()));
+                this.deps_dl.Items.Add(new System.Web.UI.WebControls.ListItem(table[dep]["label"].ToString(), table[dep]["idf"].ToString()));
             
+            }
         }
+        
     }
 
     protected void generateVykazNurse(int mesiac, int rok, Boolean writeText)
     {
-        this.vykaz_tbl.Controls.Clear();
+       // this.vykaz_tbl.Controls.Clear();
 
         string mesStr = mesiac.ToString();
         if (mesStr.Length == 1)
@@ -268,15 +345,21 @@ public partial class is_vykaz_s : System.Web.UI.Page
 
             int res = Array.IndexOf(sviatky, dentmp);
             Boolean sviatok = (res != -1) ? true : false;
+            
+            string[] rowdata = (vikend) ? vykazVypis["ExDay"].ToString().Split(',') : vykazVypis["NormDay"].ToString().Split(',');
 
-           string[] rowdata = (vikend) ? vykazVypis["ExDay"].ToString().Split(',') : vykazVypis["NormDay"].ToString().Split(',');
-
-           this.makeRow(den, cols, rowdata, rok, mesiac, sviatok, false, true);
+            this.makeRow(den, cols, rowdata, rok, mesiac, sviatok, false, true);
+            
+           
 
         }
 
-        this.fillShiftsForNurses(nurseShifts);
-        this.fillInVacations(mesiac, rok, Session["user_id"].ToString());
+       
+            this.fillShiftsForNurses(nurseShifts);
+            this.fillInVacations(mesiac, rok, vykaz.userId);
+
+        
+        
 
     }
 
@@ -299,6 +382,7 @@ public partial class is_vykaz_s : System.Web.UI.Page
 
             //string week = data[row]["tyzden"].ToString();
             string typ = data[row]["typ"].ToString();
+
             if (typ != "KlAmb") this.calcRow(sviatok, vikend, typ, dt);
 
         }
@@ -702,15 +786,7 @@ public partial class is_vykaz_s : System.Web.UI.Page
                         AND [deps] = '{2}' 
                         ORDER BY [datum] ASC";
 
-        string dep = Session["oddelenie"].ToString();
-
-        if (string.IsNullOrEmpty(dep))
-        {
-            dep = this.deps_dl.SelectedValue.ToString();
-        }
-
-
-        query = vykaz.mysql.buildSql(query, new string[] { Session["user_id"].ToString(), dateGroup.ToString(),dep });              
+        query = vykaz.mysql.buildSql(query, new string[] { vykaz.userId, dateGroup.ToString(),vykaz.department });              
                         
                        
         Dictionary<int, Hashtable> result = vykaz.mysql.getTable(query);
@@ -783,6 +859,11 @@ public partial class is_vykaz_s : System.Web.UI.Page
                         Control tbox2 = ctpl.FindControl("textBox_" + ddTemp.ToString() + "_1");
                         Control tbox3 = ctpl.FindControl("textBox_" + ddTemp.ToString() + "_2");
 
+                        Control pracDoba = ctpl.FindControl("textBox_" + ddTemp.ToString() + "_4");
+                        TextBox pracDoba_txt = (TextBox)pracDoba;
+
+                        //    Control 
+
 
                         TextBox my_text_box = (TextBox)tbox;
                         TextBox my_text_box1 = (TextBox)tbox1;
@@ -790,12 +871,38 @@ public partial class is_vykaz_s : System.Web.UI.Page
                         TextBox my_text_box2 = (TextBox)tbox2;
                         TextBox my_text_box3 = (TextBox)tbox3;
 
-                        if (dovolenky[i]["type"].ToString() == "do") { my_text_box.Text = "D"; my_text_box1.Text = "D"; my_text_box2.Text = "0"; my_text_box3.Text = "0"; }
-                        if (dovolenky[i]["type"].ToString() == "pn") { my_text_box.Text = "PN"; my_text_box1.Text = "PN"; my_text_box2.Text = "0"; my_text_box3.Text = "0"; }
-                        if (dovolenky[i]["type"].ToString() == "sk") { my_text_box.Text = "SK"; my_text_box1.Text = "SK"; my_text_box2.Text = "0"; my_text_box3.Text = "0"; }
-                        if (dovolenky[i]["type"].ToString() == "le") { my_text_box.Text = "SK"; my_text_box1.Text = "Le"; my_text_box2.Text = "0"; my_text_box3.Text = "0"; }
-
-
+                        if (dovolenky[i]["type"].ToString() == "do")
+                        {
+                            my_text_box.Text = "D";
+                            my_text_box1.Text = "D";
+                            my_text_box2.Text = "0";
+                            my_text_box3.Text = "0";
+                            pracDoba_txt.Text = Session["pracdoba"].ToString();
+                        }
+                        if (dovolenky[i]["type"].ToString() == "pn")
+                        {
+                            my_text_box.Text = "PN";
+                            my_text_box1.Text = "PN";
+                            my_text_box2.Text = "0";
+                            my_text_box3.Text = "0";
+                            pracDoba_txt.Text = Session["pracdoba"].ToString();
+                        }
+                        if (dovolenky[i]["type"].ToString() == "sk")
+                        {
+                            my_text_box.Text = "SK";
+                            my_text_box1.Text = "SK";
+                            my_text_box2.Text = "0";
+                            my_text_box3.Text = "0";
+                            pracDoba_txt.Text = Session["pracdoba"].ToString();
+                        }
+                        if (dovolenky[i]["type"].ToString() == "le")
+                        {
+                            my_text_box.Text = "SK";
+                            my_text_box1.Text = "SK";
+                            my_text_box2.Text = "0";
+                            my_text_box3.Text = "0";
+                            pracDoba_txt.Text = Session["pracdoba"].ToString();
+                        }
                     }
                 }
             }
@@ -806,7 +913,7 @@ public partial class is_vykaz_s : System.Web.UI.Page
 
     protected void newVykaz_fnc(object sender, EventArgs e)
     {
-
+        Response.Redirect("is_vykaz_s.aspx");
     }
 
     protected void generateVykaz_fnc(object sender, EventArgs e)
@@ -844,10 +951,14 @@ public partial class is_vykaz_s : System.Web.UI.Page
     {
         //this.createVykaz(false);
 
-        int cols = vykaz.vykazHeader.Length;
-
         int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue.ToString());
         int rok = Convert.ToInt32(this.rok_cb.SelectedValue.ToString());
+        //this.generateVykazNurse(mesiac, rok, false);
+
+
+        int cols = vykaz.vykazHeader.Length;
+
+
 
         int days = DateTime.DaysInMonth(rok, mesiac);
         ContentPlaceHolder ctpl = new ContentPlaceHolder();

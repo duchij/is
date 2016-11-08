@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="is_vykaz_s.aspx.cs" Inherits="is_vykaz_s" MasterPageFile="~/MasterPage.master" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="is_vykaz_s.aspx.cs" Inherits="is_vykaz_s" MaintainScrollPositionOnPostback="true" MasterPageFile="~/MasterPage.master" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
 </asp:Content>
@@ -8,22 +8,35 @@
  
   
  <h1> Mesačný výkaz sestry</h1>
-    <div class="red">Ako prvé je nutné si vybrať mesiac a rok, následne je nutné stlačiť tlačidlo <strong>Vytvor výkaz</strong>. Vygeneruje sa už výkaz aj s vypočítanými hodnotami. Ak je nutné 
+    <div class="dismissible info message">Ako prvé je nutné si vybrať mesiac a rok, následne je nutné stlačiť tlačidlo <strong>Vytvor výkaz</strong>. Vygeneruje sa už výkaz aj s vypočítanými hodnotami. Ak je nutné 
         upraviť tak si hodnoty a stlačiť tlačidlo <strong>Vypočítaj</strong>... a až potom je možné výkaz vytlačiť pomocou tlačidla Tlač...<br />
         Ak chcete vytvoriť nový výkaz tak je nutné stlačiť tlačidlo <strong>Nový výkaz</strong>
+        <p class="red">
+            Ak si zmeníte služby, dovolenky a pod Váš uložený výkaz sa vygeneruje nanovo a vy prídete o všetky zmeny. Preto si generujte výkaz ako úplne posledný...
+        </p>
     </div>
      <hr />
     <asp:PlaceHolder ID="anotherUser_pl" runat="server">
         <div class="row">
-         <div class="one third">Výkaz pre uživateľa:</div>
-        <div class="one third"> <div align="left"><asp:DropDownList ID="deps_dl" runat="server" AutoPostBack="true" OnSelectedIndexChanged="loadNurses_fnc"></asp:DropDownList><asp:DropDownList ID="nurses_dl" runat="server"></asp:DropDownList></div></div>
-        <div class="one third"><div align="left"><asp:Button ID="insertForUser_btn" runat="server" Text="Načítaj" /></div></div>
+            <div class=" dismissible warning message block">
+                Pozor!!!!! Ak vyberiete oddelenie a sestru pre dané oddelenie, bude sa zobrazovať a prepočítavať výkaz pre danú sestru a nie
+                pre prihláseného uživateľa....
+
             </div>
-     <hr />   
+         <div class="one third">
+             <h2>Výkaz pre uživateľa:</h2>
+            
+        </div>
+
+        <div class="one third"> <div align="left"><asp:DropDownList ID="deps_dl" runat="server" EnableViewState="true" AutoPostBack="true" OnSelectedIndexChanged="loadNurses_fnc"></asp:DropDownList><asp:DropDownList ID="nurses_dl" runat="server"></asp:DropDownList></div></div>
+        <div class="one third"><div align="left"><asp:Button ID="insertForUser_btn" EnableViewState="true" runat="server" Text="Načítaj vykaz pre sestru" OnClick="generateVykaz_fnc" /></div></div>
+            
+     <hr /> 
+    </div>  
     </asp:PlaceHolder>
     <div class="row">
         <div class="one third"><%--OnSelectedIndexChanged = "onMonthChangedFnc"--%>
-            <asp:Button ID="newVykaz_btn" runat="server" CssClass="button asphalt"  Text="Novy vykaz" Enabled="false" OnClick="newVykaz_fnc" />
+            <asp:Button ID="newVykaz_btn" runat="server" CssClass="button asphalt"  Text="Novy vykaz" Enabled="true" OnClick="newVykaz_fnc" />
              
                 <asp:Label ID="zaMesiac_lbl" runat="server"></asp:Label>
                  Mesiac:<asp:DropDownList ID="mesiac_cb" runat="server" Width="100"  CssClass="mojInline">
@@ -67,7 +80,7 @@
         </asp:PlaceHolder>
         <div class="row">
 
-            <asp:Table ID="vykaz_tbl" runat="server" CssClass="responsive" data-max="13"></asp:Table>
+            <asp:Table ID="vykaz_tbl" runat="server" CssClass="responsive" data-max="13" EnableViewState="true"></asp:Table>
 
         </div>
 
