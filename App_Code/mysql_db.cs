@@ -1184,7 +1184,7 @@ public class mysql_db
                 {
                     for (int i = 0; i < reader.FieldCount; i++)
                     {
-                        if (reader.GetValue(i) == DBNull.Value)
+                        if (reader.GetValue(i).ToString() == "NULL")
                         {
                             result.Add(reader.GetName(i).ToString(), "NULL");
                         }
@@ -1200,6 +1200,7 @@ public class mysql_db
                             else
                             {
                                 result.Add(reader.GetName(i).ToString(), reader.GetValue(i));
+                               
                             }
                         }
                     }

@@ -134,8 +134,10 @@ public partial class is_vykaz_s : System.Web.UI.Page
         vykaz.mysql = new mysql_db();
         vykaz.x2 = new x2_var();
         vykaz.x2log = new log();
+        vykaz.userData = new SortedList();
 
         vykaz.department = Session["oddelenie"].ToString();
+
         this.setDepsNurse();
 
         vykaz.x2.fillYearMonth(ref this.mesiac_cb, ref this.rok_cb, Session["month_dl"].ToString(), Session["years_dl"].ToString());
@@ -186,7 +188,7 @@ public partial class is_vykaz_s : System.Web.UI.Page
         string deps = this.deps_dl.SelectedValue.ToString();
         string nurse = this.nurses_dl.SelectedValue.ToString();
 
-        if (deps!= "0" && nurse != "0")
+        if (deps!= "0" && nurse != "0" && !string.IsNullOrEmpty(nurse))
         {
             vykaz.department = deps;
             vykaz.userId = nurse;
@@ -211,9 +213,71 @@ public partial class is_vykaz_s : System.Web.UI.Page
 
     }
 
+    protected void saveData()
+    {
+
+        int cols = vykaz.vykazHeader.Length;
+
+        int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue.ToString());
+        int rok = Convert.ToInt32(this.rok_cb.SelectedValue.ToString());
+
+        int days = DateTime.DaysInMonth(rok, mesiac);
+        ContentPlaceHolder ctpl = new ContentPlaceHolder();
+        Control tmpControl = Page.Master.FindControl("ContentPlaceHolder1");
+
+        ctpl = (ContentPlaceHolder)tmpControl;
+        string[] riadok = new string[days];
+
+        for (int den = 0; den < days; den++)
+        {
+            string[] tmp = new string[cols];
+            for (int col = 0; col < cols; col++)
+            {
+                Control Tbox = ctpl.FindControl("textBox_" + den.ToString() + "_" + col.ToString());
+                TextBox sumBox = (TextBox)Tbox;
+                string sum = sumBox.Text.ToString();
+                sum = sum.Replace('.', ',');
+
+                tmp[col] = sum;
+            }
+            string tmpStr = string.Join("~", tmp);
+            riadok[den] = tmpStr;
+
+        }
+        string finalStr = string.Join("|", riadok);
+        //this.msg_lbl.Visible = true;
+        // this.msg_lbl.Text = finalStr;
+
+        SortedList data = new SortedList();
+        data.Add("user_id", Session["user_id"].ToString());
+        data.Add("mesiac", mesiac.ToString());
+        data.Add("rok", rok.ToString());
+        data.Add("vykaz", finalStr);
+        data.Add("prenos", this.rozdiel_lbl.Text);
+
+        SortedList res = vykaz.mysql.mysql_insert("is_vykaz", data);
+
+        Boolean status = Convert.ToBoolean(res["status"].ToString());
+
+        if (!(Boolean)res["status"])
+        {
+            vykaz.x2.errorMessage2(ref this.msg_lbl, res["msg"].ToString());
+        }
+        else
+        {
+            this.createPdf_btn.Enabled = true;
+        }
+
+
+
+    }
+
+
+
+
     protected SortedList getUserData(string id)
     {
-        string sql = "SELECT [pracdoba],[tyzdoba],[zaradenie],[osobcislo] FROM [is_users] WHERE [id]={0}";
+        string sql = "SELECT [titul_pred],[titul_za],[full_name],[pracdoba],[tyzdoba],[zaradenie],[osobcisl] FROM [is_users] WHERE [id]={0} ";
 
         sql = vykaz.mysql.buildSql(sql, new string[] { id });
 
@@ -407,8 +471,8 @@ public partial class is_vykaz_s : System.Web.UI.Page
 
         int cols = vykaz.vykazHeader.Length;
 
-        string endHour = "";
-        Boolean epcYes = true;
+      //  string endHour = "";
+      //  Boolean epcYes = true;
 
         int daysAfter = 0;
 
@@ -524,10 +588,10 @@ public partial class is_vykaz_s : System.Web.UI.Page
         TextBox obed_konc_txt = (TextBox)obed_konc;
         obed_konc_txt.Text = rowData[2];
 
+        Control koncPrac = ctpl.FindControl("textBox_" + row.ToString() + "_3");
+        TextBox koncPrac_txt = (TextBox)koncPrac;
+        koncPrac_txt.Text = rowData[3];
 
-        
-        
-        
 
         Control hodiny = ctpl.FindControl("textBox_" + row.ToString() + "_4");
         TextBox hodiny_txt = (TextBox)hodiny;
@@ -877,7 +941,16 @@ public partial class is_vykaz_s : System.Web.UI.Page
                             my_text_box1.Text = "D";
                             my_text_box2.Text = "0";
                             my_text_box3.Text = "0";
-                            pracDoba_txt.Text = Session["pracdoba"].ToString();
+
+                            if (vykaz.userData.Count > 0)
+                            {
+                                pracDoba_txt.Text = vykaz.userData["pracdoba"].ToString();
+                            }
+                            else
+                            {
+                                pracDoba_txt.Text = Session["pracdoba"].ToString();
+                            }
+                            
                         }
                         if (dovolenky[i]["type"].ToString() == "pn")
                         {
@@ -885,7 +958,15 @@ public partial class is_vykaz_s : System.Web.UI.Page
                             my_text_box1.Text = "PN";
                             my_text_box2.Text = "0";
                             my_text_box3.Text = "0";
-                            pracDoba_txt.Text = Session["pracdoba"].ToString();
+
+                            if (vykaz.userData.Count > 0)
+                            {
+                                pracDoba_txt.Text = vykaz.userData["pracdoba"].ToString();
+                            }
+                            else
+                            {
+                                pracDoba_txt.Text = Session["pracdoba"].ToString();
+                            }
                         }
                         if (dovolenky[i]["type"].ToString() == "sk")
                         {
@@ -893,7 +974,15 @@ public partial class is_vykaz_s : System.Web.UI.Page
                             my_text_box1.Text = "SK";
                             my_text_box2.Text = "0";
                             my_text_box3.Text = "0";
-                            pracDoba_txt.Text = Session["pracdoba"].ToString();
+
+                            if (vykaz.userData.Count > 0)
+                            {
+                                pracDoba_txt.Text = vykaz.userData["pracdoba"].ToString();
+                            }
+                            else
+                            {
+                                pracDoba_txt.Text = Session["pracdoba"].ToString();
+                            }
                         }
                         if (dovolenky[i]["type"].ToString() == "le")
                         {
@@ -901,7 +990,15 @@ public partial class is_vykaz_s : System.Web.UI.Page
                             my_text_box1.Text = "SK";
                             my_text_box2.Text = "0";
                             my_text_box3.Text = "0";
-                            pracDoba_txt.Text = Session["pracdoba"].ToString();
+
+                            if (vykaz.userData.Count > 0)
+                            {
+                                pracDoba_txt.Text = vykaz.userData["pracdoba"].ToString();
+                            }
+                            else
+                            {
+                                pracDoba_txt.Text = Session["pracdoba"].ToString();
+                            }
                         }
                     }
                 }
@@ -918,6 +1015,8 @@ public partial class is_vykaz_s : System.Web.UI.Page
 
     protected void generateVykaz_fnc(object sender, EventArgs e)
     {
+        this.generateVykaz_btn.Enabled = false;
+
         int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue.ToString());
         int rok = Convert.ToInt32(this.rok_cb.SelectedValue.ToString());
         this.vykaz_tbl.Controls.Clear();
@@ -1180,7 +1279,7 @@ public partial class is_vykaz_s : System.Web.UI.Page
 
         cb.BeginText();
         cb.MoveText(233, size.Height - 97);
-        if (Session["klinika_label"].ToString().Length > 0)
+        if (vykaz.x2.getStr(Session["klinika_label"].ToString()).Length > 0)
         {
             cb.ShowText(Session["klinika_label"].ToString());
         }
@@ -1192,12 +1291,29 @@ public partial class is_vykaz_s : System.Web.UI.Page
 
         cb.BeginText();
         cb.MoveText(26, size.Height - 97);
-        cb.ShowText(Session["titul_pred"].ToString() + Session["fullname"].ToString() + " " + Session["titul_za"].ToString());
+        
+        if (vykaz.userData.Count > 0)
+        {
+            cb.ShowText(vykaz.x2.getStr(vykaz.userData["titul_pred"].ToString()) + vykaz.userData["full_name"].ToString() + " " + vykaz.x2.getStr(vykaz.userData["titul_za"].ToString()));
+        }else
+        {
+            cb.ShowText(Session["titul_pred"].ToString() + Session["fullname"].ToString() + " " + Session["titul_za"].ToString());
+        }
         cb.EndText();
+
 
         cb.BeginText();
         cb.MoveText(388, size.Height - 97);
-        cb.ShowText(Session["zaradenie"].ToString());
+        if (vykaz.userData.Count > 0)
+        {
+            cb.ShowText(vykaz.x2.getStr(vykaz.userData["zaradenie"].ToString()));
+        }
+        else
+        {
+            cb.ShowText(Session["zaradenie"].ToString());
+        }
+        
+
         cb.EndText();
 
         cb.BeginText();
@@ -1211,7 +1327,18 @@ public partial class is_vykaz_s : System.Web.UI.Page
         cb.EndText();
 
         cb.BeginText();
-        string osobcisl = Session["osobcisl"].ToString();
+
+        string osobcisl = "";
+
+        if (vykaz.userData.Count > 0)
+        {
+            osobcisl = vykaz.x2.getStr(vykaz.userData["osobcisl"].ToString());
+        }
+        else
+        {
+            osobcisl = Session["osobcisl"].ToString();
+        }
+        
         cb.MoveText(480, size.Height - 68);
 
         if (osobcisl.Length > 0)
@@ -1231,7 +1358,15 @@ public partial class is_vykaz_s : System.Web.UI.Page
 
         cb.BeginText();
         cb.MoveText(130, size.Height - 127);
-        String tyzdoba = Session["tyzdoba"].ToString();
+        String tyzdoba = "";
+        if (vykaz.userData.Count > 0)
+        {
+            tyzdoba = vykaz.x2.getStr(vykaz.userData["tyzdoba"].ToString());
+        }
+        else
+        {
+            tyzdoba = Session["tyzdoba"].ToString();
+        }
         if (tyzdoba.Length > 0)
         {
             tyzdoba = tyzdoba.Replace(',', '.');
@@ -1239,7 +1374,7 @@ public partial class is_vykaz_s : System.Web.UI.Page
         }
         else
         {
-            cb.ShowText("37.5");
+            cb.ShowText("0");
         }
 
         cb.EndText();
@@ -1324,7 +1459,7 @@ public partial class is_vykaz_s : System.Web.UI.Page
         }
         else
         {
-            this.msg_lbl.Text = ",,,,,,=" + res["msg"].ToString();
+            vykaz.x2.errorMessage2(ref this.msg_lbl, res["msg"].ToString());
         }
 
 

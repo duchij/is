@@ -690,6 +690,7 @@ public partial class vykaz2 : System.Web.UI.Page
 
             string week = data[row]["tyzden"].ToString();
             string typ = data[row]["typ"].ToString();
+
             if (typ != "KlAmb") this.calcRowDK(sviatok, vikend, week, typ, dt);
 
         }
