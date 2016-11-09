@@ -18,7 +18,9 @@ public partial class poziadavky : System.Web.UI.Page
         {
             Response.Redirect("error.html");
         }
-    
+
+        my_x2.fillYearMonth(ref this.mesiac_cb, ref this.rok_cb, Session["month_dl"].ToString(), Session["years_dl"].ToString());
+
 
         SortedList data = x_db.getNextPozDatum(DateTime.Today);
 
