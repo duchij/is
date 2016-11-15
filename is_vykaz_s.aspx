@@ -38,7 +38,9 @@
             
         </div>
 
-        <div class="one third"> <div align="left"><asp:DropDownList ID="deps_dl" runat="server" EnableViewState="true" AutoPostBack="true" OnSelectedIndexChanged="loadNurses_fnc"></asp:DropDownList><asp:DropDownList ID="nurses_dl" runat="server"></asp:DropDownList></div></div>
+        <div class="one third"> <div align="left"><asp:DropDownList ID="deps_dl" runat="server" EnableViewState="true" AutoPostBack="true" OnSelectedIndexChanged="loadNurses_fnc">
+
+        </asp:DropDownList><asp:DropDownList ID="nurses_dl" runat="server" AutoPostBack="true" OnSelectedIndexChanged="setNurseData_fnc"></asp:DropDownList></div></div>
         <div class="one third"><div align="left"><asp:Button ID="insertForUser_btn" EnableViewState="true" runat="server" CssClass="button red" Text="Načítaj vykaz pre sestru" OnClick="generateVykaz_fnc" /></div></div>
             
      <hr /> 

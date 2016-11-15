@@ -176,13 +176,21 @@ public partial class is_vykaz_s : System.Web.UI.Page
             //this.vykaz_tbl.Controls.Clear();
             int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue.ToString());
             int rok = Convert.ToInt32(this.rok_cb.SelectedValue.ToString());
+            
             this.generateVykazNurse(mesiac, rok, true);
         }
 
        
     }
 
-    
+    protected void setNurseData_fnc(object sender, EventArgs e)
+    {
+        this.setDepsNurse();
+        this.generateVykaz_btn.Enabled = false;
+    }
+
+
+
     protected void setDepsNurse()
     {
         string deps = this.deps_dl.SelectedValue.ToString();
@@ -202,6 +210,8 @@ public partial class is_vykaz_s : System.Web.UI.Page
             else
             {
                 vykaz.userData = res;
+                this.generateVykaz_btn.Enabled = false;
+
             }
 
         }
@@ -249,7 +259,15 @@ public partial class is_vykaz_s : System.Web.UI.Page
         // this.msg_lbl.Text = finalStr;
 
         SortedList data = new SortedList();
-        data.Add("user_id", Session["user_id"].ToString());
+        if (vykaz.userData.Count > 0)
+        {
+            data.Add("user_id", vykaz.userId);
+        }
+        else
+        {
+            data.Add("user_id", Session["user_id"].ToString());
+        }
+        
         data.Add("mesiac", mesiac.ToString());
         data.Add("rok", rok.ToString());
         data.Add("vykaz", finalStr);
@@ -343,7 +361,9 @@ public partial class is_vykaz_s : System.Web.UI.Page
 
     protected void generateVykazNurse(int mesiac, int rok, Boolean writeText)
     {
-       // this.vykaz_tbl.Controls.Clear();
+        // this.vykaz_tbl.Controls.Clear();
+
+        this.getPrenos(mesiac, rok);
 
         string mesStr = mesiac.ToString();
         if (mesStr.Length == 1)
@@ -417,13 +437,9 @@ public partial class is_vykaz_s : System.Web.UI.Page
            
 
         }
-
        
             this.fillShiftsForNurses(nurseShifts);
             this.fillInVacations(mesiac, rok, vykaz.userId);
-
-        
-        
 
     }
 
@@ -613,12 +629,13 @@ public partial class is_vykaz_s : System.Web.UI.Page
         }
         else if (vikend && !sviatok)
         {
-            Control mzvyhTmp = ctpl.FindControl("textBox_" + row.ToString() + "_7");
+            Control mzvyhTmp = ctpl.FindControl("textBox_" + row.ToString() + "_6");
             TextBox mzvyhTxt = (TextBox)mzvyhTmp;
             mzvyhTxt.Text = rowData[4];
+
         } else if (!vikend && sviatok)
         {
-            Control mzvyhTmpSv = ctpl.FindControl("textBox_" + row.ToString() + "_6");
+            Control mzvyhTmpSv = ctpl.FindControl("textBox_" + row.ToString() + "_7");
             TextBox mzvyhTxtSv = (TextBox)mzvyhTmpSv;
             mzvyhTxtSv.Text = rowData[4];
         }
@@ -923,8 +940,7 @@ public partial class is_vykaz_s : System.Web.UI.Page
                         Control tbox2 = ctpl.FindControl("textBox_" + ddTemp.ToString() + "_1");
                         Control tbox3 = ctpl.FindControl("textBox_" + ddTemp.ToString() + "_2");
 
-                        Control pracDoba = ctpl.FindControl("textBox_" + ddTemp.ToString() + "_4");
-                        TextBox pracDoba_txt = (TextBox)pracDoba;
+                        
 
                         //    Control 
 
@@ -935,22 +951,32 @@ public partial class is_vykaz_s : System.Web.UI.Page
                         TextBox my_text_box2 = (TextBox)tbox2;
                         TextBox my_text_box3 = (TextBox)tbox3;
 
+                       
+
                         if (dovolenky[i]["type"].ToString() == "do")
                         {
-                            my_text_box.Text = "D";
-                            my_text_box1.Text = "D";
+                            my_text_box.Text = "0";
+                            my_text_box1.Text = "Dov";
                             my_text_box2.Text = "0";
                             my_text_box3.Text = "0";
 
-                            if (vykaz.userData.Count > 0)
+                            
+                            
+                            if (vykaz.userData.ContainsKey("pracdoba") != false)
                             {
-                                pracDoba_txt.Text = vykaz.userData["pracdoba"].ToString();
+                                Control pracDoba = ctpl.FindControl("textBox_" + ddTemp.ToString() + "_4");
+                                TextBox pracDoba_txt = (TextBox)pracDoba;
+                                pracDoba_txt.Text = vykaz.x2.getStr(vykaz.userData["pracdoba"].ToString());
+                               // pracDoba_txt.Text = "tr";
+                                //vykaz.x2log.logData(vykaz.userData["pracdoba"], "", "oble");
                             }
                             else
                             {
-                                pracDoba_txt.Text = Session["pracdoba"].ToString();
+                                //pracDoba_txt.Text = vykaz.x2.getStr(Session["pracdoba"].ToString());
                             }
-                            
+                            //pracDoba_txt.Text = "g";
+                            // pracDoba_txt.Text = "T";
+
                         }
                         if (dovolenky[i]["type"].ToString() == "pn")
                         {
@@ -958,46 +984,51 @@ public partial class is_vykaz_s : System.Web.UI.Page
                             my_text_box1.Text = "PN";
                             my_text_box2.Text = "0";
                             my_text_box3.Text = "0";
-
+                            Control pracDoba = ctpl.FindControl("textBox_" + ddTemp.ToString() + "_4");
+                            TextBox pracDoba_txt = (TextBox)pracDoba;
                             if (vykaz.userData.Count > 0)
                             {
-                                pracDoba_txt.Text = vykaz.userData["pracdoba"].ToString();
+                                pracDoba_txt.Text = vykaz.x2.getStr(vykaz.userData["pracdoba"].ToString());
                             }
                             else
                             {
-                                pracDoba_txt.Text = Session["pracdoba"].ToString();
+                                pracDoba_txt.Text = vykaz.x2.getStr(Session["pracdoba"].ToString());
                             }
                         }
+
                         if (dovolenky[i]["type"].ToString() == "sk")
                         {
                             my_text_box.Text = "SK";
                             my_text_box1.Text = "SK";
                             my_text_box2.Text = "0";
                             my_text_box3.Text = "0";
-
+                            Control pracDoba = ctpl.FindControl("textBox_" + ddTemp.ToString() + "_4");
+                            TextBox pracDoba_txt = (TextBox)pracDoba;
                             if (vykaz.userData.Count > 0)
                             {
-                                pracDoba_txt.Text = vykaz.userData["pracdoba"].ToString();
+                                pracDoba_txt.Text = vykaz.x2.getStr(vykaz.userData["pracdoba"].ToString());
                             }
                             else
                             {
-                                pracDoba_txt.Text = Session["pracdoba"].ToString();
+                                pracDoba_txt.Text = vykaz.x2.getStr(Session["pracdoba"].ToString());
                             }
                         }
+
                         if (dovolenky[i]["type"].ToString() == "le")
                         {
                             my_text_box.Text = "SK";
                             my_text_box1.Text = "SK";
                             my_text_box2.Text = "0";
                             my_text_box3.Text = "0";
-
+                            Control pracDoba = ctpl.FindControl("textBox_" + ddTemp.ToString() + "_4");
+                            TextBox pracDoba_txt = (TextBox)pracDoba;
                             if (vykaz.userData.Count > 0)
                             {
-                                pracDoba_txt.Text = vykaz.userData["pracdoba"].ToString();
+                                pracDoba_txt.Text = vykaz.x2.getStr(vykaz.userData["pracdoba"].ToString());
                             }
                             else
                             {
-                                pracDoba_txt.Text = Session["pracdoba"].ToString();
+                                pracDoba_txt.Text = vykaz.x2.getStr(Session["pracdoba"].ToString());
                             }
                         }
                     }
@@ -1015,7 +1046,9 @@ public partial class is_vykaz_s : System.Web.UI.Page
 
     protected void generateVykaz_fnc(object sender, EventArgs e)
     {
-        this.generateVykaz_btn.Enabled = false;
+       // vykaz.userData.Clear();
+       
+       // this.generateVykaz_btn.Enabled = false;
 
         int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue.ToString());
         int rok = Convert.ToInt32(this.rok_cb.SelectedValue.ToString());
@@ -1032,6 +1065,52 @@ public partial class is_vykaz_s : System.Web.UI.Page
     protected void calcData_Click(object sender, EventArgs e)
     {
         this._calcData();
+    }
+
+
+    protected void getPrenos(int mesiac, int rok)
+    {
+
+        DateTime dt = new DateTime(rok, mesiac,1);
+
+        DateTime lastMonth = dt.AddMonths(-1);
+
+        string query = @"SELECT [prenos] FROM [is_vykaz] WHERE [user_id] ={0} AND [mesiac] = {1} AND [rok] = {2}";
+
+        string userId = "";
+
+        if (vykaz.userData.Count > 0)
+        {
+            userId = vykaz.userId;
+        }
+        else
+        {
+            userId = Session["user_id"].ToString();
+        }
+
+        query = vykaz.mysql.buildSql(query, new string[] { userId, lastMonth.Month.ToString(), lastMonth.Year.ToString() });
+
+        SortedList row = vykaz.mysql.getRow(query);
+
+        vykaz.x2log.logData(row, "", "pokus");
+
+        if (row.Count > 0)
+        {
+            string tmp = vykaz.x2.getStr(row["prenos"].ToString());
+
+            if (tmp.Length == 0)
+            {
+                this.predMes_txt.Text = "0";
+            }
+            else
+            {
+                this.predMes_txt.Text = tmp;
+            }
+        }
+        else
+        {
+            this.predMes_txt.Text = "0";
+        }
     }
 
     protected decimal verifyNumber(string number)
@@ -1142,7 +1221,7 @@ public partial class is_vykaz_s : System.Web.UI.Page
         this.rozdiel_lbl.Text = (real - pocetPracHod).ToString();
         this.createPdf_btn.Enabled = true;
         //this.
-        // this.saveData();
+        this.saveData();
 
     }
 
@@ -1153,7 +1232,7 @@ public partial class is_vykaz_s : System.Web.UI.Page
 
         //this.createVykaz();
 
-        //this.calcData_Click(sender, e);
+        this.calcData_Click(sender, e);
         //this.createEmptyVykaz();
         this.createPdf(rok, mesiac);
     }
@@ -1387,13 +1466,13 @@ public partial class is_vykaz_s : System.Web.UI.Page
 
         int cols = vykaz.vykazHeader.Length;
 
-        for (int col = 5; col < cols; col++)
+        for (int col = 4; col < cols; col++)
         {
             Control THbox = ctpl.FindControl("head_tbox_" + col.ToString());
             TextBox hBox = (TextBox)THbox;
             cb.BeginText();
             string num = hBox.Text.ToString();
-            cb.MoveText((float)koor[col], size.Height - 604);
+            cb.MoveText((float)koor[col+1], size.Height - 604);
             cb.ShowText(num);
 
 
@@ -1416,6 +1495,16 @@ public partial class is_vykaz_s : System.Web.UI.Page
                     string typ = workType_lbl.Text.ToString();
                     cb.BeginText();
                     cb.MoveText((float)koor[col], recYY);
+
+                    if (typ.Length > 0)
+                    {
+
+                        typ = typ.Substring(0, 1);
+
+                        
+                    }
+                    
+
                     cb.ShowText(typ);
                     cb.EndText();
                 }

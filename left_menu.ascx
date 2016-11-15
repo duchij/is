@@ -103,7 +103,7 @@
         <li><a href="dovolenky_sestr.aspx" target="_top">Dovolenky</a></li>
         <li><a href="sluzby3.aspx" target="_self">Služby lekári<%--<asp:Localize runat="server" ID="localize2" Text="<%$ Resources:Resource,odd_akt_sluz %>"></asp:Localize>--%></a></li>
 
-        <li><a href="is_vykaz_s.aspx" target="_self">Mesačný výkaz</a></li> 
+        <li><a href="is_vykaz_s.aspx" target="_self">Mesačný výkaz</a><span class="small red button">Novinka</span></li> 
     </ul>                   
    </asp:PlaceHolder>
 

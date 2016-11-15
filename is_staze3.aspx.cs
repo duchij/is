@@ -102,6 +102,7 @@ public partial class is_staze3 : System.Web.UI.Page
         Clasess.x2 = new x2_var();
         Clasess.x2log = new log();
 
+        Clasess.x2.fillYearMonth(ref this.month_dl, ref this.year_dl, Session["month_dl"].ToString(), Session["years_dl"].ToString());
 
         this.insertSection_plh.Visible = Clasess.editable;
 
@@ -111,23 +112,14 @@ public partial class is_staze3 : System.Web.UI.Page
         if (!IsPostBack)
         {
 
-            Clasess.x2.fillYearMonth(ref this.month_dl, ref this.year_dl, Session["month_dl"].ToString(), Session["years_dl"].ToString());
-
-            if (Clasess.rights.IndexOf("admin")!=-1 || Clasess.rights=="poweruser")
+            if (Clasess.editable)
             {
                 this.loadLecturers();
-            }
-            if (Clasess.rights.IndexOf("admin") != -1 || Clasess.rights == "poweruser")
-            {
                 this.loadStudentClasses();
             }
             this.setMonthYear();
             
         }
-
-        
-
-
 
         this.loadSchedule();
         
@@ -381,9 +373,6 @@ public partial class is_staze3 : System.Web.UI.Page
 
                     int kLn = kurzy.Length;
 
-                    
-
-
                     for (int k = 0; k < kLn; k++)
                     {
                         string[] kDatum = table[row]["den"].ToString().Split('|');
@@ -402,7 +391,7 @@ public partial class is_staze3 : System.Web.UI.Page
                         Literal lt = new Literal();
                         string startTime = dtTmp[2].Substring(0, 5);
                         string endTime = dtTmp[3].Substring(0, 5);
-                        lt.Text = "<p class='alert box'><span class='blue'>" + startTime + "-" + endTime + "</span><br><strong>" + dtTmp[1] + "</strong>, <span class='red'>" + dtTmp[0] + "</span> " ;
+                        lt.Text = "<p class='alert box'><span class='blue'>" + startTime + "-" + endTime + "</span><br><strong>" + year_class+"/"+dtTmp[1] + "</strong>, <span class='red'>" + dtTmp[0] + "</span> " ;
                         if (notes[k] != null) {
                             lt.Text += "<br><span class='small'>" + notes[k] + "</span></p>";
                         }
@@ -450,7 +439,7 @@ public partial class is_staze3 : System.Web.UI.Page
                     Literal lt = new Literal();
                     string startTime = dtTmp[2].Substring(0, 5);
                     string endTime = dtTmp[3].Substring(0, 5);
-                    lt.Text = " <p class='alert box'><span class='blue'>" + startTime + "-" + endTime + "</span><br><strong>" + dtTmp[1] + "</strong>, <span class='red'>" + dtTmp[0] + "</span> " ;
+                    lt.Text = " <p class='alert box'><span class='blue'>" + startTime + "-" + endTime + "</span><br><strong>" + year_class+"/"+dtTmp[1] + "</strong>, <span class='red'>" + dtTmp[0] + "</span> " ;
                     lt.Text += "<br><span class='small'>" + table[row]["note"].ToString() + "</span></p>";
                     dataCell.Controls.Add(lt);
                     if (Clasess.editable)
@@ -530,6 +519,7 @@ public partial class is_staze3 : System.Web.UI.Page
 
             this.starttime_txt.Text = startDate.ToShortTimeString();
             this.endtime_txt.Text = endDate.ToShortTimeString();
+            this.yearclass_dl.SelectedValue = row["class_year"].ToString();
         }
         
 

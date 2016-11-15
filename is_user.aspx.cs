@@ -44,10 +44,19 @@ public partial class is_user : System.Web.UI.Page
             this.admin_plh.Visible = true;
             this.user_plh.Visible = true;
             this.resetUserPsswd_btn.Visible = false;
-            if (!IsPostBack)
+
+            //if (!IsPostBack)
+            //{
+            if (this.search_txt.Text.ToString().Trim().Length > 0)
+            {
+                this.searchByNameFnc(sender, e);
+            }
+            else
             {
                 this.loadGridViewData();
             }
+                
+           // }
             
         }
         else
@@ -123,6 +132,8 @@ public partial class is_user : System.Web.UI.Page
 
     protected void loadGridViewData()
     {
+
+
         if (this.rights == "admin")
         {
             this.users_gv.DataSource = x_db.getAllUsersList(0);
@@ -222,6 +233,7 @@ public partial class is_user : System.Web.UI.Page
         this.updateUser_btn.CssClass = "green button";
         this.newUser_btn.Enabled = false;
         this.selectedUser_hf.Value = id.ToString();
+
         SortedList result = x_db.getUserInfoByID(id);
 
         this.name_txt.Text = result["full_name"].ToString();

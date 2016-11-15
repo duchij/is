@@ -15,13 +15,13 @@
         <div class="row">
             <h1 class="red">Administrator</h1>
             <div class="one half">
-                <div class="row">Časť mena: <asp:TextBox ID="search_txt" runat="server" Width="200px" CssClass="inline" ToolTip="Zadaj časť priezviska s diakritikou"></asp:TextBox>
+                <div class="row">Časť mena: <asp:TextBox ID="search_txt" EnableViewState="true" runat="server" Width="200px" CssClass="inline" ToolTip="Zadaj časť priezviska s diakritikou"></asp:TextBox>
                         <asp:Button ID="search_btn" runat="server" Text="Hľadaj" OnClick="searchByNameFnc" CssClass="blue button" />
                 </div>
                 <asp:GridView ID="users_gv" runat="server" data-max="15" CssClass="responsive" AllowPaging="True"
                     OnPageIndexChanging="users_gv_PageIndexChanging" 
                     OnSelectedIndexChanging="users_gv_SelectedIndexChanging"
-                    CaptionAlign="Left" AutoGenerateColumns="False" EnableModelValidation="True" SelectedRowStyle-BackColor="#66FF33" PagerSettings-Mode="NumericFirstLast" FooterStyle-HorizontalAlign="Center" FooterStyle-VerticalAlign="Bottom">
+                    CaptionAlign="Left" AutoGenerateColumns="False" EnableViewState="true" EnableModelValidation="True" SelectedRowStyle-BackColor="#66FF33" PagerSettings-Mode="NumericFirstLast" FooterStyle-HorizontalAlign="Center" FooterStyle-VerticalAlign="Bottom">
                          <Columns>
                              <asp:CommandField ShowSelectButton="True" />
                              <asp:BoundField DataField="id" HeaderText="id">
@@ -46,7 +46,7 @@
                
             </div>
             <div class="one half">
-                <asp:HiddenField ID="selectedUser_hf" runat="server" Value="0" />
+                <asp:HiddenField ID="selectedUser_hf" runat="server" Value="0" EnableViewState="true" />
                  <p class="red"> !!! Po zadaní mena a priezviska v nastaveniach užívateľa a opustení textového rámika sa automaticky vegenerujú login a rôzne údaje v admin sekcii, prosím skontrolujte ich.</p>
                 <table>
                     <tr>
