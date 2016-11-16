@@ -5,7 +5,7 @@
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
     
-    <asp:Label ID="msg_lbl" runat="server" Text=""></asp:Label>
+    <asp:Literal ID="msg_lbl" runat="server" Text=""></asp:Literal>
 
     
 
@@ -133,6 +133,7 @@
         </div>
     </asp:PlaceHolder>
     <hr />
+
     <asp:PlaceHolder ID="user_plh" runat="server">
         <div class="row">
             <h1 class="green">Nastavenia užívateľa</h1>

@@ -140,7 +140,7 @@ public partial class is_vykaz_s : System.Web.UI.Page
 
         this.setDepsNurse();
 
-        vykaz.x2.fillYearMonth(ref this.mesiac_cb, ref this.rok_cb, Session["month_dl"].ToString(), Session["years_dl"].ToString());
+        
 
         if (vykaz.editable)
         {
@@ -162,6 +162,8 @@ public partial class is_vykaz_s : System.Web.UI.Page
 
         if (!IsPostBack)
         {
+            vykaz.x2.fillYearMonth(ref this.mesiac_cb, ref this.rok_cb, Session["month_dl"].ToString(), Session["years_dl"].ToString());
+
             DateTime dnesJe = DateTime.Today;
             this.mesiac_cb.SelectedValue = dnesJe.Month.ToString();
             this.rok_cb.SelectedValue = dnesJe.Year.ToString();
@@ -1046,6 +1048,14 @@ public partial class is_vykaz_s : System.Web.UI.Page
 
     protected void generateVykaz_fnc(object sender, EventArgs e)
     {
+        Button sendBtn = (Button)sender;
+
+        if (sendBtn.ID == "generateVykaz_btn")
+        {
+            vykaz.userData.Clear();
+        }
+
+
        // vykaz.userData.Clear();
        
        // this.generateVykaz_btn.Enabled = false;
@@ -1498,10 +1508,32 @@ public partial class is_vykaz_s : System.Web.UI.Page
 
                     if (typ.Length > 0)
                     {
-
-                        typ = typ.Substring(0, 1);
-
-                        
+                        if (typ.IndexOf("S") !=-1)
+                        {
+                            typ = "R";
+                            
+                        }
+                        else if (typ == "A1")
+                        {
+                            typ = "R";
+                        }
+                        else if (typ == "A2")
+                        {
+                            typ = "N";
+                        }
+                        else if (typ == "ZD")
+                        {
+                            typ = "R";
+                        }
+                        else if (typ == "ZN")
+                        {
+                            typ = "N";
+                        }
+                        else
+                        {
+                            typ = typ.Substring(0, 1);
+                        }
+                       
                     }
                     
 

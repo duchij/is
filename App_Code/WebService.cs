@@ -95,6 +95,16 @@ public class WebService : System.Web.Services.WebService {
         return data;
     }
 
+    [WebMethod(EnableSession = true)]
+    public string opknihaSelectedTab(string data)
+    {
+        JavaScriptSerializer js1 = new JavaScriptSerializer();
+
+        Dictionary<string, string> obj = js1.Deserialize<Dictionary<string, string>>(data);
+        Session["opKnihaSelTab"] = obj["selTab"].ToString();
+        return data;
+    }
+
 
     [WebMethod(EnableSession = true)]
     public string nkimHlaskoSelectedTab(string data)

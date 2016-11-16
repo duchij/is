@@ -73,11 +73,13 @@ public partial class dovolenky_sestr : System.Web.UI.Page
             this.uziv_dovolenka.Visible = false;
         }
 
-        my_x2.fillYearMonth(ref this.mesiac_cb,ref this.rok_cb, Session["month_dl"].ToString(), Session["years_dl"].ToString());
+        
 
 
         if (!IsPostBack)
         {
+            my_x2.fillYearMonth(ref this.mesiac_cb, ref this.rok_cb, Session["month_dl"].ToString(), Session["years_dl"].ToString());
+
             this.mesiac_cb.SelectedValue = DateTime.Today.Month.ToString();
             this.rok_cb.SelectedValue = DateTime.Today.Year.ToString();
 

@@ -1,5 +1,5 @@
 body { 
-font-family:Verdana;
+font-family:Arial, Helvetica, sans-serif;
 font-size:12px;
 }
 
@@ -8,7 +8,7 @@ font-family:Verdana;
 }
 
 .container {
-	
+	width:98%;
 	/*background-color: none;*/
 }
 

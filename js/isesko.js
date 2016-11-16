@@ -331,7 +331,7 @@ function hlaskoTabs()
 
     var selTab = $("input[id$=hlaskoSelectedTab]").val();
     
-    if (selTab!= undefined && selTab.indexOf("hlasko_tab" != -1)) {
+    if (selTab!= undefined && selTab.indexOf("hlasko_tab") != -1) {
         switch (selTab) {
             case "#hlasko_tab1":
                 $("#hlasko_tabs").tabs({ active: 0 });
@@ -355,13 +355,34 @@ function opKnihaTabs()
         activate: function (event) {
 
             var tab = event.currentTarget.hash;
-           // console.log(tab);
+           //console.log(tab);
 
             sendData("opknihaSelectedTab", { selTab: tab }, "afterOpKnihaSelectTab");
         }
     });
 
+    var selTab = $("input[id$=opknihaTab_hv]").val();
+    // console.log(selTab);
+    if (selTab != undefined && selTab.indexOf("opkniha_tab") != -1)
+    switch (selTab) {
+        case "#opkniha_tab1":
+            $("#opkniha_tabs").tabs({ active: 0 });
+            break;
+        case "#opkniha_tab2":
+            $("#opkniha_tabs").tabs({ active: 1 });
+            break;
+        case "#opkniha_tab3":
+            $("#opkniha_tabs").tabs({ active: 2 });
+            break;
+    }
 
+
+}
+
+function afterOpKnihaSelectTab(data)
+{
+    var tab = data.selTab;
+    $("input[id$=opknihaTab_hv]").val(tab);
 }
 
 function lfTabs() {
