@@ -89,8 +89,8 @@ public partial class sluzby2_sestr : System.Web.UI.Page
             {
                 this.editShift_chk.Checked = true;
             }*/
-
-            this.drawTable();
+                this.drawTable();
+            
             
             
             //this.loadSluzby();
@@ -109,11 +109,12 @@ public partial class sluzby2_sestr : System.Web.UI.Page
             {
                 this.editShift_chk.Checked = false;
             }*/
-            
-            
-            this.drawTable();
-            
-           // this.loadDeps();
+
+
+           
+                this.drawTable();
+
+            // this.loadDeps();
             //this.loadSluzby();
         }
 
@@ -418,7 +419,39 @@ public partial class sluzby2_sestr : System.Web.UI.Page
             }
             this.shiftTable.Controls.Add(dataRow);
         }
-       this.setShifts();
+
+
+        if (!string.IsNullOrEmpty(System.Web.HttpContext.Current.Request["p"]))
+        {
+            try
+            {
+                int rokTmp = Convert.ToInt32(System.Web.HttpContext.Current.Request["m"]);
+                int mesiacTmp = Convert.ToInt32(System.Web.HttpContext.Current.Request["y"]);
+                string oddTmp = System.Web.HttpContext.Current.Request["d"].ToString();
+
+                this.rok_cb.SelectedValue = rokTmp.ToString();
+                this.mesiac_cb.SelectedValue = mesiacTmp.ToString();
+
+                this.deps_dl.SelectedValue = oddTmp;
+
+                this.setShifts();
+
+                
+
+            }
+            catch (Exception ex)
+            {
+                x2.errorMessage2(ref this.msg_lbl, "Bad request string, stoping generating plan...., More" + ex.ToString());
+            }
+        }
+        else
+        {
+            this.setShifts();
+        }
+
+
+
+       
     }
 
     protected void setShifts()
@@ -603,6 +636,13 @@ public partial class sluzby2_sestr : System.Web.UI.Page
                 }
                 
             }
+
+            if (!string.IsNullOrEmpty(System.Web.HttpContext.Current.Request["p"]))
+            {
+                this.generate_nurse_plan_fnc(new object(), new EventArgs());
+            }
+           
+
         } 
         else
         {
@@ -962,19 +1002,19 @@ public partial class sluzby2_sestr : System.Web.UI.Page
         int mesiac = Convert.ToInt32(this.mesiac_cb.SelectedValue.ToString());
 
         string odd = this.deps_dl.SelectedValue.ToString();
-        
-        string query = @"
-                        SELECT [t_users.full_name] AS [name], [t_sluzb.user_id] AS [user_id]
-                           ,GROUP_CONCAT([t_sluzb.typ] ORDER BY [t_sluzb.datum] SEPARATOR ';' ) AS [plan] 
-                           ,GROUP_CONCAT(DATE_FORMAT([t_sluzb.datum],'%Y-%c-%e') ORDER BY [t_sluzb.datum] SEPARATOR ';' ) AS [datum]
-                        FROM [is_sluzby_2_sestr] AS [t_sluzb]
-                            LEFT JOIN [is_users] AS [t_users] ON [t_users.id] = [t_sluzb.user_id]
-                        WHERE [t_sluzb.date_group]='{0}' AND [deps]='{1}' 
-                        GROUP BY [t_sluzb.user_id]
-                        ORDER BY [t_users.work_group] 
-                        ";
 
-        query = x2Mysql.buildSql(query,new string[] {x2.makeDateGroup(rok,mesiac).ToString(),odd});
+        string query = @"
+                    SELECT [t_users.full_name] AS [name], [t_sluzb.user_id] AS [user_id]
+                        ,GROUP_CONCAT([t_sluzb.typ] ORDER BY [t_sluzb.datum] SEPARATOR ';' ) AS [plan] 
+                        ,GROUP_CONCAT(DATE_FORMAT([t_sluzb.datum],'%Y-%c-%e') ORDER BY [t_sluzb.datum] SEPARATOR ';' ) AS [datum]
+                    FROM [is_sluzby_2_sestr] AS [t_sluzb]
+                        LEFT JOIN [is_users] AS [t_users] ON [t_users.id] = [t_sluzb.user_id]
+                    WHERE [t_sluzb.date_group]='{0}' AND [t_sluzb.deps]='{1}' 
+                    GROUP BY [t_sluzb.user_id]
+                    ORDER BY [t_users.work_group] 
+                    ";
+
+        query = x2Mysql.buildSql(query, new string[] { x2.makeDateGroup(rok, mesiac).ToString(), odd });
 
         Dictionary<int, Hashtable> table = x2Mysql.getTable(query);
 

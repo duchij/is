@@ -9,3 +9,52 @@
 #commBall {
     display:none;
 }
+
+a{
+    font-size:12px;
+    text-decoration:none;
+    padding:2px;
+    color:black;
+    font-weight:bold;
+    
+}
+a:hover{
+    text-decoration:none;
+    background-color:lightblue;
+    padding:2px;
+}
+
+.cellStylePlan {
+    border:thin;
+    border-style:solid;
+    border-color:lightgray;
+}
+
+.dlPlanStyle {
+    border:0px;
+    width:100%;
+    background:transparent;
+    border-radius:0;
+    -webkit-appearance: none;
+    font-weight:bold;
+    
+}
+
+.dateCellPlanStyle{
+    font-size:12px;
+}
+.menu{
+    display:inline-block;
+    font-size:12px;
+}
+.selectStyle {
+    float:left;
+    padding:2px;
+}
+
+.legendaPlan {
+    padding:3px;
+    background-color:antiquewhite;
+    font-size:12px;
+    border-radius :2;
+}
