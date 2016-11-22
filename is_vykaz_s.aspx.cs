@@ -1208,15 +1208,31 @@ public partial class is_vykaz_s : System.Web.UI.Page
 
         decimal pocetPracHod = 0;
 
-        if (Session["pracdoba"].ToString().Length != 0)
+        if (Session["pracdoba"].ToString().Length != 0 && this.nurses_dl.SelectedValue.ToString().Length == 0)
         {
             Session["pracdoba"] = Session["pracdoba"].ToString().Replace(".", ",");
-            pocetPracHod = pocetPracdni * Convert.ToDecimal(Session["pracdoba"]);
+
+            
+
+        }else
+        {
+            //toto je fallback ak nic nieje nastavene....
+            pocetPracHod = pocetPracdni * Convert.ToDecimal("7,5");
+        }
+
+
+        if (vykaz.userData.Count > 0)
+        {
+            vykaz.userData["pracdoba"] = vykaz.userData["pracdoba"].ToString().Replace(".", ",");
+            pocetPracHod = pocetPracdni * Convert.ToDecimal(vykaz.userData["pracdoba"]);
+
         }
         else
         {
+            //toto je fallback ak nic nieje nastavene....
             pocetPracHod = pocetPracdni * Convert.ToDecimal("7,5");
         }
+
 
         this.pocetHod_txt.Text = pocetPracHod.ToString();
         Control resTbox_roz = ctpl.FindControl("head_tbox_" + "4");

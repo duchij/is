@@ -1,0 +1,11 @@
+﻿body {
+    font-family:Arial, Helvetica, sans-serif;
+    font-size:11px;
+}
+.planTable select {
+    font-size:9px;
+}
+
+#commBall {
+    display:none;
+}
