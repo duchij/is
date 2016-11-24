@@ -1234,17 +1234,58 @@ public partial class is_vykaz_s : System.Web.UI.Page
         }
 
 
+
+        //vypocet nadcasov
+        decimal sumNadcas = 0;
+        try
+        {
+
+            Control nadcas1 = ctpl.FindControl("head_tbox_8");
+            TextBox nadcas1_txt = (TextBox)nadcas1;
+
+            Control nadcas2 = ctpl.FindControl("head_tbox_9");
+            TextBox nadcas2_txt = (TextBox)nadcas2;
+
+            decimal nad1 = Convert.ToDecimal(nadcas1_txt.Text.ToString());
+            decimal nad2 = Convert.ToDecimal(nadcas2_txt.Text.ToString());
+
+            sumNadcas = nad1 + nad2;
+
+
+
+
+        }catch(Exception ex)
+        {
+            vykaz.x2.errorMessage2(ref this.msg_lbl, "Zle hodnoty v nadcasoch: " + ex.ToString());
+        }
+
+
         this.pocetHod_txt.Text = pocetPracHod.ToString();
         Control resTbox_roz = ctpl.FindControl("head_tbox_" + "4");
         TextBox resTxt_roz = (TextBox)resTbox_roz;
 
         decimal real = Convert.ToDecimal(resTxt_roz.Text.ToString());
-
+        real = real - sumNadcas;
+        resTxt_roz.Text = real.ToString();
         string prenosStr = this.predMes_txt.Text.ToString();
         prenosStr = prenosStr.Replace('.', ',');
         decimal prenos = Convert.ToDecimal(prenosStr);
 
+        
+        
+
         this.rozdiel_lbl.Text = (real - pocetPracHod).ToString();
+
+
+
+
+
+        
+        
+        
+
+
+
         this.createPdf_btn.Enabled = true;
         //this.
         this.saveData();
