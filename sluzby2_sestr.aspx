@@ -73,8 +73,9 @@
                 <asp:Label ID="Label2" runat="server" Text="Štátny sviatok" CssClass="yellow box" Width="130"></asp:Label>
     <asp:Label ID="shiftState_lbl" runat="server" Text=""></asp:Label>  
     <div class="row">
+       <a href="is_plan.aspx" target="_self" class="asphalt large button">Horizontálny plán</a> 
     <asp:Button ID="Button1" runat="server" Text="Plán služieb" OnClick="generate_nurse_plan_fnc" CssClass="button green large"/>
-    <p><small>Po kliknutí sa Vám zobrazí Váš klasický plán služieb vo formáte pdf a môžete si ho vytlačiť... <br />T.č obsahuje už aj Dovolenky,PNky a pod Pozri Dovolenky...</small></p>
+    <p><small>Po kliknutí na <strong class="asphalt">Horizontálny plán</strong> sa Vám zobrazí iný pohľad na Vaše služby. Ak kliknete na <strong class="green">Plán služieb</strong> zobrazí sa Vám Váš klasický plán služieb vo formáte pdf a môžete si ho vytlačiť... <br />T.č obsahuje už aj Dovolenky,PNky a pod Pozri Dovolenky...</small></p>
         </div>          
     <asp:Table ID="shiftTable" EnableViewState="false" runat="server" CssClass="responsive" data-max="14">                 
                 </asp:Table>

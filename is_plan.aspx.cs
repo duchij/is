@@ -133,6 +133,7 @@ public partial class is_plan : System.Web.UI.Page
             Response.Redirect("error.html");
         }
 
+        this.msg_lbl.Text = "";
 
         plan.gKlinika = Convert.ToInt32(Session["klinika_id"]);
         plan.rights = Session["rights"].ToString();
@@ -156,6 +157,33 @@ public partial class is_plan : System.Web.UI.Page
         }
 
        // this.drawTable();
+    }
+
+    protected void printPlan_fnc(object sender,EventArgs e)
+    {
+        string depData = this.deps_dl.SelectedValue.ToString();
+
+        if (depData != "0")
+        {
+            int month = Convert.ToInt32(this.month_dl.SelectedValue);
+            int year = Convert.ToInt32(this.years_dl.SelectedValue);
+            string depIdf = depData.Substring(0, depData.IndexOf("_"));
+
+            
+
+            string url = plan.x2.sprintf("http://{3}/sluzby2_sestr.aspx?p=1&y={0}&m={1}&d={2}", new string[] { year.ToString(), month.ToString(), depIdf, HttpContext.Current.Request.Url.Authority });
+
+           // this.linkPlan_btn.PostBackUrl = url;
+            
+            Response.Redirect(url);
+
+        }else
+        {
+            this.msg_lbl.Text = "Nie je vybrané žiadne oddelenie....";
+        }
+       
+
+       
     }
 
     protected void drawTable()
@@ -205,10 +233,11 @@ public partial class is_plan : System.Web.UI.Page
 
             string den = (dayL + 1) + "." + month.ToString();
             TableHeaderCell dateCell = new TableHeaderCell();
+            dateCell.CssClass = "dateCellPlanStyle";
             
             if (vikend)
             {
-                dateCell.BackColor = System.Drawing.Color.Red;
+                dateCell.Style.Add("background-color", "#fc8fa1");
             }
             dateCell.Text = (dayL + 1) + "." + month.ToString();
             if (Array.IndexOf(freeDays, den) != -1)
@@ -221,11 +250,9 @@ public partial class is_plan : System.Web.UI.Page
 
             if (sviatok)
             {
-                dateCell.BackColor = System.Drawing.Color.Yellow;
+                dateCell.Style.Add("background-color", "#f5fc92");
             }
-            dateCell.BorderStyle = BorderStyle.Solid;
-            dateCell.BorderColor = System.Drawing.Color.Black;
-            dateCell.BorderWidth = Unit.Pixel(1);
+            
 
             headRow.Controls.Add(dateCell);
         }
@@ -274,24 +301,29 @@ public partial class is_plan : System.Web.UI.Page
 
                 if (vikend)
                 {
-                    dayCell.BackColor = System.Drawing.Color.Red;
+                    dayCell.Style.Add("background-color", "#fc8fa1");
                 }
 
                 if (sviatok)
                 {
-                    dayCell.BackColor = System.Drawing.Color.Yellow;
+                    dayCell.Style.Add("background-color", "#f5fc92");
                 }
 
-                dayCell.BorderStyle = BorderStyle.Solid;
-                dayCell.BorderColor = System.Drawing.Color.Black;
-                dayCell.BorderWidth = Unit.Pixel(1);
+                dayCell.CssClass = "cellStylePlan";
                 DropDownList dayDl = new DropDownList();
                 dayDl.ID = "dayCell_" + table[u]["user_id"].ToString() + "_" + (d + 1);
-                dayDl.Width = Unit.Pixel(38);
+                dayDl.CssClass = "dlPlanStyle";
 
                 dayDl.ToolTip = my_date.ToLongDateString();
                
                 this.fillWorkTypes(dayDl);
+                if (plan.editable)
+                {
+                    dayDl.Enabled = true;
+                }else
+                {
+                    dayDl.Enabled = false;
+                }
                 dayDl.Attributes.Add("onChange", "saveDayOfNurse('" + dayDl.ID.ToString() + "');");
                 dayCell.Controls.Add(dayDl);
 
@@ -445,6 +477,11 @@ public partial class is_plan : System.Web.UI.Page
 
     protected void setPlanForDepartmentFnc(object sender, EventArgs e)
     {
-        this.drawTable();
+        string deps = this.deps_dl.SelectedValue;
+        if (deps != "0")
+        {
+            this.drawTable();
+        }
+        
     }
 }
