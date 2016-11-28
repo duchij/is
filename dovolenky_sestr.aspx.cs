@@ -211,8 +211,8 @@ public partial class dovolenky_sestr : System.Web.UI.Page
                 TableCell mojaCela = new TableCell();
                 mojaCela.ID = "mojaCelb_" + i.ToString() + "_" + x.ToString();
                 mojaCela.VerticalAlign = VerticalAlign.Top;
-                
-               // mojaCela.CssClass = "duch";
+
+                // mojaCela.CssClass = "duch";
                 // mojaCela.Width = 100;
                 my_den++;
 
@@ -221,7 +221,7 @@ public partial class dovolenky_sestr : System.Web.UI.Page
                 {
                     mojaCela.CssClass = "box yellow";
                     //mojaCela.BackColor = System.Drawing.Color.Yellow;
-                   // mojaCela.ForeColor = System.Drawing.Color.FromArgb(0x990000);
+                    // mojaCela.ForeColor = System.Drawing.Color.FromArgb(0x990000);
                 }
 
 
@@ -238,14 +238,14 @@ public partial class dovolenky_sestr : System.Web.UI.Page
                     if ((nazov == "sobota") || (nazov == "nedeľa"))
                     {
                         //mojaCela.BackColor = System.Drawing.Color.FromArgb(0x990000);
-                       // mojaCela.ForeColor = System.Drawing.Color.Yellow;
+                        // mojaCela.ForeColor = System.Drawing.Color.Yellow;
                         mojaCela.CssClass = "box red";
                     }
 
                     if (DateTime.Today.Day == my_den)
                     {
                         //mojaCela.BackColor = System.Drawing.Color.Yellow;
-                       // mojaCela.ForeColor = System.Drawing.Color.FromArgb(0x990000);
+                        // mojaCela.ForeColor = System.Drawing.Color.FromArgb(0x990000);
                         mojaCela.CssClass = "box yellow";
                     }
 

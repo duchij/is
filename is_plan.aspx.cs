@@ -156,7 +156,18 @@ public partial class is_plan : System.Web.UI.Page
             this.loadDeps();
         }
 
-       // this.drawTable();
+        if (!string.IsNullOrEmpty(Session["oddelenie_id"].ToString()))
+        {
+            string depSel = plan.x2.sprintf("{0}_{1}", new string[] { plan.department, Session["oddelenie_id"].ToString() });
+
+            this.deps_dl.SelectedValue = depSel;
+
+            if (!IsPostBack) { this.drawTable(); }
+        }
+       
+
+
+       
     }
 
     protected void printPlan_fnc(object sender,EventArgs e)
@@ -196,6 +207,9 @@ public partial class is_plan : System.Web.UI.Page
         string depData = this.deps_dl.SelectedValue.ToString();
 
         string depId = depData.Substring(depData.IndexOf("_")+1, depData.Length - (depData.IndexOf("_")+1));
+
+
+        string depIdf = depData.Substring(0,depData.IndexOf("_"));
 
         string query = @"
                             SELECT [t_nurse.full_name],[t_nurse.id] AS [user_id] 
@@ -256,7 +270,8 @@ public partial class is_plan : System.Web.UI.Page
 
             headRow.Controls.Add(dateCell);
         }
-        this.planTable_tbl.Controls.Add(headRow);
+        this.headPlan_tbl.Controls.Add(headRow);
+
         for (int u = 0; u < usersLn; u++)
         {
             TableRow nameRow = new TableRow();
@@ -325,7 +340,13 @@ public partial class is_plan : System.Web.UI.Page
                     dayDl.Enabled = false;
                 }
                 dayDl.Attributes.Add("onChange", "saveDayOfNurse('" + dayDl.ID.ToString() + "');");
+
+               
                 dayCell.Controls.Add(dayDl);
+
+                Literal infoLit = new Literal();
+                infoLit.ID = "infoCell_" + table[u]["user_id"].ToString() + "_" + (d + 1);
+                dayCell.Controls.Add(infoLit);
 
                 riadok.Controls.Add(dayCell);
             }
@@ -334,7 +355,92 @@ public partial class is_plan : System.Web.UI.Page
 
         this.loadShifts(month, year);
         this.loadActivities(month, year);
+
+        if (plan.editable)
+        {
+            this.loadPoziad(month, year, depIdf);
+        }
+        
     
+    }
+
+    protected void loadPoziad(int month, int year,string depIdf)
+    {
+
+        int days = DateTime.DaysInMonth(year, month);
+
+        string sql = @"
+                        SELECT [user_id],[status],[datum] 
+                            FROM [is_poziad_sestr]
+                        WHERE [datum] BETWEEN '{0}-{1}-01 00:00:00' AND '{0}-{1}-{2} 23:59:59'
+                            AND [dep_idf]='{3}'
+                            AND [clinic_id]={4}
+                        ORDER BY [user_id]    
+
+                        ";
+
+        sql = plan.x2.sprintf(sql, new string[] { year.ToString(), month.ToString(), days.ToString(),depIdf,plan.gKlinika.ToString() });
+
+        Dictionary<int, Hashtable> table = plan.mysql.getTable(sql);
+
+        int tblLn = table.Count;
+
+        for (int i=0; i< tblLn; i++)
+        {
+            DateTime dt = plan.x2.UnixToMsDateTime(table[i]["datum"].ToString());
+
+            int userId = Convert.ToInt32(table[i]["user_id"]);
+            string status = "";
+            string toolTip = "";
+                
+            switch (table[i]["status"].ToString())
+            {
+                case "yes":
+                    status = Resources.Resource.sys_yes;
+                    toolTip = Resources.Resource.plan_sestr_yes; 
+                    break;
+                case "no":
+                    status = Resources.Resource.sys_no;
+                    toolTip = Resources.Resource.plan_sestr_no;
+                    break;
+                case "do":
+                    status = "Dov";
+                    toolTip = Resources.Resource.plan_sestr_do;
+                    break;
+                case "yes_d":
+                    status = "AnoD";
+                    toolTip = Resources.Resource.plan_sestr_yes_d;
+                    break;
+                case "yes_n":
+                    status = "AnoN";
+                    toolTip = Resources.Resource.plan_sestr_yes_n;
+                    break;
+                case "no_d":
+                    status = "NieD";
+                    toolTip = Resources.Resource.plan_sestr_no_d;
+                    break;
+                case "no_n":
+                    status = "NieN";
+                    toolTip = Resources.Resource.plan_sestr_no_n;
+                    break;
+
+
+            }
+
+            Control ctrl = FindControl("infoCell_" + userId.ToString() + "_" + dt.Day.ToString());
+
+            Literal lit = (Literal)ctrl;
+
+            string stHtml = plan.x2.sprintf("<div class='poziadavkaCont' title='{1}'><strong>P:</strong>:<br><span class='poziadavka'>{0}</span></div>", new string[] { status,toolTip });
+
+            lit.Text = stHtml;
+            
+
+
+
+        }
+        
+
     }
 
     protected void fillWorkTypes(DropDownList dl)

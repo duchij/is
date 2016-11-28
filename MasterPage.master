@@ -170,8 +170,9 @@
                 <li><button>Sestra</button>
                     <ul>
                         <li><a role="medium button" href="sestrhlas.aspx" target="_self">Hlásenie sestier</a></li>
-                        <li><a role="medium button" href="sluzby2_sestr.aspx" target="_self">Služby sestier</a></li>
-                        <li><a role="medium button" href="is_plan.aspx" target="_self">Plán sestier</a></li>
+                        <li><a role="medium button" href="sluzby2_sestr.aspx" target="_self" title="Klasický vertikálny plán">Služby sestier</a></li>
+                        <li><a role="medium button" href="is_plan.aspx" target="_self" title="Horizontálny plán - podobný papierovému plánu">Plán sestier</a></li>
+                        <li><a role="medium button" href="is_poziad_sestr.aspx" target="_self">Požiadavky sestier</a></li>
                         <li><a role="medium button" href="dovolenky_sestr.aspx" target="_self">Dovolenky sestier</a></li>
                         <li><a role="medium button" href="sluzby3.aspx" target="_self">Služby lekárov</a></li>
                     </ul>

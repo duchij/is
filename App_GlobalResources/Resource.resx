@@ -471,4 +471,31 @@
   <data name="orthanc_url" xml:space="preserve">
     <value>http://10.10.2.49/dicom/index.php?c=dicom&amp;m=searchOrthanc&amp;query=</value>
   </data>
+  <data name="plan_sestr_do" xml:space="preserve">
+    <value>Plánujem dovolenku!</value>
+  </data>
+  <data name="plan_sestr_no" xml:space="preserve">
+    <value>Nie, tu nechcem vôbec slúžiť!</value>
+  </data>
+  <data name="plan_sestr_no_d" xml:space="preserve">
+    <value>Nie, tu nechem deňku</value>
+  </data>
+  <data name="plan_sestr_no_n" xml:space="preserve">
+    <value>Nie, tu nechem nočnú</value>
+  </data>
+  <data name="plan_sestr_yes" xml:space="preserve">
+    <value>Áno, tu chcem  slúžit je mi jedno či nočná/deňka!</value>
+  </data>
+  <data name="plan_sestr_yes_d" xml:space="preserve">
+    <value>Áno, tu chcem deňku</value>
+  </data>
+  <data name="plan_sestr_yes_n" xml:space="preserve">
+    <value>Áno, tu chcem nočnú</value>
+  </data>
+  <data name="sys_no" xml:space="preserve">
+    <value>Nie</value>
+  </data>
+  <data name="sys_yes" xml:space="preserve">
+    <value>Áno</value>
+  </data>
 </root>

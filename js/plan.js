@@ -159,7 +159,11 @@ function afterSaveNurseDay(result,dlId) {
     }
 }
 
+$(function () {
+    $(document).tooltip();
+});
+
 $(document).ready(function () {
 
-
+   
 });

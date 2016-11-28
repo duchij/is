@@ -44,7 +44,11 @@ public partial class controls_kdch_shifts : System.Web.UI.UserControl
             Response.Redirect("error.html");
         }
 
-        x2.fillYearMonth(ref this.mesiac_cb, ref this.rok_cb, Session["month_dl"].ToString(), Session["years_dl"].ToString());
+        if (!IsPostBack)
+        {
+            x2.fillYearMonth(ref this.mesiac_cb, ref this.rok_cb, Session["month_dl"].ToString(), Session["years_dl"].ToString());
+        }
+       
 
         this.msg_lbl.Text = "";
 
