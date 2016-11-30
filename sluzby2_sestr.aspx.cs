@@ -68,6 +68,9 @@ public partial class sluzby2_sestr : System.Web.UI.Page
         
         if (!IsPostBack)
         {
+            x2.fillYearMonth(ref this.mesiac_cb, ref this.rok_cb, Session["month_dl"].ToString(), Session["years_dl"].ToString());
+
+
             this.setMonthYear();
 
 
