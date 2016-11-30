@@ -471,6 +471,55 @@ function afterSelectTab(data)
     $("input[id$=hlaskoSelectedTab]").val(tab);
 }
 
+//Cast pre poziadavky sestier//
+
+function savePoziadOfNurse(dlId)
+{
+    var dl = $("[id$=" + dlId + "]");
+    var status = dl.val();
+
+    switch (status) {
+
+        case "yes":
+            dl.attr("title", "Áno, tu chcem slúžiť!");
+            break;
+        case "no":
+            dl.attr("title", "Nie, tu nechcem služiť!");
+            break;
+        case "do":
+            dl.attr("title", "Plánujem dovolenku");
+            break;
+    }
+
+    
+    var year = $("[id$=years_dl]").val();
+    var month = $("[id$=month_dl]").val();
+
+    var tmp = dlId.split("_");
+
+    var userId = tmp[1];
+    var day = tmp[2];
+
+    var data = {
+        userId: userId,
+        datum:year+"-"+month+"-"+day,
+        status:status
+
+    };
+    console.log(data);
+    sendData("saveNursePoziad", data, "afterSavePoziadNurse");
+
+    //console.log(data);
+}
+
+
+function afterSavePoziadNurse(result)
+{
+    console.log(result);
+}
+
+//koniec casti pre poziadavky sesstier//
+
 function setSeminar()
 {
         var dt = $("input[id$=date_txt]").val();

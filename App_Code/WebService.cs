@@ -78,6 +78,19 @@ public class WebService : System.Web.Services.WebService {
 
     }
 
+    protected Dictionary<string,string> deserialize(string data)
+    {
+        JavaScriptSerializer js1 = new JavaScriptSerializer();
+        return js1.Deserialize<Dictionary<string, string>>(data);
+    }
+
+
+    protected string serialize(Dictionary<string,string> data)
+    {
+        JavaScriptSerializer js2 = new JavaScriptSerializer();
+        return js2.Serialize(data).ToString();
+    }
+
     private Dictionary<string,string> parseDate(string data)
     {
         JavaScriptSerializer js1 = new JavaScriptSerializer();
@@ -93,6 +106,56 @@ public class WebService : System.Web.Services.WebService {
         Dictionary<string, string> obj = js1.Deserialize<Dictionary<string, string>>(data);
         Session["hlaskoSelTab"] = obj["selTab"].ToString();
         return data;
+    }
+
+    [WebMethod(EnableSession = true)]
+    public string saveNursePoziad(string data)
+    {
+        Dictionary<string, string> obj = this.deserialize(data);
+        Dictionary<string, string> rtData = new Dictionary<string, string>();
+        if (obj["status"] != "0")
+        {
+            SortedList saveData = new SortedList();
+
+            saveData.Add("user_id", obj["userId"]);
+            saveData.Add("status", obj["status"]);
+            saveData.Add("datum", obj["datum"]);
+            saveData.Add("clinic_id", Session["klinika_id"].ToString());
+            saveData.Add("dep_idf", Session["oddelenie"].ToString());
+
+            SortedList res = x2Mysql.mysql_insert("is_poziad_sestr", saveData);
+
+            if (!(Boolean)res["status"])
+            {
+                rtData["status"] = "false";
+                rtData["msg"] = res["msg"].ToString();
+            }else
+            {
+                rtData["status"] = "true";
+            }
+        }
+
+        if (obj["status"] == "0")
+        {
+            string sql  = @"DELETE FROM [is_poziad_sestr] WHERE [user_id] = {0} AND [datum] = '{1}'";
+
+            sql = x2Mysql.buildSql(sql, new string[] { obj["userId"], obj["datum"] });
+
+            SortedList res = x2Mysql.execute(sql);
+
+            if (!(Boolean)res["status"])
+            {
+                rtData["status"] = "false";
+                rtData["msg"] = res["msg"].ToString();
+            }else
+            {
+                rtData["status"] = "true";
+            }
+
+
+
+        }
+        return this.serialize(rtData);
     }
 
     [WebMethod(EnableSession = true)]

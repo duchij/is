@@ -21,6 +21,8 @@
         Hodnoty si vyždz skontrolujte a upravte a následne a stlačte tlačidlo <u>Vypočítaj</u>... a až potom je možné výkaz vytlačiť pomocou tlačidla Tlač...<br />
         Ak chcete vytvoriť nový výkaz tak je nutné stlačiť tlačidlo <u>Nový výkaz</u>
         <br />
+        <u>Nadčasy</u> - k určitému dňu si môžete rozpísať nadčasy.Tieto sa Vám následne odrátajú od narataných hodín
+        <br />
         <p class="red">
             Ak si zmeníte služby, dovolenky a pod Váš uložený výkaz sa vygeneruje nanovo a vy prídete o všetky zmeny. Preto si generujte výkaz ako úplne posledný...
         </p>
