@@ -166,7 +166,14 @@ public partial class is_poziad_sestr : System.Web.UI.Page
         this.poziadTable_tbl.Controls.Clear();
 
         int my_den = 0;
-        int pocetDni = DateTime.DaysInMonth(2016, 11);
+
+        int month = Convert.ToInt32(this.month_dl.SelectedValue.ToString());
+        int year = Convert.ToInt32(this.years_dl.SelectedValue.ToString());
+
+        int pocetDni = DateTime.DaysInMonth(year, month);
+
+        string[] freeD = Session["freedays"].ToString().Split(',');
+
         for (int i = 0; i < 5; i++)
         {
 
@@ -183,35 +190,49 @@ public partial class is_poziad_sestr : System.Web.UI.Page
                 my_den++;
 
                 //DateTime tmp_den_mes = new DateTime(tc_rok, tc_month, o + 1);
-                if (DateTime.Today.Day == my_den)
+               /* if (DateTime.Today.Day == my_den)
                 {
                     mojaCela.CssClass = "box yellow";
                     //mojaCela.BackColor = System.Drawing.Color.Yellow;
                     // mojaCela.ForeColor = System.Drawing.Color.FromArgb(0x990000);
-                }
+                }*/
 
 
                 mojaCela.BorderWidth = 1;
                 mojaCela.BorderColor = System.Drawing.Color.LightGray;
 
-
+                
+               
                 if (my_den <= pocetDni)
                 {
-                    DateTime my_date = new DateTime(2016, 11, my_den);
+                    DateTime my_date = new DateTime(year, month, my_den);
                     int dnesJe = (int)my_date.DayOfWeek;
-                    string nazov = CultureInfo.CurrentCulture.DateTimeFormat.DayNames[dnesJe];
+                    string nazov = CultureInfo.CurrentCulture.DateTimeFormat.DayNames[dnesJe].ToString();
 
-                    if ((nazov == "sobota") || (nazov == "nedeľa"))
+                    string dayStr = my_den + "." + month.ToString();
+
+                    int res = Array.IndexOf(freeD, dayStr);
+                    Boolean sviatok = (res != -1) ? true : false;
+
+
+                    if ((dnesJe == 6) || (dnesJe == 0))
                     {
                        
                         mojaCela.CssClass = "box red";
                     }
 
-                    if (DateTime.Today.Day == my_den)
+                    if (sviatok)
+                    {
+                        mojaCela.CssClass = "box yellow";
+                    }
+                    
+
+
+                    /*if (DateTime.Today.Day == my_den)
                     {
                         
                         mojaCela.CssClass = "box yellow";
-                    }
+                    }*/
                     Literal dateLabel = new Literal();
                     dateLabel.Text = "<strong>" + my_den.ToString() + ".</strong><font> " + nazov.Substring(0, 3) + "</font><br><br/>";
                     mojaCela.Controls.Add(dateLabel);
