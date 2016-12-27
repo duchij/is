@@ -70,8 +70,28 @@ public partial class sluzby2_sestr : System.Web.UI.Page
         {
             x2.fillYearMonth(ref this.mesiac_cb, ref this.rok_cb, Session["month_dl"].ToString(), Session["years_dl"].ToString());
 
+                try
+                {
+                    if (System.Web.HttpContext.Current.Request["p"].ToString() != null)
+                    {
+                        int rokTmp = Convert.ToInt32(System.Web.HttpContext.Current.Request["m"]);
+                        int mesiacTmp = Convert.ToInt32(System.Web.HttpContext.Current.Request["y"]);
+                        string oddTmp = System.Web.HttpContext.Current.Request["d"].ToString();
 
-            this.setMonthYear();
+                        this.rok_cb.SelectedValue = rokTmp.ToString();
+                        this.mesiac_cb.SelectedValue = mesiacTmp.ToString();
+                    }
+                       
+                }catch (Exception ex)
+                {
+
+                }
+                finally
+                {
+                    this.setMonthYear();
+                }
+            
+            
 
 
             //DateTime dnes = DateTime.Today;
@@ -574,22 +594,24 @@ public partial class sluzby2_sestr : System.Web.UI.Page
                     }
                     else
                     {
-                        Control crtl = ctpl.FindControl("name_" + rDay.ToString() + "_" + table[day]["type1"].ToString());
-
-                        Label ddl = (Label)crtl;
+                        
 
                         try
                         {
+                            Control crtl = ctpl.FindControl("name_" + rDay.ToString() + "_" + table[day]["type1"].ToString());
+                            Label ddl = (Label)crtl;
                             ddl.Text = table[day]["user_names"].ToString() +"<br>";
+
+                            Control crtl1 = ctpl.FindControl("comment_" + rDay.ToString() + "_" + table[day]["type1"].ToString());
+                            Label textBox = (Label)crtl1;
+                            textBox.Text = table[day]["comment"].ToString() + "<br>";
                         }
                         catch (Exception ex)
                         {
-                            ddl.Text = "-<br>";
+                           // ddl.Text = "-<br>";
                         }
 
-                        Control crtl1 = ctpl.FindControl("comment_" + rDay.ToString() + "_" + table[day]["type1"].ToString());
-                        Label textBox = (Label)crtl1;
-                        textBox.Text = table[day]["comment"].ToString() + "<br>";
+                        
                     }
                 }
                 else
@@ -598,42 +620,48 @@ public partial class sluzby2_sestr : System.Web.UI.Page
                     {
                         if (this.editable && this.editShift_chk.Checked)
                         {
-                            Control crtl = ctpl.FindControl("ddl_" + rDay.ToString() + "_" + type[col]);
-                            DropDownList ddl = (DropDownList)crtl;
+                            
 
                             try
                             {
+                                Control crtl = ctpl.FindControl("ddl_" + rDay.ToString() + "_" + type[col]);
+                                DropDownList ddl = (DropDownList)crtl;
                                 ddl.SelectedValue = userId[col];
+
+                                Control crtl1 = ctpl.FindControl("textBox_" + rDay.ToString() + "_" + type[col]);
+                                TextBox textBox = (TextBox)crtl1;
+                                textBox.Text = comments[col];
                             }
                             catch (Exception ex)
                             {
-                                ddl.SelectedValue = "0";
+                               // ddl.SelectedValue = "0";
                             }
                             
                             //ddl.SelectedIndexChanged += new EventHandler(dItemChanged_2);
 
-                            Control crtl1 = ctpl.FindControl("textBox_" + rDay.ToString() + "_" + type[col]);
-                            TextBox textBox = (TextBox)crtl1;
-                            textBox.Text = comments[col];
+                            
                             //textBox.TextChanged += new EventHandler(commentChanged_2);
                         }
                         else
                         {
-                            Control crtl = ctpl.FindControl("name_" + rDay.ToString() + "_" + type[col]);
-                            Label ddl = (Label)crtl;
+                            
 
                             try
                             {
+                                Control crtl = ctpl.FindControl("name_" + rDay.ToString() + "_" + type[col]);
+                                Label ddl = (Label)crtl;
                                 ddl.Text = names[col] + "<br>";
+
+                                Control crtl1 = ctpl.FindControl("comment_" + rDay.ToString() + "_" + type[col]);
+                                Label textBox = (Label)crtl1;
+                                textBox.Text = comments[col] + "<br>";
                             }
                             catch (Exception ex)
                             {
-                                ddl.Text = "-<br>";
+                                //ddl.Text = "-<br>";
                             }
 
-                            Control crtl1 = ctpl.FindControl("comment_" + rDay.ToString() + "_" + type[col]);
-                            Label textBox = (Label)crtl1;
-                            textBox.Text = comments[col] + "<br>";
+                            
                         }
                     }
                 }

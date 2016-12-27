@@ -543,9 +543,14 @@ public partial class is_plan : System.Web.UI.Page
 
             Control crtl = FindControl("dayCell_" + table[i]["user_id"].ToString() + "_" + day.ToString());
 
-            DropDownList dl = (DropDownList)crtl;
+            if (crtl != null)
+            {
+                DropDownList dl = (DropDownList)crtl;
 
-            dl.SelectedValue = table[i]["typ"].ToString();
+                dl.SelectedValue = table[i]["typ"].ToString();
+            }
+
+           
 
         }
 
