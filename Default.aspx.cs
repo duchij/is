@@ -215,6 +215,8 @@ public partial class _Default : System.Web.UI.Page
                   
                     List<string> news = db_obj.getLastNews(Convert.ToInt32(Session["klinika_id"].ToString()));
 
+                    x2log.logData(news[0].ToString(), "", "news test");
+
                     if (news.Count > 0)
                     {
                         Session["newsToShow"] = news[0];

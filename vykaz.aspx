@@ -10,30 +10,13 @@
                 <asp:Label ID="zaMesiac_lbl" runat="server"></asp:Label>
                  Mesiac:<asp:DropDownList ID="mesiac_cb" runat="server" 
                         AutoPostBack="True" OnSelectedIndexChanged = "onMonthChangedFnc">
-                        <asp:ListItem Value="1">Január</asp:ListItem>
-                        <asp:ListItem Value="2">Február</asp:ListItem>
-                        <asp:ListItem Value="3">Marec</asp:ListItem>
-                        <asp:ListItem Value="4">Apríl</asp:ListItem>
-                        <asp:ListItem Value="5">Máj</asp:ListItem>
-                        <asp:ListItem Value="6">Jún</asp:ListItem>
-                        <asp:ListItem Value="7">Júl</asp:ListItem>
-                        <asp:ListItem Value="8">August</asp:ListItem>   
-                        <asp:ListItem Value="9">September</asp:ListItem>
-                        <asp:ListItem Value="10">Október</asp:ListItem>
-                        <asp:ListItem Value="11">November</asp:ListItem>
-                        <asp:ListItem Value="12">December</asp:ListItem>
+                        
                     </asp:DropDownList>  
         </div>
         <div class="one half">  
                     Rok: 
                 <asp:DropDownList ID="rok_cb" runat="server" AutoPostBack="True" OnSelectedIndexChanged = "onYearChangedFnc">
-                    <asp:ListItem Value="2010">Rok 2010</asp:ListItem>
-                    <asp:ListItem Value="2011">Rok 2011</asp:ListItem>
-                    <asp:ListItem Value="2012">Rok 2012</asp:ListItem>
-                    <asp:ListItem Value="2013">Rok 2013</asp:ListItem>
-                    <asp:ListItem Value="2014">Rok 2014</asp:ListItem>
-                     <asp:ListItem Value="2015">Rok 2015</asp:ListItem>
-                      <asp:ListItem Value="2016">Rok 2016</asp:ListItem>
+                    
                 </asp:DropDownList>
         </div>
     </div>

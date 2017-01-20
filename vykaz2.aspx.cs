@@ -68,6 +68,7 @@ public partial class vykaz2 : System.Web.UI.Page
 
         if (!IsPostBack)
         {
+            my_x2.fillYearMonth(ref this.mesiac_cb, ref this.rok_cb, Session["month_dl"].ToString(), Session["years_dl"].ToString());
             DateTime dnesJe = DateTime.Today;
             this.mesiac_cb.SelectedValue = dnesJe.Month.ToString();
             this.rok_cb.SelectedValue = dnesJe.Year.ToString();

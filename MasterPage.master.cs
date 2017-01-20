@@ -188,10 +188,12 @@ public partial class MasterPage : System.Web.UI.MasterPage
         
             this.info_plh.Visible = true;
 
-            StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("SELECT [cela_sprava],[cielova_skupina],[id] FROM [is_news] WHERE [id]={0}", Convert.ToInt32(Session["newsToShow"]));
 
-            SortedList row = x2Mysql.getRow(sb.ToString());
+        string sql = @"SELECT [cela_sprava],[cielova_skupina],[id] FROM [is_news] WHERE [id]={0}";
+        
+            sql = X2.sprintf(sql, new string[] { Session["newsToShow"].ToString()});
+
+            SortedList row = x2Mysql.getRow(sql);
 
             string spravaDialog = row["cela_sprava"].ToString();
             

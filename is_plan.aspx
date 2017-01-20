@@ -56,7 +56,7 @@
                 <asp:Table runat="server" ID="headPlan_tbl" style="width:100%;" CellPadding="0" CellSpacing="0"></asp:Table>
             </div>
             <div class="dataTable">
-                <asp:Table runat="server" ID="planTable_tbl" style="width:100%;" CellPadding="0" CellSpacing="0"></asp:Table>
+                <asp:Table runat="server" ID="planTable_tbl" EnableViewState="false" style="width:100%;" CellPadding="0" CellSpacing="0"></asp:Table>
             </div>
         </div>
     
