@@ -117,19 +117,25 @@ public partial class is_gallery : System.Web.UI.Page
 
                 TableCell nameCell1 = new TableCell();
 
-                Image img = new Image();
+                ImageButton imgBtn = new ImageButton();
+                imgBtn.ImageUrl = "http://" + HttpContext.Current.Request.Url.Authority + "/controls/lf_view.ashx?id=" + files[i]["lf_id"].ToString();
+                imgBtn.Width = new Unit(100);
+                imgBtn.Height = new Unit(100);
+                imgBtn.ImageAlign = ImageAlign.Left;
+                nameCell1.Controls.Add(imgBtn);
+               /* Image img = new Image();
 
                 img.ImageUrl = "http://" + HttpContext.Current.Request.Url.Authority + "/controls/lf_view.ashx?id=" + files[i]["lf_id"].ToString();
                 img.ImageAlign = ImageAlign.Left;
                 img.Width = new Unit(50);
 
-                nameCell1.Controls.Add(img);
+                nameCell1.Controls.Add(img);*/
 
-                HyperLink hlink = new HyperLink();
+               /* HyperLink hlink = new HyperLink();
                 hlink.NavigateUrl = "lf.aspx?id=" + files[i]["lf_id"].ToString();
                 hlink.Text = "<br>lf.aspx?id=" + files[i]["lf_id"].ToString();
                 hlink.CssClass = "blue";
-                nameCell1.Controls.Add(hlink);
+                nameCell1.Controls.Add(hlink);*/
 
                 riadok1.Controls.Add(nameCell1);
 

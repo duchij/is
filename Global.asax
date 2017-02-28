@@ -48,8 +48,10 @@
 
     void Session_Start(object sender, EventArgs e) 
     {
+        
         Session["serverUrl"] = System.Web.HttpContext.Current.Server.MapPath("/");
         Session["webstatus"] = "run";
+        Session["sid"] = this.Session.SessionID;
         //Session["dSession"] = this.Session.SessionID;
         
         string fg="";
@@ -99,6 +101,8 @@
 
     void Session_End(object sender, EventArgs e) 
     {
+        Session.Remove("sid");
+        Session.Abandon();
         Response.Write(Environment.StackTrace.ToString());
         Server.Transfer("Default.aspx");
         // Code that runs when a session ends. 

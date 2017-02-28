@@ -18,10 +18,10 @@
             messageBox(errorText, "error");
         },
         success: function (data) {
-            console.log(data);
+          //  console.log(data);
             //showNewsText(data);
             var xml = $.parseXML(data);
-            console.log(xml);
+           // console.log(xml);
             var dtJson = xml.childNodes[0].textContent;
             var obj = JSON.parse(dtJson);
             $("#commBall").css("display", "none");
@@ -70,7 +70,6 @@ function messageBox(text, type) {
 
 function saveDayOfNurse(dlId)
 {
-    console.log(dlId);
     var shiftType = $("[id$=" + dlId + "]").val();
 
     switch (shiftType) {
@@ -149,13 +148,29 @@ function  saveNurseShifts(dlId,shiftType)
 
     var data = { user_id: tmp[1], date: year + "-" + month + "-" + tmp[2], type: shiftType, depIdf: depIdf };
     // console.log(data);
-    this.sendData("saveNurseDay", data, "afterSaveNurseDay", dlId);
+    this.sendData("saveNurseDay", data, "afterSaveNurseDay", { type: shiftType,dlId:dlId });
 }
 
-function afterSaveNurseDay(result,dlId) {
+function afterSaveNurseDay(result,args) {
 
-    if (result.status === "false") {
+    if (result.status === "false" && result.msg == "DE") {
+        messageBox("Tento typ služby je už pre tento deň pridelený!!!!!<br> Môžete pridať iný typ služby", "warning");
+
+        $("[id$=" + args.dlId + "] option[value='0']").prop("selected", true);
+
+    } else if (result.status === "false") {
+
         messageBox(result.msg, "error");
+
+        $("[id$=" + args.dlId + "] option[value='0']").prop("selected", true);
+        // $("[id$")
+        
+
+
+       // console.log(test);
+    }
+    else {
+
     }
 }
 

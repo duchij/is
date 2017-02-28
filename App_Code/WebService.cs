@@ -97,6 +97,42 @@ public class WebService : System.Web.Services.WebService {
         return js1.Deserialize<Dictionary<string, string>>(data);
     }
 
+    [WebMethod(EnableSession = true)]
+    public string forceChangePasswd(string data)
+    {
+        Dictionary<string, string> obj = this.deserialize(data);
+        Dictionary<string, string> rtData = new Dictionary<string, string>();
+
+        string name = obj["uname"].ToString();
+        string passwd = obj["passwd"].ToString();
+
+        System.Text.ASCIIEncoding enc = new System.Text.ASCIIEncoding();
+       // byte[] dataArr = enc.GetBytes(passwd);
+
+        //string hPasswd = Convert.ToBase64String(dataArr);
+
+        string sql = @"UPDATE [is_users] SET [passwd]='{0}', [force_change]=0  WHERE [name]='{1}'";
+
+        sql = x2Mysql.buildSql(sql, new string[] { passwd, name });
+
+        SortedList res = x2Mysql.execute(sql);
+
+        if (!(Boolean)res["status"])
+        {
+            rtData["status"] = res["status"].ToString();
+            rtData["result"] = res["msg"].ToString();
+        }else
+        {
+            rtData["status"] = res["status"].ToString();
+        }
+
+        
+
+        return this.serialize(rtData);
+
+
+        
+    }
 
     [WebMethod(EnableSession = true)]
     public string hlaskoSelectedTab(string data)
@@ -106,6 +142,17 @@ public class WebService : System.Web.Services.WebService {
         Dictionary<string, string> obj = js1.Deserialize<Dictionary<string, string>>(data);
         Session["hlaskoSelTab"] = obj["selTab"].ToString();
         return data;
+    }
+
+    [WebMethod(EnableSession = true)]
+    public string getSessionID(string data)
+    {
+        //Session.SessionID
+        Dictionary<string, string> rtData = new Dictionary<string, string>();
+        rtData["sid"] = System.Web.HttpContext.Current.Session.SessionID;
+
+        return this.serialize(rtData);
+
     }
 
     [WebMethod(EnableSession = true)]

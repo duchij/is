@@ -1,5 +1,6 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true"  CodeFile="Default.aspx.cs" Inherits="_Default" Culture="sk-Sk" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" EnableEventValidation="false"   Culture="sk-Sk" CodeFile="Default.aspx.cs" Inherits="_Default" %>
 
+<!--CodeFile="Default.aspx.cs" Inherits="_Default"-->
 
 <!DOCTYPE html >
 
@@ -14,7 +15,10 @@
 <head  runat="server">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
-	 
+    
+	 <script type="text/javascript" src="js/sha3.js"></script> 
+    <!-- <script type="text/javascript" src="js/format-hex.js"></script>-->
+
 	   <script src="gdw/js/libs/modernizr-2.6.2.min.js"></script>
         <title></title>
     <link rel="icon" type="image/png" href="img/logo.png" />   
@@ -27,74 +31,46 @@
 	    <link type="text/css" rel="stylesheet" href="css/groundwork-ui.css">
 	    <link type="text/css" rel="stylesheet" href="css/groundwork-anim.css">
 	    <link type="text/css" rel="stylesheet" href="css/groundwork-ie.css"><![endif]-->
-	   	<link type="text/css" rel="stylesheet" href="gdw/css/duch.css" />
-    
+	   	<!--<link type="text/css" rel="stylesheet" href="gdw/css/duch.css" />-->
 </head>
-<body>
+<body onload="getData();">
     <form id="form1" runat="server">
     
     <div class="row">
-        
-      <div class="one third centered">
-        <asp:Login ID="Login1"  runat="server"  
-            FailureText="Nesprávne meno,heslo! Alebo zablokovaný účet..." onauthenticate="Login1_Authenticate" 
-            PasswordLabelText="Heslo:" PasswordRequiredErrorMessage="Nutné zadať heslo!" 
-            TitleText="Prihlásenie do IS KDCH" UserNameLabelText="Meno:" 
-            UserNameRequiredErrorMessage="Nutné zadať meno!" DisplayRememberMe="False" 
-            RememberMeText=""  LoginButtonText="Vstúpiť">
-            <LayoutTemplate >
-              
-                            <table border="0" cellpadding="0" class="responsive" data-max="15">
-                                <tr>
-                                    <td align="center" colspan="2">
-                                        <div class="box blue centered"><h1 class="responsive half-padded" data-compression="12">Prihlásenie do IS KDCH</h1></div></td>
-                                </tr>
-                                <tr>
-                                    <td align="right" >
-                                        <asp:Label ID="UserNameLabel" runat="server" AssociatedControlID="UserName"><h3>Meno:</h3></asp:Label>
-                                    </td>
-                                    <td>
-                                        <asp:TextBox ID="UserName" runat="server" Font-Size="Medium" ></asp:TextBox>
-                                        <asp:RequiredFieldValidator ID="UserNameRequired" runat="server" 
-                                            ControlToValidate="UserName" ErrorMessage="Nutné zadať meno!" 
-                                            ToolTip="Nutné zadať meno!" ValidationGroup="Login1">*</asp:RequiredFieldValidator>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td align="right" width="20%">
-                                        <asp:Label ID="PasswordLabel" runat="server" AssociatedControlID="Password"><h3>Heslo:</h3></asp:Label>
-                                    </td>
-                                    <td>
-                                        <asp:TextBox ID="Password" runat="server" TextMode="Password" Font-Size="Medium"></asp:TextBox>
-                                        <asp:RequiredFieldValidator ID="PasswordRequired" runat="server" 
-                                            ControlToValidate="Password" ErrorMessage="Nutné zadať heslo!" 
-                                            ToolTip="Nutné zadať heslo!" ValidationGroup="Login1">*</asp:RequiredFieldValidator>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td align="center" colspan="2" style="color:Red;">
-                                        <asp:Literal ID="FailureText" runat="server" EnableViewState="False"></asp:Literal>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td align="right" colspan="2">
-                                    
-                                        <asp:Button ID="LoginButton" runat="server" CommandName="Login" Text="Vstúpiť" 
-                                            ValidationGroup="Login1" BackColor="#009933" Font-Bold="True" 
-                                            Font-Size="15px" ForeColor="White"  />
-                                    </td>
-                                </tr>
-                            </table>
-                  
-            </LayoutTemplate>
-        </asp:Login>
-    
-        
-        <asp:Label ID="info_txt" runat="server"></asp:Label>
-      </div>      
-    </div>
+        <asp:LinkButton ID="link" runat="server"></asp:LinkButton>
+        <div class="one third centered">
+            <table style="width:300px;">
+                <tr>
+                    <td colspan="2" style="background-color:cadetblue;">
+                        <h2 class="white">
+                            Prihlásenie do IS.KDCH
+                        </h2>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Meno:</strong></td>
+                    <td><asp:TextBox ID="meno_txt" runat="server"></asp:TextBox></td>
+                </tr>
+                <tr>
+                    <td><strong>Heslo:</strong></td>
+                    <td><asp:TextBox TextMode="Password" runat="server" ID="passwd_txt"></asp:TextBox></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <input type="button" onclick="runLogin();" value="lalal" />
+                        
+                        <asp:Button ID="login_btn" runat="server" ClientIDMode="static" Text="" Visible="false"></asp:Button></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><asp:Label ID="info_txt" runat="server" CssClass="red" Text=""></asp:Label></td>
+                </tr>
+            </table>
+    </div>      
+   </div>
     </form>
         <script type="text/javascript" src="gdw/js/libs/jquery-1.10.2.min.js"></script>
 	<script type="text/javascript" src="gdw/js/groundwork.all.js"></script>
+    <script type="text/javascript" src="js/login.js"></script>
+    
 </body>
 </html>

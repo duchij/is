@@ -44,6 +44,7 @@ public partial class vykaz : System.Web.UI.Page
 
         if (IsPostBack == false)
         {
+            my_x2.fillYearMonth(ref this.mesiac_cb, ref this.rok_cb, Session["month_dl"].ToString(), Session["years_dl"].ToString());
             DateTime akt_datum = DateTime.Today;
 
             int mesiac = akt_datum.Month;

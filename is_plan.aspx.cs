@@ -154,6 +154,9 @@ public partial class is_plan : System.Web.UI.Page
             this.month_dl.SelectedValue = dnesJe.Month.ToString();
             this.years_dl.SelectedValue = dnesJe.Year.ToString();
             this.loadDeps();
+        }else
+        {
+            this.planTable_tbl.Controls.Clear();
         }
 
         if (!string.IsNullOrEmpty(Session["oddelenie_id"].ToString()))
@@ -162,7 +165,12 @@ public partial class is_plan : System.Web.UI.Page
 
             this.deps_dl.SelectedValue = depSel;
 
-            if (!IsPostBack) { this.drawTable(); }
+            if (!IsPostBack) {
+                this.drawTable();
+            }else
+            {
+                this.planTable_tbl.Controls.Clear();
+            }
         }
        
 
@@ -199,6 +207,8 @@ public partial class is_plan : System.Web.UI.Page
 
     protected void drawTable()
     {
+        
+
         int month = Convert.ToInt32(this.month_dl.SelectedValue);
         int year = Convert.ToInt32(this.years_dl.SelectedValue);
 
@@ -230,7 +240,7 @@ public partial class is_plan : System.Web.UI.Page
         TableHeaderRow headRow = new TableHeaderRow();
         Boolean vikend = false;
         Boolean sviatok = true;
-
+        this.planTable_tbl.Controls.Clear();
         for (int dayL=0; dayL < days; dayL++)
         {
 
@@ -270,7 +280,8 @@ public partial class is_plan : System.Web.UI.Page
 
             headRow.Controls.Add(dateCell);
         }
-        this.headPlan_tbl.Controls.Add(headRow);
+        this.planTable_tbl.Controls.Add(headRow);
+        //this.planTable_tbl.Controls.Clear();
 
         for (int u = 0; u < usersLn; u++)
         {
@@ -326,7 +337,7 @@ public partial class is_plan : System.Web.UI.Page
 
                 dayCell.CssClass = "cellStylePlan";
                 DropDownList dayDl = new DropDownList();
-                dayDl.ID = "dayCell_" + table[u]["user_id"].ToString() + "_" + (d + 1);
+                dayDl.ID = "dayCell_" + table[u]["user_id"].ToString() + "_" + (d + 1)+"_day"+(d+1);
                 dayDl.CssClass = "dlPlanStyle";
 
                 dayDl.ToolTip = my_date.ToLongDateString();
@@ -344,8 +355,9 @@ public partial class is_plan : System.Web.UI.Page
                
                 dayCell.Controls.Add(dayDl);
 
-                Literal infoLit = new Literal();
+                Label infoLit = new Label();
                 infoLit.ID = "infoCell_" + table[u]["user_id"].ToString() + "_" + (d + 1);
+                infoLit.Text = "-";
                 dayCell.Controls.Add(infoLit);
 
                 riadok.Controls.Add(dayCell);
@@ -366,13 +378,13 @@ public partial class is_plan : System.Web.UI.Page
 
     protected void loadPoziad(int month, int year,string depIdf)
     {
-
+       // this.msg_lbl.Text = "r:" + year.ToString() + "m:" + month.ToString();
         int days = DateTime.DaysInMonth(year, month);
 
         string sql = @"
                         SELECT [user_id],[status],[datum] 
                             FROM [is_poziad_sestr]
-                        WHERE [datum] BETWEEN '{0}-{1}-01 00:00:00' AND '{0}-{1}-{2} 23:59:59'
+                        WHERE [datum] BETWEEN '{0}-{1}-01' AND '{0}-{1}-{2}'
                             AND [dep_idf]='{3}'
                             AND [clinic_id]={4}
                         ORDER BY [user_id]    
@@ -380,8 +392,10 @@ public partial class is_plan : System.Web.UI.Page
                         ";
 
         sql = plan.x2.sprintf(sql, new string[] { year.ToString(), month.ToString(), days.ToString(),depIdf,plan.gKlinika.ToString() });
-
+        
         Dictionary<int, Hashtable> table = plan.mysql.getTable(sql);
+
+        
 
         int tblLn = table.Count;
 
@@ -429,7 +443,7 @@ public partial class is_plan : System.Web.UI.Page
 
             Control ctrl = FindControl("infoCell_" + userId.ToString() + "_" + dt.Day.ToString());
 
-            Literal lit = (Literal)ctrl;
+            Label lit = (Label)ctrl;
 
             string stHtml = plan.x2.sprintf("<div class='poziadavkaCont' title='{1}'><strong>P:</strong>:<br><span class='poziadavka'>{0}</span></div>", new string[] { status,toolTip });
 
@@ -504,7 +518,7 @@ public partial class is_plan : System.Web.UI.Page
             {
                 int day = ddStart.Day;
 
-                Control ctrl = FindControl("dayCell_" + table[i]["user_id"].ToString() + "_" + day.ToString());
+                Control ctrl = FindControl("dayCell_" + table[i]["user_id"].ToString() + "_" + day.ToString()+"_day"+day.ToString());
                 DropDownList dl = (DropDownList)ctrl;
                 if (dl != null)
                 {
@@ -541,11 +555,16 @@ public partial class is_plan : System.Web.UI.Page
 
             int day = dt.Day;
 
-            Control crtl = FindControl("dayCell_" + table[i]["user_id"].ToString() + "_" + day.ToString());
+            Control crtl = FindControl("dayCell_" + table[i]["user_id"].ToString() + "_" + day.ToString()+"_day"+day.ToString());
 
-            DropDownList dl = (DropDownList)crtl;
+            if (crtl != null)
+            {
+                DropDownList dl = (DropDownList)crtl;
 
-            dl.SelectedValue = table[i]["typ"].ToString();
+                dl.SelectedValue = table[i]["typ"].ToString();
+            }
+
+           
 
         }
 
@@ -583,11 +602,26 @@ public partial class is_plan : System.Web.UI.Page
 
     protected void setPlanForDepartmentFnc(object sender, EventArgs e)
     {
-        string deps = this.deps_dl.SelectedValue;
-        if (deps != "0")
+        string dd = sender.GetType().ToString();
+        //this.msg_lbl.Text = dd;
+        if (dd.IndexOf("DropDownList") != -1)
         {
-            this.drawTable();
+            DropDownList dl = (DropDownList)sender;
+
+           // this.msg_lbl.Text = dl.ID;
+
+            if (dl.ID == "years_dl" || dl.ID == "month_dl")
+            {
+                this.planTable_tbl.Controls.Clear();
+                this.deps_dl.SelectedValue = "0";
+            }
+            if (dl.ID == "deps_dl" && this.deps_dl.SelectedValue != "0")
+            {
+                this.drawTable();
+            }
         }
+
+        
         
     }
 }

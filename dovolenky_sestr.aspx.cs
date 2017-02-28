@@ -89,6 +89,8 @@ public partial class dovolenky_sestr : System.Web.UI.Page
             this.drawDovolenTab();
            // this.drawUserActDovolenky();
             this.loadNurses();
+
+            this.zoznamUser_tbl.Controls.Clear();
             
 
         }
@@ -375,7 +377,9 @@ public partial class dovolenky_sestr : System.Web.UI.Page
 
         if (Convert.ToBoolean(res["status"]))
         {
-            //Response.Redirect("dovolenky_sestr.aspx");
+            //Response.Redirect("dovolenky_sestr.aspx"); 
+            this.drawUserActDovolenky(Convert.ToInt32(this.nurses_dl.SelectedValue.ToString()));
+
         }
         else
         {
@@ -428,12 +432,13 @@ public partial class dovolenky_sestr : System.Web.UI.Page
             Button mojeTlac = new Button();
             mojeTlac.CssClass = "button red width-300";
 
-            mojeTlac.Click += new EventHandler(this.deleteDovolenka);
+            
             //comment.Attributes.Add("onChange", "saveNurseShiftComment('" + comment.ID.ToString() + "');");
             //mojeTlac.OnClientClick = "deleteNurseActivity('" + data[i]["dov_id"].ToString() + "'); return false;";
 
             mojeTlac.OnClientClick = "return confirm('Zmazat danu dovoleku?');";
-           // mojeTlac.Attributes.Add("onClick", "deleteNurseActivity('" + data[i]["dov_id"].ToString() + "'");
+            mojeTlac.Click += new EventHandler(this.deleteDovolenka);
+            // mojeTlac.Attributes.Add("onClick", "deleteNurseActivity('" + data[i]["dov_id"].ToString() + "'");
             mojeTlac.ID = "Button_" + data[i]["dov_id"].ToString();
             mojeTlac.Text = Resources.Resource.erase.ToString();
 

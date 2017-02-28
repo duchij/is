@@ -1570,4 +1570,77 @@ public class mysql_db
         return result;
     }
 
+
+    /// <summary>
+    /// Klasicky mysql insert Vlozi riadok, a vrati status true a posledne IDecko, inak vrati chybove hlasenie
+    /// </summary>
+    /// <param name="table"></param>
+    /// <param name="data"></param>
+    /// <returns></returns>
+
+    public SortedList insert_row_old(string table, SortedList data)
+    {
+        string cols = "(";
+        string values = "('";
+        string parse_str;
+        SortedList result = new SortedList();
+        foreach (DictionaryEntry tmp in data)
+        {
+            cols = cols + tmp.Key + ",";
+            parse_str = tmp.Value.ToString();
+            values = values + parse_str.Replace("'", "*") + "','";
+        }
+        cols = cols.Substring(0, cols.Length - 1);
+        values = values.Substring(0, values.Length - 2);
+        cols = cols + ")";
+        values = values + ")";
+
+        string query = "INSERT INTO `" + table + "` " + cols + " VALUES " + values;
+
+        //return query;
+        MySqlCommand cmd = new MySqlCommand();
+        try
+        {
+            my_con.Open();
+
+           // MySqlCommand my_insert = new MySqlCommand(query, my_con);
+
+            
+
+           
+
+            cmd.Connection = my_con;
+            cmd.CommandText = query;
+
+            cmd.ExecuteNonQuery();
+
+            cmd.CommandText = "SELECT LAST_INSERT_ID()";
+            int id = Convert.ToInt32(cmd.ExecuteScalar());
+
+            result.Add("status", true);
+            result.Add("last_id", id);
+            //return true;
+            my_con.Close();
+            cmd.Dispose();
+        }
+        catch (Exception e)
+        {
+            my_con.Close();
+            cmd.Dispose();
+            result.Add("status", false);
+            string msg = e.ToString();
+            
+            if (msg.IndexOf("Duplicate entry") != -1)
+            {
+                msg = "DE";
+            }
+
+            result.Add("msg", msg);
+            
+        }
+
+        return result;
+
+    }
+
 }

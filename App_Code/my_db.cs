@@ -1323,7 +1323,7 @@ public class my_db
 
     public List<string> getLastNews(int id)
     {
-        string query = "SELECT [id] FROM [is_news] WHERE DATE_ADD([datum],INTERVAL -7 DAY) AND [klinika]="+id.ToString()+" ORDER BY [datum] DESC LIMIT 1";
+        string query = "SELECT [id] FROM [is_news] WHERE [datum] BETWEEN DATE_SUB(NOW(), INTERVAL 14 DAY) AND NOW() AND [klinika]="+id.ToString()+" ORDER BY [datum] DESC LIMIT 1";
 
         List<string> result = new List<string>();
         my_con.Open();
