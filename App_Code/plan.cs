@@ -126,13 +126,14 @@ public class plan : System.Web.Services.WebService
         SortedList res = new SortedList();
 
         DateTime dt = x2.UnixToMsDateTime(obj["date"]);
+        string type = obj["type"];
         int user_id = Convert.ToInt32(obj["user_id"]);
 
-        if (user_id > 0)
+        if (type != "0")
         {
             SortedList saveData = new SortedList();
 
-            saveData.Add("user_id", obj["user_id"]);
+            saveData.Add("user_id", user_id);
             saveData.Add("datum", obj["date"]);
             saveData.Add("typ", obj["type"]);
 
@@ -144,7 +145,7 @@ public class plan : System.Web.Services.WebService
             saveData.Add("comment", "-");
             saveData.Add("deps", obj["depIdf"]);
 
-            res = x2Mysql.mysql_insert("is_sluzby_2_sestr", saveData);
+            res = x2Mysql.insert_row_old("is_sluzby_2_sestr", saveData);
 
             if ((Boolean)res["status"])
             {
@@ -161,8 +162,8 @@ public class plan : System.Web.Services.WebService
         }
         else
         {
-            string query = "DELETE FROM [is_sluzby_2_sestr] WHERE [datum]='{0}' AND [typ]='{1}' AND [deps]='{2}'";
-            query = x2Mysql.buildSql(query, new string[] { x2.unixDate(dt), obj["type"].ToString(), obj["depIdf"].ToString() });
+            string query = "DELETE FROM [is_sluzby_2_sestr] WHERE [datum]='{0}' AND [user_id]='{1}' AND [deps]='{2}'";
+            query = x2Mysql.buildSql(query, new string[] { x2.unixDate(dt), user_id.ToString(), obj["depIdf"].ToString() });
             res = x2Mysql.execute(query);
 
             if ((Boolean)res["status"])

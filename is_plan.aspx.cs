@@ -240,7 +240,7 @@ public partial class is_plan : System.Web.UI.Page
         TableHeaderRow headRow = new TableHeaderRow();
         Boolean vikend = false;
         Boolean sviatok = true;
-
+        this.planTable_tbl.Controls.Clear();
         for (int dayL=0; dayL < days; dayL++)
         {
 
@@ -280,8 +280,8 @@ public partial class is_plan : System.Web.UI.Page
 
             headRow.Controls.Add(dateCell);
         }
-        this.headPlan_tbl.Controls.Add(headRow);
-        this.planTable_tbl.Controls.Clear();
+        this.planTable_tbl.Controls.Add(headRow);
+        //this.planTable_tbl.Controls.Clear();
 
         for (int u = 0; u < usersLn; u++)
         {
@@ -337,7 +337,7 @@ public partial class is_plan : System.Web.UI.Page
 
                 dayCell.CssClass = "cellStylePlan";
                 DropDownList dayDl = new DropDownList();
-                dayDl.ID = "dayCell_" + table[u]["user_id"].ToString() + "_" + (d + 1);
+                dayDl.ID = "dayCell_" + table[u]["user_id"].ToString() + "_" + (d + 1)+"_day"+(d+1);
                 dayDl.CssClass = "dlPlanStyle";
 
                 dayDl.ToolTip = my_date.ToLongDateString();
@@ -384,7 +384,7 @@ public partial class is_plan : System.Web.UI.Page
         string sql = @"
                         SELECT [user_id],[status],[datum] 
                             FROM [is_poziad_sestr]
-                        WHERE [datum] BETWEEN '{0}-{1}-01 00:00:01' AND '{0}-{1}-{2} 23:59:59'
+                        WHERE [datum] BETWEEN '{0}-{1}-01' AND '{0}-{1}-{2}'
                             AND [dep_idf]='{3}'
                             AND [clinic_id]={4}
                         ORDER BY [user_id]    
@@ -394,6 +394,8 @@ public partial class is_plan : System.Web.UI.Page
         sql = plan.x2.sprintf(sql, new string[] { year.ToString(), month.ToString(), days.ToString(),depIdf,plan.gKlinika.ToString() });
         
         Dictionary<int, Hashtable> table = plan.mysql.getTable(sql);
+
+        
 
         int tblLn = table.Count;
 
@@ -516,7 +518,7 @@ public partial class is_plan : System.Web.UI.Page
             {
                 int day = ddStart.Day;
 
-                Control ctrl = FindControl("dayCell_" + table[i]["user_id"].ToString() + "_" + day.ToString());
+                Control ctrl = FindControl("dayCell_" + table[i]["user_id"].ToString() + "_" + day.ToString()+"_day"+day.ToString());
                 DropDownList dl = (DropDownList)ctrl;
                 if (dl != null)
                 {
@@ -553,7 +555,7 @@ public partial class is_plan : System.Web.UI.Page
 
             int day = dt.Day;
 
-            Control crtl = FindControl("dayCell_" + table[i]["user_id"].ToString() + "_" + day.ToString());
+            Control crtl = FindControl("dayCell_" + table[i]["user_id"].ToString() + "_" + day.ToString()+"_day"+day.ToString());
 
             if (crtl != null)
             {

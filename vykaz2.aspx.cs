@@ -37,8 +37,10 @@ public partial class vykaz2 : System.Web.UI.Page
 
         this.gKlinika = Session["klinika"].ToString().ToLower();
         if (this.gKlinika == "2dk") this.setVykazTypesforDK();
-        if (IsPostBack)
+        if (!IsPostBack)
         {
+            my_x2.fillYearMonth(ref this.mesiac_cb, ref this.rok_cb, Session["month_dl"].ToString(), Session["years_dl"].ToString());
+
             //this.msg_lbl.Text = ViewState["head_tbox_4"].ToString();
            //this.createVykaz(false);
         }
@@ -68,7 +70,6 @@ public partial class vykaz2 : System.Web.UI.Page
 
         if (!IsPostBack)
         {
-            my_x2.fillYearMonth(ref this.mesiac_cb, ref this.rok_cb, Session["month_dl"].ToString(), Session["years_dl"].ToString());
             DateTime dnesJe = DateTime.Today;
             this.mesiac_cb.SelectedValue = dnesJe.Month.ToString();
             this.rok_cb.SelectedValue = dnesJe.Year.ToString();
@@ -1188,7 +1189,7 @@ public partial class vykaz2 : System.Web.UI.Page
         this.rozdiel_lbl.Text = (real-pocetPracHod).ToString();
        
         //this.
-       // this.saveData();
+       this.saveData();
 
     }
 
