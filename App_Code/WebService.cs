@@ -123,6 +123,7 @@ public class WebService : System.Web.Services.WebService {
             rtData["result"] = res["msg"].ToString();
         }else
         {
+            Session.Remove("force_change");
             rtData["status"] = res["status"].ToString();
         }
 

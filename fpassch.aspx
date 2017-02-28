@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="fpassch.aspx.cs" Inherits="passch2" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="fpassch.aspx.cs" Inherits="fpassch" %>
 
 <!DOCTYPE html>
 
@@ -41,6 +41,9 @@
                      </table>
     
     </div>
+        <hr />
+        <div id="info_txt"></div>
+        <hr />
     </form>
 </body>
 </html>

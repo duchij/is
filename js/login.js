@@ -1,4 +1,4 @@
-﻿var sid = "";
+﻿var sid = null;
 
 function sendData(fnc, data, callBack, args) {
     $("#commBall").css("display", "block");
@@ -40,7 +40,7 @@ function getData()
 
 function setSessionData(result)
 {
-    sid = result.sid;
+    window.sid = result.sid;
 }
 
 function getURLParameter(name) {
@@ -49,6 +49,7 @@ function getURLParameter(name) {
 
 function readHeaders()
 {
+   
     var xhtp = new XMLHttpRequest();
     xhtp.open('GET', document.location, false);
     xhtp.send(null);
@@ -97,6 +98,8 @@ function runLogin() {
 
 function changePasswordFnc()
 {
+   
+
     var p1 = $("#passwd1_txt").val().toString();
     var p2 = $("#passwd2_txt").val().toString();
 
@@ -121,4 +124,19 @@ function changePasswordFnc()
 function afterPasswdChange(result)
 {
     console.log(result);
+
+    if (result.status === "True") {
+        window.location.href = "Default.aspx";
+    }
+    
 }
+
+$(document).ready(function () {
+    $("[id$=passwd_txt]").on("keypress", function (e) {
+        if (e.keyCode == 13) {
+            runLogin();
+        }
+       
+    });
+
+});

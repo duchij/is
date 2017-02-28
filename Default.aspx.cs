@@ -79,6 +79,7 @@ public partial class _Default : System.Web.UI.Page
         {
            result = Convert.ToInt32(row["force_change"]);
         }
+        
 
         return result;
     }
@@ -90,8 +91,8 @@ public partial class _Default : System.Web.UI.Page
         x2_var my_x2 = new x2_var();
         string passwd = this.passwd_txt.Text.ToString().Trim();
 
-        System.Text.ASCIIEncoding enc = new System.Text.ASCIIEncoding();
-        byte[] dataArr = enc.GetBytes(passwd);
+        //System.Text.ASCIIEncoding enc = new System.Text.ASCIIEncoding();
+       // byte[] dataArr = enc.GetBytes(passwd);
 
         //string l_pass = Convert.ToBase64String(dataArr);
         string l_pass = passwd;

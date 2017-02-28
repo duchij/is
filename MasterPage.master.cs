@@ -49,10 +49,23 @@ public partial class MasterPage : System.Web.UI.MasterPage
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (Session["tuisegumdrum"] == null)
+        /*if (Session["tuisegumdrum"] == null)
+        {
+            Response.Redirect("error.html");
+        }*/
+
+
+        if (Session["sid"] == null)
         {
             Response.Redirect("error.html");
         }
+
+
+        if (Session["sid"].ToString() != Session.SessionID.ToString())
+        {
+            Response.Redirect("error.html");
+        }
+
         
         this.gKlinika = Session["klinika"].ToString().Trim().ToLower();
         this.web_titel.Text = X2.setLabel(Session["klinika"].ToString().ToLower()+"_web_titel");

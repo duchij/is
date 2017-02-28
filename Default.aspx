@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" EnableEventValidation="false"   Culture="sk-Sk" CodeFile="Default.aspx.cs" Inherits="_Default" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" EnableEventValidation="false"    Culture="sk-Sk" CodeFile="Default.aspx.cs" Inherits="_Default" %>
 
 <!--CodeFile="Default.aspx.cs" Inherits="_Default"-->
 
@@ -37,29 +37,29 @@
     <form id="form1" runat="server">
     
     <div class="row">
-        <asp:LinkButton ID="link" runat="server"></asp:LinkButton>
+        <asp:LinkButton ID="link" runat="server" OnClientClick="return false;"></asp:LinkButton>
         <div class="one third centered">
             <table style="width:300px;">
                 <tr>
-                    <td colspan="2" style="background-color:cadetblue;">
-                        <h2 class="white">
-                            Prihlásenie do IS.KDCH
-                        </h2>
+                    <td colspan="2" class="responsive" data-max="15">
+                        
+                        <div class="box blue"><h1>Prihlásenie do IS.KDCH</h1></div>
+                        
                     </td>
                 </tr>
                 <tr>
                     <td><strong>Meno:</strong></td>
-                    <td><asp:TextBox ID="meno_txt" runat="server"></asp:TextBox></td>
+                    <td><asp:TextBox ID="meno_txt" runat="server" AutoPostBack="false"></asp:TextBox></td>
                 </tr>
                 <tr>
                     <td><strong>Heslo:</strong></td>
-                    <td><asp:TextBox TextMode="Password" runat="server" ID="passwd_txt"></asp:TextBox></td>
+                    <td><asp:TextBox TextMode="Password" runat="server" ID="passwd_txt" AutoPostBack="false"></asp:TextBox></td>
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <input type="button" onclick="runLogin();" value="lalal" />
+                        <input type="button" onclick="runLogin();" value="Vstupit"  />
                         
-                        <asp:Button ID="login_btn" runat="server" ClientIDMode="static" Text="" Visible="false"></asp:Button></td>
+                        <asp:Button ID="login_btn" runat="server" onClientClick="return false;" Text="" Visible="false"></asp:Button></td>
                 </tr>
                 <tr>
                     <td colspan="2"><asp:Label ID="info_txt" runat="server" CssClass="red" Text=""></asp:Label></td>
