@@ -15,8 +15,9 @@
 <head  runat="server">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
-    
-	 <script type="text/javascript" src="js/sha3.js"></script> 
+    <script type="text/javascript" src="js/core.js"></script> 
+    <script type="text/javascript" src="js/cipher-core.js"></script>
+	 <script type="text/javascript" src="js/aes.js"></script> 
     <!-- <script type="text/javascript" src="js/format-hex.js"></script>-->
 
 	   <script src="gdw/js/libs/modernizr-2.6.2.min.js"></script>
@@ -35,7 +36,8 @@
 </head>
 <body onload="getData();">
     <form id="form1" runat="server">
-    
+    <asp:HiddenField runat="server" ID="name_hf" Value="" />
+    <asp:HiddenField runat="server" ID="passwd_hf" Value="" />
     <div class="row">
         <asp:LinkButton ID="link" runat="server" OnClientClick="return false;"></asp:LinkButton>
         <div class="one third centered">
@@ -49,11 +51,14 @@
                 </tr>
                 <tr>
                     <td><strong>Meno:</strong></td>
-                    <td><asp:TextBox ID="meno_txt" runat="server" AutoPostBack="false"></asp:TextBox></td>
+                    <!--<td><asp:TextBox ID="meno_txt" runat="server" AutoPostBack="false"></asp:TextBox></td>-->
+
+                    <td><input type="text" id="meno_txt"></td>
                 </tr>
                 <tr>
                     <td><strong>Heslo:</strong></td>
-                    <td><asp:TextBox TextMode="Password" runat="server" ID="passwd_txt" AutoPostBack="false"></asp:TextBox></td>
+                    <!--<td><asp:TextBox TextMode="Password" runat="server" ID="passwd_txt" AutoPostBack="false"></asp:TextBox></td>-->
+                    <td><input type="password" id="passwd_txt"></td>
                 </tr>
                 <tr>
                     <td colspan="2">

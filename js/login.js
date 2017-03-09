@@ -1,4 +1,41 @@
-﻿var sid = null;
+﻿var __sid = null;
+
+function messageBox(text, type) {
+    switch (type) {
+        case "error":
+            $("[id$=msg_dialog]").html("<h2 class='red'>CHYBA:</h2><p class='red'>" + text + "</p>");
+            $("[id$=msg_dialog]").dialog({
+
+                closeOnEscape: true
+
+            });
+
+
+            $("[id$=msg_dialog]").dialog();
+            break;
+        case "warning":
+            $("[id$=msg_dialog]").html("<h2 class='green'>Upozornenie:</h2><p class='green'>" + text + "</p>");
+            $("[id$=msg_dialog]").dialog({
+
+                closeOnEscape: true
+
+            });
+            $("[id$=msg_dialog]").dialog();
+            break;
+        default:
+            $("[id$=msg_dialog]").html("<h2 class='blue'>Info:</h2><p class='blue'>" + text + "</p>");
+            $("[id$=msg_dialog]").dialog({
+
+                closeOnEscape: true
+
+            });
+            $("[id$=msg_dialog]").dialog();
+            break;
+    }
+
+
+}
+
 
 function sendData(fnc, data, callBack, args) {
     $("#commBall").css("display", "block");
@@ -40,7 +77,9 @@ function getData()
 
 function setSessionData(result)
 {
-    window.sid = result.sid;
+    __sid = result.sid;
+
+  
 }
 
 function getURLParameter(name) {
@@ -70,6 +109,11 @@ function readHeaders()
 }
 
 function runLogin() {
+
+    
+
+   // return;
+
     var name = $("[id$=meno_txt]").val();
     
     if (name.trim().length == 0) {
@@ -86,12 +130,38 @@ function runLogin() {
     }
 
     // alert("huera");
+    console.log(__sid);
     
-    var passHash = CryptoJS.SHA3(pss);
-    passHash = passHash.toString();
+    var key = CryptoJS.enc.Utf8.parse("8080808080808080");
+    var iv = CryptoJS.enc.Utf8.parse("8080808080808080");
+    console.log([key, iv]);
+
+    var encryptedName = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(name),key,{
+        keySize:128 /8,
+        iv:iv,
+        mode:CryptoJS.mode.CBC,
+        padding:CryptoJS.pad.Pkcs7
+    });
+
+    var encryptedPasswd = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(pss), key, {
+        keySize: 128/8 ,
+        iv: iv,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7
+    });
+    console.log(encryptedPasswd.toString());
 
 
-    $("[id$=passwd_txt]").val(passHash+sid);
+    $("[id$=name_hf]").val(encryptedName);
+    $("[id$=passwd_hf]").val(btoa(encryptedPasswd));
+    //return;
+
+
+    //var passHash = CryptoJS.SHA3(pss);
+    //passHash = passHash.toString();
+
+
+  //  $("[id$=passwd_txt]").val(passHash+sid);
     __doPostBack("login_btn", "login");
 }
 
@@ -128,10 +198,14 @@ function afterPasswdChange(result)
     if (result.status === "True") {
         window.location.href = "Default.aspx";
     }
+    else {
+        $("[id$=info_lbl]").val("Nastala chyba: " + result.result+"Kontaktujte admina...");
+    }
     
 }
 
 $(document).ready(function () {
+    getData();
     $("[id$=passwd_txt]").on("keypress", function (e) {
         if (e.keyCode == 13) {
             runLogin();

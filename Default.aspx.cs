@@ -18,6 +18,8 @@ public partial class _Default : System.Web.UI.Page
     x2_var x2 = new x2_var();
     log x2log = new log();
     mysql_db x2Mysql = new mysql_db();
+   
+    
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -89,11 +91,47 @@ public partial class _Default : System.Web.UI.Page
         //Response.Redirect("error.html");
 
         x2_var my_x2 = new x2_var();
-        string passwd = this.passwd_txt.Text.ToString().Trim();
+        string name = this.name_hf.Value.ToString();
+        //ca3b3e08ea93224c89b407a015346e21
+        System.Text.UTF8Encoding txtenc = new System.Text.UTF8Encoding();
 
+        byte[] passwde = txtenc.GetBytes(this.passwd_hf.Value.ToString());
+        
+        //string test = Rijndael.Decrypt()
+        byte[] vector = txtenc.GetBytes("8080808080808080");
+
+        RijndaelManaged crypto = new RijndaelManaged();
+        crypto.Mode = CipherMode.CBC;
+        crypto.Padding = PaddingMode.PKCS7;
+        //crypto.KeySize = 128;
+        //crypto.FeedbackSize = 128;
+
+        crypto.IV = vector;
+        crypto.Key = vector;
+
+        var decryptor = crypto.CreateDecryptor(crypto.Key, crypto.IV);
+        string plainText = null;
+
+        using (var ms = new MemoryStream(passwde))
+        {
+            using (var csDecrypt = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
+            {
+                
+                using (var sr = new StreamReader(csDecrypt))
+                {
+                    //csDecrypt.FlushFinalBlock(); 
+                    plainText = sr.ReadToEnd();
+                }
+            }
+
+
+        }
+
+
+        this.info_txt.Text = plainText;
         //System.Text.ASCIIEncoding enc = new System.Text.ASCIIEncoding();
-       // byte[] dataArr = enc.GetBytes(passwd);
-
+        // byte[] dataArr = enc.GetBytes(passwd);
+        string passwd = null;
         //string l_pass = Convert.ToBase64String(dataArr);
         string l_pass = passwd;
        // this.info_txt.Text = l_pass;
