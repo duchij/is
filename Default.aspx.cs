@@ -95,7 +95,9 @@ public partial class _Default : System.Web.UI.Page
         //ca3b3e08ea93224c89b407a015346e21
         System.Text.UTF8Encoding txtenc = new System.Text.UTF8Encoding();
 
-        byte[] passwde = txtenc.GetBytes(this.passwd_hf.Value.ToString());
+        byte[] passwde = Convert.FromBase64String(this.passwd_hf.Value.ToString());
+
+      //  this.info_txt.Text = 
         
         //string test = Rijndael.Decrypt()
         byte[] vector = txtenc.GetBytes("8080808080808080");
@@ -106,8 +108,8 @@ public partial class _Default : System.Web.UI.Page
         //crypto.KeySize = 128;
         //crypto.FeedbackSize = 128;
 
-        crypto.IV = vector;
-        crypto.Key = vector;
+        crypto.IV = Encoding.UTF8.GetBytes("8080808080808080");
+        crypto.Key = Encoding.UTF8.GetBytes("8080808080808080");
 
         var decryptor = crypto.CreateDecryptor(crypto.Key, crypto.IV);
         string plainText = null;

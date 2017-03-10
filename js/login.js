@@ -132,8 +132,8 @@ function runLogin() {
     // alert("huera");
     console.log(__sid);
     
-    var key = CryptoJS.enc.Utf8.parse("8080808080808080");
-    var iv = CryptoJS.enc.Utf8.parse("8080808080808080");
+    var key = CryptoJS.enc.Utf8.parse('8080808080808080');
+    var iv = CryptoJS.enc.Utf8.parse('8080808080808080');
     console.log([key, iv]);
 
     var encryptedName = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(name),key,{
@@ -148,14 +148,15 @@ function runLogin() {
         iv: iv,
         mode: CryptoJS.mode.CBC,
         padding: CryptoJS.pad.Pkcs7
-    });
-    console.log(encryptedPasswd.toString());
+    }).toString();
+   
+    //encryptedPasswd = btoa(encryptedPasswd); 
 
 
     $("[id$=name_hf]").val(encryptedName);
-    $("[id$=passwd_hf]").val(btoa(encryptedPasswd));
+    $("[id$=passwd_hf]").val(encryptedPasswd);
     //return;
-
+    console.log(encryptedPasswd);
 
     //var passHash = CryptoJS.SHA3(pss);
     //passHash = passHash.toString();
