@@ -11,6 +11,7 @@ using System.Web.UI.WebControls;
 using System.Web.UI.HtmlControls;
 using System.Security.Cryptography;
 
+
 public partial class _Default : System.Web.UI.Page
 {
     my_db db_obj = new my_db();
@@ -37,16 +38,16 @@ public partial class _Default : System.Web.UI.Page
 
         //Response.Cookies["akt_sluzba"].Expires = DateTime.Now.AddDays(-1);
         //Response.Cookies["akt_hlasenie "].Expires = DateTime.Now.AddDays(-1);
-        Response.Cookies["tuisegumdrum"].Expires = DateTime.Now.AddDays(-1);
+        // Response.Cookies["tuisegumdrum"].Expires = DateTime.Now.AddDays(-1);
 
-        if (Request.Browser.Cookies == false)
-        {
-            this.info_txt.Text = "Máte deaktiované cookies, na to aby tento formulár fungoval, ich musíte zapnúť!!!!";
-        }
-        else
-        {
+        /*  if (Request.Browser.Cookies == false)
+          {
+              this.info_txt.Text = "Máte deaktiované cookies, na to aby tento formulár fungoval, ich musíte zapnúť!!!!";
+          }
+          else
+          {
 
-        }
+          }*/
 
         string param = Request["__EVENTARGUMENT"];
        
@@ -54,9 +55,23 @@ public partial class _Default : System.Web.UI.Page
         {
             //this.info_txt.Text = "lalala";
             //this.Login1_Authenticate(sender, e);
-            this.runLogin(sender, e);
+            //this.runLogin(sender, e);
+           // this.test1(sender, e);
         }
 
+    }
+
+    protected void test2(object sender, EventArgs e)
+    {
+        string meno = this.test1();
+
+        //byte[] dt = Convert.FromBase64String(meno);
+
+        //string me = Encoding.UTF8.GetString(dt);
+
+        this.info_txt.Text +="l<br>"+ meno;
+
+        //ScriptManager.RegisterStartupScript(this, this.GetType(), "alert", "alert("+meno+");", true); 
     }
 
     protected Boolean personalNumber(string login)
@@ -86,54 +101,102 @@ public partial class _Default : System.Web.UI.Page
         return result;
     }
 
-    protected void runLogin(object sender, EventArgs e)
-    {
-        //Response.Redirect("error.html");
+    
 
-        x2_var my_x2 = new x2_var();
-        string name = this.name_hf.Value.ToString();
+
+    protected string test1()
+    {
+        string name = this.name_hf.Value.Trim();
+
+        this.info_txt.Text = name;
+        //name = name + "=";
         //ca3b3e08ea93224c89b407a015346e21
         System.Text.UTF8Encoding txtenc = new System.Text.UTF8Encoding();
 
-        byte[] passwde = Convert.FromBase64String(this.passwd_hf.Value.ToString());
+        byte[] passwde = Convert.FromBase64String(this.name_hf.Value);
 
-      //  this.info_txt.Text = 
+
+        string la = Encoding.UTF8.GetString(passwde);
+
+        byte[] ll = Encoding.UTF8.GetBytes(la);
+
+        this.info_txt.Text += "c:"+ la;
         
-        //string test = Rijndael.Decrypt()
-        byte[] vector = txtenc.GetBytes("8080808080808080");
 
-        RijndaelManaged crypto = new RijndaelManaged();
-        crypto.Mode = CipherMode.CBC;
-        crypto.Padding = PaddingMode.PKCS7;
-        //crypto.KeySize = 128;
-        //crypto.FeedbackSize = 128;
+        string kP = Session.SessionID.ToString().Substring(0, 16);
+        byte[] vector = txtenc.GetBytes(kP);
 
-        crypto.IV = Encoding.UTF8.GetBytes("8080808080808080");
-        crypto.Key = Encoding.UTF8.GetBytes("8080808080808080");
-
-        var decryptor = crypto.CreateDecryptor(crypto.Key, crypto.IV);
+        this.info_txt.Text += "<br>" + vector.Length;
         string plainText = null;
-
-        using (var ms = new MemoryStream(passwde))
+        using (var crypto = new RijndaelManaged())
         {
-            using (var csDecrypt = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
+            crypto.Mode = CipherMode.CBC;
+            crypto.Padding = PaddingMode.PKCS7;
+            crypto.BlockSize = 128;
+            crypto.KeySize = 128;
+            crypto.FeedbackSize = 128;
+
+            crypto.IV = vector;
+
+            //crypto.ValidKeySize()
+
+
+            crypto.Key = vector;
+
+            ICryptoTransform decryptor = crypto.CreateDecryptor(crypto.Key, crypto.IV);
+
+            try
             {
+                MemoryStream ms = new MemoryStream(passwde);
+                CryptoStream cr = new CryptoStream(ms, decryptor, CryptoStreamMode.Read);
+                byte[] output = new byte[passwde.Length];
+                int readBytes = cr.Read(output, 0, passwde.Length);
+
+
+                plainText = Encoding.UTF8.GetString(output);
+
                 
-                using (var sr = new StreamReader(csDecrypt))
-                {
-                    //csDecrypt.FlushFinalBlock(); 
-                    plainText = sr.ReadToEnd();
-                }
             }
-
-
+            catch (Exception ex)
+            {
+                plainText = ex.ToString();
+            }
+           // this.info_txt.Text = plainText;
         }
 
 
-        this.info_txt.Text = plainText;
-        //System.Text.ASCIIEncoding enc = new System.Text.ASCIIEncoding();
-        // byte[] dataArr = enc.GetBytes(passwd);
-        string passwd = null;
+        return plainText;
+
+    }
+
+    protected void runLogin(object sender, EventArgs e)
+    {
+
+        SortedList wnameSL = Rijndael.decryptJsAes(this.name_hf.Value.ToString(), Session.SessionID.ToString());
+
+        SortedList passwdSL = Rijndael.decryptJsAes(this.passwd_hf.Value.ToString(), Session.SessionID.ToString());
+        try
+        {
+            if (!(Boolean)wnameSL["status"])
+            {
+                throw new System.Exception("Bad user or not active session");
+            }
+
+            if (!(Boolean)passwdSL["status"])
+            {
+                throw new System.Exception("Bad password or not active session");
+            }
+
+            this.runLogin_phase2(wnameSL["result"].ToString(), passwdSL["result"].ToString());
+
+        } catch (Exception ex)
+        {
+            this.info_txt.Text = ex.ToString();
+        }
+
+    }
+    protected void runLogin_phase2(string userName, string passwd)
+    { 
         //string l_pass = Convert.ToBase64String(dataArr);
         string l_pass = passwd;
        // this.info_txt.Text = l_pass;
@@ -141,11 +204,13 @@ public partial class _Default : System.Web.UI.Page
         string g_pass = "";
 
         SortedList data = new SortedList();
-        string userName = this.meno_txt.Text.ToString().Trim();
+
+        string hash = x2.makeHashString(passwd);
+        string webPasswd = x2.stringTo64(hash);
 
       //  this.info_txt.Text = userName;
 
-        if (my_x2.isAlfaNum(userName))
+        if (x2.isAlfaNum(userName))
         {
 
             if (this.checkChangePassword(userName) == 1)

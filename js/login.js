@@ -110,12 +110,8 @@ function readHeaders()
 
 function runLogin() {
 
-    
-
-   // return;
 
     var name = $("[id$=meno_txt]").val();
-    
     if (name.trim().length == 0) {
         
         $("[id$=info_txt]").html("Nie je zadane meno");
@@ -123,47 +119,44 @@ function runLogin() {
     }
 
     var pss = $("[id$=passwd_txt]").val();
-
     if (pss.trim().length == 0) {
         $("[id$=info_txt]").html("Nie je zadane heslo");
         return false;
     }
 
     // alert("huera");
-    console.log(__sid);
-    
-    var key = CryptoJS.enc.Utf8.parse('8080808080808080');
-    var iv = CryptoJS.enc.Utf8.parse('8080808080808080');
-    console.log([key, iv]);
+    // console.log(__sid);
 
-    var encryptedName = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(name),key,{
-        keySize:128 /8,
+    var kP = __sid.substr(0, 16);
+
+    console.log(kP.length);
+    
+    var key = CryptoJS.enc.Utf8.parse(kP.trim());
+    var iv = CryptoJS.enc.Utf8.parse(kP.trim());
+    //console.log([key, iv]);
+
+   var encryptedName = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(name.trim()),key,{
+        keySize:128/8,
         iv:iv,
         mode:CryptoJS.mode.CBC,
-        padding:CryptoJS.pad.Pkcs7
+        padding: CryptoJS.pad.Pkcs7
     });
 
-    var encryptedPasswd = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(pss), key, {
-        keySize: 128/8 ,
+    var encryptedPasswd = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(pss.trim()), key, {
+        keySize: 128/8,
         iv: iv,
         mode: CryptoJS.mode.CBC,
         padding: CryptoJS.pad.Pkcs7
-    }).toString();
-   
-    //encryptedPasswd = btoa(encryptedPasswd); 
+    });
 
+    var nm = encryptedName;
+    var np = encryptedPasswd;
 
-    $("[id$=name_hf]").val(encryptedName);
-    $("[id$=passwd_hf]").val(encryptedPasswd);
-    //return;
-    console.log(encryptedPasswd);
-
-    //var passHash = CryptoJS.SHA3(pss);
-    //passHash = passHash.toString();
-
-
-  //  $("[id$=passwd_txt]").val(passHash+sid);
-    __doPostBack("login_btn", "login");
+    
+    $("[id$=name_hf]").val(nm);
+    $("[id$=passwd_hf]").val(np);
+    
+   // __doPostBack("login_btn", "login");
 }
 
 
@@ -206,10 +199,10 @@ function afterPasswdChange(result)
 }
 
 $(document).ready(function () {
-    getData();
+    //getData();
     $("[id$=passwd_txt]").on("keypress", function (e) {
         if (e.keyCode == 13) {
-            runLogin();
+            //runLogin();
         }
        
     });

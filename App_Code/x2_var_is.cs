@@ -448,6 +448,10 @@ public class x2_var
         return sluzby;
     }
 
+
+
+
+
     public string mySendMail(string mail_server, SortedList mailData, bool isHtml)
     {
         MailAddress from = new MailAddress(mailData["from"].ToString());
