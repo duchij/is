@@ -119,6 +119,9 @@ public partial class is_gallery : System.Web.UI.Page
 
                 ImageButton imgBtn = new ImageButton();
                 imgBtn.ImageUrl = "http://" + HttpContext.Current.Request.Url.Authority + "/controls/lf_view.ashx?id=" + files[i]["lf_id"].ToString();
+                imgBtn.Click += new ImageClickEventHandler(imgBtn_click_fnc);
+
+                imgBtn.ID ="id_"+ files[i]["lf_id"].ToString();
                 imgBtn.Width = new Unit(100);
                 imgBtn.Height = new Unit(100);
                 imgBtn.ImageAlign = ImageAlign.Left;
@@ -200,6 +203,14 @@ public partial class is_gallery : System.Web.UI.Page
             }
 
         }
+    }
+
+    protected void imgBtn_click_fnc(object sender, EventArgs e)
+    {
+        ImageButton imgBtn = (ImageButton)sender;
+        string[] tmp = imgBtn.ID.ToString().Split('_');
+    
+       Response.Redirect("lf.aspx?id=" + tmp[1]);
     }
 
     protected void searchGalleryFnc(object sender, EventArgs e)

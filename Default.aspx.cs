@@ -24,31 +24,6 @@ public partial class _Default : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        //System.Web.HttpBrowserCapabilities browser = Request.Browser;
-        /*Boolean status = x2.offline();
-
-        if (status == false)
-        {
-            Session.Clear();
-            Response.Redirect("offline.html");
-        }*/
-
-        
-
-
-        //Response.Cookies["akt_sluzba"].Expires = DateTime.Now.AddDays(-1);
-        //Response.Cookies["akt_hlasenie "].Expires = DateTime.Now.AddDays(-1);
-        // Response.Cookies["tuisegumdrum"].Expires = DateTime.Now.AddDays(-1);
-
-        /*  if (Request.Browser.Cookies == false)
-          {
-              this.info_txt.Text = "Máte deaktiované cookies, na to aby tento formulár fungoval, ich musíte zapnúť!!!!";
-          }
-          else
-          {
-
-          }*/
-
         string param = Request["__EVENTARGUMENT"];
        
         if (param == "login")
@@ -59,19 +34,6 @@ public partial class _Default : System.Web.UI.Page
            // this.test1(sender, e);
         }
 
-    }
-
-    protected void test2(object sender, EventArgs e)
-    {
-        string meno = this.test1();
-
-        //byte[] dt = Convert.FromBase64String(meno);
-
-        //string me = Encoding.UTF8.GetString(dt);
-
-        this.info_txt.Text +="l<br>"+ meno;
-
-        //ScriptManager.RegisterStartupScript(this, this.GetType(), "alert", "alert("+meno+");", true); 
     }
 
     protected Boolean personalNumber(string login)
@@ -101,80 +63,13 @@ public partial class _Default : System.Web.UI.Page
         return result;
     }
 
-    
-
-
-    protected string test1()
-    {
-        string name = this.name_hf.Value.Trim();
-
-        this.info_txt.Text = name;
-        //name = name + "=";
-        //ca3b3e08ea93224c89b407a015346e21
-        System.Text.UTF8Encoding txtenc = new System.Text.UTF8Encoding();
-
-        byte[] passwde = Convert.FromBase64String(this.name_hf.Value);
-
-
-        string la = Encoding.UTF8.GetString(passwde);
-
-        byte[] ll = Encoding.UTF8.GetBytes(la);
-
-        this.info_txt.Text += "c:"+ la;
-        
-
-        string kP = Session.SessionID.ToString().Substring(0, 16);
-        byte[] vector = txtenc.GetBytes(kP);
-
-        this.info_txt.Text += "<br>" + vector.Length;
-        string plainText = null;
-        using (var crypto = new RijndaelManaged())
-        {
-            crypto.Mode = CipherMode.CBC;
-            crypto.Padding = PaddingMode.PKCS7;
-            crypto.BlockSize = 128;
-            crypto.KeySize = 128;
-            crypto.FeedbackSize = 128;
-
-            crypto.IV = vector;
-
-            //crypto.ValidKeySize()
-
-
-            crypto.Key = vector;
-
-            ICryptoTransform decryptor = crypto.CreateDecryptor(crypto.Key, crypto.IV);
-
-            try
-            {
-                MemoryStream ms = new MemoryStream(passwde);
-                CryptoStream cr = new CryptoStream(ms, decryptor, CryptoStreamMode.Read);
-                byte[] output = new byte[passwde.Length];
-                int readBytes = cr.Read(output, 0, passwde.Length);
-
-
-                plainText = Encoding.UTF8.GetString(output);
-
-                
-            }
-            catch (Exception ex)
-            {
-                plainText = ex.ToString();
-            }
-           // this.info_txt.Text = plainText;
-        }
-
-
-        return plainText;
-
-    }
-
     protected void runLogin(object sender, EventArgs e)
     {
 
         SortedList wnameSL = Rijndael.decryptJsAes(this.name_hf.Value.ToString(), Session.SessionID.ToString());
 
         SortedList passwdSL = Rijndael.decryptJsAes(this.passwd_hf.Value.ToString(), Session.SessionID.ToString());
+
         try
         {
             if (!(Boolean)wnameSL["status"])
@@ -189,26 +84,23 @@ public partial class _Default : System.Web.UI.Page
 
             this.runLogin_phase2(wnameSL["result"].ToString(), passwdSL["result"].ToString());
 
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
-            this.info_txt.Text = ex.ToString();
+            this.info_txt.Text = ex.Message.ToString();
         }
 
     }
+
+
     protected void runLogin_phase2(string userName, string passwd)
     { 
-        //string l_pass = Convert.ToBase64String(dataArr);
-        string l_pass = passwd;
-       // this.info_txt.Text = l_pass;
 
         string g_pass = "";
 
         SortedList data = new SortedList();
 
-        string hash = x2.makeHashString(passwd);
-        string webPasswd = x2.stringTo64(hash);
-
-      //  this.info_txt.Text = userName;
+        string l_pass = x2.makeHashString(passwd);
 
         if (x2.isAlfaNum(userName))
         {
@@ -234,7 +126,10 @@ public partial class _Default : System.Web.UI.Page
             if (data.Count != 0 && data["active"].ToString() == "1")
             {
 
-                g_pass = data["passwd"].ToString()+Session["sid"].ToString();
+                g_pass = data["passwd"].ToString();
+
+
+                data.Remove("passwd");
 
                 if (persNum)
                 {
@@ -456,14 +351,14 @@ public partial class _Default : System.Web.UI.Page
                 else
                 {
                     // e.Authenticated = false;
-                   // this.info_txt.Text = "Bad user or password";
+                    this.info_txt.Text = "Bad user or password";
                     x2log.logData(data, "bad user or password", "error bad user login:" + data["full_name"]);
                 }
             }
             else
             {
                 //e.Authenticated = false;
-                //this.info_txt.Text = "Bad user or password";
+                this.info_txt.Text = "Bad user or password";
                 x2log.logData(data, "bad user or password", "error bad user login:" + data["full_name"]);
             }
         }

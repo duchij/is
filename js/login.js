@@ -77,9 +77,12 @@ function getData()
 
 function setSessionData(result)
 {
+
     __sid = result.sid;
 
-  
+    if (__sid.trim().length == 0) {
+        $("[id$=info_txt]").html("Nie je komunikacia so serverom.... !!!!!!");
+    }
 }
 
 function getURLParameter(name) {
@@ -124,16 +127,10 @@ function runLogin() {
         return false;
     }
 
-    // alert("huera");
-    // console.log(__sid);
-
     var kP = __sid.substr(0, 16);
-
-    console.log(kP.length);
     
     var key = CryptoJS.enc.Utf8.parse(kP.trim());
     var iv = CryptoJS.enc.Utf8.parse(kP.trim());
-    //console.log([key, iv]);
 
    var encryptedName = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(name.trim()),key,{
         keySize:128/8,
@@ -148,6 +145,8 @@ function runLogin() {
         mode: CryptoJS.mode.CBC,
         padding: CryptoJS.pad.Pkcs7
     });
+
+
 
     var nm = encryptedName;
     var np = encryptedPasswd;
@@ -187,7 +186,6 @@ function changePasswordFnc()
 
 function afterPasswdChange(result)
 {
-    console.log(result);
 
     if (result.status === "True") {
         window.location.href = "Default.aspx";

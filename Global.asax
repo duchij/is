@@ -1,45 +1,41 @@
 ﻿<%@ Application Language="C#" %>
 
 <script runat="server">
-    
-    
-    void Application_Start(object sender, EventArgs e) 
+
+
+    void Application_Start(object sender, EventArgs e)
     {
-        
+
         string tmp = System.Web.HttpContext.Current.Server.MapPath("/");
         log x2log = new log();
-       
+
         x2log.checkIfLogExists(tmp);
 
         mysql_db mysql = new mysql_db();
         Boolean status = mysql.offline();
-        
-        
-       
-        
-        
+
         //Session["webstatus"] = "run";
-        
-        
+
+
         // Code that runs on application startup
 
     }
-    
-    void Application_End(object sender, EventArgs e) 
+
+    void Application_End(object sender, EventArgs e)
     {
         //  Code that runs on application shutdown
         //Session.Abandon();
-        
+
 
     }
-        
-    void Application_Error(object sender, EventArgs e) 
+
+    void Application_Error(object sender, EventArgs e)
     {
         log x2log = new log();
         SortedList data = new SortedList();
         data.Add("object", sender.ToString());
         data.Add("type", sender.GetType().ToString());
-        
+
         x2log.logData(data,Environment.StackTrace.ToString(),"Global ERROR");
 
         //Server.Transfer("error.html");
@@ -47,21 +43,21 @@
 
     }
 
-    void Session_Start(object sender, EventArgs e) 
+    void Session_Start(object sender, EventArgs e)
     {
-        
+
         Session["serverUrl"] = System.Web.HttpContext.Current.Server.MapPath("/");
         Session["webstatus"] = "run";
         Session["sid"] = this.Session.SessionID;
         //Session["dSession"] = this.Session.SessionID;
-        
+
         string fg="";
 
         if (Request.QueryString["duch"] != null)
         {
             fg = Request.QueryString["duch"].ToString();
         }
-        
+
         if (fg == "run0")
         {
             Session["serverUrl"] = System.Web.HttpContext.Current.Server.MapPath("/");
@@ -79,30 +75,31 @@
                 //}
                 Session.Abandon();
                 Server.Transfer("offline.html");
-            } 
+            }
             else
             {
                 if (System.IO.File.Exists(System.Web.HttpContext.Current.Server.MapPath("/") + @"\app_offline.htm"))
                 {
-                    System.IO.File.Move(System.Web.HttpContext.Current.Server.MapPath("/") + @"\app_offline.htm", System.Web.HttpContext.Current.Server.MapPath("/") + @"\app_offline.ina");  
+                    System.IO.File.Move(System.Web.HttpContext.Current.Server.MapPath("/") + @"\app_offline.htm", System.Web.HttpContext.Current.Server.MapPath("/") + @"\app_offline.ina");
                 }
-                
-                Session["serverUrl"] = System.Web.HttpContext.Current.Server.MapPath("/"); 
-                Session["webstatus"] = "run"; 
+
+                Session["serverUrl"] = System.Web.HttpContext.Current.Server.MapPath("/");
+                Session["webstatus"] = "run";
             }
         }
-        
-        
-        
+
+
+
         //Session.Timeout = 10;
         // Code that runs when a new session is started
-        
+
 
     }
 
-    void Session_End(object sender, EventArgs e) 
+    void Session_End(object sender, EventArgs e)
     {
         Session.Remove("sid");
+        Session.Remove("tuisegumdrum");
         Session.Abandon();
         Response.Write(Environment.StackTrace.ToString());
         Server.Transfer("Default.aspx");
@@ -112,17 +109,17 @@
         // or SQLServer, the event is not raised.
 
     }
-    
+
     void Application_EndRequest(object sender, EventArgs e)
     {
-     
+
     }
 
     void Application_BeginRequest(object sender, EventArgs e)
     {
-       
+        
     }
-    
-   
-       
+
+
+
 </script>

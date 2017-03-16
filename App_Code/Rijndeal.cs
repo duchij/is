@@ -29,11 +29,20 @@ using System.Security.Cryptography;
 /// </summary>
 public class Rijndael
 {
+
+    /// <summary>
+    /// Decrypts a base64 AES/Rijndeal encoded string with vector (16 bytes)
+    /// </summary>
+    /// <param name="text">Base 64bit string  to decode</param>
+    /// <param name="sid">Vector</param>
+    /// <returns>SortedList status/result</returns>
+
     public static SortedList decryptJsAes(string text, string sid)
     {
         System.Text.UTF8Encoding txtenc = new System.Text.UTF8Encoding();
 
         SortedList result = new SortedList();
+
         byte[] textBytes = Convert.FromBase64String(text);
 
         string kP = sid.Substring(0, 16);
@@ -59,9 +68,8 @@ public class Rijndael
                 CryptoStream cr = new CryptoStream(ms, decryptor, CryptoStreamMode.Read);
                 byte[] output = new byte[textBytes.Length];
                 int readBytes = cr.Read(output, 0, textBytes.Length);
-
-
-                result["result"] = Encoding.UTF8.GetString(output);
+                
+                result["result"] = Encoding.UTF8.GetString(output).Replace("\0","");
                 result["status"] = true;
 
             }
@@ -76,6 +84,74 @@ public class Rijndael
 
         return result;
     }
+    /// <summary>
+    /// Encrypts plain Text with AES/Rijndeal with vector
+    /// </summary>
+    /// <param name="plaintext">Normal plain text</param>
+    /// <param name="sid">Vector to encrypt uses 16bytes</param>
+    /// <returns>SortedList status/result</returns>
+    public static SortedList encryptAesJs(string plaintext, string sid)
+    {
+             
+
+
+        SortedList result = new SortedList();
+
+        byte[] textBytes = Encoding.UTF8.GetBytes(plaintext);
+
+        string kP = sid.Substring(0, 16);
+        byte[] vector = Encoding.UTF8.GetBytes(kP);
+
+        using (var crypto = new RijndaelManaged())
+        {
+            crypto.Mode = CipherMode.CBC;
+            crypto.Padding = PaddingMode.PKCS7;
+            crypto.BlockSize = 128;
+            crypto.KeySize = 128;
+            crypto.FeedbackSize = 128;
+
+            crypto.IV = vector;
+
+            crypto.Key = vector;
+
+
+            ICryptoTransform encryptor = crypto.CreateEncryptor(crypto.Key, crypto.IV);
+
+            try
+            {
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    using (CryptoStream cr = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
+                    {
+                        using (var sEncrypt = new StreamWriter(cr))
+                        {
+                            sEncrypt.Write(plaintext);
+                        }
+
+                        //string tmp = Convert.ToBase64String(cBytes);
+                        byte[] encr = ms.ToArray();
+                        result["result"] = Convert.ToBase64String(encr);
+                        result["status"] = true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result["status"] = false;
+                result["result"] = ex.ToString();
+            }
+            // this.info_txt.Text = plainText;
+        }
+
+        return result;
+
+
+    }
+
+
+
+
+
 }
 //
 // END OF FILE

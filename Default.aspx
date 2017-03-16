@@ -1,7 +1,5 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" EnableEventValidation="true" EnableViewStateMac="true"  Culture="sk-Sk" CodeFile="Default.aspx.cs" Inherits="_Default" %>
 
-<!--CodeFile="Default.aspx.cs" Inherits="_Default"-->
-
 <!DOCTYPE html >
 
 <!--[if lt IE 7]><html class="no-js ie ie6 lt-ie7 lt-ie8 lt-ie9 lt-ie10"><![endif]-->
@@ -15,12 +13,9 @@
 <head  runat="server">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
-    
-    <!-- <script type="text/javascript" src="js/format-hex.js"></script>-->
-
-	   <script src="gdw/js/libs/modernizr-2.6.2.min.js"></script>
-        <title></title>
-    <link rel="icon" type="image/png" href="img/logo.png" />   
+	 <script src="gdw/js/libs/modernizr-2.6.2.min.js"></script>
+     <title>IESKO KDCH</title>
+     <link rel="icon" type="image/png" href="img/logo.png" />   
       <!-- jQuery-->
 	  
 	    <!-- framework css --><!--[if gt IE 9]><!-->
@@ -48,21 +43,20 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><strong>Meno:</strong></td>
-                    <td><asp:TextBox ID="meno_txt" runat="server" TextMode="SingleLine" ClientIDMode="static"></asp:TextBox></td>
+                    <td><h3>Meno:</h3></td>
+                    <!--<td><asp:TextBox ID="meno_txt" runat="server" TextMode="SingleLine" ClientIDMode="static"></asp:TextBox></td>-->
 
-                   <!-- <td><input type="text" id="meno_txt"></td>-->
+                   <td><input type="text" id="meno_txt"></td>
                 </tr>
                 <tr>
-                    <td><strong>Heslo:</strong></td>
-                    <td><asp:TextBox TextMode="Password" runat="server" ID="passwd_txt" ClientIDMode="static"></asp:TextBox></td>
-                    <!--<td><input type="password" id="passwd_txt"></td>-->
+                    <td><h3>Heslo:</h3></td>
+                    <!--<td><asp:TextBox TextMode="Password" runat="server" ID ="passwd_txt" ClientIDMode="static"></asp:TextBox></td>-->
+                    <td><input type="password" id="passwd_txt"></td>
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <!--<input type="button" onclick="runLogin();" value="Vstupit"  />-->
-                        
-                        <asp:Button ID="login_btn" runat="server" OnClick="test2" onClientClick="return runLogin();" Text="Chod" Visible="true"></asp:Button></td>
+                                             
+                        <asp:Button ID="login_btn" runat="server" OnClick="runLogin" onClientClick="return runLogin();" Text="Prihlásiť sa" Visible="true" CssClass="button green"></asp:Button></td>
                 </tr>
                 <tr>
                     <td colspan="2"><asp:Label ID="info_txt" runat="server" CssClass="red" Text=""></asp:Label></td>
@@ -71,13 +65,9 @@
     </div>      
    </div>
     </form>
-        <script type="text/javascript" src="gdw/js/libs/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="gdw/js/libs/jquery-1.10.2.min.js"></script>
 	<script type="text/javascript" src="gdw/js/groundwork.all.js"></script>
-   <!-- <script type="text/javascript" src="js/core.js"></script> 
-    <script type="text/javascript" src="js/cipher-core.js"></script>-->
-	 <script type="text/javascript" src="js/aes.js"></script> 
-
-
+    <script type="text/javascript" src="js/aes.js"></script> 
     <script type="text/javascript" src="js/login.js"></script>
     
 </body>
