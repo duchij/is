@@ -143,6 +143,7 @@ public partial class toexcel : System.Web.UI.Page
             }
             else
             {
+
                 this.msg_lbl.Text = "Nič na zobrazenie......";
             }
             
