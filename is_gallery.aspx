@@ -31,7 +31,7 @@
                 <asp:TextBox runat="server" ID="queryString" Text="" EnableViewState="true"></asp:TextBox>
 
             </td>
-            <td><asp:Button runat="server" ID="searchExec_btn"  CssClass="green button" Text="Hladaj" OnClick="searchGalleryFnc"/></td>
+            <td><asp:Button runat="server" ID="searchExec_btn"  CssClass="green button" Text="Hladaj" OnClick="searchGalleryFnc" EnableViewState="true"/></td>
 
 
         </tr>

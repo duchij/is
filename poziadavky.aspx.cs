@@ -157,7 +157,7 @@ public partial class poziadavky : System.Web.UI.Page
 
             this.lock_date.SelectedDate = Convert.ToDateTime(result["datum"].ToString());
             //Session.Add("lock_date",
-            Response.Redirect("poziadavky.aspx");
+            Response.Redirect("poziadavky.aspx",false);
         }
     }
 
@@ -204,7 +204,7 @@ public partial class poziadavky : System.Web.UI.Page
         Session.Add("rozpis_rok", this.rok_cb.SelectedValue.ToString());
         Session.Add("rozpis_mesiac", this.mesiac_cb.SelectedValue.ToString());
 
-        Response.Redirect(@"printpoz.aspx");
+        Response.Redirect(@"printpoz.aspx",false);
 
     }
 

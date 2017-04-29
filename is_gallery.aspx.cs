@@ -29,6 +29,10 @@ public partial class is_gallery : System.Web.UI.Page
             {
                 this.loadFirstTen();
             }
+            else
+            {
+                this.searchGalleryFnc(sender, e);
+            }
             
         }
 
@@ -121,7 +125,7 @@ public partial class is_gallery : System.Web.UI.Page
                 imgBtn.ImageUrl = "http://" + HttpContext.Current.Request.Url.Authority + "/controls/lf_view.ashx?id=" + files[i]["lf_id"].ToString();
                 imgBtn.Click += new ImageClickEventHandler(imgBtn_click_fnc);
 
-                imgBtn.ID ="id_"+ files[i]["lf_id"].ToString();
+                imgBtn.ID ="id_"+i.ToString()+"_"+ files[i]["lf_id"].ToString();
                 imgBtn.Width = new Unit(100);
                 imgBtn.Height = new Unit(100);
                 imgBtn.ImageAlign = ImageAlign.Left;
@@ -164,7 +168,7 @@ public partial class is_gallery : System.Web.UI.Page
                 TableCell actionCell = new TableCell();
                 Button downBtn = new Button();
                 downBtn.Text = "Zobraz/Stiahni...";
-                downBtn.ID = "downBtn_" + files[i]["lf_id"].ToString();
+                downBtn.ID = "downBtn_" +i.ToString()+"_"+ files[i]["lf_id"].ToString();
                 downBtn.Click += new EventHandler(this.download_fnc);
                 downBtn.CssClass = "button green";
 
@@ -173,7 +177,7 @@ public partial class is_gallery : System.Web.UI.Page
                 {
                     Button delBtn = new Button();
                     delBtn.Text = Resources.Resource.delete;
-                    delBtn.ID = "delBtn_" + files[i]["item_id"].ToString();
+                    delBtn.ID = "delBtn_" + i.ToString() + "_" + files[i]["item_id"].ToString();
                     delBtn.OnClientClick = "return confirm('Zmazať " + files[i]["patient_name"].ToString() + "?');";
                     delBtn.Click += new EventHandler(this.deleteFile_fnc);
                     delBtn.CssClass = "button red";
@@ -210,7 +214,7 @@ public partial class is_gallery : System.Web.UI.Page
         ImageButton imgBtn = (ImageButton)sender;
         string[] tmp = imgBtn.ID.ToString().Split('_');
     
-       Response.Redirect("lf.aspx?id=" + tmp[1]);
+       Response.Redirect("lf.aspx?id=" + tmp[2],false);
     }
 
     protected void searchGalleryFnc(object sender, EventArgs e)
@@ -273,7 +277,7 @@ public partial class is_gallery : System.Web.UI.Page
     {
         Button btn = (Button)sender;
         string[] idStr = btn.ID.ToString().Split('_');
-        int id = Convert.ToInt32(idStr[1]);
+        int id = Convert.ToInt32(idStr[2]);
         SortedList res = x2lf.execute("DELETE FROM [is_gallery] WHERE [item_id]=" + id);
 
         if ((Boolean)(res["status"]))
@@ -292,8 +296,8 @@ public partial class is_gallery : System.Web.UI.Page
         Button btn = (Button)sender;
         string[] idStr = btn.ID.ToString().Split('_');
       //  SortedList row = x2lf.getRow("SELECT [lf_id] AS [id] FROM [is_gallery] WHERE [item_id]=" + idStr[1]);
-        int id = Convert.ToInt32(idStr[1].ToString());
-        Response.Redirect("lf.aspx?id=" + id.ToString());
+        int id = Convert.ToInt32(idStr[2].ToString());
+        Response.Redirect("lf.aspx?id=" + id.ToString(),false);
     }
 
 

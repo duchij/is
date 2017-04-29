@@ -876,12 +876,12 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
         return result;
     }
 
-    protected void printFnc(object sendet, EventArgs e)
+    protected void printFnc(object sender, EventArgs e)
     {
         this.saveData(false,true);
         Session.Add("hlasko_date", this.Calendar1.SelectedDate);
         Session.Add("hlasko_toWord", false);
-        Response.Redirect("print.aspx");
+        Response.Redirect("print.aspx",false);
     }
 
 }

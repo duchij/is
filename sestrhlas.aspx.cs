@@ -311,7 +311,7 @@ public partial class sestrhlas : System.Web.UI.Page
     protected void print_fnc(object sender, EventArgs e)
     {
         this.save_fnc(sender, e);
-        Response.Redirect("printtses.aspx?den=" + Calendar1.SelectedDate.Day.ToString() + "&datum=" + Calendar1.SelectedDate.ToLongDateString() + "&m=" + Calendar1.SelectedDate.Month.ToString());
+        Response.Redirect("printtses.aspx?den=" + Calendar1.SelectedDate.Day.ToString() + "&datum=" + Calendar1.SelectedDate.ToLongDateString() + "&m=" + Calendar1.SelectedDate.Month.ToString(),false);
     }
 
     protected void def_loc_fnc(object sender, EventArgs e)
@@ -321,7 +321,7 @@ public partial class sestrhlas : System.Web.UI.Page
         if (hlasenie.Visible == true)
         {
             this.saveData(true);
-            Response.Redirect("printtses.aspx?den=" + Calendar1.SelectedDate.Day.ToString() + "&datum=" + Calendar1.SelectedDate.ToLongDateString() + "&m=" + Calendar1.SelectedDate.Month.ToString());
+            Response.Redirect("printtses.aspx?den=" + Calendar1.SelectedDate.Day.ToString() + "&datum=" + Calendar1.SelectedDate.ToLongDateString() + "&m=" + Calendar1.SelectedDate.Month.ToString(),false);
         }
         /*else
         {

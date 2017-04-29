@@ -39,31 +39,31 @@ public class Rijndael
 
     public static SortedList decryptJsAes(string text, string sid)
     {
-        System.Text.UTF8Encoding txtenc = new System.Text.UTF8Encoding();
-
         SortedList result = new SortedList();
-
-        byte[] textBytes = Convert.FromBase64String(text);
-
-        string kP = sid.Substring(0, 16);
-        byte[] vector = txtenc.GetBytes(kP);
 
         using (var crypto = new RijndaelManaged())
         {
-            crypto.Mode = CipherMode.CBC;
-            crypto.Padding = PaddingMode.PKCS7;
-            crypto.BlockSize = 128;
-            crypto.KeySize = 128;
-            crypto.FeedbackSize = 128;
+            System.Text.UTF8Encoding txtenc = new System.Text.UTF8Encoding();
 
-            crypto.IV = vector;
+            byte[] textBytes = Convert.FromBase64String(text);
 
-            crypto.Key = vector;
-
-            ICryptoTransform decryptor = crypto.CreateDecryptor(crypto.Key, crypto.IV);
+            string kP = sid.Substring(0, 16);
+            byte[] vector = txtenc.GetBytes(kP);
 
             try
             {
+                crypto.Mode = CipherMode.CBC;
+                crypto.Padding = PaddingMode.PKCS7;
+                crypto.BlockSize = 128;
+                crypto.KeySize = 128;
+                crypto.FeedbackSize = 128;
+
+                crypto.IV = vector;
+
+                crypto.Key = vector;
+
+                ICryptoTransform decryptor = crypto.CreateDecryptor(crypto.Key, crypto.IV);
+
                 MemoryStream ms = new MemoryStream(textBytes);
                 CryptoStream cr = new CryptoStream(ms, decryptor, CryptoStreamMode.Read);
                 byte[] output = new byte[textBytes.Length];

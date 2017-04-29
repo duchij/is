@@ -338,6 +338,15 @@ public class x2_var
 
     }
 
+    public string makeSHA1String(string text)
+    {
+        SHA1CryptoServiceProvider hasher = new SHA1CryptoServiceProvider();
+        System.Text.UTF8Encoding enc = new System.Text.UTF8Encoding();
+        byte[] arr = enc.GetBytes(text);
+        arr = hasher.ComputeHash(arr);
+        return Convert.ToBase64String(arr);
+    }
+
     public string makeByteHash(byte[] data)
     {
         MD5CryptoServiceProvider hasher = new MD5CryptoServiceProvider();

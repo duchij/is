@@ -524,7 +524,7 @@ public partial class is_user : System.Web.UI.Page
 
             if (Convert.ToBoolean(res["status"]))
             {
-                Response.Redirect("passch2.aspx");
+                Response.Redirect("passch2.aspx",false);
             }
             else
             {

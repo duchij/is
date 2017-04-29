@@ -194,7 +194,7 @@ public partial class is_plan : System.Web.UI.Page
 
            // this.linkPlan_btn.PostBackUrl = url;
             
-            Response.Redirect(url);
+            Response.Redirect(url,false);
 
         }else
         {

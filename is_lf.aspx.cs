@@ -324,7 +324,7 @@ public partial class is_lf : System.Web.UI.Page
         string[] idStr = btn.ID.ToString().Split('_');
         SortedList row = x2lf.getRow("SELECT [item_lf_id] AS [id] FROM [is_structure] WHERE [item_id]=" + idStr[1]);
         int id = Convert.ToInt32(row["id"].ToString());
-        Response.Redirect("lf.aspx?id=" + id.ToString());
+        Response.Redirect("lf.aspx?id=" + id.ToString(),false);
     }
 
     protected void deleteFile_fnc(object sender, EventArgs e)

@@ -25,15 +25,6 @@ public partial class _Default : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
         string param = Request["__EVENTARGUMENT"];
-       
-        if (param == "login")
-        {
-            //this.info_txt.Text = "lalala";
-            //this.Login1_Authenticate(sender, e);
-            //this.runLogin(sender, e);
-           // this.test1(sender, e);
-        }
-
     }
 
     protected Boolean personalNumber(string login)
@@ -42,13 +33,36 @@ public partial class _Default : System.Web.UI.Page
 
         return Int32.TryParse(login, out inOut);
     }
+    /// <summary>
+    /// Forces to change user password using the password decrypted
+    /// </summary>
+    /// <param name="userName">unexcrypted username</param>
+    /// <param name="passwd">unencrypted password</param>
+    /// <param name="type">old hashing mechanism</param>
+    /// <returns></returns>
 
-
-    protected int checkChangePassword(string userName)
+    protected int checkChangePassword(string userName, string passwd, string type)
     {
-        string sql = @"SELECT [force_change] FROM [is_users] WHERE [name]='{0}'";
+        string hPasswd = null;
 
-        sql = x2Mysql.buildSql(sql, new string[] { userName });
+        switch (type)
+        {
+            case "MD5":
+                MD5CryptoServiceProvider hasher = new MD5CryptoServiceProvider();
+
+                byte[] arr = Encoding.UTF8.GetBytes(passwd);
+
+                arr = hasher.ComputeHash(arr);
+                hPasswd = Convert.ToBase64String(arr);
+
+                break;
+
+        }
+
+
+        string sql = @"SELECT [force_change],[passwd] FROM [is_users] WHERE [name]='{0}'";
+
+        sql = x2Mysql.buildSql(sql, new string[] { userName});
 
         SortedList row = x2Mysql.getRow(sql);
 
@@ -56,39 +70,55 @@ public partial class _Default : System.Web.UI.Page
 
         if (row.ContainsKey("force_change"))
         {
-           result = Convert.ToInt32(row["force_change"]);
+            if (row["force_change"].ToString() == "0" && row["passwd"].ToString() == hPasswd)
+            {
+                result = 1; // no need to change password
+            }
+            if (row["force_change"].ToString() == "1" && row["passwd"].ToString() == hPasswd)
+            {
+                result = 2; //need to force change password
+            }
+            if (row["force_change"].ToString() == "1" && row["passwd"].ToString() != hPasswd)
+            {
+                result = 4; // Passwords are not the same, contact admin
+            }
         }
-        
+        else
+        {
+            result = 3; //skip force change
+        }
+          
+
+
+
 
         return result;
     }
 
     protected void runLogin(object sender, EventArgs e)
     {
-
         SortedList wnameSL = Rijndael.decryptJsAes(this.name_hf.Value.ToString(), Session.SessionID.ToString());
 
         SortedList passwdSL = Rijndael.decryptJsAes(this.passwd_hf.Value.ToString(), Session.SessionID.ToString());
 
-        try
-        {
+       
+
             if (!(Boolean)wnameSL["status"])
             {
-                throw new System.Exception("Bad user or not active session");
+                this.info_txt.Text = "Bad user or not active session" + wnameSL["result"].ToString();
             }
 
-            if (!(Boolean)passwdSL["status"])
+            else if (!(Boolean)passwdSL["status"])
             {
-                throw new System.Exception("Bad password or not active session");
+                this.info_txt.Text = "Bad password or not active session, "+passwdSL["result"].ToString();
             }
+            else
+            {
+                this.runLogin_phase2(wnameSL["result"].ToString(), passwdSL["result"].ToString());
+            }
+           
 
-            this.runLogin_phase2(wnameSL["result"].ToString(), passwdSL["result"].ToString());
-
-        }
-        catch (Exception ex)
-        {
-            this.info_txt.Text = ex.Message.ToString();
-        }
+       
 
     }
 
@@ -100,269 +130,289 @@ public partial class _Default : System.Web.UI.Page
 
         SortedList data = new SortedList();
 
-        string l_pass = x2.makeHashString(passwd);
+        string l_pass = x2.makeSHA1String(passwd);
 
-        if (x2.isAlfaNum(userName))
+
+        //string userName = res["result"].ToString();
+        try
         {
 
-            if (this.checkChangePassword(userName) == 1)
-            {
-                Session["force_change"] = 1;
-                Response.Redirect("fpassch.aspx?uname="+userName);
-            }
 
-
-            Boolean persNum = this.personalNumber(userName);
-
-            if (persNum)
-            {
-                userName = "d" + userName;
-            }
-
-            data = db_obj.getUserPasswd(userName);
-
-
-
-            if (data.Count != 0 && data["active"].ToString() == "1")
+            if (x2.isAlfaNum(userName))
             {
 
-                g_pass = data["passwd"].ToString();
+                int forceChangeStatus = this.checkChangePassword(userName, passwd, "MD5");
+
+                if (forceChangeStatus == 2)
+                {
+                    Session["force_change"] = 1;
+                    Response.Redirect("fpassch.aspx?uname=" + userName);
+                }
+                else if (forceChangeStatus == 4)
+                {
+                    throw new System.InvalidProgramException("Zle zadane stare heslo, nemozno zmenit na nove kontaktujte admina...");
+                }
 
 
-                data.Remove("passwd");
+                Boolean persNum = this.personalNumber(userName);
 
                 if (persNum)
                 {
-                    //g_pass = "d" + g_pass;
-                    passwd = "d" + passwd;
+                    userName = "d" + userName;
                 }
 
-                if (userName == passwd && g_pass == "NULL" && data["name"].ToString() == passwd)
+                data = db_obj.getUserPasswd(userName);
+
+
+
+                if (data.Count != 0 && data["active"].ToString() == "1")
                 {
 
-                    x2log.logData(data, "", "first user login");
-                    this.loadYearMonthData();
-                    Session.Add("tuisegumdrum", "activado");
-                    Session.Add("user_id", data["id"].ToString());
-                    Session.Add("rights", data["prava"].ToString());
-                    Session.Add("workgroup", data["work_group"].ToString());
-                    Session.Add("fullname", data["full_name"].ToString());
-                    Session.Add("login", data["name"].ToString());
-                    Session.Add("email", x2.getStr(data["email"].ToString()));
+                    g_pass = data["passwd"].ToString();
 
-                    Session.Add("klinika", x2.getStr(data["clinics_idf"].ToString()));
-                    Session.Add("oddelenie", x2.getStr(data["deps_idf"].ToString()));
 
-                    Session.Add("klinika_id", data["klinika"]);
-                    if (x2.getStr(data["omega_ms_item_id"].ToString()).Length > 0)
+                    data.Remove("passwd");
+
+                    if (persNum)
                     {
-                        Session["omega_ms_item_id"] = x2.getStr(data["omega_ms_item_id"].ToString());
-                    }
-                    else
-                    {
-                        Session["omega_ms_item_id"] = null;
+                        //g_pass = "d" + g_pass;
+                        passwd = "d" + passwd;
                     }
 
-                    Session.Add("oddelenie_id", x2.getStr(data["oddelenie"].ToString()));
-
-                    Session.Add("pracdoba", x2.getStr(data["pracdoba"].ToString()));
-                    Session.Add("tyzdoba", x2.getStr(data["tyzdoba"].ToString()));
-                    Session.Add("osobcisl", x2.getStr(data["osobcisl"].ToString()));
-
-                    Session.Add("titul_pred", x2.getStr(data["titul_pred"].ToString()));
-                    Session.Add("titul_za", x2.getStr(data["titul_za"].ToString()));
-                    Session.Add("klinika_label", x2.getStr(data["klinika_label"].ToString()));
-                    Session.Add("clinic_label", x2.getStr(data["clinic_label"].ToString()));
-                    Session.Add("zaradenie", x2.getStr(data["zaradenie"].ToString()));
-
-                    string[] fd = x2Mysql.getFreeDays();
-                    Session.Add("freedays", String.Join(",", fd));
-
-                    SortedList passPhrase = db_obj.getPassPhrase();
-                    Session.Add("passphrase", passPhrase["data"].ToString());
-
-                    Session.Add("LABELS", this.loadLabels(data["klinika"].ToString()));
-
-
-                    /* Response.Cookies["tuisegumdrum"].Value = "activado";
-                     Response.Cookies["user_id"].Value = data["id"].ToString();
-                     Response.Cookies["rights"].Value = data["group"].ToString();
-                     Response.Cookies["fullname"].Value = data["full_name"].ToString();
-                     Response.Cookies["login"].Value = data["name"].ToString();
-                     Response.Cookies["email"].Value = data["email"].ToString(); */
-
-                    Response.Redirect("passch2.aspx");
-                }
-
-                if (l_pass == g_pass)
-                {
-
-                    //this.Login1_Authenticate.
-
-                  //  e.Authenticated = true;
-
-                    x2log.logData(data, "", "user login:" + data["full_name"]);
-
-                    this.deleteFilesPerDays();
-
-                    Session.Add("tuisegumdrum", "activado");
-                    this.loadYearMonthData();
-                    Session.Add("user_id", data["id"].ToString());
-                    Session.Add("rights", data["prava"].ToString());
-                    Session.Add("workgroup", data["work_group"].ToString());
-                    Session.Add("fullname", data["full_name"].ToString());
-                    Session.Add("login", data["name"].ToString());
-                    Session.Add("email", data["email"].ToString());
-
-                    Session.Add("pracdoba", x2.getStr(data["pracdoba"].ToString()));
-                    Session.Add("tyzdoba", x2.getStr(data["tyzdoba"].ToString()));
-                    Session.Add("osobcisl", x2.getStr(data["osobcisl"].ToString()));
-
-                    Session.Add("klinika", x2.getStr(data["clinics_idf"].ToString()));
-                    Session.Add("oddelenie", x2.getStr(data["deps_idf"].ToString()));
-
-                    Session.Add("klinika_id", data["klinika"]);
-                    Session.Add("oddelenie_id", x2.getStr(data["oddelenie"].ToString()));
-
-                    Session.Add("titul_pred", x2.getStr(data["titul_pred"].ToString()));
-                    Session.Add("titul_za", x2.getStr(data["titul_za"].ToString()));
-
-                    Session.Add("zaradenie", x2.getStr(data["zaradenie"].ToString()));
-                    Session.Add("klinika_label", x2.getStr(data["klinika_label"].ToString()));
-                    Session.Add("clinic_label", x2.getStr(data["clinic_label"].ToString()));
-
-                    if (data["name"].ToString() == "sklad")
+                    if (userName == passwd && g_pass == "NULL" && data["name"].ToString() == passwd)
                     {
-                        Response.Redirect("sklad/hladanie.aspx");
-                    }
 
+                        x2log.logData(data, "", "first user login");
+                        this.loadYearMonthData();
+                        Session.Add("sid", Session.SessionID.ToString());
+                        Session.Add("tuisegumdrum", "activado");
+                        Session.Add("user_id", data["id"].ToString());
+                        Session.Add("rights", data["prava"].ToString());
+                        Session.Add("workgroup", data["work_group"].ToString());
+                        Session.Add("fullname", data["full_name"].ToString());
+                        Session.Add("login", data["name"].ToString());
+                        Session.Add("email", x2.getStr(data["email"].ToString()));
 
-                    string[] fd = x2Mysql.getFreeDays();
-                    Session.Add("freedays", String.Join(",", fd));
+                        Session.Add("klinika", x2.getStr(data["clinics_idf"].ToString()));
+                        Session.Add("oddelenie", x2.getStr(data["deps_idf"].ToString()));
 
-                    if (x2.getStr(data["omega_ms_item_id"].ToString()).Length > 0)
-                    {
-                        Session["omega_ms_item_id"] = x2.getStr(data["omega_ms_item_id"].ToString());
-                    }
-                    else
-                    {
-                        Session["omega_ms_item_id"] = null;
-                    }
-
-                    SortedList passPhrase = db_obj.getPassPhrase();
-                    Session.Add("passphrase", passPhrase["data"].ToString());
-                    Session.Add("LABELS", this.loadLabels(data["klinika"].ToString()));
-
-                    /*Response.Cookies["tuisegumdrum"].Value = " activado";
-                    Response.Cookies["user_id"].Value = data["id"].ToString();
-                    Response.Cookies["rights"].Value = data["group"].ToString();
-                    Response.Cookies["fullname"].Value = data["full_name"].ToString();
-                    Response.Cookies["login"].Value = data["name"].ToString();
-                    Response.Cookies["email"].Value = data["email"].ToString(); */
-
-
-                    List<string> news = db_obj.getLastNews(Convert.ToInt32(Session["klinika_id"].ToString()));
-
-
-
-                    if (news.Count > 0)
-                    {
-                        Session["newsToShow"] = news[0];
-                        Session["newsToShowDialog"] = news[0];
-                        //Page.ClientScript.RegisterStartupScript(this.GetType(), "AlertNews", "alert('trara');", true);
-                    }
-                    else
-                    {
-                        Session["newsToShow"] = "";
-                        Session["newsToShowDialog"] = "";
-                    }
-
-                    if (Session["klinika"].ToString() == "skladzm")
-                    {
-                        SortedList vzpData = new SortedList();
-                        vzpData.Add("search", "all");
-                        vzpData.Add("tab", "1");
-                        Session.Add("sklad_vzp", vzpData);
-                        Response.Redirect(@"sklad/vzp.aspx");
-                    }
-
-
-                    if (data["name"].ToString().IndexOf("tablet") != -1)
-                    {
-                        Response.Redirect("tabletview.aspx");
-                    }
-
-
-                    if (Session["workgroup"].ToString() == "doctor")
-                    {
-                        SortedList poz_data = db_obj.getNextPozDatum(DateTime.Today);
-
-                        if (this.maVyplnPoziadavky(Session["user_id"].ToString()) == true)
+                        Session.Add("klinika_id", data["klinika"]);
+                        if (x2.getStr(data["omega_ms_item_id"].ToString()).Length > 0)
                         {
-                            Response.Redirect(@"hlasko.aspx");
+                            Session["omega_ms_item_id"] = x2.getStr(data["omega_ms_item_id"].ToString());
                         }
                         else
                         {
-                            if (DateTime.Today < Convert.ToDateTime(poz_data["datum"].ToString()))
+                            Session["omega_ms_item_id"] = null;
+                        }
+
+                        Session.Add("oddelenie_id", x2.getStr(data["oddelenie"].ToString()));
+
+                        Session.Add("pracdoba", x2.getStr(data["pracdoba"].ToString()));
+                        Session.Add("tyzdoba", x2.getStr(data["tyzdoba"].ToString()));
+                        Session.Add("osobcisl", x2.getStr(data["osobcisl"].ToString()));
+
+                        Session.Add("titul_pred", x2.getStr(data["titul_pred"].ToString()));
+                        Session.Add("titul_za", x2.getStr(data["titul_za"].ToString()));
+                        Session.Add("klinika_label", x2.getStr(data["klinika_label"].ToString()));
+                        Session.Add("clinic_label", x2.getStr(data["clinic_label"].ToString()));
+                        Session.Add("zaradenie", x2.getStr(data["zaradenie"].ToString()));
+
+                        string[] fd = x2Mysql.getFreeDays();
+                        Session.Add("freedays", String.Join(",", fd));
+
+                        SortedList passPhrase = db_obj.getPassPhrase();
+                        Session.Add("passphrase", passPhrase["data"].ToString());
+
+                        Session.Add("LABELS", this.loadLabels(data["klinika"].ToString()));
+
+
+                        /* Response.Cookies["tuisegumdrum"].Value = "activado";
+                         Response.Cookies["user_id"].Value = data["id"].ToString();
+                         Response.Cookies["rights"].Value = data["group"].ToString();
+                         Response.Cookies["fullname"].Value = data["full_name"].ToString();
+                         Response.Cookies["login"].Value = data["name"].ToString();
+                         Response.Cookies["email"].Value = data["email"].ToString(); */
+
+                        Response.Redirect("passch2.aspx");
+                    }
+
+                    if (l_pass == g_pass)
+                    {
+
+                        //this.Login1_Authenticate.
+
+                        //  e.Authenticated = true;
+
+                        x2log.logData(data, "", "user login:" + data["full_name"]);
+
+                        this.deleteFilesPerDays();
+                        Session.Add("sid", Session.SessionID.ToString());
+                        Session.Add("tuisegumdrum", "activado");
+                        this.loadYearMonthData();
+                        Session.Add("user_id", data["id"].ToString());
+                        Session.Add("rights", data["prava"].ToString());
+                        Session.Add("workgroup", data["work_group"].ToString());
+                        Session.Add("fullname", data["full_name"].ToString());
+                        Session.Add("login", data["name"].ToString());
+                        Session.Add("email", data["email"].ToString());
+
+                        Session.Add("pracdoba", x2.getStr(data["pracdoba"].ToString()));
+                        Session.Add("tyzdoba", x2.getStr(data["tyzdoba"].ToString()));
+                        Session.Add("osobcisl", x2.getStr(data["osobcisl"].ToString()));
+
+                        Session.Add("klinika", x2.getStr(data["clinics_idf"].ToString()));
+                        Session.Add("oddelenie", x2.getStr(data["deps_idf"].ToString()));
+
+                        Session.Add("klinika_id", data["klinika"]);
+                        Session.Add("oddelenie_id", x2.getStr(data["oddelenie"].ToString()));
+
+                        Session.Add("titul_pred", x2.getStr(data["titul_pred"].ToString()));
+                        Session.Add("titul_za", x2.getStr(data["titul_za"].ToString()));
+
+                        Session.Add("zaradenie", x2.getStr(data["zaradenie"].ToString()));
+                        Session.Add("klinika_label", x2.getStr(data["klinika_label"].ToString()));
+                        Session.Add("clinic_label", x2.getStr(data["clinic_label"].ToString()));
+
+                        if (data["name"].ToString() == "sklad")
+                        {
+                            Response.Redirect("sklad/hladanie.aspx");
+                        }
+
+
+                        string[] fd = x2Mysql.getFreeDays();
+                        Session.Add("freedays", String.Join(",", fd));
+
+                        if (x2.getStr(data["omega_ms_item_id"].ToString()).Length > 0)
+                        {
+                            Session["omega_ms_item_id"] = x2.getStr(data["omega_ms_item_id"].ToString());
+                        }
+                        else
+                        {
+                            Session["omega_ms_item_id"] = null;
+                        }
+
+                        SortedList passPhrase = db_obj.getPassPhrase();
+                        Session.Add("passphrase", passPhrase["data"].ToString());
+                        Session.Add("LABELS", this.loadLabels(data["klinika"].ToString()));
+
+                        /*Response.Cookies["tuisegumdrum"].Value = " activado";
+                        Response.Cookies["user_id"].Value = data["id"].ToString();
+                        Response.Cookies["rights"].Value = data["group"].ToString();
+                        Response.Cookies["fullname"].Value = data["full_name"].ToString();
+                        Response.Cookies["login"].Value = data["name"].ToString();
+                        Response.Cookies["email"].Value = data["email"].ToString(); */
+
+
+                        List<string> news = db_obj.getLastNews(Convert.ToInt32(Session["klinika_id"].ToString()));
+
+
+
+                        if (news.Count > 0)
+                        {
+                            Session["newsToShow"] = news[0];
+                            Session["newsToShowDialog"] = news[0];
+                            //Page.ClientScript.RegisterStartupScript(this.GetType(), "AlertNews", "alert('trara');", true);
+                        }
+                        else
+                        {
+                            Session["newsToShow"] = "";
+                            Session["newsToShowDialog"] = "";
+                        }
+
+                        if (Session["klinika"].ToString() == "skladzm")
+                        {
+                            SortedList vzpData = new SortedList();
+                            vzpData.Add("search", "all");
+                            vzpData.Add("tab", "1");
+                            Session.Add("sklad_vzp", vzpData);
+                            Response.Redirect(@"sklad/vzp.aspx");
+                        }
+
+
+                        if (data["name"].ToString().IndexOf("tablet") != -1)
+                        {
+                            Response.Redirect("tabletview.aspx");
+                        }
+
+
+                        if (Session["workgroup"].ToString() == "doctor")
+                        {
+                            SortedList poz_data = db_obj.getNextPozDatum(DateTime.Today);
+
+                            if (this.maVyplnPoziadavky(Session["user_id"].ToString()) == true)
                             {
-                                if (Session["klinika"].ToString().ToLower() == "kdch" && Session["login"].ToString() != "admin")
+                                Response.Redirect(@"hlasko.aspx");
+                            }
+                            else
+                            {
+                                if (DateTime.Today < Convert.ToDateTime(poz_data["datum"].ToString()))
                                 {
-                                    Response.Redirect(@"poziadavky.aspx?a=1");
+                                    if (Session["klinika"].ToString().ToLower() == "kdch" && Session["login"].ToString() != "admin")
+                                    {
+                                        Response.Redirect(@"poziadavky.aspx?a=1");
+                                    }
+                                    else
+                                    {
+                                        Response.Redirect(@"hlasko.aspx");
+                                    }
+
                                 }
                                 else
                                 {
                                     Response.Redirect(@"hlasko.aspx");
                                 }
-
-                            }
-                            else
-                            {
-                                Response.Redirect(@"hlasko.aspx");
                             }
                         }
-                    }
-                    /*else if (group.IndexOf("medix") != -1)
-                    {
-                        Session.Add("medixUser", "medixUser");
-                        Response.Redirect(@"MEDIX/opdg.aspx");
-                    }*/
-                    else if (Session["workgroup"].ToString() == "assistent")
-                    {
-                        Response.Redirect(@"sestrhlas.aspx");
-                    }
-                    else if (Session["workgroup"].ToString() == "nurse")
-                    {
-                        //SortedList result = db_obj.getNextPozDatum(DateTime.Today);
-                        Response.Redirect(@"sestrhlas.aspx");
-                    }
-                    else if (Session["workgroup"].ToString() == "other")
-                    {
-                        Response.Redirect(@"sluzby3.aspx");
-                    }
-                    else if (Session["workgroup"].ToString() == "op")
-                    {
-                        Response.Redirect(@"opprogram.aspx");
+                        /*else if (group.IndexOf("medix") != -1)
+                        {
+                            Session.Add("medixUser", "medixUser");
+                            Response.Redirect(@"MEDIX/opdg.aspx");
+                        }*/
+                        else if (Session["workgroup"].ToString() == "assistent")
+                        {
+                            Response.Redirect(@"sestrhlas.aspx");
+                        }
+                        else if (Session["workgroup"].ToString() == "nurse")
+                        {
+                            //SortedList result = db_obj.getNextPozDatum(DateTime.Today);
+                            Response.Redirect(@"sestrhlas.aspx");
+                        }
+                        else if (Session["workgroup"].ToString() == "other")
+                        {
+                            Response.Redirect(@"sluzby3.aspx");
+                        }
+                        else if (Session["workgroup"].ToString() == "op")
+                        {
+                            Response.Redirect(@"opprogram.aspx");
+                        }
+
+                        //Response.Write("hura");
+
                     }
 
-                    //Response.Write("hura");
-
+                    else
+                    {
+                        // e.Authenticated = false;
+                        throw new System.InvalidProgramException("Zle heslo.... ");
+                       // this.info_txt.Text = "Bad user or password";
+                       // x2log.logData(data, "bad user or password", "error bad user login:" + data["full_name"]);
+                    }
                 }
-
                 else
                 {
-                    // e.Authenticated = false;
-                    this.info_txt.Text = "Bad user or password";
-                    x2log.logData(data, "bad user or password", "error bad user login:" + data["full_name"]);
+                    //e.Authenticated = false;
+                    throw new System.InvalidProgramException("Zle meno alebo heslo");
+                    //this.info_txt.Text = "Bad user or password";
+                    //x2log.logData(data, "bad user or password", "error bad user login:" + data["full_name"]);
                 }
             }
-            else
-            {
-                //e.Authenticated = false;
-                this.info_txt.Text = "Bad user or password";
-                x2log.logData(data, "bad user or password", "error bad user login:" + data["full_name"]);
-            }
         }
-
+        catch (Exception ex)
+        {
+            this.info_txt.Text = ex.Message.ToString();
+            x2log.logData(data, "bad user or password", "error bad user login:" + data["full_name"]);
+        }
 
     }
 

@@ -391,7 +391,7 @@ public partial class is_staze3 : System.Web.UI.Page
                         Literal lt = new Literal();
                         string startTime = dtTmp[2].Substring(0, 5);
                         string endTime = dtTmp[3].Substring(0, 5);
-                        lt.Text = "<p class='alert box'><span class='blue'>" + startTime + "-" + endTime + "</span><br><strong>" + year_class+"/"+dtTmp[1] + "</strong>, <span class='red'>" + dtTmp[0] + "</span> " ;
+                        lt.Text = "<p class='alert box'><span class='blue'>" + startTime + "-" + endTime + "</span><br><strong>" + year_class+" / "+dtTmp[1] + "</strong>, <span class='red'>" + dtTmp[0] + "</span> " ;
                         if (notes[k] != null) {
                             lt.Text += "<br><span class='small'>" + notes[k] + "</span></p>";
                         }
@@ -431,16 +431,16 @@ public partial class is_staze3 : System.Web.UI.Page
                     int day = dt.Day;
                     Control ctl = ctpl.FindControl("cell_" + day.ToString() + "_" + year_class);
 
-
-
                     TableCell dataCell = (TableCell)ctl;
 
                     string[] dtTmp = kruzTmp.Split(',');
                     Literal lt = new Literal();
                     string startTime = dtTmp[2].Substring(0, 5);
                     string endTime = dtTmp[3].Substring(0, 5);
-                    lt.Text = " <p class='alert box'><span class='blue'>" + startTime + "-" + endTime + "</span><br><strong>" + year_class+"/"+dtTmp[1] + "</strong>, <span class='red'>" + dtTmp[0] + "</span> " ;
+
+                    lt.Text = " <p class='alert box'><span class='blue'>" + startTime + "-" + endTime + "</span><br><strong>" + year_class+" / "+dtTmp[1] + "</strong>, <span class='red'>" + dtTmp[0] + "</span> " ;
                     lt.Text += "<br><span class='small'>" + table[row]["note"].ToString() + "</span></p>";
+                    
                     dataCell.Controls.Add(lt);
                     if (Clasess.editable)
                     {
@@ -541,6 +541,25 @@ public partial class is_staze3 : System.Web.UI.Page
         {
             this.loadSchedule();
         }
+
+    }
+
+
+    protected void printStazeFnc(object sender, EventArgs e)
+    {
+
+        Button btn = (Button)sender;
+
+        if (btn.ID.IndexOf("print") != -1)
+        {
+            Response.Redirect("is_p_staze.aspx?m=3&y=2017&p=p", false);
+        }
+
+        if (btn.ID.IndexOf("word") != -1)
+        {
+            Response.Redirect("is_p_staze.aspx?m=3&y=2017&p=w", false);
+        }
+
 
     }
 }

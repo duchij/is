@@ -934,12 +934,12 @@ public partial class controls_kdch_shifts : System.Web.UI.UserControl
         if (ID == "toWord_btn")
         {
             Session.Add("toWord", 1);
-            Response.Redirect("sltoword.aspx");
+            Response.Redirect("sltoword.aspx",false);
         }
         if (ID == "print_btn")
         {
             Session.Add("toWord", 0);
-            Response.Redirect("sltoword.aspx");
+            Response.Redirect("sltoword.aspx",false);
         }
         
     }

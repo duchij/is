@@ -127,6 +127,11 @@ function runLogin() {
         return false;
     }
 
+   // console.log()
+
+
+   // pss = CryptoJS1.SHA1(pss);
+
     var kP = __sid.substr(0, 16);
     
     var key = CryptoJS.enc.Utf8.parse(kP.trim());
@@ -168,15 +173,17 @@ function changePasswordFnc()
 
     if (p1 === p2) {
 
-        var passwd = CryptoJS.SHA3(p1);
-        var pStr = passwd.toString();
+        var passwd = CryptoJS.SHA1(p1);
+        passwd = passwd.toString(CryptoJS.enc.Base64);
+        console.log(passwd);
+        var pStr = passwd;
 
         var data = {
                 uname: $("#uname_txt").val(),
                 passwd: pStr
             };
 
-        //console.log(data);
+       console.log(data);
 
         sendData("forceChangePasswd", data, "afterPasswdChange");
 

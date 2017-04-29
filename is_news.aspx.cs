@@ -75,7 +75,7 @@ public partial class is_news : System.Web.UI.Page
 
             if (Convert.ToBoolean(res["status"]))
             {
-                Response.Redirect("is_news.aspx");
+                Response.Redirect("is_news.aspx",false);
             }
             else
             {
@@ -93,7 +93,7 @@ public partial class is_news : System.Web.UI.Page
             if (Convert.ToBoolean(res["status"]))
             {
                Session.Remove("news_edit_id");
-               Response.Redirect("is_news.aspx");
+               Response.Redirect("is_news.aspx",false);
             }
             else
             {
@@ -110,7 +110,7 @@ public partial class is_news : System.Web.UI.Page
 
         if (result == "ok")
         {
-            Response.Redirect("is_news.aspx");
+            Response.Redirect("is_news.aspx",false);
         }
         else
         {

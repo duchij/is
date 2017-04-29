@@ -258,7 +258,7 @@ public partial class is_user_vyk : System.Web.UI.Page
         }
         else
         {
-            Response.Redirect("is_user_vyk.aspx");
+            Response.Redirect("is_user_vyk.aspx",false);
         }
 
     }

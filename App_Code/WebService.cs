@@ -100,20 +100,25 @@ public class WebService : System.Web.Services.WebService {
     [WebMethod(EnableSession = true)]
     public string forceChangePasswd(string data)
     {
+
         Dictionary<string, string> obj = this.deserialize(data);
         Dictionary<string, string> rtData = new Dictionary<string, string>();
 
         string name = obj["uname"].ToString();
-        string passwd = obj["passwd"].ToString();
+        string passwd = obj["passwd"].ToString().Replace(' ','+');
 
-        System.Text.ASCIIEncoding enc = new System.Text.ASCIIEncoding();
+        //System.Text.ASCIIEncoding enc = new System.Text.ASCIIEncoding();
        // byte[] dataArr = enc.GetBytes(passwd);
 
         //string hPasswd = Convert.ToBase64String(dataArr);
 
         string sql = @"UPDATE [is_users] SET [passwd]='{0}', [force_change]=0  WHERE [name]='{1}'";
 
+        
+
         sql = x2Mysql.buildSql(sql, new string[] { passwd, name });
+
+        x2log.logData(sql, "", "test2");
 
         SortedList res = x2Mysql.execute(sql);
 

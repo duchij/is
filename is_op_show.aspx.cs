@@ -37,6 +37,6 @@ public partial class is_op_show : System.Web.UI.Page
 
     protected void printDocFnc(object sender, EventArgs e)
     {
-        Response.Redirect("is_printdoc.aspx?w=op&id=" + this.opprogid_hf.Value.ToString());
+        Response.Redirect("is_printdoc.aspx?w=op&id=" + this.opprogid_hf.Value.ToString(),false);
     }
 }

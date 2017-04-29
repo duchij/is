@@ -8,6 +8,8 @@
     <h1>Plán stáží...</h1>
     <asp:Literal runat="server" ID="msg_lbl" Text=""></asp:Literal>
     <hr />
+    <asp:Button runat="server" ID="print_btn" Text="Tlacit" OnClick="printStazeFnc" CssClass="asphalt" />
+        <asp:Button runat="server" ID="word_btn" Text="Do Wordu" OnClick="printStazeFnc" CssClass="blue"/>
     <asp:PlaceHolder ID="insertSection_plh" runat="server">
     <div class="row blue box">
         <div class="one third ">
@@ -48,9 +50,10 @@
 
     </div> 
     <div class="row">
+        
         <asp:PlaceHolder ID="listSection_plh" runat="server">
             <asp:table runat="server" ID="classes_tbl"></asp:table>
-
+        
         </asp:PlaceHolder>
          </div>
 

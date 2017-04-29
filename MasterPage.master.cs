@@ -63,8 +63,9 @@ public partial class MasterPage : System.Web.UI.MasterPage
 
         if (Session["sid"].ToString() != Session.SessionID.ToString())
         {
-            Response.Redirect("error.html");
+           Response.Redirect("error.html");
         }
+
 
         
         this.gKlinika = Session["klinika"].ToString().Trim().ToLower();

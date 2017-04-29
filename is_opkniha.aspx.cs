@@ -437,7 +437,7 @@ public partial class is_opkniha : System.Web.UI.Page
 
         Session["toExcelQuery"] = query;
 
-        Response.Redirect("toexcel.aspx?a=opres");
+        Response.Redirect("toexcel.aspx?a=opres",false);
     }
 
     protected void searchOPToExcelFnc(object sender, EventArgs e)
@@ -450,7 +450,7 @@ public partial class is_opkniha : System.Web.UI.Page
 
         Session["toExcelQuery"] = query;
 
-        Response.Redirect("toexcel.aspx?a=opres");
+        Response.Redirect("toexcel.aspx?a=opres",false);
     }
 
     protected void searchInMyExcelOPFnc(object sender, EventArgs e)
@@ -474,7 +474,7 @@ public partial class is_opkniha : System.Web.UI.Page
 
                 Session["toExcelQuery"] = query;
 
-                Response.Redirect("toexcel.aspx?a=opres");
+                Response.Redirect("toexcel.aspx?a=opres",false);
             }
             else
             {

@@ -1069,10 +1069,10 @@ public partial class sluzby : System.Web.UI.Page
 
     protected void toWord_btn_Click(object sender, EventArgs e)
     {
-        Response.Redirect("sltoword.aspx?rok=" + rok_cb.SelectedValue.ToString() + "&mesiac=" + mesiac_cb.SelectedValue.ToString() + "&mes=" + mesiac_cb.SelectedItem.ToString());
+        Response.Redirect("sltoword.aspx?rok=" + rok_cb.SelectedValue.ToString() + "&mesiac=" + mesiac_cb.SelectedValue.ToString() + "&mes=" + mesiac_cb.SelectedItem.ToString(),false);
     }
     protected void print_btn_Click(object sender, EventArgs e)
     {
-        Response.Redirect("sltoword.aspx?rok=" + rok_cb.SelectedValue.ToString() + "&mesiac=" + mesiac_cb.SelectedValue.ToString() + "&mes=" + mesiac_cb.SelectedItem.ToString() + "&print=1");
+        Response.Redirect("sltoword.aspx?rok=" + rok_cb.SelectedValue.ToString() + "&mesiac=" + mesiac_cb.SelectedValue.ToString() + "&mes=" + mesiac_cb.SelectedItem.ToString() + "&print=1",false);
     }
 }

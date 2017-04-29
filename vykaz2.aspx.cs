@@ -134,7 +134,7 @@ public partial class vykaz2 : System.Web.UI.Page
 
     protected void newVykaz_fnc(object sender, EventArgs e)
     {
-        Response.Redirect("vykaz2.aspx");
+        Response.Redirect("vykaz2.aspx",false);
     }
 
     protected void getPrenos(int mesiac, int rok)
@@ -1800,7 +1800,7 @@ public partial class vykaz2 : System.Web.UI.Page
         Session["epc_mesiac"] = mesiac;
         Session["epc_rok"] = rok;
 
-        Response.Redirect("is_epc.aspx");
+        Response.Redirect("is_epc.aspx",false);
     }
 
     protected void createPdf(int rok,int mesiac)

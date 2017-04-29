@@ -1043,7 +1043,7 @@ public partial class is_vykaz_s : System.Web.UI.Page
 
     protected void newVykaz_fnc(object sender, EventArgs e)
     {
-        Response.Redirect("is_vykaz_s.aspx");
+        Response.Redirect("is_vykaz_s.aspx",false);
     }
 
     protected void generateVykaz_fnc(object sender, EventArgs e)

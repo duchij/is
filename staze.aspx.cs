@@ -399,7 +399,7 @@ public partial class staze : System.Web.UI.Page
             Session.Add("st_to_word", false);
         }
 
-        Response.Redirect("stazeword.aspx");
+        Response.Redirect("stazeword.aspx",false);
     }
 
 }
