@@ -429,28 +429,94 @@ public partial class is_opkniha : System.Web.UI.Page
 
     protected void searchToExcelFnc(object sender, EventArgs e)
     {
+        int fromYear = 0;
+        int toYear = 0;
 
-        string finalLike = this.parseQuery(this.queryDg_txt.Text);
+        try
+        {
+
+            string query = "";
+            fromYear = Convert.ToInt32(this.fromYear_txt.Text.ToString());
+            toYear = Convert.ToInt32(this.toYear_txt.Text.ToString());
+            string finalLike = this.parseQuery(this.queryDg_txt.Text);
+
+            if (finalLike.Trim().Length > 0 && fromYear > 0 && toYear > 0)
+            {
+
+                string sql = @" SELECT [datum],[priezvisko],[rodne_cislo],[diagnoza],[vykon],[operater] 
+                                FROM [is_opkniha] 
+                            WHERE ([diagnoza] LIKE {0} 
+                            AND [datum] BETWEEN '{1}-01-01 00:00:01' AND '{2}-12-31 23:59:59'
+
+                                ORDER BY [datum]";
+
+
+                query = x2.sprintf(sql, new string[] { finalLike, fromYear.ToString(), toYear.ToString() });
+                
+                Session["toExcelQuery"] = query;
+
+                Response.Redirect("toexcel.aspx?a=opres");
+            }
+            else
+            {
+                this.msg_lbl.Text = x2.errorMessage("Nie čo hľadať !!!!!!");
+            }
+
+        }
+        catch (Exception ex)
+        {
+            this.msg_lbl.Text = x2.errorMessage("Roky nie sú čísla:  " + ex.ToString());
+        }
+        
         //x2Log.logData(finalLike, "", "final query");
 
-        string query = x2.sprintf("SELECT [datum],[priezvisko],[rodne_cislo],[diagnoza],[vykon],[operater] FROM [is_opkniha] WHERE ([diagnoza] LIKE {0} ORDER BY [datum] ", new String[] { finalLike });
 
-        Session["toExcelQuery"] = query;
 
-        Response.Redirect("toexcel.aspx?a=opres",false);
     }
 
     protected void searchOPToExcelFnc(object sender, EventArgs e)
     {
 
-        string finalLike = this.parseQuery(this.queryDg_txt.Text);
+        int fromYear = 0;
+        int toYear = 0;
+        try
+        {
+            fromYear = Convert.ToInt32(this.fromYearOP_txt.Text.ToString());
+            toYear = Convert.ToInt32(this.toYearOP_txt.Text.ToString());
+
+            string finalLike = this.parseQuery(this.queryOp_txt.Text);
+            string query = "";
+            if (finalLike.Trim().Length >0 && fromYear>0 && toYear > 0)
+            {
+
+                string sql = @" SELECT [datum],[priezvisko],[rodne_cislo],[diagnoza],[vykon],[operater] 
+                                    FROM [is_opkniha] 
+                                WHERE ([vykon] LIKE {0}  
+                                AND [datum] BETWEEN '{1}-01-01 00:00:01' AND '{2}-12-31 23:59:59' 
+                                    ORDER BY [datum]";
+
+                query = x2.sprintf(sql, new String[] { finalLike,fromYear.ToString(),toYear.ToString() });
+
+                Session["toExcelQuery"] = query;
+
+                Response.Redirect("toexcel.aspx?a=opres");
+            }
+            else
+            {
+                this.msg_lbl.Text = x2.errorMessage("Nie čo hľadať !!!!!!");
+            }
+
+        }catch (Exception ex)
+        {
+            this.msg_lbl.Text = x2.errorMessage("Roky nie sú čísla:  " + ex.ToString());
+        }
+
+       
         //x2Log.logData(finalLike, "", "final query");
 
-        string query = x2.sprintf("SELECT [datum],[priezvisko],[rodne_cislo],[diagnoza],[vykon],[operater] FROM [is_opkniha] WHERE ([vykon] LIKE {0} ORDER BY [datum] ", new String[] { finalLike });
+       
 
-        Session["toExcelQuery"] = query;
 
-        Response.Redirect("toexcel.aspx?a=opres",false);
     }
 
     protected void searchInMyExcelOPFnc(object sender, EventArgs e)
