@@ -247,6 +247,11 @@ public partial class header : System.Web.UI.UserControl
                 {
                     this.oup_lbl.Text = sluzba["OUP"].ToString() + "<br>" + notes["OUP"].ToString();
                 }
+
+                if (sluzba["Uraz2"] !=null)
+                {
+                    this.oup_lbl.Text += "<br>Klin.uraz: "+sluzba["Uraz2"].ToString() + "<br>" + notes["Uraz2"].ToString();
+                }
                 if (sluzba["OddA"] != null)
                 {
                     this.odda_lbl.Text = sluzba["OddA"].ToString() + "<br>" + notes["OddA"].ToString();

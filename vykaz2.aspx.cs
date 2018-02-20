@@ -1830,7 +1830,13 @@ public partial class vykaz2 : System.Web.UI.Page
 
         // the pdf content
         //PdfWriter pw = writer.DirectContent;
+
+        PdfImportedPage page = writer.GetImportedPage(reader, 1);
+        
+
+
         PdfContentByte cb = writer.DirectContent;
+        cb.AddTemplate(page, 0, 0);
 
         double[] koor = new double[13];
         koor[0] = 69; //prichod
@@ -1860,6 +1866,7 @@ public partial class vykaz2 : System.Web.UI.Page
 
         cb.SetColorStroke(BaseColor.LIGHT_GRAY);
         cb.SetColorFill(BaseColor.LIGHT_GRAY);
+        
 
         string[] freeDays = x_db.getFreeDays();
 
@@ -1900,7 +1907,7 @@ public partial class vykaz2 : System.Web.UI.Page
 
                 float recYY = (float)recY;
 
-                cb.Rectangle(34, recYY, 540, 11);
+                cb.Rectangle(34, recYY, 100, 11);
                 //cb.Stroke();
                 cb.Fill();
             }
@@ -2028,9 +2035,14 @@ public partial class vykaz2 : System.Web.UI.Page
             }
         }
 
-        PdfImportedPage page = writer.GetImportedPage(reader, 1);
-        cb.AddTemplate(page, 0, 0);
+        
 
+        cb.MoveText(100, 100);
+
+        Chunk chk = new Chunk("Halo toto je test");
+
+        chk.SetBackground(BaseColor.BLUE);
+        writer.Add(chk);
 
         myDoc.Close();
         fs.Close();

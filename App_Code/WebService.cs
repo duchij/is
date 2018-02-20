@@ -425,6 +425,11 @@ public class WebService : System.Web.Services.WebService {
             rtData["status"] = "false";
             rtData["msg"] = "Nie je mozne dat poznamku bez vybraneho lekara pre dany den a typ...";
         }
+        else if (Session["klinika_id"] == null)
+        {
+            rtData["status"] = "false";
+            rtData["msg"] = "<b>Boli ste dlho mimo</b>, prosim odhlaste sa a prihlaste sa na novo...";
+        }
         else
         {
             shiftsData.Add("user_id", user_id);

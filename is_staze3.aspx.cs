@@ -321,7 +321,7 @@ public partial class is_staze3 : System.Web.UI.Page
             }
             this.classes_tbl.Controls.Add(newRow);
         }
-        this.loadLectureData(year, month, 3);
+       this.loadLectureData(year, month, 3);
     }
 
 
@@ -381,7 +381,11 @@ public partial class is_staze3 : System.Web.UI.Page
 
                         DateTime dt = Convert.ToDateTime(kDatum[k]);
                         int day = dt.Day;
-                        Control ctl = ctpl.FindControl("cell_" + day.ToString() + "_" + year_class);
+
+                    //Clasess.x2log.logData(year_class, "", "year class");
+                    //Clasess.x2log.logData(day.ToString(), "", "day year class");
+                    //Clasess.x2log.logData(notes[k].ToString(), "", "poznamka");
+                    Control ctl = ctpl.FindControl("cell_" + day.ToString() + "_" + year_class);
 
                         TableCell dataCell = (TableCell)ctl;
 

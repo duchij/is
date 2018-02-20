@@ -75,17 +75,19 @@ public partial class controls_kdch_shifts : System.Web.UI.UserControl
         if (IsPostBack == false)
         {
             this.setMonthYear();
-            this.state = this.getState();
+            //this.state = this.getState();
 
-            if (this.state == "active")
-            {
-                this.editShift_chk.Checked = false;
-            }
-            else
-            {
-                this.editShift_chk.Checked = true;
-            }
+            /* if (this.state == "active")
+             {
+                 this.editShift_chk.Checked = false;
+             }
+             else
+             {
+                 this.editShift_chk.Checked = true;
+             }
+             */
 
+            this.editShift_chk.Checked = false;
 
 
             this.drawTable();

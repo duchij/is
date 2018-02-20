@@ -658,9 +658,25 @@ public class x2_var
             result = sb.ToString();
             msg.Text = result;
 
-        } 
+        }
 
-        public string errorMessage(string text)
+        public void succesMessage(ref Literal msg, string text)
+        {
+            string result = @"  <div class='success message'>
+                                        <h2>OK:</h2>
+                                        <p>{0}</p>
+                                    </div>
+                                    ";
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat(result, text);
+
+            result = sb.ToString();
+            msg.Text = result;
+
+        }
+
+    public string errorMessage(string text)
         {
             string result = @"  <div class='error message'>
                                     <h2>Nastala chyba:</h2>

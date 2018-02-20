@@ -92,7 +92,7 @@ public partial class is_user : System.Web.UI.Page
         this.titul_pred.Text = result["titul_pred"].ToString();
         this.titul_za.Text = result["titul_za"].ToString();
         this.zaradenie_txt.Text = result["zaradenie"].ToString();
-
+        this.klinika_txt.Text = result["klinika_label"].ToString();
         //this.name2_txt.Text = result["name2"].ToString();
        // this.name3_txt.Text = result["name3"].ToString();
 
