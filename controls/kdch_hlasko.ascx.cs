@@ -51,6 +51,10 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
             //this.loadHlasko();
         }
 
+        DateTime dt = Convert.ToDateTime(this.Calendar1.SelectedDate);
+       
+        this.date_hv.Value = x2.unixDate(dt);
+
         //this.setShiftTypes();
     }
 
@@ -313,6 +317,8 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
                 this.upLoadFile_btn.Visible = true;
                 this.upLoadedFile_lbl.Text = "";
 
+               // this.hlaskoSelectedTab.Value = "#hlasko_tab1";
+
             }
         }
         else
@@ -329,6 +335,8 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
                 this.loadFile_fup.Visible = true;
                 this.upLoadFile_btn.Visible = true;
                 this.upLoadedFile_lbl.Text = "";
+
+              //  this.hlaskoSelectedTab.Value = "#hlasko_tab1";
 
             }
             else
@@ -429,7 +437,9 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
     protected void loadHlasko()
     {
         DateTime dt = Convert.ToDateTime(this.Calendar1.SelectedDate);
-        
+
+        this.date_hv.Value = x2.unixDate(dt);
+
         StringBuilder sb = new StringBuilder();
         sb.Append("SELECT [is_hlasko].*, [users1].[full_name] AS [creatUser], [users2].[full_name] AS [lastUser] FROM [is_hlasko]");
         sb.AppendLine("INNER JOIN [is_users] AS [users1] ON [users1].[id] = [is_hlasko].[creat_user]");
@@ -531,6 +541,7 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
     protected void Calendar1_SelectionChanged(object sender, EventArgs e)
     {
         this.hlaskoCal_cal.SelectedDate = this.Calendar1.SelectedDate;
+      
         if (sender.GetType() == typeof(Calendar))
         {
 
@@ -620,7 +631,7 @@ public partial class controls_druhadk_hlasko : System.Web.UI.UserControl
 
             //this.loadEPCData();
             //this._generateHlasko();
-
+            this.hlaskoSelectedTab.Value = "#hlasko_tab1";
 
         }
         if (objId[0] == "delBtn")

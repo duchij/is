@@ -12,8 +12,8 @@
 
          
     <div>
-        <asp:Image ID="Image1" runat="server" ImageUrl="img/dfnsp.jpg" Width="80" Height="80" ImageAlign="Left" />
-        Detská fakultná nemocnica s poliklinikou Bratislava, Limbová 1, 833 40  Bratislava
+        <asp:Image ID="Image1" runat="server" ImageUrl="img/NUDCH.jpg" Width="15%"  ImageAlign="Left" />
+        Národný ústav detských chorôb, Limbová 1, 833 40  Bratislava
         <hr />
         <h1> EVIDENCIA PRACOVNÉHO ČASU V ÚPS</h1> <br />
         <table style="width:100%;">

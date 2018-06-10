@@ -5,12 +5,32 @@ using System.Collections;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Web.Script.Serialization;
+
+public class GalData
+{
+    public string id { get; set; }
+    public string name { get; set; }
+    public string path { get; set; }
+    public string width { get; set; }
+    public string height { get; set; }
+
+}
+
 
 public partial class is_opkniha : System.Web.UI.Page
 {
     x2_var x2 = new x2_var();
     mysql_db x2Mysql = new mysql_db();
     log x2Log = new log();
+    gal_db GalDb = new gal_db();
+
+    private List<GalData> PicData = new List<GalData>(); 
+
+    protected void Page_SaveStateComplete(object sender, EventArgs e)
+    {
+       
+    }
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -25,9 +45,239 @@ public partial class is_opkniha : System.Web.UI.Page
             this.opknihaTab_hv.Value = Session["opKnihaSelTab"].ToString();
         }
 
-
+       
         this.msg_lbl.Text = "";
         this.loadCount();
+
+       if (IsPostBack)
+        {
+            //Button searchBtn = (Button)
+
+            if (sender.GetType().ToString() == "Button")
+            {
+                Button btn = (Button)sender;
+
+                if (btn.ID == "galSearch_btn")
+                {
+                    this.loadSearchResults(this.searchData_lbl.Text.Trim());
+                }
+            }
+
+            if (Request.QueryString["m"] != null)
+            {
+                this.parseRequestData(Request);
+            }
+
+            
+        }
+
+    }
+
+    private void parseRequestData(HttpRequest request)
+    {
+        string method = Request.QueryString["m"].ToString().Trim();
+
+        switch (method)
+        {
+            case "loadGalleryData":
+
+                DateTime date = x2.UnixToMsDateTime(request.QueryString["d"].ToString().Trim());
+                this.loadSearchResults(date.ToString("ddMMyyyy"));
+                break;
+        }
+    }
+
+    protected void searchGalleryFnc(object sender, EventArgs e)
+    {
+        //if (is)
+
+        
+
+        if (IsPostBack)
+        {
+
+           // this.myTest(null);
+
+            string inDate = this.searchData_lbl.Text.Trim();
+
+            if (string.IsNullOrEmpty(inDate))
+            {
+                this.loadSearchResults(null);
+            }else
+            {
+               this.loadSearchResults(inDate);
+            }
+
+        }
+
+        
+    }
+
+    private void myTest(string date)
+    {
+        CRest myCurl = new CRest();
+
+        Dictionary<string, string> headerData = new Dictionary<string, string>();
+
+        headerData["X-Gallery-Request-Method"] = "get";
+        headerData["X-Gallery-Request-Key"] = "de1ef9f8557883c3b7b012211c635518";
+        headerData["Content_type"] = "Image/JPG";
+
+
+        string url = "http://10.10.2.83/gallery3/index.php/rest/item/1306";
+
+
+        string data = myCurl._csCurl(url, "GET_TXT", headerData);
+
+        this.msg_lbl.Text = data;
+
+    }
+
+
+    private void loadSearchResults(string inDate)
+    {
+
+        string date = null;
+
+        if (string.IsNullOrEmpty(inDate))
+        {
+            date = this.galOpDate_txt.Text.Trim();
+        }
+        else
+        {
+            date = inDate;
+
+            this.galOpDate_txt.Text = date;
+        }
+
+        this.galOpDate_txt.Text = date;
+        this.searchData_lbl.Text = date;
+
+
+        Dictionary<string, string> headerData = new Dictionary<string, string>();
+
+        headerData["X-Gallery-Request-Method"] = "get";
+        headerData["X-Gallery-Request-Key"] = "de1ef9f8557883c3b7b012211c635518";
+        headerData["Content_type"] = "Image/JPG";
+
+        CRest myRest = new CRest();
+
+        try
+        {
+
+            if (string.IsNullOrEmpty(date))
+            {
+                throw new Exception("Nebol zadany datum pre hladanie obrazkov");
+            }
+
+            /* string query = @"SELECT 
+                             [t_gal.id], [t_gal.name], [t_gal.relative_path_cache] AS [path],
+                             [t_gal.width], [t_gal.height]
+
+                             FROM [gal3_items] AS [t_gal]
+
+                             WHERE [t_gal.name] LIKE '%{0}%'
+
+                             ";
+
+             query = GalDb.buildSql(query, new string[] { date });
+             Dictionary<int, Hashtable> table = GalDb.getTable(query);*/
+
+
+            Dictionary<int, Hashtable> table = new Dictionary<int, Hashtable>();
+            Dictionary<string, string> getData = new Dictionary<string, string>();
+
+            getData.Add("d", "03032009");
+
+            string res = myRest._csCurl("http://192.168.56.1/dapp/index.php?d=03032009", "GET_TXT", getData);
+
+
+            JavaScriptSerializer sr = new JavaScriptSerializer();
+
+           // GalData gl = new GalData();
+
+            this.PicData = sr.Deserialize<List<GalData>>(res);
+
+
+           int tblCnt = table.Count;
+
+
+
+
+            this.foundPictures_lbl.CssClass = "green bold medium";
+
+
+            string tmpDate = string.Format("{0}.{1}.{2}", date.Substring(0, 2), date.Substring(2, 2), date.Substring(4, 4));
+
+            // string strDate = Convert.ToDateTime(date).ToLongDateString();
+
+            this.foundPictures_lbl.Text = string.Format("Najdenych obrazkov predatum {1} : {0}", tblCnt, tmpDate);
+
+
+            if (tblCnt > 0)
+            {
+
+                int rows = tblCnt % 2;
+
+
+                string url = null;
+                string picData = null;
+
+                for (int i = 0; i < tblCnt; i++)
+                {
+
+                    TableRow tblRow = new TableRow();
+
+                    TableCell tblCell = new TableCell();
+
+                    Label lblName = new Label();
+                    lblName.CssClass = "asphalt";
+                    lblName.Text = string.Format("<p class='asphalt bold'>{0}</p>", table[i]["path"].ToString());
+                    tblCell.Controls.Add(lblName);
+
+                    Image imgThumb = new Image();
+                    url = string.Format(Resources.Resource.opkniha_gallery_url_thumb, table[i]["id"]);
+
+                    picData = myRest._csCurl(url, "GET_BIN", headerData);
+                    string _dt = string.Format(@"data:image/jpeg;base64,{0}", picData);
+
+                    imgThumb.ImageUrl = _dt;
+                    imgThumb.Style.Add("display","block");
+                    tblCell.Controls.Add(imgThumb);
+
+
+                    HyperLink lnk = new HyperLink();
+                    lnk.Text = "Plna velkost";
+                    lnk.CssClass = "button yellow medium";
+                    lnk.NavigateUrl = "controls/opkniha_gal.aspx?galId=" + table[i]["id"].ToString(); 
+                //    lnk.
+                    tblCell.Controls.Add(lnk);
+
+                    tblRow.Controls.Add(tblCell);
+
+
+                    this.picResult_tbl.Controls.Add(tblRow);
+                }
+            }
+        }
+
+
+        catch (Exception ex)
+        {
+            this.msg_lbl.Text = x2.errorMessage("Chyba:  " + ex.Message);
+        }
+    }
+
+
+    protected void loadPicture(object sender, EventArgs e)
+    {
+        Button btn = (Button)sender;
+        string[] tmp = btn.ID.Split('_');
+
+        Response.Redirect("controls/opkniha_gal.aspx?galId=" + tmp[1]); 
+
+
+
     }
 
     protected void loadCount()
@@ -43,46 +293,75 @@ public partial class is_opkniha : System.Web.UI.Page
 
     }
 
+    
+
     protected void searchInDgFnc(object sender, EventArgs e)
     {
-        int fromYear = 0;
-        int toYear = 0;
+        string fromDate = null;
+        string toDate = null;
+        string search = null;
 
         try
         {
-            fromYear = Convert.ToInt32(this.fromYear_txt.Text.ToString());
-            toYear = Convert.ToInt32(this.toYear_txt.Text.ToString());
-            if (this.queryDg_txt.Text.ToString().Trim().Length>0)
+            fromDate = this.dgFrom_txt.Text.Trim();
+            toDate = this.dgTo_txt.Text.Trim();
+
+            if (string.IsNullOrEmpty(fromDate))
             {
-                this.searchData(this.queryDg_txt.Text.ToString().Trim(), fromYear, toYear);
+                throw new Exception("Nie je zadany datum OD");
+            }
+
+            if (string.IsNullOrEmpty(toDate))
+            {
+                throw new Exception("Nie je zadany datum DO");
+            }
+
+            search = this.queryDg_txt.Text.ToString().Trim();
+
+            if (search.Length > 0)
+            {
+                this.searchData(search, fromDate, toDate);
             }
             else
             {
-                this.msg_lbl.Text = x2.errorMessage("Nie čo hľadať !!!!!!");
+                throw new Exception("Nie čo hľadať !!!!!!");
             }
             
 
         }
         catch (Exception ex)
         {
-           this.msg_lbl.Text = x2.errorMessage("Roky nie sú čísla:  " + ex);
+           this.msg_lbl.Text = x2.errorMessage("Chyba:  " + ex.ToString());
         }
     }
 
     protected void searchInMyOPFnc(object sender, EventArgs e)
     {
-        int fromYear = 0;
-        int toYear = 0;
+        string fromDate = null;
+        string toDate = null;
+        string search = null;
 
         try
         {
-            fromYear = Convert.ToInt32(this.fromYearMyOP_txt.Text.ToString());
-            toYear = Convert.ToInt32(this.toYearMyOP_txt.Text.ToString());
+            fromDate = this.myFrom_txt.Text.Trim();
+            toDate = this.myTo_txt.Text.Trim();
+            search = this.menoMyOP_txt.Text.ToString().Trim();
 
-            if (this.menoMyOP_txt.Text.ToString().Trim().Length > 0 && fromYear>0 && toYear>0)
+
+            if (string.IsNullOrEmpty(fromDate))
+            {
+                throw new Exception("Nie je zadany datum OD");
+            }
+
+            if (string.IsNullOrEmpty(toDate))
+            {
+                throw new Exception("Nie je zadany datum DO");
+            }
+
+            if (search.Length > 0 )
             {
                
-                this.searchDataMyOP(this.menoMyOP_txt.Text.ToString().Trim(), fromYear, toYear);
+                this.searchDataMyOP(search, fromDate, toDate);
             }
             else
             {
@@ -93,24 +372,37 @@ public partial class is_opkniha : System.Web.UI.Page
         }
         catch (Exception ex)
         {
-            this.msg_lbl.Text = x2.errorMessage("Roky nie sú čísla:  " + ex);
+            this.msg_lbl.Text = x2.errorMessage("Chyba:  " + ex.ToString());
         }
     }
 
 
     protected void searchInOPFnc(object sender, EventArgs e)
     {
-        int fromYear = 0;
-        int toYear = 0;
+        string fromDate = null;
+        string toDate = null;
+        string search = null;
 
         try
         {
-            fromYear = Convert.ToInt32(this.fromYearOP_txt.Text.ToString());
-            toYear = Convert.ToInt32(this.toYearOP_txt.Text.ToString());
+            fromDate = this.opFrom_txt.Text.Trim();
+            toDate = this.opTo_txt.Text.Trim();
+            search = this.queryOp_txt.Text.ToString().Trim();
 
-            if (this.queryOp_txt.Text.ToString().Trim().Length >0)
+
+            if (string.IsNullOrEmpty(fromDate))
             {
-                this.searchDataOP(this.queryOp_txt.Text.ToString().Trim(), fromYear, toYear);
+                throw new Exception("Nie je zadany datum OD");
+            }
+
+            if (string.IsNullOrEmpty(toDate))
+            {
+                throw new Exception("Nie je zadany datum DO");
+            }
+
+            if (search.Length >0)
+            {
+                this.searchDataOP(search, fromDate, toDate);
             }
             else
             {
@@ -125,15 +417,20 @@ public partial class is_opkniha : System.Web.UI.Page
         }
     }
 
-    protected void searchDataOP(string queryStr, int fromYear, int toYear)
+    protected void searchDataOP(string queryStr, string fromDate, string toDate)
     {
 
         //string queryStr = this.queryDg_txt.Text.ToString().Trim();
         string finalLike = this.parseQuery(queryStr);
 
-        
 
-        string query = x2.sprintf("SELECT [datum],[priezvisko],[rodne_cislo],[diagnoza],[vykon],[operater] FROM [is_opkniha] WHERE ([vykon] LIKE {0} AND [datum] BETWEEN '{1}-01-01 00:00:01' AND '{2}-12-31 23:59:59' ORDER BY [datum] ", new String[] { finalLike, fromYear.ToString(), toYear.ToString() });
+
+        string query = x2.sprintf(
+                                    @"SELECT [datum],[priezvisko],[rodne_cislo],[diagnoza],[vykon],[operater] 
+                                        FROM [is_opkniha] 
+                                      WHERE ([vykon] LIKE {0} AND [datum] BETWEEN '{1} 00:00:01' AND '{2} 23:59:59' 
+                                        ORDER BY [datum] ", 
+                                   new String[] { finalLike, fromDate, toDate });
         Dictionary<int, Hashtable> table = x2Mysql.getTable(query);
 
 
@@ -188,7 +485,19 @@ public partial class is_opkniha : System.Web.UI.Page
             TableRow resRow = new TableRow();
 
             TableCell dateCell = new TableCell();
-            dateCell.Text = table[row]["datum"].ToString();
+            Label dateLbl = new Label();
+            dateLbl.Text = table[row]["datum"].ToString()+"</br>";
+            dateCell.Controls.Add(dateLbl);
+
+            //dateCell.Text = table[row]["datum"].ToString();
+
+
+            LinkButton btnLink = new LinkButton();
+            btnLink.CssClass = "button blue medium";
+            btnLink.PostBackUrl = string.Format("is_opkniha.aspx?m=loadGalleryData&d={0}", table[row]["datum"]);
+            btnLink.Text = "Obrazky pre datum";
+            dateCell.Controls.Add(btnLink);
+
             resRow.Controls.Add(dateCell);
 
             TableCell nameCell = new TableCell();
@@ -217,14 +526,21 @@ public partial class is_opkniha : System.Web.UI.Page
 
     }
 
-    protected void searchDataMyOP(string name, int fromYear, int toYear)
+    protected void searchDataMyOP(string name, string fromDate, string toDate)
     {
 
-        //string queryStr = this.queryDg_txt.Text.ToString().Trim();
-        //string finalLike = this.parseQuery(this.queryDg_txt.Text);
+        
         string nameAsci = x2_var.UTFtoASCII(name);
 
-        string query = x2.sprintf("SELECT [datum],[priezvisko],[rodne_cislo],[diagnoza],[vykon],[operater] FROM [is_opkniha] WHERE ([operater] LIKE '%{0}%' OR '%{3}%') AND [datum] BETWEEN '{1}-01-01 00:00:01' AND '{2}-12-31 23:59:59' ORDER BY [datum] ", new String[] { name, fromYear.ToString(), toYear.ToString(),nameAsci });
+        string query = x2.sprintf(
+                                    @"SELECT [datum],[priezvisko],[rodne_cislo],[diagnoza],[vykon],[operater] 
+                                        FROM [is_opkniha] 
+                                    WHERE ([operater] LIKE '%{0}%' OR '%{3}%') 
+                                    AND [datum] BETWEEN '{1} 00:00:01' AND '{2} 23:59:59' 
+                                        ORDER BY [datum] ", 
+
+                                  new String[] { name, fromDate, toDate,nameAsci });
+
         Dictionary<int, Hashtable> table = x2Mysql.getTable(query);
 
 
@@ -278,7 +594,18 @@ public partial class is_opkniha : System.Web.UI.Page
             TableRow resRow = new TableRow();
 
             TableCell dateCell = new TableCell();
-            dateCell.Text = table[row]["datum"].ToString();
+
+            Label dateLbl = new Label();
+            dateLbl.Text = table[row]["datum"].ToString()+"</br>";
+            dateCell.Controls.Add(dateLbl);
+            
+
+            LinkButton btnLink = new LinkButton();
+            btnLink.CssClass = "button blue medium";
+            btnLink.PostBackUrl = string.Format("is_opkniha.aspx?m=loadGalleryData&d={0}", table[row]["datum"]);
+            btnLink.Text = "Obrazky pre datum";
+            dateCell.Controls.Add(btnLink);
+
             resRow.Controls.Add(dateCell);
 
             TableCell nameCell = new TableCell();
@@ -309,13 +636,18 @@ public partial class is_opkniha : System.Web.UI.Page
 
 
 
-    protected void searchData(string queryStr, int fromYear, int toYear)
+    protected void searchData(string queryStr, string fromDate, string toDate)
     {
 
         //string queryStr = this.queryDg_txt.Text.ToString().Trim();
         string finalLike = this.parseQuery(this.queryDg_txt.Text);
 
-        string query = x2.sprintf("SELECT [datum],[priezvisko],[rodne_cislo],[diagnoza],[vykon],[operater] FROM [is_opkniha] WHERE ([diagnoza] LIKE {0} AND [datum] BETWEEN '{1}-01-01 00:00:01' AND '{2}-12-31 23:59:59' ORDER BY [datum] ", new String[] { finalLike,fromYear.ToString(),toYear.ToString() });
+        string query = x2.sprintf(@"SELECT [datum],[priezvisko],[rodne_cislo],[diagnoza],[vykon],[operater] 
+                                        FROM [is_opkniha] 
+                                    WHERE 
+                                    ([diagnoza] LIKE {0} AND [datum] BETWEEN '{1} 00:00:00' AND '{2} 23:59:59' 
+                                    ORDER BY [datum] ", new String[] { finalLike,fromDate,toDate});
+
         Dictionary<int, Hashtable> table = x2Mysql.getTable(query);
 
 
@@ -369,7 +701,17 @@ public partial class is_opkniha : System.Web.UI.Page
             TableRow resRow = new TableRow();
 
             TableCell dateCell = new TableCell();
-            dateCell.Text = table[row]["datum"].ToString();
+            Label dateLbl = new Label();
+            dateLbl.Text = table[row]["datum"].ToString() + "</br>";
+            dateCell.Controls.Add(dateLbl);
+
+
+            LinkButton btnLink = new LinkButton();
+            btnLink.CssClass = "button blue medium";
+            btnLink.PostBackUrl = string.Format("is_opkniha.aspx?m=loadGalleryData&d={0}", table[row]["datum"]);
+            btnLink.Text = "Obrazky pre datum";
+            dateCell.Controls.Add(btnLink);
+
             resRow.Controls.Add(dateCell);
 
             TableCell nameCell = new TableCell();
@@ -429,29 +771,30 @@ public partial class is_opkniha : System.Web.UI.Page
 
     protected void searchToExcelFnc(object sender, EventArgs e)
     {
-        int fromYear = 0;
-        int toYear = 0;
+        string fromDate = null;
+        string toDate = null;
 
         try
         {
 
             string query = "";
-            fromYear = Convert.ToInt32(this.fromYear_txt.Text.ToString());
-            toYear = Convert.ToInt32(this.toYear_txt.Text.ToString());
+
+            fromDate = this.dgFrom_txt.Text.ToString();
+            toDate = this.dgTo_txt.Text.ToString();
+
             string finalLike = this.parseQuery(this.queryDg_txt.Text);
 
-            if (finalLike.Trim().Length > 0 && fromYear > 0 && toYear > 0)
+            if (finalLike.Trim().Length > 0 && !string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
             {
 
                 string sql = @" SELECT [datum],[priezvisko],[rodne_cislo],[diagnoza],[vykon],[operater] 
-                                FROM [is_opkniha] 
-                            WHERE ([diagnoza] LIKE {0} 
-                            AND [datum] BETWEEN '{1}-01-01 00:00:01' AND '{2}-12-31 23:59:59'
-
+                                    FROM [is_opkniha] 
+                                WHERE ([diagnoza] LIKE {0} 
+                                    AND [datum] BETWEEN '{1} 00:00:01' AND '{2} 23:59:59'
                                 ORDER BY [datum]";
 
 
-                query = x2.sprintf(sql, new string[] { finalLike, fromYear.ToString(), toYear.ToString() });
+                query = x2.sprintf(sql, new string[] { finalLike, fromDate, toDate });
                 
                 Session["toExcelQuery"] = query;
 
@@ -465,7 +808,7 @@ public partial class is_opkniha : System.Web.UI.Page
         }
         catch (Exception ex)
         {
-            this.msg_lbl.Text = x2.errorMessage("Roky nie sú čísla:  " + ex.ToString());
+            this.msg_lbl.Text = x2.errorMessage("Chyba:  " + ex.ToString());
         }
         
         //x2Log.logData(finalLike, "", "final query");
@@ -477,25 +820,26 @@ public partial class is_opkniha : System.Web.UI.Page
     protected void searchOPToExcelFnc(object sender, EventArgs e)
     {
 
-        int fromYear = 0;
-        int toYear = 0;
+        string fromDate = null;
+        string toDate = null;
         try
         {
-            fromYear = Convert.ToInt32(this.fromYearOP_txt.Text.ToString());
-            toYear = Convert.ToInt32(this.toYearOP_txt.Text.ToString());
+            fromDate = this.opFrom_txt.Text.ToString().Trim();
+            toDate = this.opTo_txt.Text.ToString().Trim();
 
             string finalLike = this.parseQuery(this.queryOp_txt.Text);
+
             string query = "";
-            if (finalLike.Trim().Length >0 && fromYear>0 && toYear > 0)
+            if (finalLike.Trim().Length >0 && !string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
             {
 
                 string sql = @" SELECT [datum],[priezvisko],[rodne_cislo],[diagnoza],[vykon],[operater] 
                                     FROM [is_opkniha] 
                                 WHERE ([vykon] LIKE {0}  
-                                AND [datum] BETWEEN '{1}-01-01 00:00:01' AND '{2}-12-31 23:59:59' 
+                                AND [datum] BETWEEN '{1} 00:00:01' AND '{2} 23:59:59' 
                                     ORDER BY [datum]";
 
-                query = x2.sprintf(sql, new String[] { finalLike,fromYear.ToString(),toYear.ToString() });
+                query = x2.sprintf(sql, new String[] { finalLike,fromDate,toDate });
 
                 Session["toExcelQuery"] = query;
 
@@ -508,7 +852,7 @@ public partial class is_opkniha : System.Web.UI.Page
 
         }catch (Exception ex)
         {
-            this.msg_lbl.Text = x2.errorMessage("Roky nie sú čísla:  " + ex.ToString());
+            this.msg_lbl.Text = x2.errorMessage("Chyba:  " + ex.ToString());
         }
 
        
@@ -522,21 +866,25 @@ public partial class is_opkniha : System.Web.UI.Page
     protected void searchInMyExcelOPFnc(object sender, EventArgs e)
     {
 
-        int fromYear = 0;
-        int toYear = 0;
+        string fromDate = null;
+        string toDate = null;
 
         try
         {
-            fromYear = Convert.ToInt32(this.fromYearMyOP_txt.Text.ToString());
-            toYear = Convert.ToInt32(this.toYearMyOP_txt.Text.ToString());
+            fromDate = this.myFrom_txt.Text.ToString().Trim();
+            toDate = this.myTo_txt.Text.ToString().Trim();
 
-            if (this.menoMyOP_txt.Text.ToString().Trim().Length > 0 && fromYear > 0 && toYear > 0)
+            if (this.menoMyOP_txt.Text.ToString().Trim().Length > 0 && !string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
             {
                 string name = this.menoMyOP_txt.Text.ToString().Trim();
                 string nameAsci = x2_var.UTFtoASCII(name);
                    
                 //this.searchDataMyOP(this.menoMyOP_txt.Text.ToString().Trim(), fromYear, toYear);
-                string query = x2.sprintf("SELECT [datum],[priezvisko],[rodne_cislo],[diagnoza],[vykon],[operater] FROM [is_opkniha] WHERE ([operater] LIKE '%{0}%' OR '%{3}%') AND [datum] BETWEEN '{1}-01-01 00:00:01' AND '{2}-12-31 23:59:59' ORDER BY [datum] ", new String[] { name, fromYear.ToString(), toYear.ToString(), nameAsci });
+                string query = x2.sprintf(@"SELECT [datum],[priezvisko],[rodne_cislo],[diagnoza],[vykon],[operater] 
+                                                FROM [is_opkniha] 
+                                            WHERE ([operater] LIKE '%{0}%' OR '%{3}%') 
+                                                AND [datum] BETWEEN '{1} 00:00:01' AND '{2} 23:59:59' 
+                                                ORDER BY [datum] ", new String[] { name, fromDate, toDate, nameAsci });
 
                 Session["toExcelQuery"] = query;
 
@@ -551,7 +899,7 @@ public partial class is_opkniha : System.Web.UI.Page
         }
         catch (Exception ex)
         {
-            this.msg_lbl.Text = x2.errorMessage("Roky nie sú čísla:  " + ex);
+            this.msg_lbl.Text = x2.errorMessage("Chyba:  " + ex);
         }
     }
 

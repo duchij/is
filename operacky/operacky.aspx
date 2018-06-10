@@ -9,14 +9,13 @@
 <body>
     <form id="form1" runat="server">
     <div>
-        Rodne cislo:
-        <asp:TextBox ID="TextBox1" runat="server"></asp:TextBox>
+        Rodn0 cislo:
+        <asp:TextBox ID="TextBox1" runat="server" Width="123px"></asp:TextBox>
         <br />
         Meno:
-        <asp:TextBox ID="TextBox2" runat="server"></asp:TextBox>
+        <asp:TextBox ID="TextBox2" runat="server" Width="133px"></asp:TextBox>
         <br />
-        Priezvisko&nbsp;
-        <asp:TextBox ID="TextBox3" runat="server"></asp:TextBox>
+        Priezvisko&nbsp; <asp:TextBox ID="TextBox3" runat="server"></asp:TextBox>
         <br />
         Poistovna:
         <asp:TextBox ID="TextBox4" runat="server"></asp:TextBox>
@@ -30,6 +29,7 @@
         Operacny vykon stat:
         <br />
         Operacny vykon slovom&nbsp;
+        <asp:ImageButton ID="ImageButton1" runat="server" />
         <br />
         Kodove oznacenie:<br />
         Trauma:<br />

@@ -8,9 +8,17 @@ using System.Collections.Generic;
 
 public class lf_view : IHttpHandler {
 
-    mysql_db x2Mysql = new mysql_db();
+    private mysql_db x2Mysql = new mysql_db();
+    private x2_var X2 = new x2_var();
 
     public void ProcessRequest (HttpContext context) {
+
+
+        if (context.Request.QueryString["galId"] != null)
+        {
+            this.loadDataFromGallery(context.Request.QueryString["galId"].ToString(), context);
+        }
+
 
         if (context.Request.QueryString["id"] != null)
         {
@@ -35,16 +43,9 @@ public class lf_view : IHttpHandler {
             }
             byte[] lfData = x2Mysql.lfStoredData(picId, Convert.ToInt32(picData["file-size"]));
             context.Response.BinaryWrite(lfData);
-            
+
 
         }
-
-
-
-        //context.Response.ContentType = "text/plain";
-        //context.Response.Write("Hello World");
-
-
     }
 
     public bool IsReusable {
@@ -52,5 +53,30 @@ public class lf_view : IHttpHandler {
             return false;
         }
     }
+
+    private void loadDataFromGallery(string id,HttpContext context)
+    {
+
+        Dictionary<string, string> headerData = new Dictionary<string, string>();
+
+        headerData["X-Gallery-Request-Method"] = "get";
+        headerData["X-Gallery-Request-Key"] = "de1ef9f8557883c3b7b012211c635518";
+        headerData["Content_type"] = "Image/JPG";
+
+        CRest myCurl = new CRest();
+        string url = string.Format(Resources.Resource.opkniha_gallery_url_picture, id);
+        string data = myCurl._csCurl(url, "GET_BIN", headerData);
+
+        byte[] arr = Convert.FromBase64String(data);
+
+        context.Response.BinaryWrite(arr);
+
+
+
+
+    }
+
+
+
 
 }

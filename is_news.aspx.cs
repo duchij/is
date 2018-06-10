@@ -15,13 +15,13 @@ class NewsObj
     private mysql_db _mysql;
     private int _gKlinika;
 
-    public int gKlinika
+    private int gKlinika
     {
         get { return _gKlinika; }
         set { _gKlinika = value; }
     }
 
-    public mysql_db mysql
+    private mysql_db mysql
     {
         get { return _mysql; }
         set { _mysql = value; }
@@ -46,6 +46,7 @@ public partial class is_news : System.Web.UI.Page
 
         int klinikaId = Convert.ToInt32(Session["klinika_id"].ToString());
        
+        
         news_gv.DataSource = x_db.getData_News(klinikaId);
         news_gv.DataBind();
        
@@ -119,6 +120,8 @@ public partial class is_news : System.Web.UI.Page
 
     }
 
+
+
     protected void news_gv_selectRow(object sender, GridViewSelectEventArgs e)
     {
         SortedList data = x_db.getInfoNewsData(Convert.ToInt32(news_gv.Rows[e.NewSelectedIndex].Cells[1].Text.ToString()));
@@ -142,5 +145,10 @@ public partial class is_news : System.Web.UI.Page
         }
     }
 
-   
+
+
+    protected void news_gv_PageIndexChanging(object sender, GridViewPageEventArgs e)
+    {
+        this.news_gv.PageIndex = e.NewPageIndex;
+    }
 }

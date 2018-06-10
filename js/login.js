@@ -57,10 +57,10 @@ function sendData(fnc, data, callBack, args) {
             messageBox(errorText, "error");
         },
         success: function (data) {
-            console.log(data);
+            //console.log(data);
             //showNewsText(data);
             var xml = $.parseXML(data);
-            console.log(xml);
+           // console.log(xml);
             var dtJson = xml.childNodes[0].textContent;
             var obj = JSON.parse(dtJson);
             $("#commBall").css("display", "none");
@@ -183,7 +183,7 @@ function changePasswordFnc()
                 passwd: pStr
             };
 
-       console.log(data);
+       //console.log(data);
 
         sendData("forceChangePasswd", data, "afterPasswdChange");
 

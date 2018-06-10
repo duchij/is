@@ -122,7 +122,7 @@ public partial class is_gallery : System.Web.UI.Page
                 TableCell nameCell1 = new TableCell();
 
                 ImageButton imgBtn = new ImageButton();
-                imgBtn.ImageUrl = "http://" + HttpContext.Current.Request.Url.Authority + "/controls/lf_view.ashx?id=" + files[i]["lf_id"].ToString();
+                imgBtn.ImageUrl = "https://" + HttpContext.Current.Request.Url.Authority + "/controls/lf_view.ashx?id=" + files[i]["lf_id"].ToString();
                 imgBtn.Click += new ImageClickEventHandler(imgBtn_click_fnc);
 
                 imgBtn.ID ="id_"+i.ToString()+"_"+ files[i]["lf_id"].ToString();

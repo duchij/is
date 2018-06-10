@@ -1,5 +1,144 @@
-﻿
+﻿//Main Iesko JS script
+/* options ={ 
+                headers:key/value of headers to be set for the call
+                responseType: string arraybuffer, blob, json, text
+              
+                source: the source which called the method
+                callback: the method, to which the result is to be loaded
+                args: arguments, in form of array or single parameter
+                contentType: content type to be loaded eg image/jpeg
+    method = GET,POST
+    url = url of the REST call
+                
+*/
 
+//options{headers,source,callback,responseType, args}
+function xhrRawGetData(method, url, type, options)
+{
+    ///<summary> Gets Data from REST call </summary>
+        
+
+    // Attempt to creat the XHR2 object
+    var xhr;
+
+    try {
+        xhr = new XMLHttpRequest();
+    } catch (e) {
+        try {
+            xhr = new XDomainRequest();
+        } catch (e) {
+            try {
+                xhr = new ActiveXObject('Msxml2.XMLHTTP');
+            } catch (e) {
+                try {
+                    xhr = new ActiveXObject('Microsoft.XMLHTTP');
+                } catch (e) {
+                    alert('\nYour browser is not' +
+                        ' compatible with XHR2');
+                }
+            }
+        }
+    }
+
+    xhr.open(method, url, true);
+    xhr.responseType = options.responseType;
+    //xhr.
+    // xhr.overrideMimeType("text\/plain; charset=x-user-defined");
+
+    // xhr.setRequestHeader("Access-Control-Allow-Origin","*");
+    var headers = options.headers;
+
+    for (var key in headers) {
+        xhr.setRequestHeader(key, headers[key]);
+    }
+
+    var _source = options.source;
+
+   // xhr.setRequestHeader("X-Gallery-Request-Method", "get");
+  //  xhr.setRequestHeader("X-Gallery-Request-Key", "de1ef9f8557883c3b7b012211c635518");
+   // xhr.setRequestHeader("Content-type", "Image/JPG");
+    //console.log(["type", type]);
+    switch (type) {
+
+        case "BINARY_DATA":
+            xhr.onload = function () {
+
+                if (this.status == 200) {
+
+                    var blob = new Blob([xhr.response, { type: options.contentType }]);
+
+                    var objectUrl = URL.createObjectURL(blob);
+
+                   _source[options.callback](true, objectUrl, options.args);
+                    //window.open(objectUrl);
+                }
+                else {
+                   // console.log(xhr.responseText);
+                    _source[options.callback](false, xhr.responseText, options.args);
+
+                }
+            }
+            break;
+
+        case "TEXT_DATA":
+            
+            xhr.onreadystatechange = function (e) {
+
+                if (xhr.readyState == 4 && xhr.status == 200) {
+
+                    var response = xhr.responseText;
+                    var data;
+                    try {
+
+                        data = JSON.parse(response);
+
+                    } catch (e) {
+
+                        data = e.message;
+                    }
+
+                    _source[options.callback](true,data, options.args);
+                }
+                if (xhr.status != 200)
+                {
+                    _source[options.callback](false, xhr.responseText, options.args);
+                }
+            }
+
+
+            break;
+    
+
+    
+    }
+
+    /* xhr.onreadystatechange = function (e) {
+ 
+         if (xhr.readyState == 4 && xhr.status == 200) {
+             // console.log(e.target);
+ 
+             var dataLn = e.target.responseText.length;
+             var array = [];
+             for (var i = 0; i < dataLn; i++) {
+                 array[i] = e.target.responseText.charCodeAt(1) & 0xff;
+             }
+ 
+            // var arrayBuffer = e.target.responseText.charCodeAt(x) & 0xff;
+ 
+             console.log(["pole", atob(array)]);
+ 
+            // var arrayBuffer = new Uint8Array(e.target.response);
+             //var byteArray = new Uint8Array(arrayBuffer);
+ 
+ 
+             var response = $.base64('encode', array);
+             window[callback](response, args);
+         }
+     };*/
+
+    xhr.send(null);
+    // numberOfBLObsSent++;
+};
 
 function sendData(fnc,data,callBack,args)
 {
@@ -22,10 +161,10 @@ function sendData(fnc,data,callBack,args)
             messageBox(errorText, "error");
         },
         success: function (data) {
-            console.log(data);
+            //console.log(data);
             //showNewsText(data);
             var xml = $.parseXML(data);
-            console.log(xml);
+            //console.log(xml);
             var dtJson = xml.childNodes[0].textContent;
             var obj = JSON.parse(dtJson);
             $("#commBall").css("display", "none");
@@ -34,6 +173,121 @@ function sendData(fnc,data,callBack,args)
 
     });
 }
+
+
+function sendData2(scriptFile, fnc, data, source, callBack, args) {
+    $("#commBall").css("display", "block");
+    /// <summary>Funkcia na poslanie jQuery Ajaxu smerom na server</summary>
+    /// <param name="fnc" type="String">Funkcia na strane serveru vo WebService.asmx</param>
+    /// <param name="data" type="Object">JSON Objekt co sa ma poslat</param>
+    /// <param name="callBack" type="String">Javascript funkcia kam sa to ma vratit</param>
+    /// <param name="args" type="Mixed">Moze by objekt, pole, hocico co sa preposle do callback funkcie</param>
+    $.ajax({
+        url: scriptFile+"/" + fnc,
+        method: "POST",
+        dataType: "text",
+        // contentType: "application/json; charset=utf-8",
+        contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+        // contentType: "application/x-www-form-urlencoded",
+        //contentType: "text/html",
+        data: "data=" + JSON.stringify(data),
+        error: function (jqXHR, errorText) {
+            messageBox(errorText, "error");
+        },
+        success: function (data) {
+            //console.log(data);
+            //showNewsText(data);
+            var xml = $.parseXML(data);
+            //console.log(xml);
+            var dtJson = xml.childNodes[0].textContent;
+            var obj = JSON.parse(dtJson);
+            $("#commBall").css("display", "none");
+            window[callBack](obj, args);
+        }
+
+    });
+}
+
+
+function getDataFromUrl(url, options, data, source, callBack, args) {
+
+    $.ajaxSetup({
+        beforeSend: function (request) {
+            request.setRequestHeader("X-Gallery-Request-Method", "get");
+            request.setRequestHeader("X-Gallery-Request-Key", "de1ef9f8557883c3b7b012211c635518");
+            request.setRequestHeader("Content-type", "Image/JPG");
+
+
+        }
+    });
+
+    $("#commBall").css("display", "block");
+    /// <summary>Funkcia na poslanie jQuery Ajaxu smerom na server</summary>
+    /// <param name="fnc" type="String">Funkcia na strane serveru vo WebService.asmx</param>
+    /// <param name="data" type="Object">JSON Objekt co sa ma poslat</param>
+    /// <param name="callBack" type="String">Javascript funkcia kam sa to ma vratit</param>
+    /// <param name="args" type="Mixed">Moze by objekt, pole, hocico co sa preposle do callback funkcie</param>
+    $.ajax({
+        url: url,
+        method: options.method,
+        dataType: options.dataType,
+        headers: options.headers,
+       /* beforeSend: function (request) {
+            request.setRequestHeader("X-Gallery-Request-Method", "get");
+            request.setRequestHeader("X-Gallery-Request-Key", "de1ef9f8557883c3b7b012211c635518");
+            request.setRequestHeader("Content-type", "Image/JPG");
+
+
+        },*/
+        
+       
+        contentType: options.contentType,
+        //contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+        // contentType: "application/x-www-form-urlencoded",
+        //contentType: "text/html",
+        data: "data=" + JSON.stringify(data),
+        error: function (jqXHR, errorText) {
+            messageBox(errorText, "error");
+        },
+        success: function (data) {
+
+            //console.log(data);
+            //console.log(data);
+            //showNewsText(data);
+            //var xml = $.parseXML(data);
+            //console.log(xml);
+            //var dtJson = xml.childNodes[0].textContent;
+
+            switch (this.dataType) {
+
+                case "text":
+                    var obj = JSON.parse(data);
+                    $("#commBall").css("display", "none");
+                    window[callBack](obj, args);
+                    break;
+                case "binary":
+                    var inData = data.base64.encode(data);
+                    window[callBack](inData, args);
+
+
+            }
+
+            
+        }
+
+    });
+}
+
+
+function sprintf (text, objArgs) {
+    //var text = this;
+    for (var key in objArgs) {
+        var reg = new RegExp('{' + key + '}', 'gm');
+        text = text.replace(reg, objArgs[key]);
+    }
+    return text;
+}
+
 
 
 
@@ -240,6 +494,8 @@ function messageBox(text,type)
     
 }
 
+
+
 function deleteNurseActivity(id)
 {
     alert(id);
@@ -314,76 +570,8 @@ function afterSaveKdhaoShifts(result)
     }
 }
 
-function hlaskoTabs()
-{
-    $("#hlasko_tabs").tabs();
 
 
-    $("#hlasko_tabs").tabs({
-        activate: function (event) {
-
-            var tab = event.currentTarget.hash;
-           // console.log(tab);
-
-            sendData("hlaskoSelectedTab", { selTab: tab }, "afterSelectTab");
-        }
-    });
-
-    var selTab = $("input[id$=hlaskoSelectedTab]").val();
-    
-    if (selTab!= undefined && selTab.indexOf("hlasko_tab") != -1) {
-        switch (selTab) {
-            case "#hlasko_tab1":
-                $("#hlasko_tabs").tabs({ active: 0 });
-                break;
-            case "#hlasko_tab2":
-                $("#hlasko_tabs").tabs({ active: 1 });
-                break;
-            case "#hlasko_tab3":
-                $("#hlasko_tabs").tabs({ active: 2 });
-                break;
-        }
-    }
-}
-
-function opKnihaTabs()
-{
-    
-    $("#opkniha_tabs").tabs();
-
-    $("#opkniha_tabs").tabs({
-        activate: function (event) {
-
-            var tab = event.currentTarget.hash;
-           //console.log(tab);
-
-            sendData("opknihaSelectedTab", { selTab: tab }, "afterOpKnihaSelectTab");
-        }
-    });
-
-    var selTab = $("input[id$=opknihaTab_hv]").val();
-    // console.log(selTab);
-    if (selTab != undefined && selTab.indexOf("opkniha_tab") != -1)
-    switch (selTab) {
-        case "#opkniha_tab1":
-            $("#opkniha_tabs").tabs({ active: 0 });
-            break;
-        case "#opkniha_tab2":
-            $("#opkniha_tabs").tabs({ active: 1 });
-            break;
-        case "#opkniha_tab3":
-            $("#opkniha_tabs").tabs({ active: 2 });
-            break;
-    }
-
-
-}
-
-function afterOpKnihaSelectTab(data)
-{
-    var tab = data.selTab;
-    $("input[id$=opknihaTab_hv]").val(tab);
-}
 
 function lfTabs() {
 
@@ -465,11 +653,7 @@ function afterLfSelectTab(data) {
 }
 
 
-function afterSelectTab(data)
-{
-    var tab = data.selTab;
-    $("input[id$=hlaskoSelectedTab]").val(tab);
-}
+
 
 //Cast pre poziadavky sestier//
 
@@ -531,10 +715,45 @@ function setSeminar()
    // $("input[id$=date_txt]").datepicker("setDate", "yy-mm-dd");
 }
 
+
+function loadJsFileForClass(myClass) {
+    var jsfile = myClass;
+
+    if (jsfile === ".js") {
+        return;
+    }
+
+    if (!checkClass(jsfile)) {
+        var fileRef = document.createElement("script");
+        fileRef.setAttribute("type", "text/javascript");
+        fileRef.setAttribute("src", "js/" + jsfile);
+
+        document.getElementsByTagName("head")[0].appendChild(fileRef);
+    }
+}
+
+function checkClass(jsFile) {
+
+    var head = document.getElementsByTagName("head")[0].children;
+    for (var ele in head) {
+        if (typeof head[ele] === "object") {
+            if (head[ele].outerHTML.indexOf("jsFile") != -1) return true;
+        }
+    }
+    return false;
+}
+
+function avh(message)
+{
+    console.log("****************************DEBUG*****************************");
+    console.log(message);
+    console.log("****************************END DEBUG*****************************")
+}
+
+
 $(document).ready(function () {
 
-    hlaskoTabs();
-    opKnihaTabs();
+ 
     lfTabs();
     nkimTabs();
 
@@ -543,11 +762,6 @@ $(document).ready(function () {
     {
         setSeminar();
     }
-
-   
-
-
-
 
     $("#delPasswdBtn").click(function (e) {
         //alert("lal");
@@ -565,49 +779,16 @@ $(document).ready(function () {
 
     });
 
-    $("select[id$=_worktype_cb]").change(function (e) {
+   
 
-        var selectedValue = $("select[id$=_worktype_cb]").val();
+   
 
-        if (selectedValue == "urgent") {
-            $("input[id$=_patientname_txt]").val("Osetr. pacienti");
-            $("input[id$=_jsWorktimetxt]").val("1440");
-            $("input[id$=_jsWorkstarttxt]").val("07:00");
-        }
+   //inicializacia js triedy
+    if ($("input[id$=class_hv]").val() != undefined) {
 
-        // alert(selectedValue);
-    });
-
-    $("input[id$=_jsWorkstarttxt]").change(function (e) {
-
-        var str = $("input[id$=_jsWorkstarttxt]").val();
-        var re = new RegExp("^([01]?[0-9]|2[0-3]):[0-5][0-9]$","ig");
-        //alert(str);
-        if (!re.test(str)) {
-            var dt = new Date();
-            var min = dt.getMinutes();
-            var minStr = "";
-            if (min >= 0 || min <= 9) {
-                minStr = "0" + min;
-            }
-            else {
-                minStr = min.toString();
-            }
-
-                $("input[id$=_jsWorkstarttxt]").val(dt.getHours() + ":" + dt.getMinutes());
-            alert("Chyba!!! toto nie je spravny format casu!!!! Nastaveny bude aktualny");
-        }
-
-    });
-
-    $("input[id$=_jsWorktimetxt]").change(function (e) {
-        var str = $("input[id$=_jsWorktimetxt]").val();
-        // alert(Number(str));
-        if (isNaN(str)) {
-            $("input[id$=_jsWorktimetxt]").val("15");
-            alert("Toto nie je cele cislo!!!!");
-        }
-    });
+        var loadClass = $("input[id$=class_hv]").val();
+        loadJsFileForClass(loadClass+".js");
+    }
 
 
 });

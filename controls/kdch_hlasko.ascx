@@ -1,5 +1,6 @@
-﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="kdch_hlasko.ascx.cs" Inherits="controls_druhadk_hlasko" EnableViewState="true" %>
+﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="kdch_hlasko.ascx.cs" Inherits="controls_druhadk_hlasko" EnableViewState="true"  %>
 <asp:HiddenField ID="hlaskoSelectedTab" runat="server" />
+<asp:HiddenField ID="class_hv" runat="server" Value="is_hlasko" />
 <h1 class="black">Hlásenie služby</h1>
 <hr />
 Vytvoril:<asp:Label ID="creatUser_lbl" runat="server" Text="" Font-Bold="true"></asp:Label><br />
@@ -86,7 +87,8 @@ Vytvoril:<asp:Label ID="creatUser_lbl" runat="server" Text="" Font-Bold="true"><
                 <asp:ListItem Value="konzil">Konzílium</asp:ListItem>
                 <asp:ListItem Value="vizita">Vizita</asp:ListItem>
                 <asp:ListItem Value="dekurz">Dekurzovanie</asp:ListItem>
-                <asp:ListItem Value="urgent">Urgent</asp:ListItem>
+                <asp:ListItem Value="urgent">Urgentný príjem</asp:ListItem>
+                    
                     </asp:DropDownList>
             </div> 
 </div>
@@ -147,6 +149,7 @@ Vytvoril:<asp:Label ID="creatUser_lbl" runat="server" Text="" Font-Bold="true"><
         <h3>Zobraz hlasenia</h3>
         <div class="row">
             <div class="one third">
+                <asp:HiddenField ID="date_hv" runat="server" Value="" />
             <asp:Calendar CssClass="responsive" data-max="12" runat="server" OnSelectionChanged="hlasko_SelectionChanged" ID="hlaskoCal_cal" BackColor="White" BorderColor="#d9edf7" CellPadding="4" DayNameFormat="Shortest" Font-Names="Verdana" Font-Size="8pt" ForeColor="Black" Height="180px" Width="200px" >
                 <DayHeaderStyle BackColor="#ffe5c7" Font-Bold="True" Font-Size="7pt" />
                 <NextPrevStyle VerticalAlign="Bottom" />
@@ -159,10 +162,12 @@ Vytvoril:<asp:Label ID="creatUser_lbl" runat="server" Text="" Font-Bold="true"><
             </asp:Calendar>
                 </div>
             <div class="two third">
-            <asp:Button CssClass="medium button red" runat="server" ID="showOup_btn" OnClick="showHlasko_fnc" Text="OUP" />
-            <asp:Button CssClass="medium button blue" runat="server" ID="showOddA_btn" OnClick="showHlasko_fnc" Text="OddA" />
-            <asp:Button CssClass="medium button green" runat="server" ID="showOddB_btn" OnClick="showHlasko_fnc" Text="OddB" />
-            <asp:Button CssClass="medium button asphalt" runat="server" ID="showOp_btn" OnClick="showHlasko_fnc" Text="Op. pohotovost" />
+            <asp:Button CssClass="medium button red" runat="server" ID="showOup_btn" OnClick="showHlasko_fnc"  onClientClick="return false;" Text="OUP" />
+            <asp:Button CssClass="medium button blue" runat="server" ID="showOddA_btn" OnClick="showHlasko_fnc" onClientClick="loadOddHlasko();return false;" Text="OddA" />
+                <%--<button class="medium button blue" id="showOddA_btn">Test</button>--%>
+
+            <asp:Button CssClass="medium button green safariClick" style="cursor:pointer;" runat="server" ID="showOddB_btn" OnClick="showHlasko_fnc"  onClientClick="return false;" Text="OddB" />
+            <asp:Button CssClass="medium button asphalt safariClick" style="cursor:pointer;" runat="server" ID="showOp_btn" OnClick="showHlasko_fnc"  onClientClick="return false;" Text="Op. pohotovost" />
             <asp:TextBox ID="hlasenie" CssClass="dtextbox" runat="server"  Width="90%" Rows="30" Height="500" TextMode="MultiLine"> </asp:TextBox>
             
             <asp:Button ID="saveHlasko_btn" runat="server" Text="Ulož zmenu" OnClick="saveHlaskoFnc" CssClass="button green" />

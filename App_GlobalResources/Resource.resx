@@ -498,4 +498,10 @@
   <data name="sys_yes" xml:space="preserve">
     <value>Áno</value>
   </data>
+  <data name="opkniha_gallery_url_picture" xml:space="preserve">
+    <value>http://10.10.2.83/gallery3/index.php/rest/data/{0}?size=full</value>
+  </data>
+  <data name="opkniha_gallery_url_thumb" xml:space="preserve">
+    <value>http://10.10.2.83/gallery3/index.php/rest/data/{0}?size=thumb</value>
+  </data>
 </root>

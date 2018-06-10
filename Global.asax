@@ -117,7 +117,22 @@
 
     void Application_BeginRequest(object sender, EventArgs e)
     {
+        if (!Request.IsLocal)
+        {
+            switch (Request.Url.Scheme)
+            {
+                case "https":
+                    Response.AddHeader("Strict-Transport-Security", "max-age=300");
+                    break;
+                case "http":
+                    var path = "https://" + Request.Url.Host + Request.Url.PathAndQuery;
+                    Response.Status = "301 Moved Permanently";
+                    Response.AddHeader("Location", path);
+                    break;
+            }
+        }
         
+
     }
 
 

@@ -33,6 +33,7 @@
 </head>
 <body>
     <form id="form1" runat="server">
+        <asp:Literal ID="msg_lit" runat="server"></asp:Literal>
         <h1><asp:Label ID="dovkomplTitel_lbl" runat="server" Text=""></asp:Label></h1>
         <hr />
         <div class="nonprint">

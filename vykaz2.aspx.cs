@@ -1026,7 +1026,7 @@ public partial class vykaz2 : System.Web.UI.Page
         StringBuilder query = new StringBuilder();
         int dateGroup = my_x2.makeDateGroup(rok, mesiac);
         //query.AppendFormat("SELECT [datum] FROM [is_sluzby_2] WHERE [user_id] = '{0}' AND [date_group]='{1}' AND ([typ]<>'Prijm' OR [typ]<>'Uraz' OR [typ]<>'Vseob') ORDER BY [datum] ASC", Session["user_id"].ToString(), dateGroup);
-        query.AppendFormat("SELECT [datum] FROM [is_sluzby_2] WHERE [user_id] = '{0}' AND [date_group]='{1}' AND [typ] NOT IN('Prijm','Uraz','Vseob','GFS') ORDER BY [datum] ASC", Session["user_id"].ToString(), dateGroup);
+        query.AppendFormat("SELECT [datum] FROM [is_sluzby_2] WHERE [user_id] = '{0}' AND [date_group]='{1}' AND [typ] NOT IN('Prijm','Uraz','Vseob','GFS','Uraz2') ORDER BY [datum] ASC", Session["user_id"].ToString(), dateGroup);
         Dictionary<int, Hashtable> table = x2Mysql.getTable(query.ToString());
 
         
@@ -1810,7 +1810,7 @@ public partial class vykaz2 : System.Web.UI.Page
         int milis = DateTime.Now.Millisecond;
         string path = Server.MapPath("App_Data");
         string imagepath = Server.MapPath("App_Data");
-        string oldFile = @path + "\\vykaz.pdf";
+        string oldFile = @path + "\\vykaz1.pdf";
         string hash = my_x2.makeFileHash(Session["login"].ToString() + milis.ToString());
         string newFile = @path + "\\vykaz_" + hash + ".pdf";
         this.msg_lbl.Text = oldFile;
@@ -1818,6 +1818,8 @@ public partial class vykaz2 : System.Web.UI.Page
         PdfReader reader = new PdfReader(oldFile);
         Rectangle size = reader.GetPageSizeWithRotation(1); 
         Document myDoc = new Document(PageSize.A4);
+		
+		
 
         //1cm == 28.3pt
 
@@ -1830,12 +1832,10 @@ public partial class vykaz2 : System.Web.UI.Page
 
         // the pdf content
         //PdfWriter pw = writer.DirectContent;
-
-        PdfImportedPage page = writer.GetImportedPage(reader, 1);
-        
-
-
         PdfContentByte cb = writer.DirectContent;
+		
+		
+		PdfImportedPage page = writer.GetImportedPage(reader, 1);
         cb.AddTemplate(page, 0, 0);
 
         double[] koor = new double[13];
@@ -1866,7 +1866,6 @@ public partial class vykaz2 : System.Web.UI.Page
 
         cb.SetColorStroke(BaseColor.LIGHT_GRAY);
         cb.SetColorFill(BaseColor.LIGHT_GRAY);
-        
 
         string[] freeDays = x_db.getFreeDays();
 
@@ -1907,7 +1906,7 @@ public partial class vykaz2 : System.Web.UI.Page
 
                 float recYY = (float)recY;
 
-                cb.Rectangle(34, recYY, 100, 11);
+                cb.Rectangle(34, recYY, 25, 11);
                 //cb.Stroke();
                 cb.Fill();
             }
@@ -2035,14 +2034,8 @@ public partial class vykaz2 : System.Web.UI.Page
             }
         }
 
-        
+     
 
-        cb.MoveText(100, 100);
-
-        Chunk chk = new Chunk("Halo toto je test");
-
-        chk.SetBackground(BaseColor.BLUE);
-        writer.Add(chk);
 
         myDoc.Close();
         fs.Close();

@@ -14,6 +14,12 @@ public partial class dovkompl : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
+
+        if (Session["tuisegumdrum"] == null)
+        {
+            Response.Redirect("error.html");
+        }
+
         int mesiac = Convert.ToInt32(Session["dov_mesiac"]);
         int rok = Convert.ToInt32(Session["dov_rok"]);
 
@@ -306,7 +312,9 @@ public partial class dovkompl : System.Web.UI.Page
                                     GROUP_CONCAT([t_sluz.user_id] ORDER BY [t_sluz.ordering]) AS [user_ids] 
                             FROM [is_sluzby_2] AS [t_sluz]
                             INNER JOIN [is_users] AS [t_users] ON [t_users.id] = [t_sluz.user_id]
-                            WHERE [t_sluz.date_group] = '{0}' AND [t_sluz.state]='active' AND [t_users.worker]='int'  
+                            WHERE [t_sluz.date_group] = '{0}' 
+                            -- AND [t_sluz.state]='active' 
+                            AND [t_users.worker]='int'  
                                   GROUP BY [datum] 
                         ";
 
@@ -350,7 +358,7 @@ public partial class dovkompl : System.Web.UI.Page
                                 stCell.ToolTip += "Oddelenie B" + "\r\n";
                                 break;
                             case "OP":
-                                stCell.BackColor = System.Drawing.Color.FromArgb(0x46627f);
+                                stCell.BackColor = System.Drawing.Color.FromArgb(0xf7f6bb);
                                 stCell.ToolTip += "Operačná pohotovosť" + "\r\n";
                                 break;
                             case "Prijm":
@@ -402,6 +410,10 @@ public partial class dovkompl : System.Web.UI.Page
                     }
                 }
             }
+        }
+        else
+        {
+            this.msg_lit.Text = "<p style='color:red;'>Pozor nezobrazuju sa sluzby, skontrolujte ci su nastavene dostupne pre vsetkych!!!!</p>";
         }
     }
 
@@ -503,7 +515,7 @@ public partial class dovkompl : System.Web.UI.Page
         {
             case "do":
                 result.Add("code", "D");
-                result.Add("color", 0x261758);
+                result.Add("color", 0xccb9f7);
                 result.Add("label", Resources.Resource.free_do);
                
                 break;
@@ -569,14 +581,25 @@ public partial class dovkompl : System.Web.UI.Page
         headRow.Controls.Add(headMeno);
 
         string[] freeDays = x2Mysql.getFreeDays();
+        int dnesJe = DateTime.Today.Day;
 
         for (int den = 0; den<dni; den++)
         {
             TableCell denCell = new TableCell();
             int rDen = den+1;
             denCell.Text = rDen.ToString();
+
+            if (rDen == dnesJe)
+            {
+                denCell.BackColor = System.Drawing.Color.LightPink;
+            }
+            
+          
             denCell.HorizontalAlign = HorizontalAlign.Center;
             headRow.Controls.Add(denCell);
+
+
+
         }
 
        
@@ -602,13 +625,15 @@ public partial class dovkompl : System.Web.UI.Page
 
             riadok.Controls.Add(menoCell);
 
+
+
             for (int den = 0; den < dni; den++)
             {
                 int rDen = den + 1;
 
                 int weekDay = (int)new DateTime(rok, mesiac, rDen).DayOfWeek;
 
-                int dnesJe = DateTime.Today.Day;
+               
 
                 TableCell statusCell = new TableCell();
                 statusCell.ID = "stCell_" + rDen.ToString() + "_" + table[row]["id"].ToString();
@@ -620,24 +645,24 @@ public partial class dovkompl : System.Web.UI.Page
 
                 if (dnesJe == rDen)
                 {
-                    statusCell.BorderColor = System.Drawing.Color.Black;
-                    statusCell.BorderStyle = BorderStyle.Dotted;
+                    statusCell.BorderColor = System.Drawing.Color.White;
+                    statusCell.BorderStyle = BorderStyle.Groove;
                     
                 }
 
                 if (weekDay == 0 || weekDay == 6)
                 {
-                    statusCell.BackColor = System.Drawing.Color.FromArgb(0xD46A6A);
+                    statusCell.BackColor = System.Drawing.Color.FromArgb(0xf9aec4);
                 }
                 else
                 {
-                    statusCell.BackColor = System.Drawing.Color.FromArgb(0x80BA5D);
+                    statusCell.BackColor = System.Drawing.Color.FromArgb(0xb8f29d);
                 }
 
                 string denMes = rDen.ToString() + "." + mesiac.ToString();
                 if (Array.IndexOf(freeDays, denMes) != -1)
                 {
-                    statusCell.BackColor = System.Drawing.Color.FromArgb(0xD4BF6A);
+                    statusCell.BackColor = System.Drawing.Color.FromArgb(0xadcdf7);
                 }
                 riadok.Controls.Add(statusCell);
             }

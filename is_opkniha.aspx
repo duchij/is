@@ -1,10 +1,13 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="is_opkniha.aspx.cs" Inherits="is_opkniha" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="is_opkniha.aspx.cs" Inherits="is_opkniha" EnableViewState="true" MaintainScrollPositionOnPostback="true" EnableEventValidation="false" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
+    
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
    
     <h1> Hľadanie v operačnej knihe</h1>
+    
+    <asp:HiddenField ID="class_hv" runat="server" Value="is_opkniha" />
     <asp:HiddenField ID="opknihaTab_hv" runat="server" Value="" />
     <asp:Literal ID="msg_lbl" runat="server" Text=""></asp:Literal>
     <div class="dismissible info message">
@@ -32,6 +35,7 @@
             <li><a href="#opkniha_tab1">podľa Diagnóz</a></li>
             <li><a href="#opkniha_tab2">podľa Výkonov</a></li>
             <li><a href="#opkniha_tab3">Moje výkony</a></li>
+            <li><a href="#opkniha_tab4">Galeria Kliniky</a></li>
         </ul>
         <div id="opkniha_tab1">
         <h3 class="blue"> Hľadanie v diagnózach</h3>
@@ -42,14 +46,14 @@
         <b>Hľadaj v diagnózach: </b><asp:TextBox ID="queryDg_txt" runat="server" EnableViewState="true"></asp:TextBox>
             </div>
         <div class="one fourth">
-            <strong>Od roku:</strong>  <asp:TextBox ID="fromYear_txt" runat="server" ></asp:TextBox>
+            <strong>Od (rrrr-mm-dd):</strong>  <asp:TextBox ID="dgFrom_txt" runat="server"  ></asp:TextBox>
         </div>
         <div class="one fourth">
-            <strong>Do roku:</strong> <asp:TextBox ID="toYear_txt" runat="server"></asp:TextBox>
+            <strong>Do (rrrr-mm-dd):</strong> <asp:TextBox ID="dgTo_txt" runat="server"></asp:TextBox>
         </div>
         <div class="one fourth">
             <br />
-            <asp:Button ID="search_dg_btn" runat="server" Text="<%$ Resources:Resource,search %>" CssClass="blue button" OnClick="searchInDgFnc" />
+            <asp:Button ID="btn_DG" runat="server" Text="<%$ Resources:Resource,search %>" CssClass="blue button" OnClick="searchInDgFnc" />
              <asp:Button ID="to_excel_btn" runat="server" Text="Do excelu" CssClass="green button" OnClick="searchToExcelFnc" />
        </div>
             </div> <!-- koniec tabu1 -->
@@ -62,14 +66,14 @@
        <b> Hľadaj v výkonoch:</b> <asp:TextBox ID="queryOp_txt" runat="server" EnableViewState="true"></asp:TextBox>
             </div>
         <div class="one fourth">
-            <strong>Od roku:</strong>  <asp:TextBox ID="fromYearOP_txt" runat="server" EnableViewState="true" ></asp:TextBox>
+            <strong>Od (rrrr-mm-dd):</strong>  <asp:TextBox ID="opFrom_txt" runat="server" EnableViewState="true" ></asp:TextBox>
         </div>
         <div class="one fourth">
-            <strong>Do roku:</strong> <asp:TextBox ID="toYearOP_txt" runat="server" EnableViewState="true"></asp:TextBox>
+            <strong>Do (rrrr-mm-dd):</strong> <asp:TextBox ID="opTo_txt" runat="server" EnableViewState="true"></asp:TextBox>
         </div>
         <div class="one fourth">
              <br />
-            <asp:Button ID="Button1" runat="server" Text="<%$ Resources:Resource,search %>" CssClass="blue button" OnClick="searchInOPFnc" />
+            <asp:Button ID="btn_OP" runat="server" Text="<%$ Resources:Resource,search %>" CssClass="blue button" OnClick="searchInOPFnc" />
              <asp:Button ID="Button2" runat="server" Text="Do excelu" CssClass="green button" OnClick="searchOPToExcelFnc" />
        </div>
         </div> <!--zaciatok tabu3 -->
@@ -77,15 +81,38 @@
             <div id="opkniha_tab3"> <!--zaciatok tabu3 -->
                     <h3 class="asphalt"> Výpis mojich výkonov </h3>
                     <div class="one fourth">Meno:<asp:textbox id="menoMyOP_txt" runat="server"></asp:textbox></div>
-                    <div class="one fourth">Od roku:<asp:textbox id="fromYearMyOP_txt" runat="server"></asp:textbox></div>
-                    <div class="one fourth">Do roku:<asp:textbox id="toYearMyOP_txt" runat="server"></asp:textbox></div>
+                    <div class="one fourth">Od (rrrr-mm-dd):<asp:textbox id="myFrom_txt" runat="server"></asp:textbox></div>
+                    <div class="one fourth">Do (rrrr-mm-dd):<asp:textbox id="myTo_txt" runat="server"></asp:textbox></div>
                     <div class="one fourth">
                         <asp:Button ID="Button3" runat="server" Text="<%$ Resources:Resource,search %>" CssClass="blue button" OnClick="searchInMyOPFnc" />
              <asp:Button ID="Button4" runat="server" Text="Do excelu" CssClass="green button" OnClick="searchInMyExcelOPFnc" /></div>
             
             </div>
         </div><!--koniec tabu3 -->
+        <div class="row">
+            <div id="opkniha_tab4"> <!--zaciatok tabu4 -->
+                <h3 class="asphalt">Hľadanie v galérii KDCH</h3>
+                <p class="black">
+                    Prehľadáva sa podľa dátumu vyhotovenia obrázka. Tento je vo formáte <strong>ddmmrrrr</strong>. Kliknutím na textový rámček sa Vám objaví dátumovník.
+                    <span class="red">
+                        Pozor!!!! Táto funkcia je dostupná len v rámci NUDCH.
+                    </span>
 
+
+                </p>
+                <div style="display:inline-block">
+                    <asp:TextBox ID="galOpDate_txt" runat="server" Width="120px" CssClass="inline" EnableViewState="true"></asp:TextBox>
+                    
+                    <asp:Button ID="galSearch_btn" runat="server"  Text="Hladaj v galleri" CssClass="yellow inline" OnClientClick="getGalleryData();return false;" _OnClick="searchGalleryFnc"/>
+                </div>
+                    <p>
+                        Hladany datum: <asp:Label runat="server" ID="searchData_lbl"></asp:Label>
+                    <asp:Label runat="server" ID="foundPictures_lbl"></asp:Label>
+                        <div id="contentGalPics"></div>
+                    <asp:Table runat="server" ID="picResult_tbl" CssClass="responsive" data-max="13"></asp:Table>
+                </p>
+            </div><!--koniec tabu4 -->
+        </div>
 
          </div>
     </div>

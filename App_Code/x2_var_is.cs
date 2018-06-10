@@ -232,12 +232,15 @@ public class x2_var
 
     public string unixDate(DateTime datum)
     {
-        string mesiac = datum.Month.ToString();
-        string den = datum.Day.ToString();
-        string rok = datum.Year.ToString();
-
-        return rok + "-" + mesiac + "-" + den;
+        return datum.ToString("yyyy-MM-dd");
     }
+
+    public string unixDateFull(DateTime datum)
+    {
+        return datum.ToString("yyyy-MM-dd HH:mm:ss");
+    }
+
+
 
     public DateTime UnixToMsDateTime(string datetime)
     {

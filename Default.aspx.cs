@@ -82,6 +82,10 @@ public partial class _Default : System.Web.UI.Page
             {
                 result = 4; // Passwords are not the same, contact admin
             }
+            if (row["force_change"].ToString() == "1" && row["passwd"].ToString() == "NULL")
+            {
+                result = 7;
+            }
         }
         else
         {
@@ -143,7 +147,7 @@ public partial class _Default : System.Web.UI.Page
 
                 int forceChangeStatus = this.checkChangePassword(userName, passwd, "MD5");
 
-                if (forceChangeStatus == 2)
+                if (forceChangeStatus == 2 || forceChangeStatus == 7)
                 {
                     Session["force_change"] = 1;
                     Response.Redirect("fpassch.aspx?uname=" + userName);

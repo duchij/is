@@ -14,7 +14,7 @@ using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 
 
-class planClass
+class planClass1
 {
     private string _rights = "";
     private int _gKlinika = 0;
@@ -124,7 +124,7 @@ class planClass
 
 public partial class is_plan : System.Web.UI.Page
 {
-    planClass plan = new planClass();
+    planClass1 plan = new planClass1();
 
     protected void Page_Load(object sender, EventArgs e)
     {

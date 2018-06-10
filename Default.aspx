@@ -33,10 +33,10 @@
     <asp:HiddenField runat="server" ID="passwd_hf" Value="" />
     <div class="row">
      
-        <div class="one third centered">
-            <table style="width:300px;">
+        <div class="one third centered two-up-mobile">
+            <table>
                 <tr>
-                    <td colspan="2" class="responsive" data-max="15">
+                    <td colspan="2" class="responsive" data-max="14">
                         
                         <div class="box blue"><h1>Prihlásenie do IS.KDCH</h1></div>
                         
@@ -68,8 +68,7 @@
     <script type="text/javascript" src="gdw/js/libs/jquery-1.10.2.min.js"></script>
 	<script type="text/javascript" src="gdw/js/groundwork.all.js"></script>
     <script type="text/javascript" src="js/aes.js"></script> 
-    <!--<script type="text/javascript" src="js/sha1.js"></script>-->
-    <script type="text/javascript" src="js/login.js"></script>
+   <script type="text/javascript" src="js/login_min.js"></script>
     
 </body>
 </html>

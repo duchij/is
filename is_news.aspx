@@ -24,7 +24,7 @@
             <h3 class="blue">Zoznam aktualít:</h3>
                 <asp:GridView ID="news_gv" runat="server" AutoGenerateColumns="False"  CssClass="responsive" data-max="15"
                     AllowPaging="True" 
-                    onrowdeleting="news_gv_RowDeleting" PageSize="5" Width="99%" OnSelectedIndexChanging="news_gv_selectRow" EnableModelValidation="True" >
+                    onrowdeleting="news_gv_RowDeleting" PageSize="5" Width="99%" OnSelectedIndexChanging="news_gv_selectRow" EnableModelValidation="True" OnPageIndexChanging="news_gv_PageIndexChanging" >
                     <Columns>
                         <asp:CommandField SelectText="Upraviť" ShowSelectButton="True">
                         <ControlStyle Font-Bold="True" ForeColor="#006600" />
@@ -44,7 +44,7 @@
                             <ControlStyle Width="100px" Font-Bold="True" ForeColor="#CC0000" />
                         </asp:CommandField>
                     </Columns>
-                    <PagerStyle Font-Bold="True" Font-Size="Large" ForeColor="Black" />
+                    <PagerStyle Font-Bold="True" Font-Size="Large" ForeColor="Black"  />
                 </asp:GridView>
  </div>
         </div>
